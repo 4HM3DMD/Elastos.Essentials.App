@@ -4,16 +4,16 @@ export const availableThemes: ThemeConfig[] = [
   {
     key: "white",
     variants: {
-      "light": { color: "#F2F2F2", boxColor: "#FFFFFF" },
-      "dark": { color: "#FFFFFF", boxColor: "#F2F2F2" }
+      "light": { color: "#F4F4F6", boxColor: "#FFFFFF", textColor: "#111114", buttonBackgroundColor: "#F6921A", buttonTextColor: "#1A1208" },
+      "dark": { color: "#FFFFFF", boxColor: "#F4F4F6", textColor: "#111114", buttonBackgroundColor: "#F6921A", buttonTextColor: "#1A1208" }
     },
     usesDarkMode: false
   },
   {
     key: "black",
     variants: {
-      "light": { color: "#000000", boxColor: "#212021" },
-      "dark": { color: "#212021", boxColor: "#000000" }
+      "light": { color: "#0B0B0D", boxColor: "#161619", textColor: "#F5F5F7", buttonBackgroundColor: "#F6921A", buttonTextColor: "#1A1208" },
+      "dark": { color: "#161619", boxColor: "#0B0B0D", textColor: "#F5F5F7", buttonBackgroundColor: "#F6921A", buttonTextColor: "#1A1208" }
     },
     usesDarkMode: true
   },
