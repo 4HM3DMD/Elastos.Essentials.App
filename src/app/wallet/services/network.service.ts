@@ -173,7 +173,6 @@ export class WalletNetworkService {
     // Define hardcoded preferred network keys that should appear first
     const preferredNetworkKeys = [
       'elastos',
-      'elastoseco',
       'elastosecopgp',
       'btc',
       'bsc',
@@ -297,7 +296,7 @@ export class WalletNetworkService {
   public isActiveNetworkElastos(): boolean {
     return (
       this.activeNetwork.value &&
-      ['elastos', 'elastossmartchain', 'elastosidchain', 'elastoseco'].includes(this.activeNetwork.value.key)
+      ['elastos', 'elastossmartchain', 'elastosidchain'].includes(this.activeNetwork.value.key)
     );
   }
 
@@ -352,7 +351,6 @@ export class WalletNetworkService {
     // Default networks that should be visible to new users
     const defaultVisibleNetworks = [
       'elastos',
-      'elastoseco',
       'elastosecopgp',
       'elastossmartchain',
       'elastosidchain',

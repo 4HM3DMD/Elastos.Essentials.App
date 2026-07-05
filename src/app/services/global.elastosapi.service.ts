@@ -458,9 +458,6 @@ export class GlobalElastosAPIService extends GlobalService {
       case ElastosApiUrlType.ETHSC_RPC:
         network = this.networksService.getNetworkByKey('elastossmartchain');
         break;
-      case ElastosApiUrlType.ECO_RPC:
-        network = this.networksService.getNetworkByKey('elastoseco');
-        break;
       default:
         // For other api url types, just call this service. They are not overriden by user
         // network overrides.

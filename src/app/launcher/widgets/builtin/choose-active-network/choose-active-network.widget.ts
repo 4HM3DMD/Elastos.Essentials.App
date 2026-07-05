@@ -67,7 +67,7 @@ export class ChooseActiveNetworkWidget extends WidgetBase implements OnInit, OnD
     const defaultNetworks: AnyNetwork[] = [
       this.walletNetworkService.getNetworkByKey('bsc'), // Binance Smart Chain
       this.walletNetworkService.getNetworkByKey('btc'), // Bitcoin
-      this.walletNetworkService.getNetworkByKey('elastoseco'), // Elastos ECO
+      this.walletNetworkService.getNetworkByKey('elastosecopgp'), // Elastos PGP
       this.walletNetworkService.getNetworkByKey('elastos') // Elastos mainchain
     ].filter(n => !!n); // Filter undefined networks to make sure we are ready
 

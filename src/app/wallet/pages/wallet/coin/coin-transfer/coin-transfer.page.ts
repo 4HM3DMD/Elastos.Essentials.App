@@ -1308,9 +1308,6 @@ export class CoinTransferPage implements OnInit, OnDestroy {
         case StandardCoinName.ETHSC:
           networkKey = 'elastossmartchain';
           break;
-        case StandardCoinName.ETHECO:
-          networkKey = 'elastoseco';
-          break;
         case StandardCoinName.ETHECOPGP:
           networkKey = 'elastosecopgp';
           break;

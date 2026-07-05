@@ -197,7 +197,6 @@ export class AccessPage implements OnInit {
             case 'elastos':
             case 'elastossmartchain':
             case 'elastosidchain':
-            case 'elastoseco':
             case 'elastosecopgp':
             break;
             default:

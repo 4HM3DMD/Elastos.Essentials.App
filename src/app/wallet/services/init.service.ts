@@ -26,10 +26,6 @@ import { CeloTestNetNetwork } from '../model/networks/celo/network/celo.testnet.
 import { CronosMainNetNetwork } from '../model/networks/cronos/network/cronos.mainnet.network';
 import { CronosTestNetNetwork } from '../model/networks/cronos/network/cronos.testnet.network';
 import {
-  ElastosECOMainNetNetwork,
-  ElastosECOTestNetNetwork
-} from '../model/networks/elastos/evms/eco/network/eco.networks';
-import {
   ElastosPGPMainNetNetwork,
   ElastosPGPTestNetNetwork
 } from '../model/networks/elastos/evms/pgp/network/pgp.networks';
@@ -186,7 +182,6 @@ export class WalletInitService extends GlobalService {
     await this.createAndRegisterNetwork(new ElastosMainChainMainNetNetwork());
     await this.createAndRegisterNetwork(new ElastosSmartChainMainNetNetwork(), networkTemplate === MAINNET_TEMPLATE);
     await this.createAndRegisterNetwork(new ElastosIdentityChainMainNetNetwork());
-    await this.createAndRegisterNetwork(new ElastosECOMainNetNetwork());
     await this.createAndRegisterNetwork(new ElastosPGPMainNetNetwork());
     await this.createAndRegisterNetwork(new BTCMainNetNetwork());
     await this.createAndRegisterNetwork(new EthereumMainNetNetwork());
@@ -211,7 +206,6 @@ export class WalletInitService extends GlobalService {
     await this.createAndRegisterNetwork(new ElastosMainChainTestNetNetwork());
     await this.createAndRegisterNetwork(new ElastosSmartChainTestNetNetwork(), networkTemplate === TESTNET_TEMPLATE);
     await this.createAndRegisterNetwork(new ElastosIdentityChainTestNetNetwork());
-    await this.createAndRegisterNetwork(new ElastosECOTestNetNetwork());
     await this.createAndRegisterNetwork(new ElastosPGPTestNetNetwork());
     await this.createAndRegisterNetwork(new BTCTestNetNetwork());
     await this.createAndRegisterNetwork(new EthereumGoerliNetwork());

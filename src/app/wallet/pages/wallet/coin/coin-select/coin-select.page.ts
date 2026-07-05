@@ -117,13 +117,6 @@ export class CoinSelectPage implements OnInit {
       subwallets.push(escsubwallet);
     }
 
-    let ecoChain = WalletNetworkService.instance.getNetworkByKey('elastoseco');
-    let ecoNetworkWallet = await ecoChain.createNetworkWallet(this.networkWallet.masterWallet, false);
-    if (ecoNetworkWallet) {
-      let ecosubwallet = ecoNetworkWallet.getSubWallet(StandardCoinName.ETHECO);
-      subwallets.push(ecosubwallet);
-    }
-
     let ecoPGPChain = WalletNetworkService.instance.getNetworkByKey('elastosecopgp');
     let ecoPGPNetworkWallet = await ecoPGPChain.createNetworkWallet(this.networkWallet.masterWallet, false);
     if (ecoPGPNetworkWallet) {
@@ -152,18 +145,10 @@ export class CoinSelectPage implements OnInit {
       logo: escChain.logo,
       tokenSymbol: escChain.getMainTokenSymbol()
     });
-    let ecoChain = WalletNetworkService.instance.getNetworkByKey('elastoseco');
-    this.destNetworks.push({
-      id: StandardCoinName.ETHECO,
-      chainId: (<EVMNetwork>ecoChain).getMainChainID(),
-      friendName: 'ECO SideChain',
-      logo: ecoChain.logo,
-      tokenSymbol: ecoChain.getMainTokenSymbol()
-    });
     let ecoPGPChain = WalletNetworkService.instance.getNetworkByKey('elastosecopgp');
     this.destNetworks.push({
       id: StandardCoinName.ETHECOPGP,
-      chainId: (<EVMNetwork>ecoChain).getMainChainID(),
+      chainId: (<EVMNetwork>ecoPGPChain).getMainChainID(),
       friendName: 'PGP Chain',
       logo: ecoPGPChain.logo,
       tokenSymbol: ecoPGPChain.getMainTokenSymbol()})

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Logger } from 'src/app/logger';
-import { PGAccountAbstractionProvider } from '../../model/networks/elastos/evms/eco/account-abstraction-providers/pg-account-abstraction.provider';
 import { AccountAbstractionProvider } from '../../model/networks/evms/account-abstraction-provider';
 
 /**
@@ -23,7 +22,8 @@ export class AccountAbstractionProvidersService {
   }
 
   private registerProviders(): void {
-    this.registerAAProvider(new PGAccountAbstractionProvider());
+    // No account-abstraction providers are currently registered: the Elastos ECO chain,
+    // which was the only AA-capable network, has been removed.
   }
 
   public registerAAProvider(provider: AccountAbstractionProvider): void {

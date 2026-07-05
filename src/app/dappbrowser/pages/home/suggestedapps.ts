@@ -19,22 +19,13 @@ export const suggestedDApps = (darkMode: boolean): DAppMenuEntry[] => [
     networks: ['elastosecopgp']
   },
   {
-    icon: '/assets/browser/dapps/pga.png',
-    title: 'BTCD Stablecoin Minting',
-    description: "The world's first fully Bitcoin-backed stablecoin. Put your Bitcoin to work without selling it.",
-    url: 'https://ecobtcd.pgachain.org/',
-    useExternalBrowser: false,
-    walletConnectSupported: false,
-    networks: ['elastoseco']
-  },
-  {
     icon: '/assets/browser/dapps/pgp.png',
     title: 'PGP Swap',
     description: '',
     url: 'https://swap.pgachain.org',
     useExternalBrowser: false,
     walletConnectSupported: false,
-    networks: ['elastoseco', 'elastosecopgp']
+    networks: ['elastosecopgp']
   },
   {
     icon: '/assets/browser/dapps/pgp.png',
@@ -43,7 +34,7 @@ export const suggestedDApps = (darkMode: boolean): DAppMenuEntry[] => [
     url: 'https://miner.pgachain.org',
     useExternalBrowser: false,
     walletConnectSupported: false,
-    networks: ['elastoseco', 'elastosecopgp']
+    networks: ['elastosecopgp']
   },
   {
     icon: '/assets/browser/dapps/ela.svg',
@@ -53,15 +44,6 @@ export const suggestedDApps = (darkMode: boolean): DAppMenuEntry[] => [
     useExternalBrowser: false,
     walletConnectSupported: false,
     networks: ['elastosecopgp']
-  },
-  {
-    icon: '/assets/browser/dapps/ela.svg',
-    title: 'PGP Explorer',
-    description: '',
-    url: 'https://eco.elastos.io/',
-    useExternalBrowser: false,
-    walletConnectSupported: false,
-    networks: ['elastoseco']
   },
   {
     icon: '/assets/browser/dapps/ela.svg',
