@@ -10,6 +10,7 @@ import { UiEmptyStateComponent } from './ui-empty-state/ui-empty-state.component
 import { UiKvRowComponent } from './ui-kv-row/ui-kv-row.component';
 import { UiSheetHeaderComponent } from './ui-sheet-header/ui-sheet-header.component';
 import { UiSkeletonComponent } from './ui-skeleton/ui-skeleton.component';
+import { UiSparklineComponent } from './ui-sparkline/ui-sparkline.component';
 import { UiTokenRowComponent } from './ui-token-row/ui-token-row.component';
 
 /**
@@ -28,7 +29,8 @@ import { UiTokenRowComponent } from './ui-token-row/ui-token-row.component';
     UiSheetHeaderComponent,
     UiKvRowComponent,
     UiEmptyStateComponent,
-    UiSkeletonComponent
+    UiSkeletonComponent,
+    UiSparklineComponent
   ],
   imports: [CommonModule, IonicModule, InlineSVGModule],
   exports: [
@@ -40,7 +42,8 @@ import { UiTokenRowComponent } from './ui-token-row/ui-token-row.component';
     UiSheetHeaderComponent,
     UiKvRowComponent,
     UiEmptyStateComponent,
-    UiSkeletonComponent
+    UiSkeletonComponent,
+    UiSparklineComponent
   ]
 })
 export class UiComponentsModule {}

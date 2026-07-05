@@ -31,13 +31,16 @@
     <div *ngIf="sub" class="sub">{{ sub }}</div>
   </div>
 
-  <ion-icon *ngIf="chevron && !value && !subValue" class="chevron" name="chevron-forward" aria-hidden="true"></ion-icon>
+  <ion-icon *ngIf="chevron && !value && !subValue && !subValue2" class="chevron" name="chevron-forward"
+    aria-hidden="true"></ion-icon>
 
-  <div *ngIf="value || subValue" class="values">
+  <div *ngIf="value || subValue || subValue2" class="values">
     <div *ngIf="value" class="value tabular" [class.up]="valueTone === 'up'"
       [class.down]="valueTone === 'down'">{{ value }}</div>
     <div *ngIf="subValue" class="sub-value tabular" [class.up]="subValueTone === 'up'"
       [class.down]="subValueTone === 'down'">{{ subValue }}</div>
+    <div *ngIf="subValue2" class="sub-value tabular" [class.up]="subValue2Tone === 'up'"
+      [class.down]="subValue2Tone === 'down'">{{ subValue2 }}</div>
   </div>
 
   <ion-ripple-effect *ngIf="interactive"></ion-ripple-effect>

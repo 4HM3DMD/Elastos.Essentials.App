@@ -1,0 +1,6 @@
+<svg *ngIf="visible" class="sparkline" [class.up]="toneClass === 'up'" [class.down]="toneClass === 'down'"
+  [attr.viewBox]="'0 0 ' + width + ' ' + height" [style.height.px]="height" preserveAspectRatio="none"
+  aria-hidden="true">
+  <path *ngIf="area" class="area" [attr.d]="areaPath"></path>
+  <path class="line" [attr.d]="linePath" [attr.stroke-width]="strokeWidth"></path>
+</svg>

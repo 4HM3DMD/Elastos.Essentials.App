@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.sparkline {
+  display: block;
+  width: 100%;
+
+  .line {
+    fill: none;
+    stroke: var(--essentials-text-secondary);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    // Keep the stroke a constant screen width despite the non-uniform viewBox stretch.
+    vector-effect: non-scaling-stroke;
+  }
+
+  .area {
+    stroke: none;
+    opacity: 0.12;
+  }
+
+  &.up {
+    .line {
+      stroke: var(--essentials-success);
+    }
+
+    .area {
+      fill: var(--essentials-success);
+    }
+  }
+
+  &.down {
+    .line {
+      stroke: var(--essentials-danger);
+    }
+
+    .area {
+      fill: var(--essentials-danger);
+    }
+  }
+}
