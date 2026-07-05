@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { SharedComponentsModule } from 'src/app/components/sharedcomponents.module';
+import { UiComponentsModule } from 'src/app/components/ui/ui-components.module';
 import { ComponentsModule } from 'src/app/wallet/components/components.module';
 import { StdTransactionComponentModule } from 'src/app/wallet/components/std-transaction/module';
 import { TxDetailsMultisigComponentModule } from 'src/app/wallet/components/tx-details-multisig/module';
@@ -15,6 +16,7 @@ import { CoinTxInfoPage } from './coin-tx-info.page';
     declarations: [CoinTxInfoPage],
     imports: [
         SharedComponentsModule,
+        UiComponentsModule,
         CommonModule,
         ComponentsModule,
         FormsModule,
