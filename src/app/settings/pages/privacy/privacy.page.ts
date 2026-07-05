@@ -3,7 +3,6 @@ import { Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { App } from 'src/app/model/app.enum';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
@@ -27,7 +26,6 @@ export class PrivacyPage implements OnInit {
   public allowBitcoinSignData = false;
 
   public isIOS = false;
-  public lightweightMode = false;
 
   constructor(
     public settings: SettingsService,
@@ -36,8 +34,8 @@ export class PrivacyPage implements OnInit {
     public translate: TranslateService,
     private nav: GlobalNavService,
     private prefs: GlobalPreferencesService,
-    private platform: Platform,
-    private lightweightService: GlobalLightweightService
+    private platform: Platform
+
   ) {}
 
   ngOnInit() {
@@ -49,8 +47,6 @@ export class PrivacyPage implements OnInit {
   async ionViewWillEnter() {
     this.titleBar.setTitle(this.translate.instant('settings.privacy'));
 
-    // Get current lightweight mode from service
-    this.lightweightMode = this.lightweightService.getCurrentLightweightMode();
 
     await this.fetchUseBuiltInBrowser();
     await this.fetchAllowBitcoinSignData();

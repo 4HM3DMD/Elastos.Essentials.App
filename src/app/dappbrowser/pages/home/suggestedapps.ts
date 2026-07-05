@@ -8,7 +8,7 @@ export type DAppMenuEntry = {
   networks: string[]; // List of network keys in which this dapp can run. Empty list = available everywhere.
 };
 
-export const suggestedDApps = (darkMode: boolean, lightweightMode = false): DAppMenuEntry[] => [
+export const suggestedDApps = (darkMode: boolean): DAppMenuEntry[] => [
   {
     icon: '/assets/browser/dapps/pga.png',
     title: 'BTCD Stablecoin Minting',
@@ -108,19 +108,15 @@ export const suggestedDApps = (darkMode: boolean, lightweightMode = false): DApp
     walletConnectSupported: true,
     networks: ['elastossmartchain']
   },
-  ...(!lightweightMode
-    ? [
-        {
-          icon: '/assets/browser/dapps/elastosdao.svg',
-          title: 'Elastos DAO',
-          description: 'Elastos DAO (DAO) is the community that has naturally formed around Elastos.',
-          url: 'https://elastos.com/',
-          useExternalBrowser: false,
-          walletConnectSupported: true, // Not really, but we can open on ios, as this is a non web3 dapps
-          networks: [] // All networks
-        }
-      ]
-    : []),
+  {
+    icon: '/assets/browser/dapps/elastosdao.svg',
+    title: 'Elastos DAO',
+    description: 'Elastos DAO (DAO) is the community that has naturally formed around Elastos.',
+    url: 'https://elastos.com/',
+    useExternalBrowser: false,
+    walletConnectSupported: true, // Not really, but we can open on ios, as this is a non web3 dapps
+    networks: [] // All networks
+  },
   // {
   //   icon: '/assets/browser/dapps/multichain.png',
   //   title: 'Multichain',
@@ -150,19 +146,15 @@ export const suggestedDApps = (darkMode: boolean, lightweightMode = false): DApp
     walletConnectSupported: true,
     networks: ['bsc', 'elastossmartchain']
   },
-  ...(!lightweightMode
-    ? [
-        {
-          icon: '/assets/browser/dapps/kyc-me.png',
-          title: 'Kyc-me',
-          description: 'KYC service for W3C DID Verifiable Credentials on Elastos',
-          url: 'https://kyc-me.io/',
-          useExternalBrowser: false,
-          walletConnectSupported: true,
-          networks: [] // All networks
-        }
-      ]
-    : []),
+  {
+    icon: '/assets/browser/dapps/kyc-me.png',
+    title: 'Kyc-me',
+    description: 'KYC service for W3C DID Verifiable Credentials on Elastos',
+    url: 'https://kyc-me.io/',
+    useExternalBrowser: false,
+    walletConnectSupported: true,
+    networks: [] // All networks
+  },
   {
     icon: '/assets/browser/dapps/tokbridge.svg',
     title: 'Shadow Tokens',

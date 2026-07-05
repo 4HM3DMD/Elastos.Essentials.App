@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IdentityEntry } from 'src/app/model/didsessions/identityentry';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalService, GlobalServiceManager } from 'src/app/services/global.service.manager';
 import { GlobalStorageService } from 'src/app/services/global.storage.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
@@ -27,19 +26,16 @@ export class WidgetsNewsService implements GlobalService {
 
   constructor(
     private globalStorageService: GlobalStorageService,
-    private widgetPluginsService: WidgetPluginsService,
-    private lightweightService: GlobalLightweightService
+    private widgetPluginsService: WidgetPluginsService
   ) {
     WidgetsNewsService.instance = this;
     GlobalServiceManager.getInstance().registerService(this);
   }
 
   async onUserSignIn(signedInIdentity: IdentityEntry): Promise<void> {
-    // Only initialize news functionality if not in lightweight mode
-    if (!this.lightweightService.getCurrentLightweightMode()) {
       await this.loadNewsSources();
       this.sources.next(this.sources.value);
-    }
+    
   }
 
   onUserSignOut(): Promise<void> {

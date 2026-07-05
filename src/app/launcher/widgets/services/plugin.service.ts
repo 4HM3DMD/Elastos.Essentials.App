@@ -302,7 +302,6 @@ export class WidgetPluginsService implements GlobalService {
         let widgetState: WidgetState = {
           category: 'app-plugin',
           displayCategories: null,
-          availableInLightweightMode: false,
           plugin: {
             url: source.url,
             pluginType: 'standard'

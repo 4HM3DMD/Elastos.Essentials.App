@@ -5,7 +5,6 @@ import { DIDManagerService } from 'src/app/launcher/services/didmanager.service'
 import { App } from 'src/app/model/app.enum';
 import { GlobalAppBackgroundService } from 'src/app/services/global.appbackground.service';
 import { GlobalFirebaseService } from 'src/app/services/global.firebase.service';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
@@ -16,7 +15,6 @@ import { SettingsService } from '../../services/settings.service';
 
 type Preferences = {
   developerMode: boolean;
-  lightweightMode: boolean;
 };
 
 @Component({
@@ -28,11 +26,9 @@ export class MenuPage implements OnInit {
   @ViewChild(TitleBarComponent, { static: false }) titleBar: TitleBarComponent;
 
   prefs: Preferences = {
-    developerMode: false,
-    lightweightMode: true
+    developerMode: false
   };
 
-  public lightweightMode = false;
 
   public hasConfigSections = false;
 
@@ -42,7 +38,6 @@ export class MenuPage implements OnInit {
     public translate: TranslateService,
     private nav: GlobalNavService,
     private prefsService: GlobalPreferencesService,
-    private lightweightService: GlobalLightweightService,
     private settingsService: SettingsService,
     public didService: DIDManagerService,
     private appBackGroundService: GlobalAppBackgroundService
@@ -62,10 +57,6 @@ export class MenuPage implements OnInit {
       NetworkTemplateStore.networkTemplate
     );
     this.prefs.developerMode = prefs['developer.mode'];
-    this.prefs.lightweightMode = prefs['ui.lightweight'];
-
-    // Get current lightweight mode from service
-    this.lightweightMode = this.lightweightService.getCurrentLightweightMode();
   }
 
   ionViewWillEnter() {
@@ -88,13 +79,6 @@ export class MenuPage implements OnInit {
     if (!this.prefs.developerMode) {
       await this.developer.reset();
     }
-  }
-
-  async toggleDisplayMode() {
-    await this.lightweightService.setLightweightMode(this.prefs.lightweightMode);
-    // Show restart prompt with custom message
-    const customMessage = this.translate.instant('settings.display-mode-restart-prompt');
-    await this.nav.showRestartPrompt(true, customMessage);
   }
 
   open(router: string) {

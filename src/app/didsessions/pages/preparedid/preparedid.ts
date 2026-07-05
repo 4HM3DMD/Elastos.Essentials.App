@@ -6,7 +6,6 @@ import { Subscription } from 'rxjs';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { TitleBarIcon, TitleBarIconSlot, TitleBarMenuItem } from 'src/app/components/titlebar/titlebar.types';
 import { Logger } from 'src/app/logger';
-import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { IdentityService } from '../../services/identity.service';
 import { PrepareDIDCallbacks, PrepareDIDService } from '../../services/prepare-did.service';
@@ -32,7 +31,6 @@ export class PrepareDIDPage {
     slidesPerView: 1
   };
   public hidden = true;
-  public isLightweightMode = false;
 
   // True when we are doing the very last finalization before showing the launch screen.
   public finalizingPreparation = false;
@@ -50,7 +48,6 @@ export class PrepareDIDPage {
     private identityService: IdentityService,
     private platform: Platform,
     private prepareDIDService: PrepareDIDService,
-    private globalPreferences: GlobalPreferencesService,
     public theme: GlobalThemeService
   ) {
     Logger.log('didsessions', 'Entering PrepareDID page');
@@ -62,14 +59,6 @@ export class PrepareDIDPage {
   }
 
   async ionViewWillEnter() {
-    // Check lightweight mode preference
-    try {
-      this.isLightweightMode = await this.globalPreferences.getLightweightMode('', '');
-    } catch (error) {
-      Logger.log('didsessions', 'Error getting lightweight mode preference, defaulting to false:', error);
-      this.isLightweightMode = false;
-    }
-
     this.titleBar.setTitle(' ');
     this.titleBar.setNavigationMode(null);
     this.titleBar.setIcon(TitleBarIconSlot.OUTER_LEFT, null);
@@ -118,17 +107,11 @@ export class PrepareDIDPage {
       },
       onAllStepsCompleted: () => {
         Logger.log('didsessions', 'All preparation steps completed');
-
-        // If lightweight mode, directly finalize the preparation.
-        // In advanced mode, keep the last "all done" shown waiting for user to click "continue".
-        if (this.isLightweightMode) {
-          this.finalizePreparation();
-        }
+        // Keep the last "all done" slide shown, waiting for the user to click "continue".
       }
     };
 
     await this.prepareDIDService.startPreparation({
-      isLightweightMode: this.isLightweightMode,
       callbacks: callbacks
     });
   }

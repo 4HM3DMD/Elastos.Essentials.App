@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { runDelayed } from 'src/app/helpers/sleep.helper';
 import { IdentityEntry } from 'src/app/model/didsessions/identityentry';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalService, GlobalServiceManager } from 'src/app/services/global.service.manager';
 import { BackupService } from '../services/backup.service';
@@ -18,8 +17,7 @@ export class ContactsInitService extends GlobalService {
     private intentService: IntentService,
     private friendsService: FriendsService,
     private backupService: BackupService,
-    private globalNav: GlobalNavService,
-    private lightweightService: GlobalLightweightService
+    private globalNav: GlobalNavService
   ) {
     super();
   }
@@ -30,8 +28,6 @@ export class ContactsInitService extends GlobalService {
   }
 
   public async onUserSignIn(signedInIdentity: IdentityEntry): Promise<void> {
-    // Only initialize contacts functionality if not in lightweight mode
-    if (!this.lightweightService.getCurrentLightweightMode()) {
       await this.friendsService.init();
       // Make sure to call intent service after friends services because contacts must be
       // initialized before handling any intent that would modify contacts.
@@ -39,7 +35,7 @@ export class ContactsInitService extends GlobalService {
 
       // Contacts backup/restore uses hive and DIDs a lot, that's slow.
       this.backupTimeout = runDelayed(() => this.backupService.init(), 10000);
-    }
+    
   }
 
   public onUserSignOut(): Promise<void> {

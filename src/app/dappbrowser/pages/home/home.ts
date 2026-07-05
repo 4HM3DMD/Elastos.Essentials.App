@@ -8,7 +8,6 @@ import { BuiltInIcon, TitleBarIcon, TitleBarMenuItem } from 'src/app/components/
 import { transparentPixelIconDataUrl } from 'src/app/helpers/picture.helpers';
 import { App } from 'src/app/model/app.enum';
 import { GlobalIntentService } from 'src/app/services/global.intent.service';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalStartupService } from 'src/app/services/global.startup.service';
 import { GlobalStorageService } from 'src/app/services/global.storage.service';
@@ -69,8 +68,8 @@ export class HomePage {
     public walletNetworkService: WalletNetworkService,
     private walletNetworkUIService: WalletNetworkUIService,
     private browserWalletConnectionsService: BrowserWalletConnectionsService,
-    private favoritesService: FavoritesService,
-    private lightweightService: GlobalLightweightService
+    private favoritesService: FavoritesService
+
   ) {
     void this.init();
   }
@@ -79,7 +78,7 @@ export class HomePage {
     this.isIOS = this.platform.platforms().indexOf('android') < 0;
     this.canBrowseInApp = await this.dAppBrowserService.canBrowseInApp();
 
-    if (!this.isIOS) this.allDApps = suggestedDApps(this.theme.darkMode, this.lightweightService.getCurrentLightweightMode());
+    if (!this.isIOS) this.allDApps = suggestedDApps(this.theme.darkMode);
 
     void this.updateFavoritesAndApps();
   }

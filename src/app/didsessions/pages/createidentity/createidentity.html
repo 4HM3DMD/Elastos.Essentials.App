@@ -1,15 +1,8 @@
 <ion-content>
   <app-titlebar></app-titlebar>
 
-  <!-- Advanced Mode Component -->
-  <app-advanced-mode *ngIf="!isLightweightMode" [hidden]="hidden" [slideIndex]="slideIndex" [slideOpts]="slideOpts"
+  <app-advanced-mode [hidden]="hidden" [slideIndex]="slideIndex" [slideOpts]="slideOpts"
     (slideIndexChange)="onSlideIndexChange($event)" (nextSlide)="onNextSlide()"
     (createNewIdentity)="createNewIdentity()" (importIdentity)="importIdentity()">
   </app-advanced-mode>
-
-  <!-- Lightweight Mode Component -->
-  <app-lightweight-mode *ngIf="isLightweightMode" [hidden]="hidden" [slideIndex]="slideIndex" [slideOpts]="slideOpts"
-    (slideIndexChange)="onSlideIndexChange($event)" (nextSlide)="onNextSlide()" (createWallet)="createWallet()"
-    (importWallet)="importWallet()">
-  </app-lightweight-mode>
 </ion-content>

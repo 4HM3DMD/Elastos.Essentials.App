@@ -14,7 +14,6 @@ import { Logger } from 'src/app/logger';
 import { IdentityEntry } from 'src/app/model/didsessions/identityentry';
 import type { JSONObject } from 'src/app/model/json';
 import { GlobalEvents } from 'src/app/services/global.events.service';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalService, GlobalServiceManager } from 'src/app/services/global.service.manager';
 import { TimeBasedPersistentCache } from 'src/app/wallet/model/timebasedpersistentcache';
 import { LocalStorage } from '../../identity/services/localstorage';
@@ -62,8 +61,7 @@ export class GlobalCredentialTypesService extends GlobalService {
     public events: GlobalEvents,
     public localStorage: LocalStorage,
     public native: Native,
-    private http: HttpClient,
-    private lightweightService: GlobalLightweightService
+    private http: HttpClient
   ) {
     super();
   }
@@ -75,10 +73,8 @@ export class GlobalCredentialTypesService extends GlobalService {
   }
 
   public onUserSignIn(signedInIdentity: IdentityEntry): Promise<void> {
-    // Only initialize credential types functionality if not in lightweight mode
-    if (!this.lightweightService.getCurrentLightweightMode()) {
       Logger.log('GlobalCredentialTypesService', 'Initializing credential types functionality for user');
-    }
+    
     return;
   }
 

@@ -101,10 +101,6 @@ export class GlobalPreferencesService implements GlobalService {
 
     const enableCreatingRedPacket = isAndroid ? true : false;
 
-    // For signed in users that don't have a saved lightweight mode, use advanced mode (lightweight = false).
-    // When not signed in (DID sessions), use lightweight mode (lightweight = true) so that new users will use lightweight.
-    const lightweightDefault = did ? false : true;
-
     return {
       'locale.language': 'native system',
       'developer.mode': false,
@@ -121,7 +117,7 @@ export class GlobalPreferencesService implements GlobalService {
       'ui.darkmode': true,
       'ui.theme': 'black', // Dark-first default (doc 144 D2); retired theme keys migrate in GlobalThemeService
       'ui.variant': 'light',
-      'ui.lightweight': lightweightDefault,
+      'ui.lightweight': false, // Lightweight mode retired (WO-5); kept for the one-time migration in WidgetsService
       'ui.startupscreen': 'home',
       'network.template': 'MainNet',
       'chain.network.config': '',
@@ -311,10 +307,6 @@ export class GlobalPreferencesService implements GlobalService {
 
   public setEnableCreatingOfRedPacket(did: string, networkTemplate: string, enable: boolean): Promise<void> {
     return this.setPreference(did, networkTemplate, 'privacy.redpacket.create', enable);
-  }
-
-  public setLightweightMode(did: string, networkTemplate: string, lightweight: boolean): Promise<void> {
-    return this.setPreference(did, networkTemplate, 'ui.lightweight', lightweight, true);
   }
 
   public getLightweightMode(did: string, networkTemplate: string, allowNullDID = false): Promise<boolean> {

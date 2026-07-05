@@ -33,7 +33,6 @@ export type WidgetState = {
   id?: string; // Unique widget ID generated when first created. Used to uniquely identity (eg deletions) this widget.
   category: 'builtin' | 'app-plugin'; // builtin: fully custom Essentials widget. "app-plugin": template based plugin widget for external dApps.
   displayCategories: DisplayCategories[];
-  availableInLightweightMode: boolean; // Whether the widget can be added/removed in lightweight mode.
 
   // For built=in widgets
   builtInType?: BuiltInWidgetType;

@@ -23,7 +23,6 @@ export interface PrepareDIDCallbacks {
 }
 
 export interface PrepareDIDOptions {
-  isLightweightMode: boolean;
   callbacks: PrepareDIDCallbacks;
 }
 
@@ -44,7 +43,6 @@ export class PrepareDIDService {
   private hiveSetupAlreadyTried = false;
   private isRunning = false;
 
-  private lightweightMode = false;
 
   constructor(
     private identityService: IdentityService,
@@ -65,12 +63,7 @@ export class PrepareDIDService {
     this.resetState();
 
     try {
-      this.lightweightMode = options.isLightweightMode;
-      if (options.isLightweightMode) {
-        await this.runLightweightMode(options.callbacks);
-      } else {
-        await this.runAdvancedMode(options.callbacks);
-      }
+      await this.runAdvancedMode(options.callbacks);
     } catch (error) {
       Logger.error('didsessions', 'Error during preparation:', error);
       options.callbacks.onError('general', error.toString());
@@ -118,78 +111,6 @@ export class PrepareDIDService {
 
     Logger.log('didsessions', 'Advanced mode preparation completed');
     callbacks.onAllStepsCompleted();
-  }
-
-  private async runLightweightMode(callbacks: PrepareDIDCallbacks): Promise<void> {
-    Logger.log('didsessions', 'Running lightweight mode preparation');
-
-    // Awaiting sign in completion is required as onUserSignIn is triggered in multiple services.
-    await this.runSignInStep(callbacks);
-
-    // Create wallet using the same mnemonic and wait for completion.
-    await this.runWalletCreationStep(callbacks);
-
-    // Let other steps continue in background while user already reached home screen
-    this.runPublishIdentityStep(callbacks, false)
-      .then(() => {
-        // Hive requires did to be published to initialize.
-        return this.runHiveSetupStep(callbacks);
-      })
-      .catch(error => {
-        Logger.warn('didsessions', 'Some background steps failed:', error);
-      });
-
-    Logger.log('didsessions', 'Lightweight mode preparation completed (wallet ready)');
-    callbacks.onAllStepsCompleted();
-  }
-
-  private async runPublishIdentityStep(callbacks: PrepareDIDCallbacks, shouldAwait = true): Promise<void> {
-    try {
-      if (await this.needToPublishIdentity()) {
-        callbacks.onSlideChange(this.PUBLISH_DID_SLIDE_INDEX);
-        if (shouldAwait) {
-          await this.publishIdentity(callbacks);
-        } else {
-          void this.publishIdentity(callbacks);
-        }
-      }
-    } catch (error) {
-      Logger.warn('didsessions', 'Publish identity step failed:', error);
-    }
-  }
-
-  private async runSignInStep(callbacks: PrepareDIDCallbacks): Promise<void> {
-    try {
-      // Check if sign in is needed
-      if (DIDSessionsStore.signedInDIDString === null) {
-        callbacks.onSlideChange(this.SIGN_IN_SLIDE_INDEX);
-        await this.signIn(callbacks);
-      }
-    } catch (error) {
-      Logger.warn('didsessions', 'Sign in step failed:', error);
-    }
-  }
-
-  private async runHiveSetupStep(callbacks: PrepareDIDCallbacks): Promise<void> {
-    try {
-      if (!(await this.isHiveVaultReady())) {
-        callbacks.onSlideChange(this.HIVE_SETUP_SLIDE_INDEX);
-        await this.setupHiveStorage(this.vaultAddress, callbacks);
-      }
-    } catch (error) {
-      Logger.warn('didsessions', 'Hive setup step failed:', error);
-    }
-  }
-
-  private async runWalletCreationStep(callbacks: PrepareDIDCallbacks): Promise<void> {
-    try {
-      if (!(await this.defaultWalletExists())) {
-        callbacks.onSlideChange(this.DEFAULT_WALLET_SLIDE_INDEX);
-        await this.createWalletFromIdentity(callbacks);
-      }
-    } catch (error) {
-      Logger.warn('didsessions', 'Wallet creation step failed:', error);
-    }
   }
 
   private resetState(): void {
@@ -361,7 +282,7 @@ export class PrepareDIDService {
     try {
       await Promise.all([
         sleep(MIN_SLIDE_SHOW_DURATION_MS),
-        this.identityService.signIn(this.identityService.identityBeingCreated.didSessionsEntry, false, false, this.lightweightMode)
+        this.identityService.signIn(this.identityService.identityBeingCreated.didSessionsEntry, false, false)
       ]);
       Logger.log('didsessions', 'Sign in complete');
       return true;

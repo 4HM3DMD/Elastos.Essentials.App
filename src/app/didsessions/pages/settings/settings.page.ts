@@ -9,9 +9,6 @@ import {
 } from 'src/app/components/titlebar/titlebar.types';
 import { App } from 'src/app/model/app.enum';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
-import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
-import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
-import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { UXService } from '../../services/ux.service';
 
@@ -26,14 +23,12 @@ export class SettingsPage implements OnInit {
   private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void;
 
   public hasConfigSections = false;
-  public isLightweightMode = true; // Whether lightweight UI mode is enabled
 
   constructor(
     public theme: GlobalThemeService,
     public translate: TranslateService,
     private nav: GlobalNavService,
-    public uxService: UXService,
-    private prefsService: GlobalPreferencesService
+    public uxService: UXService
   ) {
     this.init();
   }
@@ -53,7 +48,6 @@ export class SettingsPage implements OnInit {
         this.uxService.onTitleBarItemClicked(icon);
       })
     );
-    await this.fetchLightweightMode();
   }
 
   ionViewWillLeave() {
@@ -64,28 +58,4 @@ export class SettingsPage implements OnInit {
     void this.nav.navigateTo(App.SETTINGS, router);
   }
 
-  private async fetchLightweightMode(): Promise<void> {
-    this.isLightweightMode = await this.prefsService.getLightweightMode(
-      DIDSessionsStore.signedInDIDString,
-      NetworkTemplateStore.networkTemplate,
-      true
-    );
-  }
-
-  public getLightweightModeTitle(): string {
-    if (this.isLightweightMode) {
-      return this.translate.instant('settings.lightweight-mode-enabled');
-    } else {
-      return this.translate.instant('settings.lightweight-mode-disabled');
-    }
-  }
-
-  async toggleLightweightMode(): Promise<void> {
-    this.isLightweightMode = !this.isLightweightMode;
-    await this.prefsService.setLightweightMode(
-      DIDSessionsStore.signedInDIDString,
-      NetworkTemplateStore.networkTemplate,
-      this.isLightweightMode
-    );
-  }
 }

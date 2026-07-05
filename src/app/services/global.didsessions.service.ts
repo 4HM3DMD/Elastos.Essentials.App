@@ -13,7 +13,6 @@ import { GlobalServiceManager } from './global.service.manager';
 import { GlobalStorageService } from './global.storage.service';
 import { DIDSessionsStore } from './stores/didsessions.store';
 import { NetworkTemplateStore } from './stores/networktemplate.store';
-import { GlobalLightweightService } from './global.lightweight.service';
 
 declare let internalManager: InternalPlugin.InternalManager;
 
@@ -24,7 +23,6 @@ export type SignInOptions = {
   /** Suggested session language code to use? */
   sessionLanguage?: string;
   showBlockingSignInDialog?: boolean;
-  lightweightMode?: boolean;
 }
 
 @Injectable({
@@ -43,7 +41,6 @@ export class GlobalDIDSessionsService {
     private globalNetworkService: GlobalNetworksService,
     private globalIntentService: GlobalIntentService,
     public globalNativeService: GlobalNativeService,
-    private lightweightService: GlobalLightweightService,
     public translate: TranslateService,
   ) {
     GlobalDIDSessionsService.instance = this;
@@ -180,8 +177,6 @@ export class GlobalDIDSessionsService {
 
     DIDSessionsStore.signedInDIDString = this.signedInIdentity.didString;
 
-    if (options && options.lightweightMode)
-      await this.lightweightService.setLightweightMode(options.lightweightMode);
 
     if (!options || options.showBlockingSignInDialog)
       await this.globalNativeService.showLoading(this.translate.instant("didsessions.prepare.sign-in-title"));

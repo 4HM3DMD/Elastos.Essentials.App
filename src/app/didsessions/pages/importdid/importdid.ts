@@ -17,7 +17,6 @@ import { Util } from 'src/app/model/util';
 import { GlobalEvents } from 'src/app/services/global.events.service';
 import { GlobalMnemonicKeypadService } from 'src/app/services/global.mnemonickeypad.service';
 import { GlobalPopupService } from 'src/app/services/global.popup.service';
-import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { DIDMnemonicHelper } from '../../helpers/didmnemonic.helper';
 
@@ -48,7 +47,6 @@ export class ImportDIDPage {
   public readonly = false; // set true if import mnemonic form wallet app
 
   private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void;
-  public isLightweightMode = false;
 
   constructor(
     public router: Router,
@@ -62,8 +60,7 @@ export class ImportDIDPage {
     public theme: GlobalThemeService,
     private events: GlobalEvents,
     public element: ElementRef,
-    private mnemonicKeypadService: GlobalMnemonicKeypadService,
-    private globalPreferencesService: GlobalPreferencesService
+    private mnemonicKeypadService: GlobalMnemonicKeypadService
   ) {
     const navigation = this.router.getCurrentNavigation();
     if (!Util.isEmptyObject(navigation.extras.state)) {
@@ -84,19 +81,8 @@ export class ImportDIDPage {
     });
   }
 
-  async checkLightweightMode() {
-    try {
-      this.isLightweightMode = await this.globalPreferencesService.getLightweightMode(null, null);
-    } catch (error) {
-      Logger.log('didsessions', 'Error checking lightweight mode:', error);
-      this.isLightweightMode = false;
-    }
-  }
-
-  async ionViewWillEnter() {
-    await this.checkLightweightMode();
-    const titleKey = this.isLightweightMode ? 'didsessions.import-wallet' : 'didsessions.import-my-did';
-    this.titleBar.setTitle(this.translate.instant(titleKey));
+  ionViewWillEnter() {
+    this.titleBar.setTitle(this.translate.instant('didsessions.import-my-did'));
     this.titleBar.setIcon(TitleBarIconSlot.OUTER_LEFT, { key: 'back', iconPath: BuiltInIcon.BACK });
     this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, { key: 'language', iconPath: BuiltInIcon.EDIT });
     this.titleBar.setIcon(TitleBarIconSlot.INNER_RIGHT, { key: 'scan', iconPath: BuiltInIcon.SCAN });

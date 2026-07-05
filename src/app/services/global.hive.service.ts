@@ -18,7 +18,6 @@ import { rawImageToBase64DataUrl } from '../helpers/picture.helpers';
 import { runDelayed } from '../helpers/sleep.helper';
 import { IdentityEntry } from '../model/didsessions/identityentry';
 import { JSONObject } from '../model/json';
-import { GlobalLightweightService } from './global.lightweight.service';
 import { GlobalNetworksService, LRW_TEMPLATE, MAINNET_TEMPLATE, TESTNET_TEMPLATE } from './global.networks.service';
 import { GlobalPopupService } from './global.popup.service';
 import { GlobalPreferencesService } from './global.preferences.service';
@@ -74,8 +73,8 @@ export class GlobalHiveService extends GlobalService {
     private globalNetworksService: GlobalNetworksService,
     private storage: GlobalStorageService,
     private prefs: GlobalPreferencesService,
-    private popup: GlobalPopupService,
-    private lightweightService: GlobalLightweightService
+    private popup: GlobalPopupService
+
   ) {
     super();
 
@@ -114,8 +113,6 @@ export class GlobalHiveService extends GlobalService {
   }
 
   onUserSignIn(signedInIdentity: IdentityEntry): Promise<void> {
-    // Only initialize hive functionality if not in lightweight mode
-    if (!this.lightweightService.getCurrentLightweightMode()) {
       this.vaultStatus.next({
         checkState: VaultStatusState.NOT_CHECKED,
         vaultInfo: null,
@@ -127,7 +124,7 @@ export class GlobalHiveService extends GlobalService {
         void this.retrieveVaultStatus();
       }, 3000);
       Logger.log('GlobalHiveService', 'Initializing hive functionality for user');
-    }
+    
 
     return;
   }

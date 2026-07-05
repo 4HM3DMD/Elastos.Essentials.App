@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { urlDomain } from 'src/app/helpers/url.helpers';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { BrowsedAppInfo } from '../../model/browsedappinfo';
@@ -37,8 +36,8 @@ export class URLInputAssistantComponent {
     public themeService: GlobalThemeService,
     private dAppBrowserService: DappBrowserService,
     private walletNetworkService: WalletNetworkService,
-    private platform: Platform,
-    private lightweightService: GlobalLightweightService
+    private platform: Platform
+
   ) {
     void this.init();
   }
@@ -46,7 +45,7 @@ export class URLInputAssistantComponent {
   async init() {
     this.isIOS = this.platform.platforms().indexOf('android') < 0;
     if (!this.isIOS)
-      this.allDApps = suggestedDApps(this.themeService.darkMode, this.lightweightService.getCurrentLightweightMode());
+      this.allDApps = suggestedDApps(this.themeService.darkMode);
 
     await this.buildFilteredDApps();
     this.dAppsWithAppInfo = this.getAllDAppsWithInfo();

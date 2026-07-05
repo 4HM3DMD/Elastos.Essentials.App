@@ -12,7 +12,6 @@ import {
 } from 'src/app/components/titlebar/titlebar.types';
 import { Logger } from 'src/app/logger';
 import { App } from 'src/app/model/app.enum';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import {
   GlobalNetworksService,
@@ -65,7 +64,6 @@ export class HomePage implements OnInit {
   public slidesShown = false;
   public activeScreenIndex: number;
   public editingWidgets = false;
-  public lightweightMode;
   private hasUserInteractedWithSlides = false;
 
   constructor(
@@ -81,23 +79,12 @@ export class HomePage implements OnInit {
     private globalNavService: GlobalNavService,
     private widgetsService: WidgetsService,
     private launcherNotificationsService: NotificationManagerService,
-    private globalPrefs: GlobalPreferencesService,
-    private lightweightService: GlobalLightweightService
+    private globalPrefs: GlobalPreferencesService
   ) {
-    // Read lightweight mode synchronously from the service
-    this.lightweightMode = this.lightweightService.getCurrentLightweightMode();
-
-    // Register containers based on lightweight mode
-    if (!this.lightweightMode) {
-      this.widgetsService.registerContainer('left');
-      this.widgetsService.registerContainer('main');
-      this.widgetsService.registerContainer('right');
-      this.activeScreenIndex = 1;
-    } else {
-      // Lightweight mode: only one screen
-      this.widgetsService.registerContainer('main');
-      this.activeScreenIndex = 0;
-    }
+    this.widgetsService.registerContainer('left');
+    this.widgetsService.registerContainer('main');
+    this.widgetsService.registerContainer('right');
+    this.activeScreenIndex = 1;
   }
 
   ngOnInit() {
@@ -142,7 +129,7 @@ export class HomePage implements OnInit {
         switch (icon.key) {
           case 'home':
             this.widgetsService.exitEditionMode(); // Exit edition mode if needed
-            if (this.widgetsSlides && !this.lightweightMode) {
+            if (this.widgetsSlides) {
               void this.widgetsSlides.slideTo(1); // re-center on the middle screen
             }
             return;
@@ -196,8 +183,7 @@ export class HomePage implements OnInit {
     this.widgetsEditionModeSub = WidgetsServiceEvents.editionMode.subscribe(editionMode => {
       this.editingWidgets = editionMode;
 
-      // Only handle slides logic if not in lightweight mode
-      if (this.widgetsSlides && !this.lightweightMode) {
+      if (this.widgetsSlides) {
         // Lock the slider during edition to avoid horizontal scrolling
         void this.widgetsSlides.lockSwipes(editionMode);
 
@@ -226,8 +212,8 @@ export class HomePage implements OnInit {
     //console.log(this.widgetContainers)
     this.widgetContainers = this.widgetContainersList.toArray();
 
-    // Fallback: ensure slides are shown in non-lightweight mode
-    if (!this.lightweightMode && !this.slidesShown) {
+    // Fallback: ensure slides are shown.
+    if (!this.slidesShown) {
       console.warn('Slides not shown in ionViewDidEnter, forcing visibility');
       this.initializeSlidesVisibility();
     }
@@ -275,12 +261,6 @@ export class HomePage implements OnInit {
    * Initialize slides visibility
    */
   private initializeSlidesVisibility() {
-    if (this.lightweightMode) {
-      // In lightweight mode, mark slides as shown since we don't use slides
-      this.slidesShown = true;
-      return;
-    }
-
     if (this.slidesShown) {
       console.log('Slides already shown, returning');
       return; // Already initialized
@@ -311,17 +291,8 @@ export class HomePage implements OnInit {
   }
 
   public async onSlideChange(evt) {
-    console.log(
-      'onSlideChange called, lightweightMode:',
-      this.lightweightMode,
-      'showSwipeIndicator:',
-      this.showSwipeIndicator
-    );
+    console.log('onSlideChange called, showSwipeIndicator:', this.showSwipeIndicator);
     console.log('widgetsSlides exists:', !!this.widgetsSlides);
-
-    // Only handle slide changes if not in lightweight mode
-    if (!this.lightweightMode) {
-      console.log('Inside slides handling block');
 
       // Ignore initial non-user slide changes (from init)
       if (!this.hasUserInteractedWithSlides) {
@@ -356,8 +327,5 @@ export class HomePage implements OnInit {
       } else {
         console.log('showSwipeIndicator is false, not hiding');
       }
-    } else {
-      console.log('Not inside slides handling block - lightweightMode:', this.lightweightMode);
-    }
   }
 }

@@ -12,7 +12,6 @@ import { WalletNetworkService } from '../wallet/services/network.service';
 import { ElastosApiUrlType, GlobalElastosAPIService } from './global.elastosapi.service';
 import { GlobalIntentService } from './global.intent.service';
 import { GlobalJsonRPCService } from './global.jsonrpc.service';
-import { GlobalLightweightService } from './global.lightweight.service';
 import { GlobalNativeService } from './global.native.service';
 import { GlobalNetworksService, MAINNET_TEMPLATE, TESTNET_TEMPLATE } from './global.networks.service';
 import { GlobalPreferencesService } from './global.preferences.service';
@@ -680,8 +679,7 @@ export class GlobalPublicationService extends GlobalService {
     private globalNetworksService: GlobalNetworksService,
     private globalIntentService: GlobalIntentService,
     private globalNativeService: GlobalNativeService,
-    private globalSwitchNetworkService: GlobalSwitchNetworkService,
-    private lightweightService: GlobalLightweightService
+    private globalSwitchNetworkService: GlobalSwitchNetworkService
   ) {
     super();
     GlobalPublicationService.instance = this;
@@ -707,10 +705,8 @@ export class GlobalPublicationService extends GlobalService {
   }
 
   public onUserSignIn(signedInIdentity: IdentityEntry): Promise<void> {
-    // Only initialize publication functionality if not in lightweight mode
-    if (!this.lightweightService.getCurrentLightweightMode()) {
       Logger.log('GlobalPublicationService', 'Initializing publication functionality for user');
-    }
+    
     return;
   }
 

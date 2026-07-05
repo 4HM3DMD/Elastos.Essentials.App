@@ -6,9 +6,9 @@ import moment from 'moment';
 import { Subject } from 'rxjs';
 import { unsafeRandomHex } from 'src/app/helpers/random.helper';
 import { Logger } from 'src/app/logger';
-import { IdentityEntry } from 'src/app/model/didsessions/identityentry';
 import { GlobalNativeService } from 'src/app/services/global.native.service';
 import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
+import { IdentityEntry } from 'src/app/model/didsessions/identityentry';
 import { GlobalServiceManager } from 'src/app/services/global.service.manager';
 import { GlobalStorageService } from 'src/app/services/global.storage.service';
 import { GlobalTranslationService } from 'src/app/services/global.translation.service';
@@ -37,109 +37,91 @@ const builtInWidgets: WidgetState[] = [
     category: 'builtin',
     builtInType: 'identity',
     displayCategories: [DisplayCategories.IDENTITY],
-    availableInLightweightMode: false
   },
   {
     category: 'builtin',
     builtInType: 'active-wallet',
     displayCategories: [DisplayCategories.FINANCE],
-    availableInLightweightMode: true
   },
   {
     category: 'builtin',
     builtInType: 'active-network-coin-price',
     displayCategories: [DisplayCategories.FINANCE],
-    availableInLightweightMode: true
   },
   {
     category: 'builtin',
     builtInType: 'choose-active-network',
     displayCategories: [DisplayCategories.FINANCE],
-    availableInLightweightMode: true
   },
   {
     category: 'builtin',
     builtInType: 'signout',
     displayCategories: [DisplayCategories.IDENTITY],
-    availableInLightweightMode: true
   },
   {
     category: 'builtin',
     builtInType: 'elastos-voting',
     displayCategories: [DisplayCategories.ELASTOS],
-    availableInLightweightMode: false
   },
   {
     category: 'builtin',
     builtInType: 'elastos-staking',
     displayCategories: [DisplayCategories.ELASTOS],
-    availableInLightweightMode: false
   },
   {
     category: 'builtin',
     builtInType: 'cyber-republic',
     displayCategories: [DisplayCategories.ELASTOS],
-    availableInLightweightMode: false
   },
   {
     category: 'builtin',
     builtInType: 'recent-apps',
     displayCategories: [DisplayCategories.BROWSER],
-    availableInLightweightMode: true
   },
   {
     category: 'builtin',
     builtInType: 'favorite-apps',
     displayCategories: [DisplayCategories.BROWSER],
-    availableInLightweightMode: true
   },
   {
     category: 'builtin',
     builtInType: 'wallet-connect',
     displayCategories: [DisplayCategories.FINANCE],
-    availableInLightweightMode: true
   },
   {
     category: 'builtin',
     builtInType: 'contacts',
     displayCategories: [DisplayCategories.COMMUNITY],
-    availableInLightweightMode: false
   },
   {
     category: 'builtin',
     builtInType: 'red-packets',
     displayCategories: [DisplayCategories.COMMUNITY],
-    availableInLightweightMode: false
   },
   {
     category: 'builtin',
     builtInType: 'discover-dapps',
     displayCategories: [DisplayCategories.BROWSER],
-    availableInLightweightMode: false
   },
   {
     category: 'builtin',
     builtInType: 'new-red-packets',
     displayCategories: [DisplayCategories.COMMUNITY],
-    availableInLightweightMode: false
   },
   {
     category: 'builtin',
     builtInType: 'backup-identity',
     displayCategories: [DisplayCategories.IDENTITY],
-    availableInLightweightMode: false
   },
   {
     category: 'builtin',
     builtInType: 'notifications',
     displayCategories: [DisplayCategories.COMMUNITY],
-    availableInLightweightMode: true
   },
   {
     category: 'app-plugin',
     displayCategories: [DisplayCategories.COMMUNITY],
     plugin: { pluginType: 'news' },
-    availableInLightweightMode: false
   }
 ];
 
@@ -165,7 +147,6 @@ export class WidgetsService {
 
   // List of widget components instantiated, so we can call the lifecycle on them
   private componentsInstances: WidgetInstance[] = [];
-  private lightweightMode: boolean;
 
   private launcherHomeViewIsActive = false;
   private containerNames: string[] = []; // List of containers used on the home screen
@@ -196,10 +177,24 @@ export class WidgetsService {
   }
 
   public async onUserSignIn(signedInIdentity: IdentityEntry): Promise<void> {
-    this.lightweightMode = await this.globalPrefs.getLightweightMode(
+    // One-time migration for users who were on the removed "lightweight" mode: their
+    // single-panel layout is reset to the default three-panel (advanced) layout once.
+    let wasLightweight = await this.globalPrefs.getLightweightMode(
       signedInIdentity.didString,
       NetworkTemplateStore.networkTemplate
     );
+    if (wasLightweight) {
+      // Reset each home container to its default (three-panel advanced) layout.
+      for (const containerName of ['left', 'main', 'right']) {
+        await this.saveContainerState(containerName, this.generateDefaultContainerState(containerName));
+      }
+      await this.globalPrefs.setPreference(
+        signedInIdentity.didString,
+        NetworkTemplateStore.networkTemplate,
+        'ui.lightweight',
+        false
+      );
+    }
   }
 
   public onUserSignOut(): Promise<void> {
@@ -209,10 +204,6 @@ export class WidgetsService {
   }
 
   public getAvailableBuiltInWidgets(): WidgetState[] {
-    // Honor lightweight mode: only expose widgets marked as available in lightweight mode
-    if (this.lightweightMode) {
-      return builtInWidgets.filter(w => w.availableInLightweightMode);
-    }
     return builtInWidgets;
   }
 
@@ -402,7 +393,6 @@ export class WidgetsService {
       category: 'builtin',
       builtInType,
       displayCategories: registeredBuiltInWidgetState.displayCategories,
-      availableInLightweightMode: registeredBuiltInWidgetState.availableInLightweightMode
     });
   }
 
@@ -414,7 +404,6 @@ export class WidgetsService {
     return this.createWidgetState({
       category: 'app-plugin',
       displayCategories: registeredBuiltInWidgetState.displayCategories,
-      availableInLightweightMode: registeredBuiltInWidgetState.availableInLightweightMode,
       plugin: {
         pluginType
       }
@@ -485,7 +474,6 @@ export class WidgetsService {
       let widgetState = this.createWidgetState({
         category: 'app-plugin',
         displayCategories: [DisplayCategories.DAPPS],
-        availableInLightweightMode: false,
         plugin: {
           pluginType: 'standard' // standard for now, updated just after
         }
@@ -591,17 +579,7 @@ export class WidgetsService {
   private generateDefaultContainerState(widgetContainerName: string): WidgetContainerState {
     let widgets: WidgetState[] = [];
 
-    if (this.lightweightMode) {
-      if (widgetContainerName === 'main') {
-        widgets.push(this.createBuiltInWidgetState('active-wallet'));
-        widgets.push(this.createBuiltInWidgetState('choose-active-network'));
-        widgets.push(this.createBuiltInWidgetState('discover-dapps'));
-        widgets.push(this.createBuiltInWidgetState('notifications'));
-        widgets.push(this.createBuiltInWidgetState('wallet-connect'));
-        // widgets.push(this.createBuiltInWidgetState('favorite-apps'));
-      }
-    } else {
-      switch (widgetContainerName) {
+    switch (widgetContainerName) {
         case 'left':
           // widgets.push(this.createBuiltInWidgetState('active-network-coin-price'));
           widgets.push(this.createBuiltInWidgetState('recent-apps'));
@@ -642,7 +620,6 @@ export class WidgetsService {
           //widgets.push(...this.getDefaultPartnerPlugins());
 
           break;
-      }
     }
 
     return {

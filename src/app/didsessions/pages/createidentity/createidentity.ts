@@ -15,7 +15,6 @@ import { Styling } from 'src/app/didsessions/services/styling';
 import { UXService } from 'src/app/didsessions/services/ux.service';
 import { Logger } from 'src/app/logger';
 import { Util } from 'src/app/model/util';
-import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
 import { GlobalStartupService } from 'src/app/services/global.startup.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 
@@ -43,7 +42,6 @@ export class CreateIdentityPage {
   public passwordSheetDockedHeight = 350;
   public password = '';
   public passwordConfirmation = '';
-  public isLightweightMode = false;
 
   private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void;
 
@@ -53,8 +51,7 @@ export class CreateIdentityPage {
     private identityService: IdentityService,
     private uxService: UXService,
     private translate: TranslateService,
-    public theme: GlobalThemeService,
-    private globalPreferences: GlobalPreferencesService
+    public theme: GlobalThemeService
   ) {
     const navigation = this.router.getCurrentNavigation();
     if (!Util.isEmptyObject(navigation.extras.state)) {
@@ -64,17 +61,8 @@ export class CreateIdentityPage {
     }
   }
 
-  async ionViewWillEnter() {
-    // Check lightweight mode preference
-    try {
-      this.isLightweightMode = await this.globalPreferences.getLightweightMode('', '');
-    } catch (error) {
-      Logger.log('didsessions', 'Error getting lightweight mode preference, defaulting to false:', error);
-      this.isLightweightMode = false;
-    }
-
-    const titleKey = this.isLightweightMode ? 'didsessions.create-wallet' : 'didsessions.create-identity';
-    this.titleBar.setTitle(this.translate.instant(titleKey));
+  ionViewWillEnter() {
+    this.titleBar.setTitle(this.translate.instant('didsessions.create-identity'));
     this.titleBar.setIcon(TitleBarIconSlot.OUTER_LEFT, { key: 'backToRoot', iconPath: BuiltInIcon.BACK });
     this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, { key: 'settings', iconPath: BuiltInIcon.SETTINGS });
     this.titleBar.setNavigationMode(null);

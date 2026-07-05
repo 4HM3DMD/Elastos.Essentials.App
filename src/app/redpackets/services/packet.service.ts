@@ -6,7 +6,6 @@ import { runDelayed } from 'src/app/helpers/sleep.helper';
 import { Logger } from 'src/app/logger';
 import { App } from 'src/app/model/app.enum';
 import { GlobalIntentService } from 'src/app/services/global.intent.service';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalStorageService } from 'src/app/services/global.storage.service';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
@@ -34,13 +33,10 @@ export class PacketService {
     private globalIntentService: GlobalIntentService,
     private globalNavService: GlobalNavService,
     private walletNetworkService: WalletNetworkService,
-    private storage: GlobalStorageService,
-    private lightweightService: GlobalLightweightService
+    private storage: GlobalStorageService
   ) {}
 
   public async onUserSignIn(): Promise<void> {
-    // Only initialize packet functionality if not in lightweight mode
-    if (!this.lightweightService.getCurrentLightweightMode()) {
       //await this.dev_clearLocalStorage(); // Development only
 
       await this.loadMyPackets();
@@ -60,7 +56,7 @@ export class PacketService {
 
       // Load public packets asynchrinously
       runDelayed(() => this.fetchPublicPackets(), 5000);
-    }
+    
   }
 
   public onUserSignOut() {

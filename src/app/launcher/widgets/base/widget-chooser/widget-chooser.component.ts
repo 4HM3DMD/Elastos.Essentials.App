@@ -15,7 +15,6 @@ import { WidgetsService } from 'src/app/launcher/widgets/services/widgets.servic
 import { Logger } from 'src/app/logger';
 import { Util } from 'src/app/model/util';
 import { GlobalIntentService } from 'src/app/services/global.intent.service';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalNativeService } from 'src/app/services/global.native.service';
 import { GlobalThemeService } from '../../../../services/theming/global.theme.service';
 import { WidgetPluginsService } from '../../services/plugin.service';
@@ -66,7 +65,6 @@ export class WidgetChooserComponent implements OnInit, OnDestroy {
   private pluginsListSub: Subscription = null;
 
   public isIOS = false;
-  public lightweightMode = false;
 
   constructor(
     public theme: GlobalThemeService,
@@ -78,8 +76,8 @@ export class WidgetChooserComponent implements OnInit, OnDestroy {
     private clipboard: Clipboard,
     private native: GlobalNativeService,
     private globalIntentService: GlobalIntentService,
-    private platform: Platform,
-    private lightweightService: GlobalLightweightService
+    private platform: Platform
+
   ) {}
 
   ngOnInit() {
@@ -87,22 +85,16 @@ export class WidgetChooserComponent implements OnInit, OnDestroy {
     // We can try to disable this ios check later (with changes to get rejected).
     this.isIOS = this.platform.platforms().indexOf('android') < 0;
 
-    // Read lightweight mode synchronously
-    this.lightweightMode = this.lightweightService.getCurrentLightweightMode();
-
     const navigation = this.router.getCurrentNavigation();
     if (!Util.isEmptyObject(navigation.extras.state)) {
       this.receivedIntent = <EssentialsIntentPlugin.ReceivedIntent>navigation.extras.state.intent;
     }
 
-    // Build categories, hiding Identity and Elastos entirely in lightweight mode
     this.categories = [];
     this.categories.push({ key: DisplayCategory.FINANCE, title: 'widget-category-finance' });
-    if (!this.lightweightMode)
-      this.categories.push({ key: DisplayCategory.IDENTITY, title: 'widget-category-identity' });
+    this.categories.push({ key: DisplayCategory.IDENTITY, title: 'widget-category-identity' });
     this.categories.push({ key: DisplayCategory.BROWSER, title: 'widget-category-browser' });
-    if (!this.lightweightMode)
-      this.categories.push({ key: DisplayCategory.ELASTOS, title: 'widget-category-elastos-tech' });
+    this.categories.push({ key: DisplayCategory.ELASTOS, title: 'widget-category-elastos-tech' });
     this.categories.push({ key: DisplayCategory.COMMUNITY, title: 'widget-category-community' });
 
     // Show DApps category only if allowed (not iOS)
@@ -180,11 +172,6 @@ export class WidgetChooserComponent implements OnInit, OnDestroy {
       filteredWidgets = Object.values(customPluginsList);
 
       this.hasCustomWidgets = filteredWidgets.length > 0;
-    }
-
-    // In lightweight mode, filter out widgets not allowed
-    if (this.lightweightMode) {
-      filteredWidgets = filteredWidgets.filter(w => !!w.availableInLightweightMode);
     }
 
     for (let widget of filteredWidgets) {

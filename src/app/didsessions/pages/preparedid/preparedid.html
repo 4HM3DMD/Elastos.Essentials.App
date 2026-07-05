@@ -1,17 +1,10 @@
 <ion-content>
   <app-titlebar></app-titlebar>
 
-  <!-- Advanced Mode Component -->
-  <app-prepare-did-advanced-mode *ngIf="!isLightweightMode" [hidden]="hidden" [slideIndex]="slideIndex"
+  <app-prepare-did-advanced-mode [hidden]="hidden" [slideIndex]="slideIndex"
     [slideOpts]="slideOpts" [publishError]="publishError" [signInError]="signInError" [hiveError]="hiveError"
     [finalizingPreparation]="finalizingPreparation" (slideIndexChange)="onSlideIndexChange($event)"
     (cancelPreparation)="cancelPreparation()" (finalizePreparation)="finalizePreparation()">
   </app-prepare-did-advanced-mode>
-
-  <!-- Lightweight Mode Component -->
-  <app-prepare-did-lightweight-mode *ngIf="isLightweightMode" [hidden]="hidden" [slideIndex]="slideIndex"
-    [slideOpts]="slideOpts" [finalizingPreparation]="finalizingPreparation"
-    (slideIndexChange)="onSlideIndexChange($event)" (finalizePreparation)="finalizePreparation()">
-  </app-prepare-did-lightweight-mode>
 
 </ion-content>

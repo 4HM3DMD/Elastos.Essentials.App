@@ -9,7 +9,6 @@ import { Logger } from 'src/app/logger';
 import { IdentityEntry } from 'src/app/model/didsessions/identityentry';
 import { environment } from 'src/environments/environment';
 import { GlobalCredentialTypesService } from '../credential-types/global.credential.types.service';
-import { GlobalLightweightService } from '../global.lightweight.service';
 import { GlobalPreferencesService } from '../global.preferences.service';
 import { GlobalService, GlobalServiceManager } from '../global.service.manager';
 import { GlobalStorageService } from '../global.storage.service';
@@ -70,8 +69,7 @@ export class GlobalCredentialToolboxService implements GlobalService {
     private storage: GlobalStorageService,
     private didAuthService: AuthService,
     private prefs: GlobalPreferencesService,
-    private credentialTypesService: GlobalCredentialTypesService,
-    private lightweightService: GlobalLightweightService
+    private credentialTypesService: GlobalCredentialTypesService
   ) {}
 
   public init(): Promise<void> {
@@ -80,11 +78,9 @@ export class GlobalCredentialToolboxService implements GlobalService {
   }
 
   public onUserSignIn(signedInIdentity: IdentityEntry): Promise<void> {
-    // Only initialize credential toolbox functionality if not in lightweight mode
-    if (!this.lightweightService.getCurrentLightweightMode()) {
       void this.checkIfRightTimeToSendStats();
       Logger.log('GlobalCredentialToolboxService', 'Initializing credential toolbox functionality for user');
-    }
+    
     return;
   }
 

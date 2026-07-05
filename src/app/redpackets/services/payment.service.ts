@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import moment from 'moment';
 import { Logger } from 'src/app/logger';
 import { IdentityEntry } from 'src/app/model/didsessions/identityentry';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalService, GlobalServiceManager } from 'src/app/services/global.service.manager';
 import { GlobalStorageService } from 'src/app/services/global.storage.service';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
@@ -43,8 +42,7 @@ export class PaymentService implements GlobalService {
 
   constructor(
     private storage: GlobalStorageService,
-    private http: HttpClient,
-    private lightweightService: GlobalLightweightService
+    private http: HttpClient
   ) {}
 
   public init() {
@@ -52,10 +50,8 @@ export class PaymentService implements GlobalService {
   }
 
   async onUserSignIn(signedInIdentity: IdentityEntry): Promise<void> {
-    // Only initialize payment functionality if not in lightweight mode
-    if (!this.lightweightService.getCurrentLightweightMode()) {
       await this.loadState();
-    }
+    
   }
 
   onUserSignOut(): Promise<void> {

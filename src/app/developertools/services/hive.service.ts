@@ -3,7 +3,6 @@ import type { Vault } from '@elastosfoundation/hive-js-sdk';
 import { IdentityEntry } from 'src/app/model/didsessions/identityentry';
 import {} from 'src/app/services/global.didsessions.service';
 import { GlobalHiveService } from 'src/app/services/global.hive.service';
-import { GlobalLightweightService } from 'src/app/services/global.lightweight.service';
 import { GlobalService, GlobalServiceManager } from 'src/app/services/global.service.manager';
 import { DIDSessionsStore } from './../../services/stores/didsessions.store';
 
@@ -14,15 +13,13 @@ export class HiveService implements GlobalService {
   private developerVaultServices: Vault;
   private ttechVaultServices: Vault;
 
-  constructor(private globalHiveService: GlobalHiveService, private lightweightService: GlobalLightweightService) {
+  constructor(private globalHiveService: GlobalHiveService) {
     GlobalServiceManager.getInstance().registerService(this);
   }
 
   onUserSignIn(signedInIdentity: IdentityEntry): Promise<void> {
-    // Only initialize developer tools hive functionality if not in lightweight mode
-    if (!this.lightweightService.getCurrentLightweightMode()) {
       // Developer tools hive initialization logic would go here if needed
-    }
+    
     return;
   }
 
