@@ -131,6 +131,10 @@
             align-items: center;
             padding-left: 10px;
 
+            // Neutral circle in both themes. The tx glyphs (arrows, the colour
+            // red-packet illustration, the red error disc) keep their own colours,
+            // so the circle is not type-tinted and the glyphs are not recoloured:
+            // type-tinting would need a monochrome glyph set, which does not exist yet.
             .icon-container {
                 display: flex;
                 justify-content: center;
@@ -139,31 +143,12 @@
                 height: 40px;
                 object-fit: contain;
                 border-radius: 100%;
-                background: var(--essentials-box-color);
+                background: linear-gradient(305deg, rgba(255, 255, 255, 0.5) 0%, rgba(0, 0, 0, 0.1) 100%);
 
-                // Tx glyphs render white so they read on the tinted type circles.
                 .inline-svg {
                     width: 24px;
                     height: 24px;
-                    filter: brightness(0) invert(1);
                 }
-            }
-
-            // Transaction-type tinted circles (previously commented out; now on tokens).
-            .purple {
-                background: #6C5CE7;
-            }
-
-            .green {
-                background: var(--essentials-success);
-            }
-
-            .black {
-                background: var(--essentials-box-color);
-            }
-
-            .orange {
-                background: var(--essentials-accent);
             }
 
             .redpacket {

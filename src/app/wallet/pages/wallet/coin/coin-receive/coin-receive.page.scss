@@ -38,19 +38,22 @@
 
   .address-row {
     margin-top: 14px;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 8px 8px 16px;
+    padding: 10px 8px 10px 16px;
     border-radius: 14px;
     background: var(--essentials-box-color);
+    max-width: 320px;
 
     .address {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.3px;
       color: var(--ion-text-color);
       cursor: pointer;
+      text-align: left;
+      word-break: break-all;
       font-variant-numeric: tabular-nums;
     }
 

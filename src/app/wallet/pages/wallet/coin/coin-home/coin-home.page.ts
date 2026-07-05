@@ -533,10 +533,6 @@ export class CoinHomePage implements OnInit {
   }
 
   /** Returns the currency to be displayed for this coin. */
-  getCoinBalanceCurrency() {
-    return this.subWallet.getDisplayTokenName();
-  }
-
   /** Native balance for the shared amount display. */
   public get coinDisplayValue(): string {
     if (!this.subWallet) return '';
@@ -579,22 +575,6 @@ export class CoinHomePage implements OnInit {
     this.setTransactionListType(type);
   }
 
-  getSubwalletClass() {
-    switch (this.subWallet.id) {
-      case 'ELA':
-        return 'black-card card-row';
-      case 'IDChain':
-        return 'blue-card card-row';
-      case 'ETHSC':
-        return 'gray-card card-row';
-    }
-    if (this.subWallet instanceof ERC20SubWallet) {
-      return 'gray2-card card-row';
-    }
-
-    return 'black-card card-row';
-  }
-
   getSubwalletTitle() {
     return this.subWallet.getFriendlyName();
   }
@@ -623,10 +603,6 @@ export class CoinHomePage implements OnInit {
   closeRefreshBox() {
     this.uiService.returnedUser = true;
     void this.storage.setVisit(true);
-  }
-
-  public useSmallFont(): boolean {
-    return WalletUtil.getWholeBalance(this.networkWallet.subWallets[this.subWalletId].getDisplayBalance()).length >= 10;
   }
 
   public setTransactionListType(transactionlistType: TransactionListType) {
@@ -817,15 +793,6 @@ export class CoinHomePage implements OnInit {
 
   public getStakedBalanceInNative() {
     return WalletUtil.getFriendlyBalance(new BigNumber(this.stakedBalance));
-  }
-
-  public getStakedBalanceInCurrency() {
-    let balance = CurrencyService.instance.getMainTokenValue(
-      new BigNumber(this.stakedBalance),
-      this.networkWallet.network,
-      this.currencyService.selectedCurrency.symbol
-    );
-    return WalletUtil.getFriendlyBalance(balance);
   }
 
   public goStakeApp() {

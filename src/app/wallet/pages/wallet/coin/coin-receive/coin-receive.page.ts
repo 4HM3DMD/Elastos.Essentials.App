@@ -110,12 +110,6 @@ export class CoinReceivePage implements OnInit, OnDestroy {
     this.setAddressType(Number(key));
   }
 
-  /** The active address, middle-truncated for display; copy still yields the full string. */
-  public get shortAddress(): string {
-    if (!this.qrcode) return '';
-    return this.qrcode.length > 22 ? `${this.qrcode.slice(0, 12)}...${this.qrcode.slice(-8)}` : this.qrcode;
-  }
-
   public get networkName(): string {
     return this.networkWallet ? this.networkWallet.network.getEffectiveName() : '';
   }
