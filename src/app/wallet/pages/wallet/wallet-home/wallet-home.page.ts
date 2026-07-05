@@ -580,11 +580,8 @@ export class WalletHomePage implements OnInit, OnDestroy {
         });
     }
 
-    public viewTransactions(event, subWallet: AnySubWallet) {
-        // Prevent from subwallet main div to get the click (do not open transactions list)
-        event.preventDefault();
-        event.stopPropagation();
-
+    public viewTransactions(subWallet: AnySubWallet) {
+        // Invoked from ui-token-row's (pressed) output, which carries no DOM event.
         this.goCoinHome(subWallet.networkWallet.id, subWallet.id)
     }
 

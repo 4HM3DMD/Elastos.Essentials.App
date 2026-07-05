@@ -101,7 +101,7 @@
 
             <ui-token-row *ngFor="let row of tokenRows; trackBy: trackRow" [icon]="row.icon" [badge]="row.badge"
                 [title]="row.title" [sub]="row.priceLine" [value]="hideBalances ? '••••' : row.balance"
-                [subValue]="hideBalances ? null : row.fiat" [subValueTone]="row.tone" (pressed)="viewTransactions($event, row.subWallet)">
+                [subValue]="hideBalances ? null : row.fiat" [subValueTone]="row.tone" (pressed)="viewTransactions(row.subWallet)">
             </ui-token-row>
 
             <!-- Collectibles -->
