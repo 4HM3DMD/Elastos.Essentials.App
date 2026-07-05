@@ -98,6 +98,14 @@
       font-size: 15px;
       font-weight: 500;
       color: var(--ion-text-color);
+
+      &.up {
+        color: var(--essentials-success);
+      }
+
+      &.down {
+        color: var(--essentials-danger);
+      }
     }
 
     .sub-value {

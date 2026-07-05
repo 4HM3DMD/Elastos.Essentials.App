@@ -34,60 +34,30 @@
                 <h1 *ngIf="txTabs.length <= 1" class="tx-header">{{ 'wallet.coin-transactions' | translate }}</h1>
             </div>
 
-            <!-- List of transactions - offchain transactions -->
-            <div *ngIf="transactionsLoaded && offlineTransactions.length > 0">
-                <ion-row class="item-row ripple ion-activatable" *ngFor="let offlineTx of offlineTransactions"
-                    (click)="onOfflineTransactionItem(offlineTx)">
-                    <ion-col size="2" class="left-col">
-                        <div class="icon-container orange">
-                            <div class="inline-svg" inlineSVG="/assets/wallet/tx/transfer.svg"></div>
-                        </div>
-                    </ion-col>
-                    <ion-col size="10" class="middle-col">
-                        <h1>{{ getOfflineTransactionTitle(offlineTx) }}</h1>
-                        <p>{{ getOfflineTransactionDate(offlineTx) }}</p>
-                    </ion-col>
-                    <ion-ripple-effect></ion-ripple-effect>
-                </ion-row>
-            </div>
+            <!-- Loading skeleton -->
+            <ui-skeleton *ngIf="!transactionsLoaded" kind="row" [rows]="5"></ui-skeleton>
 
-            <!-- List of transactions - onchain transactions -->
-            <div *ngIf="transactionsLoaded && transferList.length > 0">
-                <ion-row class="item-row ripple ion-activatable" *ngFor="let item of transferList"
-                    (click)="onItem(item)">
-                    <ion-col size="2" class="left-col">
-                        <div class="icon-container" [class.green]="(item.type === 1) && !item.isRedPacket"
-                            [class.redpacket]="(item.type === 1) && item.isRedPacket" [class.purple]="(item.type === 2)"
-                            [class.orange]="item.type === 3">
-                            <div class="inline-svg" [inlineSVG]="getPayStatusIcon(item)"></div>
-                        </div>
-                    </ion-col>
-                    <ion-col [size]="item.amount.isZero() ? 7 : 5" class="middle-col">
-                        <h1>{{ getTransactionTitle(item) }}</h1>
+            <ng-container *ngIf="transactionsLoaded">
+                <!-- Offline (offchain) transactions -->
+                <ui-token-row *ngFor="let offlineTx of offlineTransactions"
+                    icon="/assets/wallet/tx/transfer.svg" [title]="getOfflineTransactionTitle(offlineTx)"
+                    [sub]="getOfflineTransactionDate(offlineTx)"
+                    (pressed)="onOfflineTransactionItem(offlineTx)"></ui-token-row>
 
-                        <!-- TMP TEST -->
-                        <h1 *ngFor="let event of getContractEvents(item)">* {{ event.description }}</h1>
+                <!-- Onchain transactions (received amounts green, sent red) -->
+                <ui-token-row *ngFor="let item of transferList" [icon]="getPayStatusIcon(item)"
+                    [title]="getTransactionTitle(item)" [sub]="item.datetime"
+                    [value]="(item.symbol || '') + uiService.getFixedBalance(item.amount)"
+                    [valueTone]="item.type === 1 ? 'up' : (item.type === 2 ? 'down' : 'muted')"
+                    [subValue]="subWallet.getAmountInExternalCurrency(item.amount)
+                        ? ((item.symbol || '') + subWallet.getAmountInExternalCurrency(item.amount) + ' ' + currencyService.selectedCurrency.symbol)
+                        : null"
+                    (pressed)="onItem(item)"></ui-token-row>
 
-                        <p class="memo" *ngIf="item.memo">{{ item.memo }}</p>
-                        <p>{{ item.datetime }}</p>
-                    </ion-col>
-                    <ion-col [size]="item.amount.isZero() ? 3 : 5" class="right-col">
-                        <h1>{{ item.symbol }}{{ uiService.getFixedBalance(item.amount) }}</h1>
-                        <p *ngIf="subWallet.getAmountInExternalCurrency(item.amount)">
-                            {{ item.symbol }}{{ subWallet.getAmountInExternalCurrency(item.amount) }}
-                            {{ currencyService.selectedCurrency.symbol }}
-                        </p>
-                    </ion-col>
-                    <ion-ripple-effect></ion-ripple-effect>
-                </ion-row>
-            </div>
-
-            <!-- Empty transactions list -->
-            <div class="empty-list" *ngIf="transactionsLoaded && transferList.length === 0">
-                <img
-                    [src]="theme.darkMode ? 'assets/wallet/icons/white-warning.svg' : 'assets/wallet/icons/black-warning.svg'" />
-                <h1>{{ 'wallet.coin-no-transactions' | translate }}</h1>
-            </div>
+                <!-- Empty transactions list -->
+                <ui-empty-state *ngIf="transferList.length === 0 && offlineTransactions.length === 0"
+                    icon="receipt-outline" [message]="'wallet.coin-no-transactions' | translate"></ui-empty-state>
+            </ng-container>
 
             <!-- Used to detect when user reaches the screen bottom to load more transactions -->
             <div #fetchmoretrigger></div>

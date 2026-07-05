@@ -21,6 +21,8 @@ export class UiTokenRowComponent {
   @Input() public sub: string = null;
   @Input() public value: string = null;
   @Input() public subValue: string = null;
+  /** Tints the main value (e.g. green for received, red for sent). */
+  @Input() public valueTone: SubValueTone = 'muted';
   @Input() public subValueTone: SubValueTone = 'muted';
   @Input() public skeleton = false;
   /** Renders a right chevron (for navigation rows with no value column). */
