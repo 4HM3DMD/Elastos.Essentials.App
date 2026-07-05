@@ -7,6 +7,11 @@
             </ion-refresher-content>
         </ion-refresher>
 
+        <div class="segment-row">
+            <ui-chip-row [chips]="segments" [active]="activeSegment" (activeChange)="onSegmentChange($event)">
+            </ui-chip-row>
+        </div>
+
         <!-- Search Input - reveal if first proposals are fetched on page load -->
         <ion-row *ngIf="showSearch" class="search-row">
             <ion-input #input autosize placeholder="{{ 'crproposalvoting.search-proposal' | translate }}"

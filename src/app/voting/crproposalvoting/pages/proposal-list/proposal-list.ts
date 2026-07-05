@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IonContent, IonInput } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
+import { UiChip } from 'src/app/components/ui/ui-chip-row/ui-chip-row.component';
 import { BuiltInIcon, TitleBarIcon, TitleBarIconSlot, TitleBarMenuItem } from 'src/app/components/titlebar/titlebar.types';
 import { Logger } from 'src/app/logger';
 import { App } from 'src/app/model/app.enum';
@@ -27,6 +28,10 @@ export class ProposalListPage implements OnInit {
     public proposalType: ProposalStatus;
     public proposals: ProposalSearchResult[] = [];
     public proposalsFetched = false;
+
+    // Proposals and suggestions form one combined screen; these chips switch between them.
+    public segments: UiChip[] = [];
+    public activeSegment = 'proposals';
 
     public showSearch = false;
     public searchInput = '';
@@ -62,7 +67,11 @@ export class ProposalListPage implements OnInit {
     }
 
     async init() {
-        this.titleBar.setTitle(this.translate.instant('launcher.app-cr-proposal'));
+        this.titleBar.setTitle(this.translate.instant('crproposalvoting.proposals'));
+        this.segments = [
+            { key: 'proposals', label: this.translate.instant('crproposalvoting.proposals') },
+            { key: 'suggestions', label: this.translate.instant('crproposalvoting.suggestions') }
+        ];
         this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, { key: "scan", iconPath: BuiltInIcon.SCAN });
         this.titleBar.addOnItemClickedListener(this.titleBarIconClickedListener = (icon) => {
             void this.globalNav.navigateTo("scanner", '/scanner/scan');
@@ -83,7 +92,6 @@ export class ProposalListPage implements OnInit {
             this.proposalsFetched = true;
             this.showSearch = true;
             this.fetchPage = Math.floor(this.proposals.length / 10) + 1;
-            this.titleBar.setTitle(this.translate.instant('crproposalvoting.proposals'));
             Logger.log(App.CRPROPOSAL_VOTING, 'fetchProposals', this.proposals);
         }
         catch (err) {
@@ -155,5 +163,15 @@ export class ProposalListPage implements OnInit {
 
     selectProposal(proposal: ProposalSearchResult) {
         this.proposalService.navigateToProposalDetailPage(proposal);
+    }
+
+    public onSegmentChange(key: string) {
+        if (key !== 'suggestions') {
+            return;
+        }
+        // Drop both list routes from the history so back from the combined screen
+        // returns to whatever opened it instead of ping-ponging between segments.
+        this.globalNav.clearIntermediateRoutes(['/crproposalvoting/proposals/all', '/crproposalvoting/suggestions/all']);
+        void this.globalNav.navigateTo(App.CRSUGGESTION, '/crproposalvoting/suggestions/all');
     }
 }
