@@ -6,7 +6,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { SharedComponentsModule } from 'src/app/components/sharedcomponents.module';
 import { GlobalDirectivesModule } from 'src/app/helpers/directives/module';
-import { ColorChooserComponent } from './base/color-chooser/color-chooser.component';
 import { WidgetContainerComponent } from './base/widget-container/widget-container.component';
 import { WidgetHolderComponent } from './base/widget-holder/widget-holder.component';
 import { ActiveNetworkCoinPriceWidget } from './builtin/active-network-coin-price/active-network-coin-price.widget';
@@ -40,7 +39,6 @@ import { TokenPriceTemplate } from './plugins/templates/tokenprice/tokenprice';
     // Base
     WidgetContainerComponent,
     WidgetHolderComponent,
-    ColorChooserComponent,
 
     // Widgets
     IdentityWidget,

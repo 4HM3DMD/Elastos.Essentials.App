@@ -14,7 +14,6 @@ import { GlobalThemeService } from '../../../../services/theming/global.theme.se
 import { WidgetPluginsService } from '../../services/plugin.service';
 import { WidgetsServiceEvents } from '../../services/widgets.events';
 import { WidgetsUIService } from '../../services/widgets.ui.service';
-import { ColorChooserComponent } from '../color-chooser/color-chooser.component';
 import type { WidgetHolderComponent } from '../widget-holder/widget-holder.component';
 import type { WidgetState } from '../widgetstate';
 @Component({
@@ -249,34 +248,12 @@ export class WidgetContainerComponent implements OnInit {
     this.dragRefs = [];
   }
 
-  public openColorChooser() {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
-    return new Promise(async resolve => {
-      const modal = await this.modalCtrl.create({
-        component: ColorChooserComponent,
-        componentProps: {},
-        backdropDismiss: true, // Closeable
-        cssClass: 'popup-base color-chooser-component ' + (this.theme.darkMode ? 'darkContainer' : '')
-      });
-
-      void modal.onDidDismiss().then((response: { data?: boolean }) => {
-        resolve(!!response.data); // true or undefined
-      });
-
-      void modal.present();
-    });
+  public toggleDarkLight() {
+    void this.theme.toggleDarkLight();
   }
 
-  public toggleThemeVariant() {
-    void this.theme.toggleThemeVariant();
-  }
-
-  public getActiveThemeColorName(): string {
-    return this.theme.getThemeTitle(this.theme.activeTheme.value.config);
-  }
-
-  public getActiveThemeVariantName(): string {
-    return this.translate.instant('launcher.theme-variant-' + this.theme.activeTheme.value.variant);
+  public getDarkLightLabel(): string {
+    return this.translate.instant('launcher.theme-variant-' + (this.theme.darkMode ? 'dark' : 'light'));
   }
 
   public async restoreAllWidgets() {

@@ -2,23 +2,16 @@
 
   <!-- Buttons to exit the edition mode -->
   <div class="edition-controls" [@simpleFadeAnimation]="'in'" *ngIf="inLiveMode() && editing">
-    <!-- Active theme color -->
-    <div class="change-color" (click)="openColorChooser()">
+    <!-- Dark / light mode toggle -->
+    <div class="change-color" (click)="toggleDarkLight()">
       <img
         [src]="theme.darkMode ? '/assets/launcher/icons/dark_mode/change-color.svg' : '/assets/launcher/icons/change-color.svg'" />
-      {{ getActiveThemeColorName() }}
+      {{ getDarkLightLabel() }}
     </div>
 
     <!-- Validate edition button -->
     <div class="exit-edition" (click)="exitEdition()">
       <img [src]="theme.darkMode ? '/assets/launcher/icons/dark_mode/check.svg' : '/assets/launcher/icons/check.svg'" />
-    </div>
-
-    <!-- Active theme variant (light/dark) -->
-    <div class="change-variant" (click)="toggleThemeVariant()">
-      <img
-        [src]="theme.darkMode ? '/assets/launcher/icons/dark_mode/change-color.svg' : '/assets/launcher/icons/change-color.svg'" />
-      {{ getActiveThemeVariantName() }}
     </div>
   </div>
 

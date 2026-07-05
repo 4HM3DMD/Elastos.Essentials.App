@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { Platform } from '@ionic/angular';
-import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
 import { IdentityEntry } from '../../model/didsessions/identityentry';
 import { Logger } from '../../logger';
@@ -46,7 +45,6 @@ export class GlobalThemeService extends GlobalService {
   constructor(
     private prefs: GlobalPreferencesService,
     private platform: Platform,
-    private translate: TranslateService,
     private statusBar: StatusBar
   ) {
     super();
@@ -96,8 +94,10 @@ export class GlobalThemeService extends GlobalService {
       NetworkTemplateStore.networkTemplate,
       'ui.variant'
     );
+    // The variant axis is not user-facing anymore (Dark/Light themes only):
+    // normalize everything to the canonical 'light' variant palettes.
     let variantMigrated = false;
-    if (themeVariant !== 'light' && themeVariant !== 'dark') {
+    if (themeVariant !== 'light') {
       themeVariant = 'light';
       variantMigrated = true;
     }
@@ -239,6 +239,16 @@ export class GlobalThemeService extends GlobalService {
   }
 
   /**
+   * Switches between the dark and light themes. This is the only user-facing
+   * theme control (the theme picker was removed with the novelty themes).
+   */
+  public async toggleDarkLight() {
+    let target = availableThemes.find(theme => theme.usesDarkMode !== this.darkMode);
+    if (target)
+      await this.setThemeConfig(target);
+  }
+
+  /**
    * Applies a new theme and make it persisting
    */
   public async setThemeConfig(theme: ThemeConfig) {
@@ -256,26 +266,4 @@ export class GlobalThemeService extends GlobalService {
     void this.applyThemeConfig(theme, themeVariant);
   }
 
-  private async setThemeVariant(themeVariant: 'light' | 'dark') {
-    let theme = this.activeTheme.value.config;
-
-    // Persist
-    await this.prefs.setPreference(
-      DIDSessionsStore.signedInDIDString,
-      NetworkTemplateStore.networkTemplate,
-      'ui.variant',
-      themeVariant
-    );
-
-    // Apply
-    void this.applyThemeConfig(theme, themeVariant);
-  }
-
-  public async toggleThemeVariant() {
-    await this.setThemeVariant(this.activeTheme.value.variant === 'light' ? 'dark' : 'light');
-  }
-
-  public getThemeTitle(theme: ThemeConfig): string {
-    return this.translate.instant('launcher.theme-name-' + theme.key);
-  }
 }
