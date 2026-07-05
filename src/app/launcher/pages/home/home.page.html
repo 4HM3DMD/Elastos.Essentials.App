@@ -25,7 +25,7 @@
 
     <!-- Active wallet balance -->
     <div *ngIf="balanceVm" class="balance-block">
-      <ui-amount-display [size]="1" [value]="balanceVm.value" [unit]="balanceVm.unit" [fiat]="balanceVm.fiat"
+      <ui-amount-display [size]="3" [value]="balanceVm.value" [unit]="balanceVm.unit" [fiat]="balanceVm.fiat"
         [hidden]="hideBalances" [showToggle]="true" (toggleHidden)="toggleHideBalances()"></ui-amount-display>
     </div>
 
