@@ -802,4 +802,13 @@ export class CoinHomePage implements OnInit {
   public goTronResource() {
     this.native.go('wallet-tron-resource');
   }
+
+  /** Routes the Stake action to Tron resource freezing or ELA staking, whichever applies. */
+  public onStakeAction() {
+    if (this.canStakeTRX()) {
+      this.goTronResource();
+    } else {
+      this.goStakeApp();
+    }
+  }
 }

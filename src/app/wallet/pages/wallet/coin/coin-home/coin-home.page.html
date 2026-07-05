@@ -70,46 +70,20 @@
     </ion-content>
 
     <div class="footer" ngxHideOnScroll *ngIf="subWallet">
-        <img class="action-toggle" (click)="toggleShowAllActions()" *ngIf="shouldShowAllActionsToggle()"
-            [src]="getActionToggleIcon()">
-        <ion-row class="card-btn-row">
-            <ion-col [size]="transfersColumnSize()" *ngIf="coinCanBeTransferred()">
-                <ebutton class="btn-box" (clicked)="transferFunds()" topicon="assets/wallet/buttons/curcol-transfer.svg"
-                    [title]="(chainIsELA() ? 'wallet.coin-action-recharge' : 'wallet.coin-action-withdraw') | translate">
-                </ebutton>
-            </ion-col>
-            <ion-col [size]="transfersColumnSize()" *ngIf="coinCanBeSent()">
-                <ebutton class="btn-box" [uppercase]="true" (clicked)="sendFunds()"
-                    topicon="assets/wallet/buttons/curcol-send.svg" [title]="'wallet.coin-action-send' | translate">
-                </ebutton>
-            </ion-col>
-            <ion-col [size]="transfersColumnSize()">
-                <ebutton class="btn-box" [uppercase]="true" (clicked)="receiveFunds()"
-                    topicon="assets/wallet/buttons/curcol-receive.svg"
-                    [title]="'wallet.coin-action-receive' | translate"></ebutton>
-            </ion-col>
-        </ion-row>
-        <ion-row class="card-btn-row" *ngIf="shouldShowAllActions && canEarnSwapOrBridge()">
-            <ion-col [size]="swapsColumnSize()" *ngIf="canEarn()">
-                <ebutton class="btn-box" [uppercase]="true" (clicked)="earn(subWallet)"
-                    topicon="assets/wallet/buttons/curcol-earn.svg" [title]="'wallet.earn' | translate">
-                </ebutton>
-            </ion-col>
-            <ion-col [size]="swapsColumnSize()" *ngIf="canStakeELA()">
-                <ebutton class="btn-box" [uppercase]="true" (clicked)="goStakeApp()"
-                    topicon='assets/launcher/apps/app-icons/staking.svg' [title]="'staking.stake' | translate">
-                </ebutton>
-            </ion-col>
-            <ion-col [size]="swapsColumnSize()" *ngIf="canStakeTRX()">
-                <ebutton class="btn-box" [uppercase]="true" (clicked)="goTronResource()"
-                    topicon='assets/launcher/apps/app-icons/staking.svg' [title]="'wallet.resource' | translate">
-                </ebutton>
-            </ion-col>
-            <!-- <ion-col size="4" *ngIf="canBridge()">
-                <ebutton class="btn-box" [uppercase]="true" (clicked)="bridge(subWallet)"
-                    topicon="assets/wallet/buttons/curcol-bridge.svg" [title]="'wallet.bridge' | translate">
-                </ebutton>
-            </ion-col> -->
-        </ion-row>
+        <ui-action-grid [columns]="4" class="footer-actions">
+            <ui-action-tile *ngIf="coinCanBeSent()" label="Send" (pressed)="sendFunds()">
+                <ion-icon name="arrow-up-outline"></ion-icon>
+            </ui-action-tile>
+            <ui-action-tile label="Receive" (pressed)="receiveFunds()">
+                <ion-icon name="arrow-down-outline"></ion-icon>
+            </ui-action-tile>
+            <ui-action-tile *ngIf="canStakeELA() || canStakeTRX()" label="Stake" (pressed)="onStakeAction()">
+                <ion-icon name="layers-outline"></ion-icon>
+            </ui-action-tile>
+            <!-- Transfer = cross-chain move, only on the Elastos mainchain and its sidechains -->
+            <ui-action-tile *ngIf="coinCanBeTransferred()" label="Transfer" (pressed)="transferFunds()">
+                <ion-icon name="swap-horizontal-outline"></ion-icon>
+            </ui-action-tile>
+        </ui-action-grid>
     </div>
 </ion-content>

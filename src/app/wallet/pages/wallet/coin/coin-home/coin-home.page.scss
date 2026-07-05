@@ -249,6 +249,12 @@
     bottom: 0;
     width: 100%;
     transition: transform 0.3s ease-in-out; // Transition on hide/show.
+    background: var(--ion-background-color);
+    padding: 8px 16px calc(env(safe-area-inset-bottom) + 12px);
+
+    .footer-actions {
+        display: block;
+    }
 
     .card-btn-row {
         display: flex;
