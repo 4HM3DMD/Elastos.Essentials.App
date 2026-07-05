@@ -11,15 +11,24 @@
     <span class="label">Wallet</span>
   </button>
 
-  <button type="button" class="tab center" role="tab" aria-label="Apps" (click)="onApps()">
+  <button type="button" class="tab center" role="tab" [class.active]="active === 'elastos'" aria-label="Elastos"
+    (click)="onElastos()">
     <div class="center-circle">
-      <ion-icon name="apps"></ion-icon>
+      <!-- Elastos logo (inlined from assets/components/titlebar/elastos.svg, tinted via currentColor) -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="21.5" viewBox="0 0 24.452 20.189"
+        fill="currentColor" aria-hidden="true">
+        <path d="M3058.25 1682.818l6.113-3.529 6.113-3.551-6.113-3.529-6.113 3.529-6.113-3.529-6.113 3.529 6.113 3.551z"
+          transform="translate(-3046.024 -1662.628)" />
+        <path d="M3058.25 1563.609l6.113-3.529 6.113-3.551-6.113-3.529-6.113 3.529-6.113-3.529-6.113 3.529 6.113 3.551z"
+          transform="translate(-3046.024 -1553)" />
+      </svg>
     </div>
   </button>
 
-  <button type="button" class="tab" role="tab" aria-label="Activity" (click)="onActivity()">
-    <ion-icon name="notifications-outline"></ion-icon>
-    <span class="label">Activity</span>
+  <button type="button" class="tab" role="tab" [class.active]="active === 'browser'" aria-label="Browser"
+    (click)="onBrowser()">
+    <ion-icon [name]="active === 'browser' ? 'compass' : 'compass-outline'"></ion-icon>
+    <span class="label">Browser</span>
   </button>
 
   <button type="button" class="tab" role="tab" [class.active]="active === 'menu'" aria-label="Menu"

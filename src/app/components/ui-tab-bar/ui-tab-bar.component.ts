@@ -1,17 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { App } from 'src/app/model/app.enum';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 
-type TabKey = 'home' | 'wallet' | 'apps' | 'activity' | 'menu';
+type TabKey = 'home' | 'wallet' | 'elastos' | 'browser' | 'menu';
 
 /**
  * The global bottom tab bar. Its visibility is owned by TabBarVisibilityService
  * (the shell only renders it when that says so). Each tab resets the navigation
- * stack to its own root; Activity opens the notifications modal instead.
+ * stack to its own root. The raised center button opens the Elastos hub.
  */
 @Component({
   selector: 'ui-tab-bar',
@@ -22,12 +21,10 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
   public active: TabKey = 'home';
 
   private routerSub: Subscription = null;
-  private activityModalOpen = false;
 
   constructor(
     private router: Router,
-    private globalNav: GlobalNavService,
-    private modalCtrl: ModalController
+    private globalNav: GlobalNavService
   ) {}
 
   public ngOnInit(): void {
@@ -44,8 +41,9 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
   private syncActive(url: string): void {
     if (url.startsWith('/wallet')) this.active = 'wallet';
     else if (url.startsWith('/settings')) this.active = 'menu';
+    else if (url.startsWith('/launcher/elastos')) this.active = 'elastos';
+    else if (url.startsWith('/dappbrowser')) this.active = 'browser';
     else if (url.startsWith('/launcher/home')) this.active = 'home';
-    // Apps + Activity have no dedicated landing route yet, so they never latch.
   }
 
   public async onHome(): Promise<void> {
@@ -58,23 +56,14 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
     await this.globalNav.navigateRoot(App.WALLET, '/wallet/wallet-home');
   }
 
-  public async onApps(): Promise<void> {
-    // TODO WO-33: route to the dedicated Apps hub once it exists.
+  public async onElastos(): Promise<void> {
     this.globalNav.clearNavigationHistory();
-    await this.globalNav.navigateHome();
+    await this.globalNav.navigateTo(App.LAUNCHER, '/launcher/elastos');
   }
 
-  public async onActivity(): Promise<void> {
-    if (this.activityModalOpen) return;
-    this.activityModalOpen = true;
-    const { NotificationsPage } = await import('src/app/launcher/pages/notifications/notifications.page');
-    const modal = await this.modalCtrl.create({
-      component: NotificationsPage,
-      cssClass: 'running-modal',
-      mode: 'ios'
-    });
-    void modal.onDidDismiss().then(() => (this.activityModalOpen = false));
-    await modal.present();
+  public async onBrowser(): Promise<void> {
+    this.globalNav.clearNavigationHistory();
+    await this.globalNav.navigateRoot(App.DAPP_BROWSER, '/dappbrowser/home');
   }
 
   public async onMenu(): Promise<void> {

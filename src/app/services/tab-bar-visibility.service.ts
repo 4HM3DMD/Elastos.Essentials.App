@@ -10,13 +10,15 @@ import { NetworkTemplateStore } from './stores/networktemplate.store';
 
 // Route prefixes where the global bottom tab bar must be hidden: onboarding and
 // the scanner (full-screen, no signed-in shell), any intent request screen, the
-// dApp browser (its native webview paints over the DOM on Android), and the two
-// modules that render their own bottom tab bar (would otherwise double up).
+// active dApp browsing session and its menu (the native webview paints over the
+// DOM on Android; the browser HOME is a plain page and keeps the bar), and the
+// two modules that render their own bottom tab bar (would otherwise double up).
 const HIDE_TABBAR_ROUTE_PREFIXES = [
   '/didsessions/',
   '/scanner/',
   '/intents/',
-  '/dappbrowser/',
+  '/dappbrowser/browser',
+  '/dappbrowser/menu',
   '/identity/myprofile/',
   '/dpos2/menu/'
 ];

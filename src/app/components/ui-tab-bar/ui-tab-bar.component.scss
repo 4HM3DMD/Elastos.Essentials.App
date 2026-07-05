@@ -61,9 +61,13 @@
         // A ring in the bar's surface color separates the raised circle from the bar.
         border: 3px solid var(--essentials-box-color);
 
-        ion-icon {
-          font-size: 24px;
+        svg {
+          display: block;
         }
+      }
+
+      &.active .center-circle {
+        border-color: var(--essentials-accent-ink);
       }
     }
   }
