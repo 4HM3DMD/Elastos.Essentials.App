@@ -53,8 +53,6 @@ export const fr = {
         'app-identity-description': 'Gérez votre identité numérique',
         'app-contacts': 'Contacts',
         'app-contacts-description': 'Gérez vos contacts',
-        'app-hive': 'Hive',
-        'app-hive-description': 'Gestionnaire de stockage',
         'app-passwords': 'Mots de passe',
         'app-passwords-description': 'Gérez tous vos mots de passe',
         'app-scanner': 'Scanner',

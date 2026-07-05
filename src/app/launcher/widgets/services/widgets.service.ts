@@ -113,12 +113,6 @@ const builtInWidgets: WidgetState[] = [
   },
   {
     category: 'builtin',
-    builtInType: 'hive',
-    displayCategories: [DisplayCategories.ELASTOS],
-    availableInLightweightMode: false
-  },
-  {
-    category: 'builtin',
     builtInType: 'discover-dapps',
     displayCategories: [DisplayCategories.BROWSER],
     availableInLightweightMode: false
@@ -132,12 +126,6 @@ const builtInWidgets: WidgetState[] = [
   {
     category: 'builtin',
     builtInType: 'backup-identity',
-    displayCategories: [DisplayCategories.IDENTITY],
-    availableInLightweightMode: false
-  },
-  {
-    category: 'builtin',
-    builtInType: 'hive-sync',
     displayCategories: [DisplayCategories.IDENTITY],
     availableInLightweightMode: false
   },
@@ -628,7 +616,6 @@ export class WidgetsService {
           widgets.push(this.createBuiltInWidgetState('new-red-packets'));
           widgets.push(this.createBuiltInWidgetState('backup-identity'));
           widgets.push(this.createBuiltInWidgetState('active-wallet'));
-          widgets.push(this.createBuiltInWidgetState('hive-sync'));
           // widgets.push(this.createBuiltInWidgetState("swap"));
           widgets.push(this.createBuiltInWidgetState('discover-dapps'));
           widgets.push(this.createBuiltInWidgetState('red-packets'));
@@ -647,7 +634,6 @@ export class WidgetsService {
           widgets.push(this.createBuiltInWidgetState('elastos-staking'));
           widgets.push(this.createBuiltInWidgetState('elastos-voting'));
           widgets.push(this.createBuiltInWidgetState('contacts'));
-          widgets.push(this.createBuiltInWidgetState('hive'));
 
           // Can't do this... this would force us to fetch plugins when starting essentials for
           // the first time

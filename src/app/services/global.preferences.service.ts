@@ -78,9 +78,14 @@ export class GlobalPreferencesService implements GlobalService {
 
   async onUserSignIn(signedInIdentity: IdentityEntry): Promise<void> {
     // Emit a few subjects.
-    this.useHiveSync.next(
-      await this.getPreference(signedInIdentity.didString, NetworkTemplateStore.networkTemplate, 'privacy.hive.sync')
-    );
+    // Hive data sync is being retired and its control UI (privacy toggle + widget) is gone,
+    // so migrate any still-enabled preference to false to stop invisible background sync.
+    let useHiveSync = await this.getPreference(signedInIdentity.didString, NetworkTemplateStore.networkTemplate, 'privacy.hive.sync');
+    if (useHiveSync) {
+      await this.setPreference(signedInIdentity.didString, NetworkTemplateStore.networkTemplate, 'privacy.hive.sync', false);
+      useHiveSync = false;
+    }
+    this.useHiveSync.next(useHiveSync);
   }
 
   onUserSignOut(): Promise<void> {

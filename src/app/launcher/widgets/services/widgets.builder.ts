@@ -76,12 +76,10 @@ export class WidgetsBuilder {
                 case "recent-apps": widgetComponentClass = (await import("../builtin/recent-apps/recent-apps.widget")).RecentAppsWidget; break;
                 case "favorite-apps": widgetComponentClass = (await import("../builtin/favorite-apps/favorite-apps.widget")).FavoriteAppsWidget; break;
                 case "backup-identity": widgetComponentClass = (await import("../builtin/backup-identity/backup-identity.widget")).BackupIdentityWidget; break;
-                case "hive-sync": widgetComponentClass = (await import("../builtin/hive-sync/hive-sync.widget")).HiveSyncWidget; break;
                 case "wallet-connect": widgetComponentClass = (await import("../builtin/wallet-connect/wallet-connect.widget")).WalletConnectWidget; break;
                 case "new-red-packets": widgetComponentClass = (await import("../builtin/new-red-packets/new-red-packets.widget")).NewRedPacketsWidget; break;
                 case "contacts": widgetComponentClass = (await import("../builtin/contacts/contacts.widget")).ContactsWidget; break;
                 case "red-packets": widgetComponentClass = (await import("../builtin/red-packets/red-packets.widget")).RedPacketsWidget; break;
-                case "hive": widgetComponentClass = (await import("../builtin/hive/hive.widget")).HiveWidget; break;
                 case "discover-dapps": widgetComponentClass = (await import("../builtin/discover-dapps/discover-dapps.widget")).DiscoverDAppsWidget; break;
                 case "notifications": widgetComponentClass = (await import("../builtin/notifications/notifications.widget")).NotificationsWidget; break;
                 // case "swap":

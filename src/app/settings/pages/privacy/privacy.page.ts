@@ -23,7 +23,6 @@ export class PrivacyPage implements OnInit {
   public useBuiltInBrowser = false; // Whether to launch urls in the built in browser, or in an external browser
   public publishIdentityMedium = 'assist'; // assist or wallet
   public sendCredentialToolboxStats = true;
-  public useHiveDataSync = false;
   public enableCreatingRedPackets = false;
   public allowBitcoinSignData = false;
 
@@ -60,7 +59,6 @@ export class PrivacyPage implements OnInit {
     if (this.isIOS) {
       await this.fetchEnableCreatingOfRedPacket();
     }
-    void this.fetchHiveDataSync();
   }
 
   ionViewWillLeave() {}
@@ -162,27 +160,6 @@ export class PrivacyPage implements OnInit {
 
   open(router: string) {
     void this.nav.navigateTo(App.SETTINGS, router);
-  }
-
-  private async fetchHiveDataSync(): Promise<void> {
-    this.useHiveDataSync = await this.prefs.getUseHiveSync(DIDSessionsStore.signedInDIDString);
-  }
-
-  public getHiveDataSyncTitle() {
-    if (this.useHiveDataSync) {
-      return this.translate.instant('settings.privacy-use-hive-data-sync');
-    } else {
-      return this.translate.instant('settings.privacy-dont-use-hive-data-sync');
-    }
-  }
-
-  public async toggleHiveDataSync() {
-    this.useHiveDataSync = !this.useHiveDataSync;
-    await this.prefs.setUseHiveSync(
-      DIDSessionsStore.signedInDIDString,
-      NetworkTemplateStore.networkTemplate,
-      this.useHiveDataSync
-    );
   }
 
   private async fetchEnableCreatingOfRedPacket(): Promise<void> {

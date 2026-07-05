@@ -13,7 +13,6 @@ export enum App {
     DPOS_REGISTRATION = "dposregistration",
     DPOS2 = "dpos2",
     STAKING = "staking",
-    HIVE_MANAGER = "hivemanager",
     SETTINGS = "settings",
     SCANNER = "scanner",
     DAPP_BROWSER = "dappbrowser",

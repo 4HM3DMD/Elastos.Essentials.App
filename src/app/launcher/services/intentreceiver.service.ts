@@ -4,7 +4,6 @@ import { MenuController, ModalController, PopoverController } from '@ionic/angul
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ContactsInitService } from 'src/app/contacts/services/init.service';
-import { HiveManagerInitService } from 'src/app/hivemanager/services/init.service';
 import { App } from 'src/app/model/app.enum';
 import { GlobalEvents } from 'src/app/services/global.events.service';
 import { GlobalIntentService } from 'src/app/services/global.intent.service';
@@ -40,7 +39,6 @@ export class IntentReceiverService {
         private globalIntentService: GlobalIntentService,
         private globalNav: GlobalNavService,
         // In-app Services
-        private hiveManagerInitService: HiveManagerInitService,
         private walletInitService: WalletInitService,
         private crCouncilVotingInitService: CRCouncilVotingInitService,
         private contactsInitService: ContactsInitService,

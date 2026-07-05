@@ -199,8 +199,6 @@ export class AppmanagerService {
                 return 'launcher.app-dpos-voting';
             case App.DPOS_REGISTRATION:
                 return 'launcher.app-dpos-registration';
-            case App.HIVE_MANAGER:
-                return 'launcher.app-hive';
             case App.IDENTITY:
                 return 'launcher.app-identity';
             case App.SETTINGS:
@@ -230,8 +228,6 @@ export class AppmanagerService {
                 return 'assets/launcher/apps/app-icons/dpos.svg';
             case App.DPOS_REGISTRATION:
                 return 'assets/launcher/apps/app-icons/dpos.svg';
-            case App.HIVE_MANAGER:
-                return 'assets/launcher/apps/app-icons/curcol-hive-cross.svg';
             case App.IDENTITY:
                 return 'assets/launcher/apps/app-icons/identity.svg';
             case App.SETTINGS:

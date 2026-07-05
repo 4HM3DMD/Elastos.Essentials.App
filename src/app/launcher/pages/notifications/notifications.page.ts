@@ -5,7 +5,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { BuiltInIcon, TitleBarForegroundMode, TitleBarIcon, TitleBarIconSlot, TitleBarMenuItem } from 'src/app/components/titlebar/titlebar.types';
-import { HiveManagerInitService } from 'src/app/hivemanager/services/init.service';
 import { Logger } from 'src/app/logger';
 import { App } from "src/app/model/app.enum";
 import { GlobalEvents } from 'src/app/services/global.events.service';
@@ -47,7 +46,6 @@ export class NotificationsPage implements OnInit {
     private appManagerService: AppmanagerService,
     private tipsService: TipsService,
     private events: GlobalEvents,
-    private hiveManagerInitService: HiveManagerInitService,
     private walletInitService: WalletInitService
   ) {
   }
@@ -129,9 +127,6 @@ export class NotificationsPage implements OnInit {
           break;
         case App.DEVELOPER_TOOLS:
           void this.globalNav.navigateTo(App.DEVELOPER_TOOLS, '/developertools/home');
-          break;
-        case App.HIVE_MANAGER:
-          void this.hiveManagerInitService.start();
           break;
         case App.IDENTITY:
           void this.globalNav.navigateTo(App.IDENTITY, '/identity/myprofile/home');

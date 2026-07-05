@@ -9,7 +9,6 @@ const routes: Routes = [
   { path: 'launcher', loadChildren: () => import('./launcher/module').then(x => x.LauncherModule), canActivate: [AuthGuardService] },
   { path: 'didsessions', loadChildren: () => import('./didsessions/module').then(x => x.DIDSessionsModule) },
   { path: 'scanner', loadChildren: () => import('./scanner/module').then(x => x.ScannerModule) },
-  { path: 'hivemanager', loadChildren: () => import('./hivemanager/module').then(x => x.HiveManagerModule), canActivate: [AuthGuardService] },
   { path: 'settings', loadChildren: () => import('./settings/module').then(x => x.SettingsModule), canActivate: [AuthGuardService] },
   { path: 'contacts', loadChildren: () => import('./contacts/module').then(x => x.ContactsModule), canActivate: [AuthGuardService] },
   { path: 'identity', loadChildren: () => import('./identity/services/module').then(x => x.IdentityModule), canActivate: [AuthGuardService] },

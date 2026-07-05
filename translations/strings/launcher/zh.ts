@@ -53,8 +53,6 @@ export const zh = {
         'app-identity-description': '管理您的数字身份',
         'app-contacts': '联系人',
         'app-contacts-description': '管理您的联系人',
-        'app-hive': 'Hive',
-        'app-hive-description': '存储管理',
         'app-passwords': '密码管理器',
         'app-passwords-description': '管理您所有的密码',
         'app-scanner': '扫描仪',

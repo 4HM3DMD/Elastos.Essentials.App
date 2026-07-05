@@ -18,8 +18,6 @@ import { DiscoverDAppsWidget } from './builtin/discover-dapps/discover-dapps.wid
 import { ElastosStakingWidget } from './builtin/elastos-staking/elastos-staking.widget';
 import { ElastosVotingWidget } from './builtin/elastos-voting/elastos-voting.widget';
 import { FavoriteAppsWidget } from './builtin/favorite-apps/favorite-apps.widget';
-import { HiveSyncWidget } from './builtin/hive-sync/hive-sync.widget';
-import { HiveWidget } from './builtin/hive/hive.widget';
 import { IdentityWidget } from './builtin/identity/identity.widget';
 import { NewRedPacketsWidget } from './builtin/new-red-packets/new-red-packets.widget';
 import { NewsConfiguratorComponentsModule } from './builtin/news/components/configurator/module';
@@ -50,11 +48,9 @@ import { TokenPriceTemplate } from './plugins/templates/tokenprice/tokenprice';
     RecentAppsWidget,
     WalletConnectWidget,
     BackupIdentityWidget,
-    HiveSyncWidget,
     NewRedPacketsWidget,
     ContactsWidget,
     RedPacketsWidget,
-    HiveWidget,
     DiscoverDAppsWidget,
     ActiveNetworkCoinPriceWidget,
     ChooseActiveNetworkWidget,

@@ -3,7 +3,6 @@ import { ContactsInitService } from '../contacts/services/init.service';
 import { DAppBrowserInitService } from '../dappbrowser/services/init.service';
 import { DeveloperToolsInitService } from '../developertools/services/init.service';
 import { DIDSessionsInitService } from '../didsessions/services/init.service';
-import { HiveManagerInitService } from '../hivemanager/services/init.service';
 import { IdentityInitService } from '../identity/services/init.service';
 import { LauncherInitService } from '../launcher/services/init.service';
 import { RedPacketsInitService } from '../redpackets/services/init.service';
@@ -22,7 +21,6 @@ export class GlobalAppBackgroundService {
     private launcherInitService: LauncherInitService,
     private didSessionsInitService: DIDSessionsInitService,
     private scannerInitService: ScannerInitService,
-    private hiveManagerInitService: HiveManagerInitService,
     private settingsInitService: SettingsInitService,
     private contactsInitService: ContactsInitService,
     private identityInitService: IdentityInitService,
@@ -40,7 +38,6 @@ export class GlobalAppBackgroundService {
     await this.didSessionsInitService.init();
     await this.launcherInitService.init();
     await this.scannerInitService.init();
-    await this.hiveManagerInitService.init();
     await this.settingsInitService.init();
     await this.contactsInitService.init();
     await this.identityInitService.init();

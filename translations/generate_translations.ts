@@ -11,7 +11,6 @@ class TranslationsLoader {
         "didsessions",
         "dposvoting",
         "dposregistration",
-        "hivemanager",
         "identity",
         "launcher",
         "scanner",

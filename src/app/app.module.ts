@@ -22,7 +22,6 @@ import { AppComponent } from './app.component';
 import { ContactsInitModule } from './contacts/init.module';
 import { DeveloperToolsInitModule } from './developertools/init.module';
 import { DIDSessionsInitModule } from './didsessions/init.module';
-import { HiveManagerInitModule } from './hivemanager/init.module';
 import { IdentityInitModule } from './identity/init.module';
 import { LauncherModule } from './launcher/module';
 import { Logger } from './logger';
@@ -279,7 +278,6 @@ providers.push({ provide: ErrorHandler, useClass: SentryErrorHandler });
      * Sub-apps INIT (only - for bundle size / perf) modules
      */
     WalletInitModule,
-    HiveManagerInitModule,
     IdentityInitModule,
     ContactsInitModule,
     DIDSessionsInitModule,
