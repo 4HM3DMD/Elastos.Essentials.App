@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedComponentsModule } from 'src/app/components/sharedcomponents.module';
+import { UiComponentsModule } from 'src/app/components/ui/ui-components.module';
 import { CoinReceivePage } from './coin-receive.page';
 import { QRCodeModule } from 'angularx-qrcode';
 
@@ -12,6 +13,7 @@ import { QRCodeModule } from 'angularx-qrcode';
     declarations: [CoinReceivePage],
     imports: [
         SharedComponentsModule,
+        UiComponentsModule,
         CommonModule,
         FormsModule,
         IonicModule,

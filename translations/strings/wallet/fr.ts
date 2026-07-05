@@ -254,6 +254,7 @@ export const fr = {
      *********************/
     'coin-receive-title': 'Réception de {{coinName}}',
     'coin-receive-ela-address': 'Votre adresse de réception {{coinName}}',
+        'coin-receive-network-address': 'Votre adresse {{coin}} sur {{network}}',
     'coin-receive-tap-to-copy': "Touchez l'adresse pour la copier",
     'coin-address-copied': 'Adresse de votre portefeuille {{coinName}} copiée!',
     'coin-receive-address-list': 'Voir la liste des adresses',

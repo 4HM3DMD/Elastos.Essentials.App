@@ -251,6 +251,7 @@ export const en = {
      *********************/
     'coin-receive-title': 'Receive {{coinName}}',
     'coin-receive-ela-address': 'Your {{coinName}} Address',
+        'coin-receive-network-address': 'Your {{coin}} address on {{network}}',
     'coin-receive-tap-to-copy': 'Tap address to copy',
     'coin-address-copied': '{{coinName}} address copied!',
     'coin-receive-address-list': 'Enter Address List',

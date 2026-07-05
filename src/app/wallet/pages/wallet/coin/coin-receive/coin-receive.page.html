@@ -1,34 +1,37 @@
 <ion-content>
-    <app-titlebar></app-titlebar>
-    <ion-grid class="container" [class.dark-container]="theme.darkMode">
-        <img [src]="!theme.darkMode ? this.networkWallet.network.logo : this.networkWallet.network.logo" />
-        <div *ngIf="qrcode" class="qrcode-container">
-            <qrcode class="qrcode" [qrdata]="qrcode" [width]="200"></qrcode>
-        </div>
-        <ion-row class="address-title-row">
-            <ion-col class="title-col" [size]="walletAddressInfo.length > 1 ? 6 : 12"
-                [class.active]="addressType == 0" (click)="setAddressType(0)">
-                <h1>{{ walletAddressInfo[0].title }}</h1>
-            </ion-col>
+  <app-titlebar></app-titlebar>
 
-            <ion-col *ngIf="walletAddressInfo.length > 1" class="title-col" size="6"
-                [class.active]="addressType == 1" (click)="setAddressType(1)">
-                <h1>{{ walletAddressInfo[1].title }}</h1>
-            </ion-col>
-        </ion-row>
+  <div class="receive">
+    <!-- QR card -->
+    <div *ngIf="qrcode" class="qr-card">
+      <qrcode class="qrcode" [qrdata]="qrcode" [width]="200"></qrcode>
+    </div>
 
-        <ion-row class="address-row">
-            <ion-col class="address-col">
-              <h2 *ngIf="qrcode" (click)="copyAddress()">
-                  {{ qrcode }}
-              </h2>
-              <ion-icon class='icon' mode="ios" name="open-outline" (click)="openForBrowseMode()"></ion-icon>
-            </ion-col>
-        </ion-row>
-        <p>{{ 'wallet.coin-receive-tap-to-copy' | translate }}</p>
+    <!-- What this address is -->
+    <p class="address-label">
+      {{ 'wallet.coin-receive-network-address' | translate:{ coin: tokenName, network: networkName } }}
+    </p>
 
-        <h3 *ngIf="!isSingleAddress" (click)="showAddressList()">
-            {{ 'wallet.coin-receive-address-list' | translate }}
-        </h3>
-    </ion-grid>
+    <!-- Address type chips (only when more than one receiving address type exists) -->
+    <div *ngIf="addressChips.length > 1" class="type-chips">
+      <ui-chip-row [chips]="addressChips" [active]="activeAddressType"
+        (activeChange)="onAddressTypeChange($event)"></ui-chip-row>
+    </div>
+
+    <!-- Address + actions -->
+    <div class="address-row">
+      <span class="address" (click)="copyAddress()">{{ shortAddress }}</span>
+      <button type="button" class="icon-btn" aria-label="Copy address" (click)="copyAddress()">
+        <ion-icon name="copy-outline"></ion-icon>
+      </button>
+      <button type="button" class="icon-btn" aria-label="View in explorer" (click)="openForBrowseMode()">
+        <ion-icon name="open-outline"></ion-icon>
+      </button>
+    </div>
+    <p class="hint">{{ 'wallet.coin-receive-tap-to-copy' | translate }}</p>
+
+    <button *ngIf="!isSingleAddress" type="button" class="address-list" (click)="showAddressList()">
+      {{ 'wallet.coin-receive-address-list' | translate }}
+    </button>
+  </div>
 </ion-content>

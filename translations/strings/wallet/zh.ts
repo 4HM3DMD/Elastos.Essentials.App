@@ -249,6 +249,7 @@ export const zh = {
      *********************/
     'coin-receive-title': '接收 {{coinName}}',
     'coin-receive-ela-address': '您的{{coinName}}地址',
+        'coin-receive-network-address': '您在 {{network}} 上的 {{coin}} 地址',
     'coin-receive-tap-to-copy': '点击地址即可复制',
     'coin-address-copied': '{{coinName}} 地址已复制！',
     'coin-receive-address-list': '地址列表',

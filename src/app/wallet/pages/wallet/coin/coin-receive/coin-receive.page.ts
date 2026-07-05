@@ -34,6 +34,8 @@ export class CoinReceivePage implements OnInit, OnDestroy {
   public isSingleAddress = false;
   public walletAddressInfo: WalletAddressInfo[] = [];
   public addressType = 0;
+  // Chip control for wallets that expose more than one receiving address type.
+  public addressChips: { key: string; label: string }[] = [];
   private selectSubscription: Subscription = null;
 
   constructor(
@@ -89,6 +91,7 @@ export class CoinReceivePage implements OnInit, OnDestroy {
 
   getAddress() {
     this.walletAddressInfo = this.networkWallet.getAddresses();
+    this.addressChips = this.walletAddressInfo.map((info, i) => ({ key: String(i), label: info.title }));
 
     this.setAddressType(0);
   }
@@ -97,6 +100,24 @@ export class CoinReceivePage implements OnInit, OnDestroy {
     this.addressType = type;
     this.qrcode = this.walletAddressInfo[type].address;
     Logger.log('wallet', 'Address', this.qrcode);
+  }
+
+  public get activeAddressType(): string {
+    return String(this.addressType);
+  }
+
+  public onAddressTypeChange(key: string) {
+    this.setAddressType(Number(key));
+  }
+
+  /** The active address, middle-truncated for display; copy still yields the full string. */
+  public get shortAddress(): string {
+    if (!this.qrcode) return '';
+    return this.qrcode.length > 22 ? `${this.qrcode.slice(0, 12)}...${this.qrcode.slice(-8)}` : this.qrcode;
+  }
+
+  public get networkName(): string {
+    return this.networkWallet ? this.networkWallet.network.getEffectiveName() : '';
   }
 
   showAddressList() {

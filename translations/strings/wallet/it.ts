@@ -252,6 +252,7 @@ export const it = {
      *********************/
     'coin-receive-title': 'Ricevi {{coinName}}',
     'coin-receive-ela-address': 'Il tuo Indirizzo per ricevere {{coinName}}',
+        'coin-receive-network-address': 'Il tuo indirizzo {{coin}} su {{network}}',
     'coin-receive-tap-to-copy': 'Premi per copiare',
     'coin-address-copied': 'Indirizzo del tuo portafoglio {{coinName}} copiato!',
     'coin-receive-address-list': "Consulta l'elenco degli indirizzi",
