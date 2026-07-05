@@ -220,7 +220,7 @@
     "cordova-plugin-printer": "0.8.0",
     "cordova-plugin-qrscanner": "3.0.1",
     "cordova-plugin-screen-orientation": "^3.0.4",
-    "cordova-plugin-statusbar": "2.4.3",
+    "cordova-plugin-statusbar": "4.0.0",
     "cordova-sqlite-storage": "7.0.0",
     "dotenv": "^14.3.2",
     "elastos-essentials-plugin-dappbrowser": "file:plugin_src/dappbrowser",
