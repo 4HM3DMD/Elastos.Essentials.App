@@ -7,10 +7,14 @@
       <qrcode class="qrcode" [qrdata]="qrcode" [width]="200"></qrcode>
     </div>
 
-    <!-- What this address is -->
-    <p class="address-label">
-      {{ 'wallet.coin-receive-network-address' | translate:{ coin: tokenName, network: networkName } }}
-    </p>
+    <!-- Network -->
+    <div class="section">
+      <p class="section-label">{{ 'wallet.coin-receive-network-label' | translate }}</p>
+      <div class="network-row">
+        <img *ngIf="networkLogo" class="network-logo" [src]="networkLogo" alt="" />
+        <span class="network-name">{{ networkName }}</span>
+      </div>
+    </div>
 
     <!-- Address type chips (only when more than one receiving address type exists) -->
     <div *ngIf="addressChips.length > 1" class="type-chips">
@@ -18,20 +22,39 @@
         (activeChange)="onAddressTypeChange($event)"></ui-chip-row>
     </div>
 
-    <!-- Address + actions -->
-    <div class="address-row">
-      <span class="address" (click)="copyAddress()">{{ qrcode }}</span>
-      <button type="button" class="icon-btn" aria-label="Copy address" (click)="copyAddress()">
-        <ion-icon name="copy-outline"></ion-icon>
-      </button>
-      <button type="button" class="icon-btn" aria-label="View in explorer" (click)="openForBrowseMode()">
-        <ion-icon name="open-outline"></ion-icon>
-      </button>
+    <!-- Address -->
+    <div class="section">
+      <p class="section-label">{{ 'launcher.address' | translate }}</p>
+      <div class="address-row">
+        <span class="address" (click)="copyAddress()">{{ qrcode }}</span>
+        <button type="button" class="icon-btn" aria-label="Copy address" (click)="copyAddress()">
+          <ion-icon name="copy-outline"></ion-icon>
+        </button>
+        <button type="button" class="icon-btn" aria-label="View in explorer" (click)="openForBrowseMode()">
+          <ion-icon name="open-outline"></ion-icon>
+        </button>
+      </div>
     </div>
-    <p class="hint">{{ 'wallet.coin-receive-tap-to-copy' | translate }}</p>
+
+    <!-- Cross-network safety warning -->
+    <p class="warning">
+      {{ 'wallet.coin-receive-warning' | translate:{ coin: tokenName, network: networkName } }}
+    </p>
 
     <button *ngIf="!isSingleAddress" type="button" class="address-list" (click)="showAddressList()">
       {{ 'wallet.coin-receive-address-list' | translate }}
     </button>
+
+    <!-- Bottom actions -->
+    <div class="actions">
+      <button type="button" class="action secondary" (click)="copyAddress()">
+        <ion-icon name="copy-outline"></ion-icon>
+        <span>{{ 'wallet.coin-receive-copy' | translate }}</span>
+      </button>
+      <button type="button" class="action primary" (click)="shareAddress()">
+        <ion-icon name="share-social-outline"></ion-icon>
+        <span>{{ 'wallet.coin-receive-share' | translate }}</span>
+      </button>
+    </div>
   </div>
 </ion-content>

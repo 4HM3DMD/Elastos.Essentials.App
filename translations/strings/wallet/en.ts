@@ -250,6 +250,10 @@ export const en = {
      * Coin Receive Page *
      *********************/
     'coin-receive-title': 'Receive {{coinName}}',
+    'coin-receive-network-label': 'Network',
+    'coin-receive-warning': 'Only send {{coin}} on {{network}} to this address.',
+    'coin-receive-copy': 'Copy Address',
+    'coin-receive-share': 'Share Address',
     'coin-receive-ela-address': 'Your {{coinName}} Address',
         'coin-receive-network-address': 'Your {{coin}} address on {{network}}',
     'coin-receive-tap-to-copy': 'Tap address to copy',

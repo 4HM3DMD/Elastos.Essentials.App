@@ -248,6 +248,10 @@ export const zh = {
      * Coin Receive Page *
      *********************/
     'coin-receive-title': '接收 {{coinName}}',
+    'coin-receive-network-label': '网络',
+    'coin-receive-warning': '仅向此地址发送 {{network}} 网络上的 {{coin}}。',
+    'coin-receive-copy': '复制地址',
+    'coin-receive-share': '分享地址',
     'coin-receive-ela-address': '您的{{coinName}}地址',
         'coin-receive-network-address': '您在 {{network}} 上的 {{coin}} 地址',
     'coin-receive-tap-to-copy': '点击地址即可复制',

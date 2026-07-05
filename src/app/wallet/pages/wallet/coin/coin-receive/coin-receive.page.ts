@@ -6,6 +6,7 @@ import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.componen
 import { DappBrowserService } from 'src/app/dappbrowser/services/dappbrowser.service';
 import { Logger } from 'src/app/logger';
 import { GlobalEvents } from 'src/app/services/global.events.service';
+import { GlobalIntentService } from 'src/app/services/global.intent.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { AnyNetworkWallet, WalletAddressInfo } from 'src/app/wallet/model/networks/base/networkwallets/networkwallet';
 import { AnySubWallet } from 'src/app/wallet/model/networks/base/subwallets/subwallet';
@@ -47,7 +48,8 @@ export class CoinReceivePage implements OnInit, OnDestroy {
     private coinTransferService: CoinTransferService,
     public theme: GlobalThemeService,
     private translate: TranslateService,
-    public dappbrowserService: DappBrowserService
+    public dappbrowserService: DappBrowserService,
+    private globalIntentService: GlobalIntentService
   ) {}
 
   ngOnInit() {
@@ -112,6 +114,18 @@ export class CoinReceivePage implements OnInit, OnDestroy {
 
   public get networkName(): string {
     return this.networkWallet ? this.networkWallet.network.getEffectiveName() : '';
+  }
+
+  public get networkLogo(): string {
+    return this.networkWallet ? this.networkWallet.network.logo : null;
+  }
+
+  /** Shares the current receiving address through the system share sheet. */
+  public shareAddress() {
+    void this.globalIntentService.sendIntent('share', {
+      title: this.translate.instant('wallet.coin-receive-title', { coinName: this.tokenName }),
+      url: this.qrcode
+    });
   }
 
   showAddressList() {

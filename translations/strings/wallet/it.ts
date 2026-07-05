@@ -251,6 +251,10 @@ export const it = {
      * Coin Receive Page *
      *********************/
     'coin-receive-title': 'Ricevi {{coinName}}',
+    'coin-receive-network-label': 'Rete',
+    'coin-receive-warning': 'Invia solo {{coin}} sulla rete {{network}} a questo indirizzo.',
+    'coin-receive-copy': 'Copia indirizzo',
+    'coin-receive-share': 'Condividi indirizzo',
     'coin-receive-ela-address': 'Il tuo Indirizzo per ricevere {{coinName}}',
         'coin-receive-network-address': 'Il tuo indirizzo {{coin}} su {{network}}',
     'coin-receive-tap-to-copy': 'Premi per copiare',

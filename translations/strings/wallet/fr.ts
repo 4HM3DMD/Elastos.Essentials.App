@@ -253,6 +253,10 @@ export const fr = {
      * Coin Receive Page *
      *********************/
     'coin-receive-title': 'Réception de {{coinName}}',
+    'coin-receive-network-label': 'Réseau',
+    'coin-receive-warning': "N'envoyez que des {{coin}} sur le réseau {{network}} à cette adresse.",
+    'coin-receive-copy': "Copier l'adresse",
+    'coin-receive-share': "Partager l'adresse",
     'coin-receive-ela-address': 'Votre adresse de réception {{coinName}}',
         'coin-receive-network-address': 'Votre adresse {{coin}} sur {{network}}',
     'coin-receive-tap-to-copy': "Touchez l'adresse pour la copier",
