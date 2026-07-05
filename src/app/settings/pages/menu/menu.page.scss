@@ -1,12 +1,86 @@
-@import "src/app/settings/root.scss";
-@import "../../shared.scss";
+.settings {
+  padding: 8px 16px calc(env(safe-area-inset-bottom) + 24px);
 
-.container {
-  padding: 0px 20px 20px;
-  min-height: 100%;
+  .section-title {
+    margin: 20px 2px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--essentials-text-secondary);
+  }
 
-  .sign-out {
+  .card-group {
+    background: var(--essentials-box-color);
+    border-radius: 14px;
+    padding: 4px 14px;
+
+    .setting-row:not(:last-child) {
+      border-bottom: 1px solid var(--essentials-border-separator-color);
+    }
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 0;
     border: none;
-    margin-right: 5px;
+    background: transparent;
+    color: var(--ion-text-color);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      border-radius: 10px;
+      background: var(--ion-background-color);
+      color: var(--essentials-accent);
+
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+
+    .text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-left: 12px;
+      min-width: 0;
+      flex: 1;
+
+      .title {
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .sub {
+        font-size: 12px;
+        color: var(--essentials-text-secondary);
+      }
+    }
+
+    .chevron {
+      flex-shrink: 0;
+      font-size: 16px;
+      color: var(--essentials-text-tertiary);
+    }
+
+    ion-toggle {
+      flex-shrink: 0;
+    }
+
+    &.toggle-row {
+      cursor: default;
+    }
+
+    &.sign-out .icon {
+      color: var(--essentials-danger);
+    }
   }
 }

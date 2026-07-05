@@ -8,6 +8,13 @@ export const zh = {
     // Titles
     'capsule-setting': '胶囊管理',
     'about-setting': '关于Essentials',
+        'section-general': '通用',
+        'section-security': '安全',
+        'section-networks': '网络',
+        'section-advanced': '高级',
+        'section-about': '关于',
+        'currency-intro-setting': '余额显示货币',
+        'manage-networks-intro-setting': '添加或隐藏网络',
     'developer-setting': '开发者选项',
     'passwordmanager-setting': '密码管理器',
     'wallet-setting': '我的钱包',

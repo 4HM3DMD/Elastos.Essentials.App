@@ -8,6 +8,13 @@ export const it = {
     // Titles
     'capsule-setting': 'Impostazioni capsula',
     'about-setting': 'Informazioni su Essentials',
+        'section-general': 'Generale',
+        'section-security': 'Sicurezza',
+        'section-networks': 'Reti',
+        'section-advanced': 'Avanzate',
+        'section-about': 'Informazioni',
+        'currency-intro-setting': 'Valuta di visualizzazione dei saldi',
+        'manage-networks-intro-setting': 'Aggiungi o nascondi reti',
     'developer-setting': 'Opzioni sviluppatore',
     'display-setting': 'Cambia il Tema',
     'dev-mode': 'Modalità sviluppatore',

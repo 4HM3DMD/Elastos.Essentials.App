@@ -8,6 +8,13 @@ export const en = {
     // Titles
     'capsule-setting': 'Capsule Settings',
     'about-setting': 'About',
+        'section-general': 'General',
+        'section-security': 'Security',
+        'section-networks': 'Networks',
+        'section-advanced': 'Advanced',
+        'section-about': 'About',
+        'currency-intro-setting': 'Display currency for balances',
+        'manage-networks-intro-setting': 'Add or hide networks',
     'developer-setting': 'Developer Options',
     'display-setting': 'Change Theme',
     'dev-mode': 'Developer Mode',

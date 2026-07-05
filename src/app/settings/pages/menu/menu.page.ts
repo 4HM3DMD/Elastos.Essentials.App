@@ -85,6 +85,11 @@ export class MenuPage implements OnInit {
     void this.nav.navigateTo(App.SETTINGS, router);
   }
 
+  /** Opens a wallet-context settings route (currency, network management). */
+  openWallet(router: string) {
+    void this.nav.navigateTo(App.WALLET, router);
+  }
+
   async signOut() {
     await this.appBackGroundService.stop();
     await this.didService.signOut();

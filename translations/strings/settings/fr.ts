@@ -8,6 +8,13 @@ export const fr = {
     // Titles
     'capsule-setting': "Gestionnaire d'application",
     'about-setting': "A propos d'Essentials",
+        'section-general': 'Général',
+        'section-security': 'Sécurité',
+        'section-networks': 'Réseaux',
+        'section-advanced': 'Avancé',
+        'section-about': 'À propos',
+        'currency-intro-setting': 'Devise des soldes affichés',
+        'manage-networks-intro-setting': 'Ajouter ou masquer des réseaux',
     'developer-setting': 'Options pour développeurs',
     'display-setting': 'Thème',
     'dev-mode': 'Mode développeur',
