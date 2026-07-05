@@ -91,6 +91,8 @@ export class CoinHomePage implements OnInit {
   public transactionListType = TransactionListType.NORMAL;
   public hasInternalTransactions = false;
   public hasRechargeTransactions = false;
+  // Segmented control for the transaction lists, rebuilt when the available sets change.
+  public txTabs: { key: string; label: string }[] = [];
 
   public stakedBalance = null; // Staked on ELA main chain or Tron
 
@@ -198,6 +200,7 @@ export class CoinHomePage implements OnInit {
     this.coinTransferService.subWalletId = this.subWalletId;
     this.titleBar.setTitle(this.translate.instant('wallet.coin-transactions'));
 
+    this.rebuildTxTabs();
     void this.loadShowAllActions();
   }
 
@@ -304,6 +307,7 @@ export class CoinHomePage implements OnInit {
         Logger.log('wallet', 'find internal transactions.');
         this.zone.run(() => {
           this.hasInternalTransactions = true;
+          this.rebuildTxTabs();
         });
       }
     }
@@ -317,6 +321,7 @@ export class CoinHomePage implements OnInit {
         Logger.log('wallet', 'find recharge transactions.');
         this.zone.run(() => {
           this.hasRechargeTransactions = true;
+          this.rebuildTxTabs();
         });
       }
     }
@@ -530,6 +535,48 @@ export class CoinHomePage implements OnInit {
   /** Returns the currency to be displayed for this coin. */
   getCoinBalanceCurrency() {
     return this.subWallet.getDisplayTokenName();
+  }
+
+  /** Native balance for the shared amount display. */
+  public get coinDisplayValue(): string {
+    if (!this.subWallet) return '';
+    return WalletUtil.getFriendlyBalance(this.subWallet.getDisplayBalance(), this.networkWallet.getDecimalPlaces());
+  }
+
+  public get coinDisplayUnit(): string {
+    return this.subWallet ? this.subWallet.getDisplayTokenName() : '';
+  }
+
+  /** Fiat value for the amount display, or null when no rate is available (renders no line). */
+  public get coinDisplayFiat(): string {
+    if (!this.subWallet) return null;
+    let fiat = this.subWallet.getAmountInExternalCurrency(this.subWallet.getDisplayBalance());
+    return fiat && !fiat.isNaN() ? `${fiat.toString()} ${this.currencyService.selectedCurrency.symbol}` : null;
+  }
+
+  /** Rebuilds the transaction-list segmented control from the currently available lists. */
+  public rebuildTxTabs() {
+    let tabs = [{ key: 'normal', label: this.translate.instant('wallet.coin-transactions') }];
+    if (this.hasInternalTransactions) {
+      tabs.push({ key: 'internal', label: this.translate.instant('wallet.coin-internal-transactions') });
+    }
+    if (this.hasRechargeTransactions) {
+      tabs.push({ key: 'recharge', label: this.translate.instant('wallet.coin-recharge-transactions') });
+    }
+    this.txTabs = tabs;
+  }
+
+  public get activeTxTab(): string {
+    if (this.transactionListType === TransactionListType.INTERNAL) return 'internal';
+    if (this.transactionListType === TransactionListType.RECHARGE) return 'recharge';
+    return 'normal';
+  }
+
+  public onTxTabChange(key: string) {
+    let type = key === 'internal' ? TransactionListType.INTERNAL
+      : key === 'recharge' ? TransactionListType.RECHARGE
+      : TransactionListType.NORMAL;
+    this.setTransactionListType(type);
   }
 
   getSubwalletClass() {

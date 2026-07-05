@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { SharedComponentsModule } from 'src/app/components/sharedcomponents.module';
+import { UiComponentsModule } from 'src/app/components/ui/ui-components.module';
 import { GlobalDirectivesModule } from 'src/app/helpers/directives/module';
 import { ComponentsModule } from 'src/app/wallet/components/components.module';
 import { CoinHomePage } from './coin-home.page';
@@ -14,6 +15,7 @@ import { CoinHomePage } from './coin-home.page';
     declarations: [CoinHomePage],
     imports: [
         SharedComponentsModule,
+        UiComponentsModule,
         CommonModule,
         FormsModule,
         IonicModule,

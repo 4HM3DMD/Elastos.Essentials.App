@@ -16,69 +16,23 @@
                         translate:{todaysTransactions: todaysTransactions} }}</p>
                 </ion-col>
             </ion-row>
-            <ion-row *ngIf="networkWallet" [class]="getSubwalletClass()">
+            <div *ngIf="networkWallet" class="balance-card">
                 <img class="blurred-network-logo" [src]="networkWallet.network.logo" />
-                <ion-row class="card-label-row">
-                    <h3>{{ 'wallet.coin-balance' | translate }}</h3>
-                    <div (click)="!chainIsERC20() ? currencyService.toggleCurrencyDisplay() : null">
-                        <h4 *ngIf="!currencyService.useCurrency || chainIsERC20()" class="bigFont"
-                            [class.smallFont]="useSmallFont()">{{
-                            WalletUtil.getWholeBalance(networkWallet.subWallets[subWalletId].getDisplayBalance())
-                            }}<span class="dot"
-                                *ngIf="!networkWallet.subWallets[subWalletId].getDisplayBalance().isZero() && !networkWallet.subWallets[subWalletId].getDisplayBalance().isNaN() && WalletUtil.getDecimalBalance(networkWallet.subWallets[subWalletId].getDisplayBalance())">.</span>
-                            <span class="decimals">{{
-                                WalletUtil.getDecimalBalance(networkWallet.subWallets[subWalletId].getDisplayBalance(),
-                                networkWallet.getDecimalPlaces())
-                                }}</span>
-                            <span class="ela"> {{ getCoinBalanceCurrency() }}</span>
-                        </h4>
-                        <h4 *ngIf="currencyService.useCurrency && !chainIsERC20()" class="bigFont"
-                            [class.smallFont]="useSmallFont()">{{
-                            WalletUtil.getWholeBalance(currencyService.getMainTokenValue(networkWallet.subWallets[subWalletId].getDisplayBalance()))
-                            }}<span class="dot"
-                                *ngIf="!networkWallet.subWallets[subWalletId].getDisplayBalance().isZero() && !networkWallet.subWallets[subWalletId].getDisplayBalance().isNaN() && WalletUtil.getDecimalBalance(currencyService.getMainTokenValue(networkWallet.subWallets[subWalletId].getDisplayBalance()))">.</span>
-                            <span class="decimals">{{
-                                WalletUtil.getDecimalBalance(currencyService.getMainTokenValue(networkWallet.subWallets[subWalletId].getDisplayBalance()))
-                                }}</span>
-                            <span class="ela"> {{ currencyService.selectedCurrency.symbol }}</span>
-                        </h4>
-                    </div>
+                <h3 class="balance-label">{{ 'wallet.coin-balance' | translate }}</h3>
+                <ui-amount-display [size]="3" [value]="coinDisplayValue" [unit]="coinDisplayUnit"
+                    [fiat]="coinDisplayFiat"></ui-amount-display>
+                <div *ngIf="stakedBalance" class="staked-line">
+                    <span class="staked-label">{{ getStakeTitle() | translate }}</span>
+                    <span class="staked-value">{{ getStakedBalanceInNative() }} {{ networkWallet.getDisplayTokenName() }}</span>
+                </div>
+            </div>
 
-                    <h3 *ngIf="stakedBalance">{{ getStakeTitle() | translate }}</h3>
-                    <div *ngIf="stakedBalance" (click)="currencyService.toggleCurrencyDisplay()">
-                        <h5 *ngIf="!currencyService.useCurrency">{{ getStakedBalanceInNative() }}
-                            <span class="ela"> {{ networkWallet.getDisplayTokenName() }}</span>
-                        </h5>
-                        <h5 *ngIf="currencyService.useCurrency">{{ getStakedBalanceInCurrency() }}
-                            <span class="ela"> {{ currencyService.selectedCurrency.symbol }}</span>
-                        </h5>
-                    </div>
-                </ion-row>
-            </ion-row>
-
-            <!-- Transactions list header -->
-            <ion-row class="list-title-row">
-                <ion-col class="title-col"
-                    [size]="(hasInternalTransactions && hasRechargeTransactions) ? 4 : ((hasInternalTransactions || hasRechargeTransactions) ? 6 : 12)"
-                    [class.active]="transactionListType == 0" (click)="setTransactionListType(0)">
-                    <h1>{{ 'wallet.coin-transactions' | translate }}</h1>
-                </ion-col>
-
-                <ion-col *ngIf="hasInternalTransactions" class="title-col"
-                    [size]="hasRechargeTransactions ? 4 : 6"
-                    [class.active]="transactionListType == 1" (click)="setTransactionListType(1)">
-                    <h1>{{ 'wallet.coin-internal-transactions' | translate }}</h1>
-                </ion-col>
-
-                <ion-col *ngIf="hasRechargeTransactions" class="title-col"
-                    [size]="hasInternalTransactions ? 4 : 6"
-                    [class.active]="transactionListType == 2" (click)="setTransactionListType(2)">
-                    <h1>{{ 'wallet.coin-recharge-transactions' | translate }}</h1>
-                </ion-col>
-                <!-- <ion-col *ngIf="shouldShowLoadingSpinner" class="spinner-col" size="12">
-                    <ion-spinner name="dots"></ion-spinner>
-                </ion-col> -->
-            </ion-row>
+            <!-- Transactions list header: a single tab collapses to a plain header -->
+            <div class="tx-tabs">
+                <ui-chip-row *ngIf="txTabs.length > 1" [chips]="txTabs" [active]="activeTxTab"
+                    (activeChange)="onTxTabChange($event)"></ui-chip-row>
+                <h1 *ngIf="txTabs.length <= 1" class="tx-header">{{ 'wallet.coin-transactions' | translate }}</h1>
+            </div>
 
             <!-- List of transactions - offchain transactions -->
             <div *ngIf="transactionsLoaded && offlineTransactions.length > 0">
