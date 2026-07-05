@@ -22,7 +22,6 @@ class TranslationsLoader {
         "migrator",
         "multiswap",
         "staking",
-        "mainchainpolls",
     ];
     static languagesToLoad = [
         "en",

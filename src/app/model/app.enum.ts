@@ -20,6 +20,5 @@ export enum App {
     SECURITY = "security",
     MIGRATOR = "migrator",
     MULTI_SWAP = "multi_swap",
-    ELASTOS_STAKING = "elastosstaking",
-    MAINCHAIN_POLLS = "mainchainpolls"
+    ELASTOS_STAKING = "elastosstaking"
 }

@@ -7,7 +7,6 @@ import { App } from 'src/app/model/app.enum';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { CRCouncilVotingInitService } from 'src/app/voting/crcouncilvoting/services/init.service';
 import { DPoS2InitService } from 'src/app/voting/dpos2/services/init.service';
-import { MainchainPollsInitService } from 'src/app/voting/mainchainpolls/services/init.service';
 import { DposStatus, VoteService } from 'src/app/voting/services/vote.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { WidgetBase } from '../../base/widgetbase';
@@ -31,7 +30,6 @@ export class ElastosVotingWidget extends WidgetBase implements OnInit {
     public walletNetworkService: WalletNetworkService,
     private dpos2InitService: DPoS2InitService,
     private crCouncilVotingInitService: CRCouncilVotingInitService,
-    private mainchainPollsInitService: MainchainPollsInitService,
     private voteService: VoteService
   ) {
     super();
@@ -61,16 +59,6 @@ export class ElastosVotingWidget extends WidgetBase implements OnInit {
         });
       }
 
-      // Add mainchain polls app
-      apps.push({
-        id: 'mainchainpolls',
-        routerContext: App.MAINCHAIN_POLLS,
-        name: 'launcher.app-mainchain-polls',
-        description: 'launcher.app-mainchain-polls-description',
-        icon: '/assets/launcher/apps/app-icons/dpos.svg',
-        hasWidget: false,
-        startCall: () => this.mainchainPollsInitService.start()
-      });
 
       this.runnableApps = {
         type: 'launcher.elastos-voting',
