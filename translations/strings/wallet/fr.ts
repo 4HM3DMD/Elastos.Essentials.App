@@ -59,6 +59,8 @@ export const fr = {
     'sync-progress': 'Synchronisation {{progress}}%',
     'ela-erc20': 'JETON ERC20 ELASTOS',
     'coin-list': 'Liste des jetons',
+    'select-token': 'Sélectionner un jeton',
+    'no-tokens-found': 'Aucun jeton trouvé',
     'staking-assets': 'Actifs en exercice',
     'staking-assets-refresh': 'Actualiser',
     'staking-assets-refreshing': 'Actualisation',

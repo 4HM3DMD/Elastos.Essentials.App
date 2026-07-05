@@ -1,0 +1,26 @@
+.select-token {
+  padding: 8px 16px calc(env(safe-area-inset-bottom) + 24px);
+
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 16px;
+    padding: 4px 14px;
+    border-radius: 14px;
+    background: var(--essentials-box-color);
+
+    ion-icon {
+      flex-shrink: 0;
+      font-size: 18px;
+      color: var(--essentials-text-secondary);
+    }
+
+    ion-input {
+      --padding-top: 12px;
+      --padding-bottom: 12px;
+      --padding-start: 0;
+      font-size: 15px;
+    }
+  }
+}

@@ -57,6 +57,8 @@ export const zh = {
     'sync-progress': '同步中 {{progress}}%',
     'ela-erc20': 'ELASTOS ERC20 币种',
     'coin-list': '币列表',
+    'select-token': '选择代币',
+    'no-tokens-found': '未找到代币',
     'staking-assets': '质押资产',
     'staking-assets-refresh': '刷新',
     'staking-assets-refreshing': '正在拼命刷新...',

@@ -34,7 +34,7 @@
 
     <!-- Quick actions -->
     <ui-action-grid *ngIf="hasWallet()" [columns]="4" class="tiles">
-      <ui-action-tile label="Send" (pressed)="onMainAction()">
+      <ui-action-tile label="Send" (pressed)="onSend()">
         <ion-icon name="arrow-up-outline"></ion-icon>
       </ui-action-tile>
       <ui-action-tile label="Receive" (pressed)="onMainAction()">

@@ -460,6 +460,12 @@ export class WalletHomePage implements OnInit, OnDestroy {
         if (main) this.goCoinHome(main.networkWallet.id, main.id);
     }
 
+    /** Send opens the 2026 token picker first, then the transfer form for the chosen token. */
+    public onSend() {
+        let main = this.getMainSubWallet();
+        if (main) this.native.go('/wallet/coin-select-send', { masterWalletId: main.networkWallet.id });
+    }
+
     public trackRow(_index: number, row: TokenRowViewModel): string {
         return row.subWallet.id;
     }

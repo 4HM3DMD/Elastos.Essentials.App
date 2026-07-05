@@ -1,0 +1,20 @@
+<ion-content>
+  <app-titlebar></app-titlebar>
+
+  <div class="select-token">
+    <div class="search">
+      <ion-icon name="search-outline"></ion-icon>
+      <ion-input [(ngModel)]="searchKey" (ngModelChange)="onSearch()" clearInput
+        [placeholder]="'wallet.search-coin' | translate" ngDefaultControl></ion-input>
+    </div>
+
+    <ui-skeleton *ngIf="!shownRows" [rows]="6" kind="row"></ui-skeleton>
+
+    <ui-token-row *ngFor="let row of shownRows; trackBy: trackRow" [icon]="row.icon" [badge]="row.badge"
+      [title]="row.title" [sub]="row.sub" [value]="row.fiat" [subValue]="row.changeSubValue"
+      [subValueTone]="row.tone" (pressed)="onRow(row)"></ui-token-row>
+
+    <ui-empty-state *ngIf="shownRows && shownRows.length === 0" icon="search-outline"
+      [message]="'wallet.no-tokens-found' | translate"></ui-empty-state>
+  </div>
+</ion-content>

@@ -58,6 +58,8 @@ export const it = {
     'sync-progress': 'Sincronizzazione al {{progress}}%',
     'ela-erc20': 'ELASTOS ERC20 TOKEN',
     'coin-list': 'Lista dei Token',
+    'select-token': 'Seleziona token',
+    'no-tokens-found': 'Nessun token trovato',
     'staking-assets': 'Attività di Staking',
     'staking-assets-refresh': 'Aggiorna',
     'staking-assets-refreshing': 'Aggiornamento',

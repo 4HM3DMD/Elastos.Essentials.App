@@ -330,12 +330,21 @@ export class HomePage implements OnInit, OnDestroy {
     return !!this.networkWallet;
   }
 
-  /** Send/Receive/Swap/Stake land on the main token's coin home (v1 depth, D6). */
+  /** Receive/Swap/Stake land on the main token's coin home (v1 depth, D6). */
   public onMainAction() {
     let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
     if (!main) return;
     void this.globalNav.navigateTo(App.WALLET, '/wallet/coin', {
       state: { masterWalletId: main.networkWallet.id, subWalletId: main.id }
+    });
+  }
+
+  /** Send opens the 2026 token picker first, then the transfer form for the chosen token. */
+  public onSend() {
+    let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
+    if (!main) return;
+    void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-select-send', {
+      state: { masterWalletId: main.networkWallet.id }
     });
   }
 

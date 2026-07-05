@@ -56,7 +56,7 @@
 
         <!-- Actions -->
         <ui-action-grid *ngIf="networkWallet && !noAddressForLedgerWallet" [columns]="4" class="actions">
-            <ui-action-tile label="Send" (pressed)="onMainAction()">
+            <ui-action-tile label="Send" (pressed)="onSend()">
                 <ion-icon name="arrow-up-outline"></ion-icon>
             </ui-action-tile>
             <ui-action-tile label="Receive" (pressed)="onMainAction()">
