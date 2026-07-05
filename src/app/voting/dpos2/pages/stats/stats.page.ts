@@ -19,6 +19,9 @@ export class StatsPage implements OnInit {
 
     async ionViewWillEnter() {
         this.titleBar.setTitle(this.translate.instant('launcher.app-dpos2-voting'));
+        // Direct entries (e.g. the Elastos hub deep link) land here without the
+        // list page having run; init() populates _nodes and no-ops otherwise.
+        await this.dpos2Service.init();
         await this.dpos2Service.fetchStats();
     }
 

@@ -1,8 +1,9 @@
 .container {
     min-height: 100%;
     padding: 15px;
-    // Tab bar clearance comes from the global has-tabbar ion-content rule.
-    padding-bottom: 24px;
+    // Tab bar clearance comes from the global has-tabbar ion-content rule;
+    // keep safe-area clearance for the kill-switch (no tab bar) case.
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
     text-align: left;
 
     .no-favorite {

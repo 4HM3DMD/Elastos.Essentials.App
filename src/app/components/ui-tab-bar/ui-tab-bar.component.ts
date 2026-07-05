@@ -38,10 +38,14 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
     this.routerSub?.unsubscribe();
   }
 
+  private static readonly ELASTOS_CONTEXT_PREFIXES = [
+    '/launcher/elastos', '/staking', '/dpos2', '/crproposalvoting', '/crcouncilvoting', '/identity'
+  ];
+
   private syncActive(url: string): void {
     if (url.startsWith('/wallet')) this.active = 'wallet';
     else if (url.startsWith('/settings')) this.active = 'menu';
-    else if (url.startsWith('/launcher/elastos')) this.active = 'elastos';
+    else if (UiTabBarComponent.ELASTOS_CONTEXT_PREFIXES.some(p => url.startsWith(p))) this.active = 'elastos';
     else if (url.startsWith('/dappbrowser')) this.active = 'browser';
     else if (url.startsWith('/launcher/home')) this.active = 'home';
   }
@@ -57,7 +61,9 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
   }
 
   public async onElastos(): Promise<void> {
-    this.globalNav.clearNavigationHistory();
+    // Unlike the other tabs the hub keeps the caller in history, so both the
+    // titlebar arrow and the Android hardware back return to the origin screen.
+    this.globalNav.clearIntermediateRoutes(['/launcher/elastos']);
     await this.globalNav.navigateTo(App.LAUNCHER, '/launcher/elastos');
   }
 

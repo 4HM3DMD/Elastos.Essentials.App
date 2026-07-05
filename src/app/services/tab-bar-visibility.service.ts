@@ -21,6 +21,7 @@ const HIDE_TABBAR_ROUTE_PREFIXES = [
   '/intents/',
   '/dappbrowser/browser',
   '/dappbrowser/menu',
+  '/dappbrowser/edit-favorite',
   '/identity/myprofile/',
   '/dpos2/menu/',
   '/staking/',

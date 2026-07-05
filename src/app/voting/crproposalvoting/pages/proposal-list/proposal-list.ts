@@ -114,6 +114,7 @@ export class ProposalListPage implements OnInit {
             }
             catch (err) {
                 Logger.error(App.CRPROPOSAL_VOTING, 'searchProposal error:', err);
+                this.titleBar.setTitle(this.translate.instant('crproposalvoting.proposals'));
             }
         } else {
             this.proposals = this.proposalService.allResults;
@@ -169,9 +170,15 @@ export class ProposalListPage implements OnInit {
         if (key !== 'suggestions') {
             return;
         }
+        // This page instance stays alive in Ionic's stack; drop any search filter
+        // so returning to the segment shows the full list again.
+        if (this.searchInput) {
+            this.searchInput = '';
+            this.proposals = this.proposalService.allResults;
+        }
         // Drop both list routes from the history so back from the combined screen
         // returns to whatever opened it instead of ping-ponging between segments.
         this.globalNav.clearIntermediateRoutes(['/crproposalvoting/proposals/all', '/crproposalvoting/suggestions/all']);
-        void this.globalNav.navigateTo(App.CRSUGGESTION, '/crproposalvoting/suggestions/all');
+        void this.globalNav.navigateTo(App.CRSUGGESTION, '/crproposalvoting/suggestions/all', { animated: false });
     }
 }
