@@ -6,7 +6,6 @@ import { DIDManagerService } from 'src/app/launcher/services/didmanager.service'
 import { App } from 'src/app/model/app.enum';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { CRCouncilVotingInitService } from 'src/app/voting/crcouncilvoting/services/init.service';
-import { DPoSVotingInitService } from 'src/app/voting/dposvoting/services/init.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { WidgetBase } from '../../base/widgetbase';
 
@@ -24,7 +23,6 @@ export class CyberRepublicWidget extends WidgetBase implements OnInit {
     private translate: TranslateService,
     public appService: AppmanagerService,
     public walletNetworkService: WalletNetworkService,
-    private dposVotingInitService: DPoSVotingInitService,
     private crCouncilVotingInitService: CRCouncilVotingInitService,
   ) {
     super();

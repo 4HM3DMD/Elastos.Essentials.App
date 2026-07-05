@@ -12,7 +12,6 @@ import { GlobalEvents } from 'src/app/services/global.events.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalSwitchNetworkService } from 'src/app/services/global.switchnetwork.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
-import { DPoSVotingInitService } from 'src/app/voting/dposvoting/services/init.service';
 import { WalletInitService } from 'src/app/wallet/services/init.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { AppmanagerService } from '../../services/appmanager.service';
@@ -49,7 +48,6 @@ export class NotificationsPage implements OnInit {
     private tipsService: TipsService,
     private events: GlobalEvents,
     private hiveManagerInitService: HiveManagerInitService,
-    private dposVotingInitService: DPoSVotingInitService,
     private walletInitService: WalletInitService
   ) {
   }
@@ -131,9 +129,6 @@ export class NotificationsPage implements OnInit {
           break;
         case App.DEVELOPER_TOOLS:
           void this.globalNav.navigateTo(App.DEVELOPER_TOOLS, '/developertools/home');
-          break;
-        case App.DPOS_VOTING:
-          void this.dposVotingInitService.start()
           break;
         case App.HIVE_MANAGER:
           void this.hiveManagerInitService.start();

@@ -7,7 +7,6 @@ import { App } from 'src/app/model/app.enum';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { CRCouncilVotingInitService } from 'src/app/voting/crcouncilvoting/services/init.service';
 import { DPoS2InitService } from 'src/app/voting/dpos2/services/init.service';
-import { DPoSVotingInitService } from 'src/app/voting/dposvoting/services/init.service';
 import { MainchainPollsInitService } from 'src/app/voting/mainchainpolls/services/init.service';
 import { DposStatus, VoteService } from 'src/app/voting/services/vote.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
@@ -30,7 +29,6 @@ export class ElastosVotingWidget extends WidgetBase implements OnInit {
     private translate: TranslateService,
     public appService: AppmanagerService,
     public walletNetworkService: WalletNetworkService,
-    private dposVotingInitService: DPoSVotingInitService,
     private dpos2InitService: DPoS2InitService,
     private crCouncilVotingInitService: CRCouncilVotingInitService,
     private mainchainPollsInitService: MainchainPollsInitService,
@@ -60,18 +58,6 @@ export class ElastosVotingWidget extends WidgetBase implements OnInit {
           icon: '/assets/launcher/apps/app-icons/dpos.svg',
           hasWidget: false,
           startCall: () => this.dpos2InitService.start()
-        });
-      }
-
-      if (status === DposStatus.DPoSV1V2 || status == DposStatus.DPoSV1) {
-        apps.push({
-          id: 'dpos',
-          routerContext: App.DPOS_VOTING,
-          name: 'launcher.app-dpos-voting',
-          description: 'launcher.app-dpos-description',
-          icon: '/assets/launcher/apps/app-icons/dpos.svg',
-          hasWidget: false,
-          startCall: () => this.dposVotingInitService.start()
         });
       }
 

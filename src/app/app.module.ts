@@ -33,7 +33,6 @@ import { SettingsInitModule } from './settings/init.module';
 import { CRCouncilVotingInitModule } from './voting/crcouncilvoting/init.module';
 import { CRProposalVotingInitModule } from './voting/crproposalvoting/init.module';
 import { DPoSRegistrationInitModule } from './voting/dposregistration/init.module';
-import { DPoSVotingInitModule } from './voting/dposvoting/init.module';
 import { WalletInitModule } from './wallet/init.module';
 
 // Ignore errors with specific messages
@@ -288,7 +287,6 @@ providers.push({ provide: ErrorHandler, useClass: SentryErrorHandler });
     CRCouncilVotingInitModule,
     CRProposalVotingInitModule,
     SettingsInitModule,
-    DPoSVotingInitModule,
     DPoSRegistrationInitModule,
     DeveloperToolsInitModule,
 

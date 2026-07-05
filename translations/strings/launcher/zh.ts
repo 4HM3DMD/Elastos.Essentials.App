@@ -61,8 +61,6 @@ export const zh = {
         'app-scanner-description': '扫描二维码',
         'app-settings': '设置',
         'app-settings-description': '管理 Essentials',
-        'app-dpos-voting': 'DPoS 1.0 超级节点投票',
-        'app-dpos-description': '参与亦来云生态体系建设',
         'app-cr-council': 'Elastos 委员会',
         'app-crcouncil-description': 'Elastos 委员会成员',
         'app-cr-council-election': 'Elastos 委员选举',

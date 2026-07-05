@@ -14,7 +14,6 @@ import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalStorageService } from 'src/app/services/global.storage.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { CRCouncilVotingInitService } from 'src/app/voting/crcouncilvoting/services/init.service';
-import { DPoSVotingInitService } from 'src/app/voting/dposvoting/services/init.service';
 import { WalletInitService } from 'src/app/wallet/services/init.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { DIDManagerService } from './didmanager.service';
@@ -42,7 +41,6 @@ export class IntentReceiverService {
         private globalNav: GlobalNavService,
         // In-app Services
         private hiveManagerInitService: HiveManagerInitService,
-        private dposVotingInitService: DPoSVotingInitService,
         private walletInitService: WalletInitService,
         private crCouncilVotingInitService: CRCouncilVotingInitService,
         private contactsInitService: ContactsInitService,

@@ -7,7 +7,7 @@ import { Util } from 'src/app/model/util';
 import { GlobalJsonRPCService } from 'src/app/services/global.jsonrpc.service';
 import { GlobalNativeService } from 'src/app/services/global.native.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
-import { DPoSRegistrationInfo, NodesService } from 'src/app/voting/dposvoting/services/nodes.service';
+import { DPoSRegistrationInfo, NodesService } from 'src/app/voting/dposregistration/services/nodes.service';
 import { VoteService } from 'src/app/voting/services/vote.service';
 import { StandardCoinName } from 'src/app/wallet/model/coin';
 import { AuthService } from 'src/app/wallet/services/auth.service';
@@ -57,10 +57,15 @@ export class DPosRegistrationPage implements OnInit {
     ngOnInit() {
     }
 
-    ionViewWillEnter() {
+    async ionViewWillEnter() {
         Logger.log("DPosRegistrationPage", this.voteService.masterWalletId);
         this.masterWalletId = this.voteService.masterWalletId;
         // this.titleBar.setTheme('#732dcf', TitleBarForegroundMode.LIGHT);
+
+        // The retired v1 voting page used to preload the node list before this page
+        // could be reached; the page now fetches what it needs on entry.
+        if (!this.nodesService.dposInfo)
+            await this.nodesService.fetchNodes();
 
         this.dposInfo = Util.clone(this.nodesService.dposInfo);
 

@@ -85,7 +85,7 @@ export class GlobalNavService {
           route = '/crproposalvoting/suggestions/all';
           break;
         case App.DPOS_VOTING:
-          route = '/dposvoting/menu/vote';
+          route = '/dpos2/menu/list'; // v1 voting retired; BPoS (dpos2) is the successor
           break;
         case App.STAKING:
           route = '/staking/staking-home';

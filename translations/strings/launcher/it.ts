@@ -61,8 +61,6 @@ export const it = {
         'app-scanner-description': 'Scansiona i tuoi codici QR',
         'app-settings': 'Impostazioni',
         'app-settings-description': 'Configura Essentials',
-        'app-dpos-voting': 'Votazione DPoS 1.0',
-        'app-dpos-description': 'DPoS Supernodes',
         'app-cr-council': 'Consiglio Elastos',
         'app-crcouncil-description': 'Membri del consiglio della Elastos',
         'app-cr-council-election': 'Elastos Council Election',

@@ -61,8 +61,6 @@ export const en = {
         'app-scanner-description': 'Scan anything',
         'app-settings': 'Settings',
         'app-settings-description': 'Manage Essentials',
-        'app-dpos-voting': 'DPoS 1.0 Voting',
-        'app-dpos-description': 'DPoS Supernodes',
         'app-cr-council': 'Elastos Council',
         'app-crcouncil-description': 'Elastos Council members',
         'app-cr-council-election': 'Elastos Council Election',

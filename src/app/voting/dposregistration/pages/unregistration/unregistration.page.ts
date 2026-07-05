@@ -18,7 +18,7 @@ import { GlobalNativeService } from 'src/app/services/global.native.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalPopupService } from 'src/app/services/global.popup.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
-import { DPoSRegistrationInfo, NodesService } from 'src/app/voting/dposvoting/services/nodes.service';
+import { DPoSRegistrationInfo, NodesService } from 'src/app/voting/dposregistration/services/nodes.service';
 import { VoteService } from 'src/app/voting/services/vote.service';
 import { StandardCoinName } from 'src/app/wallet/model/coin';
 import { Utxo, UtxoType } from 'src/app/wallet/model/tx-providers/transaction.types';
@@ -100,11 +100,12 @@ export class DPosUnRegistrationPage implements OnInit {
     this.masterWalletId = this.voteService.masterWalletId;
     // this.titleBar.setTheme('#732dcf', TitleBarForegroundMode.LIGHT);
 
-    this.dposInfo = this.nodesService.dposInfo;
-    if (this.nodesService.dposInfo.state == 'Pending') {
+    // The retired v1 voting page used to preload the node list before this page
+    // could be reached; fetch on entry when the data is missing or still pending.
+    if (!this.nodesService.dposInfo || this.nodesService.dposInfo.state == 'Pending') {
       await this.nodesService.fetchNodes();
-      this.dposInfo = this.nodesService.dposInfo;
     }
+    this.dposInfo = this.nodesService.dposInfo;
 
     let depositAddress = await this.voteService.sourceSubwallet.getOwnerDepositAddress();
     const txRawList = await GlobalElastosAPIService.instance.getTransactionsByAddress(

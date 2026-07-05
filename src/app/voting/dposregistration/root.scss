@@ -1,4 +1,4 @@
-@import "src/app/voting/dposvoting/root.scss";
+@import "src/app/voting/root.scss";
 
 ion-list-header {
     --color: var(--ion-text-color);
@@ -13,10 +13,12 @@ ion-spinner {
 }
 
 .header {
+    width: 100%;
     height: 15px;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
     position: static;
+    background: var(--ion-background-color);
 }
 
 .align-center {
