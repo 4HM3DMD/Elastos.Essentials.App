@@ -84,8 +84,8 @@
                 </ion-col>
             </ion-row>
 
-            <!-- Address quick actions (in-page scan removed; the single scan affordance is the header) -->
-            <div class="address-chips">
+            <!-- Address quick actions, only with the custom-address input (in-page scan removed) -->
+            <div class="address-chips" *ngIf="useCustumReceiverAddress">
                 <button type="button" class="addr-chip" (click)="pasteFromClipboard()">
                     <ion-icon name="clipboard-outline"></ion-icon>{{ 'wallet.paste' | translate }}
                 </button>
@@ -316,7 +316,7 @@
                 <ion-col size="6" class="right-col">
                     <ion-input [disabled]="!amountCanBeEditedInPayIntent" class="amount-input" type="number"
                         placeholder="0" name="amount3" ngDefaultControl [(ngModel)]="amount"
-                        (ngModelChange)="refreshPayValuesReady()">
+                        (ngModelChange)="onPayAmountInput()">
                     </ion-input>
                     <p *ngIf="amount && isStandardSubwallet(fromSubWallet)">
                         {{ fromSubWallet.getAmountInExternalCurrency(convertAmountToBigNumber(amount)) }}
@@ -331,7 +331,7 @@
         </div>
 
         <div class="footer-container ion-no-border" [class.dark-footer]="theme.darkMode">
-            <p *ngIf="!payValuesReady">{{ 'wallet.insufficient-balance' | translate }}</p>
+            <p *ngIf="amount && !payValuesReady">{{ 'wallet.insufficient-balance' | translate }}</p>
             <ion-row class="btn-row">
                 <ion-col size="6">
                     <ebutton class="btn cancel" mode="cancel" (clicked)="cancelPayment()"

@@ -167,6 +167,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   public amountCanBeEditedInPayIntent = true;
   // Precomputed 'ready to pay' flag for the PAY footer (the template must not call the async validator directly).
   public payValuesReady = true;
+  private payReadyTimer: ReturnType<typeof setTimeout> = null;
 
   // Submit transaction
   public transaction: () => Promise<void> | void;
@@ -253,6 +254,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.payReadyTimer) clearTimeout(this.payReadyTimer);
     if (this.addressUpdateSubscription) this.addressUpdateSubscription.unsubscribe();
     if (this.publicationStatusSub) this.publicationStatusSub.unsubscribe();
     if (this.ethTransactionSpeedupSub) this.ethTransactionSpeedupSub.unsubscribe();
@@ -741,6 +743,19 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     void this.checkValuesReady(false).then(ready => {
       this.zone.run(() => { this.payValuesReady = ready; });
     });
+  }
+
+  /**
+   * Debounced from the editable pay amount input. checkValuesReady does fee
+   * estimation (a network call for BTC) and can truncate the amount in place, so
+   * it must not run on every keystroke — wait until the user pauses typing.
+   */
+  public onPayAmountInput() {
+    if (this.payReadyTimer) clearTimeout(this.payReadyTimer);
+    this.payReadyTimer = setTimeout(() => {
+      this.payReadyTimer = null;
+      this.refreshPayValuesReady();
+    }, 600);
   }
 
   supportsMaxTransfer() {
