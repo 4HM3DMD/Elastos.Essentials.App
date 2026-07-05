@@ -45,7 +45,6 @@ import { GlobalPopupService } from 'src/app/services/global.popup.service';
 import { GlobalTranslationService } from 'src/app/services/global.translation.service';
 import { GlobalTronGridService } from 'src/app/services/global.tron.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
-import { OptionsComponent, OptionsType } from 'src/app/wallet/components/options/options.component';
 import {
   TransferWalletChooserComponent,
   WalletChooserComponentOptions
@@ -70,7 +69,7 @@ import { WalletUtil } from 'src/app/wallet/model/wallet.util';
 import { ERC1155Service } from 'src/app/wallet/services/evm/erc1155.service';
 import { ERC721Service } from 'src/app/wallet/services/evm/erc721.service';
 import { EVMService } from 'src/app/wallet/services/evm/evm.service';
-import { IntentService, ScanType } from 'src/app/wallet/services/intent.service';
+import { IntentService } from 'src/app/wallet/services/intent.service';
 import { NameResolvingService } from 'src/app/wallet/services/nameresolving.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { ContactsComponent } from '../../../../components/contacts/contacts.component';
@@ -166,6 +165,8 @@ export class CoinTransferPage implements OnInit, OnDestroy {
 
   // Pay intent
   public amountCanBeEditedInPayIntent = true;
+  // Precomputed 'ready to pay' flag for the PAY footer (the template must not call the async validator directly).
+  public payValuesReady = true;
 
   // Submit transaction
   public transaction: () => Promise<void> | void;
@@ -467,6 +468,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
             await this.parseException(err);
           }
         }
+        this.refreshPayValuesReady();
         break;
       // Send NFT
       case TransferType.SEND_NFT:
@@ -724,42 +726,6 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     }
   }
 
-  async showOptions(ev: any) {
-    this.popover = await this.popoverCtrl.create({
-      mode: 'ios',
-      component: OptionsComponent,
-      componentProps: {
-        showContacts: this.showContactsOption,
-        showCryptonames: this.showCryptonamesOption
-      },
-      cssClass: !this.theme.activeTheme.value.config.usesDarkMode ? 'options-component' : 'options-component-dark',
-      event: ev,
-      translucent: false
-    });
-    this.popover.onWillDismiss().then(ret => {
-      this.popover = null;
-      void this.doActionAccordingToOptions(ret.data);
-    });
-    return await this.popover.present();
-  }
-
-  async doActionAccordingToOptions(ret: OptionsType) {
-    switch (ret) {
-      case OptionsType.CONTACTS:
-        void this.openContacts();
-        break;
-      case OptionsType.CRYPTONAMES:
-        void this.showCryptonames();
-        break;
-      case OptionsType.Paste:
-        await this.pasteFromClipboard();
-        break;
-      case OptionsType.SCAN:
-        this.goScan();
-        break;
-    }
-  }
-
   async pasteFromClipboard() {
     this.toAddress = (await this.native.pasteFromClipboard()).trim();
 
@@ -770,8 +736,11 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     }
   }
 
-  goScan() {
-    void this.intentService.scan(ScanType.Address);
+  /** Recomputes the PAY footer 'insufficient balance' flag off the async validator. */
+  public refreshPayValuesReady() {
+    void this.checkValuesReady(false).then(ready => {
+      this.zone.run(() => { this.payValuesReady = ready; });
+    });
   }
 
   supportsMaxTransfer() {

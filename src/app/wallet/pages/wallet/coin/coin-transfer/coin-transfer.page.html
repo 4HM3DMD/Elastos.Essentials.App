@@ -82,11 +82,17 @@
                         (input)='onSendToAddressInput($event.target.value)'>
                     </ion-input>
                 </ion-col>
-                <ion-col size="1" class="right-col" (click)="showOptions($event)">
-                    <img
-                        [src]="!theme.darkMode ? '/assets/launcher/icons/vertical-dots.svg' : '/assets/launcher/icons/dark_mode/vertical-dots.svg'">
-                </ion-col>
             </ion-row>
+
+            <!-- Address quick actions (in-page scan removed; the single scan affordance is the header) -->
+            <div class="address-chips">
+                <button type="button" class="addr-chip" (click)="pasteFromClipboard()">
+                    <ion-icon name="clipboard-outline"></ion-icon>{{ 'wallet.paste' | translate }}
+                </button>
+                <button type="button" class="addr-chip" *ngIf="showContactsOption" (click)="openContacts()">
+                    <ion-icon name="people-outline"></ion-icon>{{ 'wallet.contacts' | translate }}
+                </button>
+            </div>
             <!-- Selected address name (cryptoname, etc) -->
             <ion-row class="contact-row" [class.invisible]="!addressName">
                 <p>{{ addressName }}</p>
@@ -193,11 +199,17 @@
                         (input)='onSendToAddressInput($event.target.value)'>
                     </ion-input>
                 </ion-col>
-                <ion-col size="1" class="right-col" (click)="showOptions($event)">
-                    <img
-                        [src]="!theme.darkMode ? '/assets/launcher/icons/vertical-dots.svg' : '/assets/launcher/icons/dark_mode/vertical-dots.svg'">
-                </ion-col>
             </ion-row>
+
+            <!-- Address quick actions (in-page scan removed; the single scan affordance is the header) -->
+            <div class="address-chips">
+                <button type="button" class="addr-chip" (click)="pasteFromClipboard()">
+                    <ion-icon name="clipboard-outline"></ion-icon>{{ 'wallet.paste' | translate }}
+                </button>
+                <button type="button" class="addr-chip" *ngIf="showContactsOption" (click)="openContacts()">
+                    <ion-icon name="people-outline"></ion-icon>{{ 'wallet.contacts' | translate }}
+                </button>
+            </div>
 
             <!-- Option to pick a personal wallet to send the asset -->
             <p *ngIf="canSendToPersonalWallet()" (click)="choosePersonalWallet(true)">
@@ -303,7 +315,8 @@
                 </ion-col>
                 <ion-col size="6" class="right-col">
                     <ion-input [disabled]="!amountCanBeEditedInPayIntent" class="amount-input" type="number"
-                        placeholder="0" name="amount3" ngDefaultControl [(ngModel)]="amount">
+                        placeholder="0" name="amount3" ngDefaultControl [(ngModel)]="amount"
+                        (ngModelChange)="refreshPayValuesReady()">
                     </ion-input>
                     <p *ngIf="amount && isStandardSubwallet(fromSubWallet)">
                         {{ fromSubWallet.getAmountInExternalCurrency(convertAmountToBigNumber(amount)) }}
@@ -318,7 +331,7 @@
         </div>
 
         <div class="footer-container ion-no-border" [class.dark-footer]="theme.darkMode">
-            <p *ngIf="!checkValuesReady(false)">{{ 'wallet.insufficient-balance' | translate }}</p>
+            <p *ngIf="!payValuesReady">{{ 'wallet.insufficient-balance' | translate }}</p>
             <ion-row class="btn-row">
                 <ion-col size="6">
                     <ebutton class="btn cancel" mode="cancel" (clicked)="cancelPayment()"

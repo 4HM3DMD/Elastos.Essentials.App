@@ -720,3 +720,29 @@
         }
     }
 }
+
+/* Address quick-action chips (Paste / Contacts), replacing the vertical-dots popover. */
+.address-chips {
+    display: flex;
+    gap: 8px;
+    margin: 8px 2px 0;
+
+    .addr-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 12px;
+        border: none;
+        border-radius: 10px;
+        background: var(--essentials-box-color);
+        color: var(--essentials-text-secondary);
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+
+        ion-icon {
+            font-size: 15px;
+        }
+    }
+}
