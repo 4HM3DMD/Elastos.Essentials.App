@@ -12,12 +12,12 @@
 
     <div class="search-row">
       <ion-icon name="search-outline"></ion-icon>
-      <input type="text" [(ngModel)]="searchInput" [placeholder]="'wallet.search-network' | translate"
-        autocapitalize="off" autocomplete="off" spellcheck="false" />
+      <input type="text" [(ngModel)]="searchInput" (ngModelChange)="applyNetworkFilter()"
+        [placeholder]="'wallet.search-network' | translate" autocapitalize="off" autocomplete="off" spellcheck="false" />
     </div>
 
     <div class="network-list">
-      <button type="button" *ngFor="let network of displayedNetworks" class="network-row ion-activatable"
+      <button type="button" *ngFor="let network of displayedNetworks; trackBy: trackByKey" class="network-row ion-activatable"
         [class.selected]="currentNetwork && network.key === currentNetwork.key" (click)="selectNetwork(network)">
         <img class="logo" [src]="network.logo" alt="" />
         <span class="name">{{ network.getEffectiveName() }}</span>

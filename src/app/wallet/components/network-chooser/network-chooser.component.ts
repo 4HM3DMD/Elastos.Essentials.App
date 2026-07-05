@@ -41,6 +41,7 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
   public options: NetworkChooserComponentOptions = null;
   public currentNetwork: AnyNetwork;
   public networksToShowInList: AnyNetwork[] = [];
+  public displayedNetworks: AnyNetwork[] = [];
   public searchInput = '';
 
   private netListSubscription: Subscription = null;
@@ -70,6 +71,7 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
       this.networksToShowInList = networks.filter(n => {
         return (!this.options.filter || this.options.filter(n));
       });
+      this.applyNetworkFilter();
     });
   }
 
@@ -80,11 +82,16 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
     }
   }
 
-  /** The networks to render, narrowed by the search box (case-insensitive name match). */
-  public get displayedNetworks(): AnyNetwork[] {
+  /** Recomputes the rendered list from the search box; called on list load and on each keystroke. */
+  public applyNetworkFilter() {
     let query = this.searchInput.trim().toLowerCase();
-    if (!query) return this.networksToShowInList;
-    return this.networksToShowInList.filter(n => n.getEffectiveName().toLowerCase().includes(query));
+    this.displayedNetworks = query
+      ? this.networksToShowInList.filter(n => n.getEffectiveName().toLowerCase().includes(query))
+      : this.networksToShowInList;
+  }
+
+  public trackByKey(_index: number, network: AnyNetwork): string {
+    return network.key;
   }
 
   /** The Elastos main chain hosts governance and staking tools; its row carries a tools tag. */

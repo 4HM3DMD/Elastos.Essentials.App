@@ -1,3 +1,9 @@
+// The global body.has-tabbar rule adds bottom padding to every ion-content; on
+// this short bottom sheet that would stack on the footer and clip the last rows.
+:host ion-content {
+  --padding-bottom: 0;
+}
+
 .network-sheet {
   padding: 20px 16px 8px;
 
