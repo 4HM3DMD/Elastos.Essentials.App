@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { SharedComponentsModule } from 'src/app/components/sharedcomponents.module';
+import { UiComponentsModule } from 'src/app/components/ui/ui-components.module';
 import { EthTransactionComponentModule } from '../../components/eth-transaction/module';
 import { LedgerSignComponentModule } from '../../components/ledger-sign/module';
 import { StdTransactionComponentModule } from '../../components/std-transaction/module';
@@ -52,6 +53,7 @@ import { PushBitcoinTxPage } from './pushbitcointx/pushbitcointx.page';
         EthTransactionComponentModule,
         LedgerSignComponentModule,
         SharedComponentsModule,
+        UiComponentsModule,
         StdTransactionComponentModule,
         CommonModule,
         FormsModule,

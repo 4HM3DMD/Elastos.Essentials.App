@@ -1,156 +1,53 @@
-@import 'src/app/wallet/root.scss';
+.access-sheet {
+  padding: 8px 16px 12px;
 
-.container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-    padding: 20px 10px;
-    background-image: url('/assets/wallet/background/intent.svg');
-    object-fit: cover;
+  .reason {
+    margin: 16px 2px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ion-text-color);
+  }
 
-    ion-card {
-        margin: 0;
-        background: #ffffff;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 3px 15px 0 #ededf0;
-        border-radius: 15px;
-        padding: 25px 15px 30px;
+  .sub-reason {
+    margin: 6px 2px 14px;
+    font-size: 13px;
+    color: var(--essentials-text-secondary);
+  }
 
-        .inline-svg {
-            width: 50px;
-            height: 50px;
-        }
+  .card-group {
+    background: var(--essentials-box-color);
+    border-radius: 14px;
+    padding: 4px 14px;
 
-        ion-card-title {
-            font-size: 21px;
-            font-weight: 600;
-            line-height: 1.29;
-            color: #2e2f4e;
-            margin: 15px 15px 10px;
-        }
-
-        ion-card-subtitle {
-            text-transform: none;
-            font-size: 13px;
-            font-weight: 500;
-            line-height: 1.46;
-            color: #161740;
-            margin: 0 15px;
-        }
+    ui-kv-row:not(:last-child) {
+      border-bottom: 1px solid var(--essentials-border-separator-color);
     }
+  }
 
-    .msg-container {
-        padding: 20px 20px 5px;
+  .warning-block {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--essentials-box-color);
 
-        p {
-            font-size: 16px;
-            font-weight: 600;
-            line-height: 1.25;
-            text-align: center;
-            color: #2e2f4e;
-        }
+    p {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: var(--ion-text-color);
 
-        .second-msg {
-            color: #8888b0;
-            text-align: left;
-            margin: 30px 0 10px;
-        }
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
-
-    .data-row {
-        box-shadow: 0 3px 15px 0 #ededf0;
-        background: #ffffff;
-        border-radius: 15px;
-        padding: 0px 20px;
-        margin-bottom: 7.5px;
-        display: flex;
-        flex-direction: column;
-
-        p {
-            font-size: 13px;
-            font-weight: 600;
-            line-height: 1.46;
-            text-align: left;
-            color: #2e2f4e;
-            margin: 10px 0 2.5px;
-        }
-
-        h5 {
-            margin: 0 0 10px;
-            font-size: 13px;
-            font-weight: 500;
-            line-height: 1.46;
-            text-align: left;
-            color: #161740;
-            word-break: break-all;
-        }
-    }
-
-    .btn {
-        width: 46.5%;
-        position: fixed;
-        bottom: 20px;
-    }
-
-    .cancel {
-        left: 2%;
-    }
-
-    .confirm {
-        right: 2%;
-    }
+  }
 }
 
-.dark-container {
-    background-image: url('/assets/wallet/background/darkmode/intent.svg');
+.sheet-footer {
+  display: flex;
+  gap: 12px;
+  padding: 8px 16px calc(env(safe-area-inset-bottom) + 12px);
 
-    ion-card {
-        margin: 0;
-        background: #2e2f4e;
-        box-shadow: 0 3px 15px 0 #151626;
-
-        ion-card-title {
-            color: #ffffff;
-        }
-
-        ion-card-subtitle {
-            color: #cfd1f7;
-        }
-    }
-
-    .msg-container {
-        p {
-            color: #ffffff;
-        }
-    }
-
-    .data-row {
-        background: #2e2f4e;
-        box-shadow: 0 3px 15px 0 #151626;
-
-        p {
-            color: #ffffff;
-        }
-
-        h5 {
-            color: #cfd1f7;
-        }
-    }
-
-    .cancel {
-        box-shadow: 0 3px 6px 0 #151626;
-        background-color: #202039;
-
-        ion-label {
-            color: #ffffff;
-        }
-    }
-
-    .confirm {
-        box-shadow: 0 3px 15px 0 #151626;
-    }
+  .btn {
+    flex: 1;
+  }
 }
-

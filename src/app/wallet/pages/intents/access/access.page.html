@@ -1,40 +1,34 @@
 <ion-content>
-    <app-titlebar></app-titlebar>
-    <ion-grid class="container" [class.dark-container]="theme.darkMode">
+  <app-titlebar></app-titlebar>
 
-        <ion-card>
-            <div *ngIf="exportMnemonic" class="inline-svg" inlineSVG="/assets/shared/curcol-icons/warning.svg"></div>
-            <div *ngIf="!exportMnemonic" class="inline-svg" inlineSVG="/assets/wallet/settings/curcol-wallet.svg"></div>
-            <ion-card-title>{{ title }}</ion-card-title>
-            <ion-card-subtitle *ngIf="requestDapp">{{ requestDapp }}</ion-card-subtitle>
-        </ion-card>
+  <div class="access-sheet">
+    <ui-sheet-header [title]="title"
+      [origin]="requestDapp ? { icon: (exportMnemonic ? '/assets/shared/curcol-icons/warning.svg' : '/assets/wallet/settings/curcol-wallet.svg'), name: requestDapp } : null">
+    </ui-sheet-header>
 
-        <div *ngIf="!exportMnemonic">
-            <div class="msg-container">
-                <p *ngIf="showReason">{{ 'wallet.access-reason' | translate }}: {{ requestItems[0].reason }}</p>
-                <p *ngIf="!showReason">{{ 'wallet.access-request-for-info' | translate }}</p>
-                <p class="second-msg">{{ 'wallet.access-data-access' | translate }}</p>
-            </div>
-            <ion-row class="data-row" *ngFor="let item of requestItems">
-                <p>{{ getClaimTitle(item.name) | translate }}</p>
-                <h5 *ngIf="item.name === 'elaamount'">{{ item.value}} ELA</h5>
-                <h5 *ngIf="item.name !== 'elaamount'">{{ item.value }}</h5>
-            </ion-row>
-        </div>
+    <!-- Information request -->
+    <div *ngIf="!exportMnemonic">
+      <p class="reason" *ngIf="showReason">{{ 'wallet.access-reason' | translate }}: {{ requestItems[0].reason }}</p>
+      <p class="reason" *ngIf="!showReason">{{ 'wallet.access-request-for-info' | translate }}</p>
+      <p class="sub-reason">{{ 'wallet.access-data-access' | translate }}</p>
 
-        <div *ngIf="exportMnemonic">
-            <div class="msg-container">
-                <p>{{ 'wallet.text-share-mnemonic-warning' | translate }}</p>
-                <p *ngIf="showReason">{{ 'wallet.access-reason' | translate }}: {{ requestItems[0].reason }}</p>
-            </div>
-        </div>
+      <div class="card-group">
+        <ui-kv-row *ngFor="let item of requestItems" [label]="getClaimTitle(item.name) | translate"
+          [value]="item.name === 'elaamount' ? (item.value + ' ELA') : item.value"></ui-kv-row>
+      </div>
+    </div>
 
-        <ebutton class="btn cancel" mode="cancel" (clicked)="cancelOperation()"
-            [title]="'common.cancel' | translate">
-        </ebutton>
-        <ebutton class="btn confirm" (clicked)="onShare()"
-            [title]="'common.confirm' | translate">
-        </ebutton>
+    <!-- Mnemonic export warning -->
+    <div *ngIf="exportMnemonic" class="warning-block">
+      <p>{{ 'wallet.text-share-mnemonic-warning' | translate }}</p>
+      <p *ngIf="showReason">{{ 'wallet.access-reason' | translate }}: {{ requestItems[0].reason }}</p>
+    </div>
+  </div>
 
-    </ion-grid>
+  <div class="sheet-footer">
+    <ebutton class="btn cancel" mode="cancel" (clicked)="cancelOperation()"
+      [title]="'common.cancel' | translate"></ebutton>
+    <ebutton class="btn confirm" (clicked)="onShare()"
+      [title]="'common.confirm' | translate"></ebutton>
+  </div>
 </ion-content>
