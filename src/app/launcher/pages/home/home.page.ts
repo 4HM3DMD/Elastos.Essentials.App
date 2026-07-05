@@ -1,15 +1,6 @@
-import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { IonContent, IonSlides, ModalController, ToastController } from '@ionic/angular';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { IonSlides } from '@ionic/angular';
 import { Subscription } from 'rxjs';
-import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
-import {
-  BuiltInIcon,
-  TitleBarIcon,
-  TitleBarIconSlot,
-  TitleBarMenuItem,
-  TitleBarNavigationMode
-} from 'src/app/components/titlebar/titlebar.types';
 import { Logger } from 'src/app/logger';
 import { App } from 'src/app/model/app.enum';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
@@ -19,188 +10,172 @@ import {
   MAINNET_TEMPLATE,
   TESTNET_TEMPLATE
 } from 'src/app/services/global.networks.service';
+import { GlobalNotificationsService } from 'src/app/services/global.notifications.service';
 import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
 import { GlobalStartupService } from 'src/app/services/global.startup.service';
 import { GlobalStorageService } from 'src/app/services/global.storage.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
+import { AnyNetworkWallet } from 'src/app/wallet/model/networks/base/networkwallets/networkwallet';
+import { AnySubWallet } from 'src/app/wallet/model/networks/base/subwallets/subwallet';
+import { WalletUtil } from 'src/app/wallet/model/wallet.util';
+import { WalletSortType } from 'src/app/wallet/model/walletaccount';
+import { CurrencyService } from 'src/app/wallet/services/currency.service';
+import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { UiService } from 'src/app/wallet/services/ui.service';
-import { AppmanagerService } from '../../services/appmanager.service';
+import { WalletService } from 'src/app/wallet/services/wallet.service';
 import { DIDManagerService } from '../../services/didmanager.service';
 import { NotificationManagerService } from '../../services/notificationmanager.service';
 import { WidgetContainerComponent } from '../../widgets/base/widget-container/widget-container.component';
 import { WidgetsServiceEvents } from '../../widgets/services/widgets.events';
 import { WidgetsService } from '../../widgets/services/widgets.service';
 
+const HIDDEN_MASK = '••••••';
+
+/** Precomputed strings for the active wallet balance hero. */
+interface HomeBalanceVm {
+  value: string;
+  unit: string;
+  fiat: string;
+}
+
+/** Precomputed strings for one row of the tokens preview. */
+interface HomeTokenRow {
+  icon: string;
+  badge: string;
+  title: string;
+  balance: string;
+  fiat: string;
+  subWallet: AnySubWallet;
+}
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss']
 })
-export class HomePage implements OnInit {
-  @ViewChild(TitleBarComponent, { static: true }) titleBar: TitleBarComponent;
-  @ViewChild(IonContent, { static: true }) ionContent: IonContent;
+export class HomePage implements OnInit, OnDestroy {
   @ViewChild('widgetsslides', { static: false }) widgetsSlides: IonSlides | undefined;
   @ViewChildren(WidgetContainerComponent) widgetContainersList: QueryList<WidgetContainerComponent>;
 
   private widgetContainers: WidgetContainerComponent[] = [];
+  private modal: HTMLIonModalElement = null;
 
-  private popover: HTMLIonPopoverElement = null;
-  private modal: any = null;
-
-  private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void;
-  private themeSubscription: Subscription = null; // Subscription to theme change
-  private themeColorSubscription: Subscription = null;
+  private walletServiceSub: Subscription = null;
+  private networkWalletSub: Subscription = null;
+  private activeNetworkSub: Subscription = null;
+  private notificationsSub: Subscription = null;
+  private networkTemplateSub: Subscription = null;
   private widgetsEditionModeSub: Subscription = null;
 
-  public showSwipeIndicator = false; // Whether to show the swipe animation or not (first time only for new identities)
+  // Header
+  public identityName = '';
+  public avatarDataUrl: string = null;
+  public hasNewNotifications = false;
+  public networkBanner: string = null;
 
+  // Wallet summary
+  public balanceVm: HomeBalanceVm = null;
+  public tokenRows: HomeTokenRow[] = null;
+  public hideBalances = false;
+  public readonly mask = HIDDEN_MASK;
+  private networkWallet: AnyNetworkWallet = null;
+
+  // Widget canvas
+  public showSwipeIndicator = false; // First time only, for new identities
   public widgetsSlidesOpts = {
     autoHeight: true,
     spaceBetween: 10,
-    initialSlide: 1 // Start at middle slide (index 1)
+    initialSlide: 1 // Start at the middle (main) panel
   };
   public slidesShown = false;
-  public activeScreenIndex: number;
+  public activeScreenIndex = 1;
   public editingWidgets = false;
   private hasUserInteractedWithSlides = false;
 
   constructor(
-    public toastCtrl: ToastController,
-    public translate: TranslateService,
     public storage: GlobalStorageService,
     public theme: GlobalThemeService,
-    public appService: AppmanagerService,
     public didService: DIDManagerService,
-    private modalCtrl: ModalController,
-    public walletUIService: UiService,
     private globalNetworksService: GlobalNetworksService,
-    private globalNavService: GlobalNavService,
+    private globalNav: GlobalNavService,
+    private globalNotifications: GlobalNotificationsService,
+    private globalPrefs: GlobalPreferencesService,
     private widgetsService: WidgetsService,
     private launcherNotificationsService: NotificationManagerService,
-    private globalPrefs: GlobalPreferencesService
+    private walletService: WalletService,
+    private walletNetworkService: WalletNetworkService,
+    private currencyService: CurrencyService,
+    private uiService: UiService
   ) {
     this.widgetsService.registerContainer('left');
     this.widgetsService.registerContainer('main');
     this.widgetsService.registerContainer('right');
-    this.activeScreenIndex = 1;
   }
 
   ngOnInit() {
     this.launcherNotificationsService.init();
 
     void this.storage
-      .getSetting(
-        DIDSessionsStore.signedInDIDString,
-        NetworkTemplateStore.networkTemplate,
-        'launcher',
-        'swipanimationshown',
-        false
-      )
+      .getSetting(DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'launcher', 'swipanimationshown', false)
       .then(swipeAnimationShown => {
         this.showSwipeIndicator = !swipeAnimationShown;
       });
+
+    // The wallet summary refreshes on the same signals the active-wallet widget uses.
+    this.walletServiceSub = this.walletService.walletServiceStatus.subscribe(initializationComplete => {
+      if (initializationComplete) this.refreshWalletData();
+    });
+    this.networkWalletSub = this.walletService.activeNetworkWallet.subscribe(() => {
+      if (this.walletService.walletServiceStatus.value) this.refreshWalletData();
+    });
+    this.activeNetworkSub = this.walletNetworkService.activeNetwork.subscribe(() => {
+      if (this.walletService.walletServiceStatus.value) this.refreshWalletData();
+    });
+
+    this.notificationsSub = this.globalNotifications.notifications.subscribe(notifications => {
+      this.hasNewNotifications = notifications && notifications.length > 0;
+    });
+
+    this.networkTemplateSub = this.globalNetworksService.activeNetworkTemplate.subscribe(template => {
+      switch (template) {
+        case TESTNET_TEMPLATE: this.networkBanner = 'TEST NET Active'; break;
+        case LRW_TEMPLATE: this.networkBanner = 'CR Private Net Active'; break;
+        case MAINNET_TEMPLATE: default: this.networkBanner = null;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    for (let sub of [this.walletServiceSub, this.networkWalletSub, this.activeNetworkSub, this.notificationsSub, this.networkTemplateSub]) {
+      sub?.unsubscribe();
+    }
+    this.walletServiceSub = this.networkWalletSub = this.activeNetworkSub = this.notificationsSub = this.networkTemplateSub = null;
   }
 
   ionViewWillEnter() {
     Logger.log('launcher', 'Launcher home screen will enter');
-    /*  setTimeout(()=>{
-       const notification = {
-         key: 'storagePlanExpiring',
-         title: 'Storage Plan Expiring',
-         message: 'You have a storage plan expiring soon. Please renew your plan before the expiration time.',
-         app: App.WALLET
-       };
-       this.globalNotifications.sendNotification(notification);
-     }, 2000); */
 
-    this.titleBar.setNavigationMode(TitleBarNavigationMode.CUSTOM);
-    this.titleBar.setIcon(TitleBarIconSlot.OUTER_LEFT, {
-      key: 'home',
-      iconPath: BuiltInIcon.HOME
-    });
-    this.titleBar.setIcon(TitleBarIconSlot.INNER_LEFT, {
-      key: 'notifications',
-      iconPath: BuiltInIcon.NOTIFICATIONS
-    });
-    this.titleBar.addOnItemClickedListener(
-      (this.titleBarIconClickedListener = icon => {
-        switch (icon.key) {
-          case 'home':
-            this.widgetsService.exitEditionMode(); // Exit edition mode if needed
-            if (this.widgetsSlides) {
-              void this.widgetsSlides.slideTo(1); // re-center on the middle screen
-            }
-            return;
-          case 'notifications':
-            void this.showNotifications();
-            break;
-          case 'scan':
-            void this.globalNavService.navigateTo(App.SCANNER, '/scanner/scan');
-            break;
-          case 'settings':
-            void this.globalNavService.navigateTo(App.SETTINGS, '/settings/menu');
-            break;
-        }
-      })
-    );
-
-    /* if (this.theme.darkMode) {
-      this.titleBar.setForegroundMode(TitleBarForegroundMode.LIGHT);
-    } else {
-      this.titleBar.setForegroundMode(TitleBarForegroundMode.DARK);
-    } */
-
-    this.themeSubscription = this.theme.activeTheme.subscribe(theme => {
-      this.titleBar.setIcon(TitleBarIconSlot.INNER_RIGHT, {
-        key: 'scan',
-        iconPath: BuiltInIcon.SCAN
-      });
-      this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, {
-        key: 'settings',
-        iconPath: BuiltInIcon.SETTINGS
-      });
-    });
-
-    if (this.didService.signedIdentity) {
-      // Should not happen, just in case - for ionic hot reload
-      this.globalNetworksService.activeNetworkTemplate.subscribe(template => {
-        switch (template) {
-          case MAINNET_TEMPLATE:
-            this.titleBar.setTitle(null);
-            break;
-          case TESTNET_TEMPLATE:
-            this.titleBar.setTitle('TEST NET Active');
-            break;
-          case LRW_TEMPLATE:
-            this.titleBar.setTitle('CR Private Net Active');
-            break;
-        }
-      });
-    }
+    this.refreshIdentity();
+    this.refreshWalletData();
+    void this.loadHideBalances();
 
     this.widgetsEditionModeSub = WidgetsServiceEvents.editionMode.subscribe(editionMode => {
       this.editingWidgets = editionMode;
 
       if (this.widgetsSlides) {
-        // Lock the slider during edition to avoid horizontal scrolling
+        // Lock the slider during edition to avoid horizontal scrolling.
         void this.widgetsSlides.lockSwipes(editionMode);
 
-        // When the mode changes to edition, the active slide content will get higher
-        // as new content is shown. We need to wait for this content (invisible widgets) to be shown then
-        // force a recomputation of the slider height, otherwiser the user can't scroll down.
+        // Entering edition reveals extra content; the slider height must be
+        // recomputed once that content is rendered or the page cannot scroll.
         setTimeout(() => {
           void this.widgetsSlides.updateAutoHeight(0);
         }, 500);
       }
     });
 
-    //Logger.log("launcher", "Launcher home screen will enter completed")
-
-    //void this.widgetsService.onLauncherHomeViewWillEnter();
-
-    // Initialize slides visibility
     this.initializeSlidesVisibility();
   }
 
@@ -209,123 +184,171 @@ export class HomePage implements OnInit {
 
     GlobalStartupService.instance.setStartupScreenReady();
 
-    //console.log(this.widgetContainers)
     this.widgetContainers = this.widgetContainersList.toArray();
 
-    // Fallback: ensure slides are shown.
-    if (!this.slidesShown) {
-      console.warn('Slides not shown in ionViewDidEnter, forcing visibility');
-      this.initializeSlidesVisibility();
-    }
+    if (!this.slidesShown) this.initializeSlidesVisibility();
   }
 
   ionViewWillLeave() {
-    if (this.themeSubscription) {
-      this.themeSubscription.unsubscribe();
-      this.themeSubscription = null;
-    }
-
-    if (this.widgetsEditionModeSub) {
-      this.widgetsEditionModeSub.unsubscribe();
-      this.widgetsEditionModeSub = null;
-    }
-
-    this.titleBar.removeOnItemClickedListener(this.titleBarIconClickedListener);
-    if (this.popover) {
-      void this.popover.dismiss();
-      this.popover = null;
-    }
-
-    //void this.widgetsService.onLauncherHomeViewWillLeave();
+    this.widgetsEditionModeSub?.unsubscribe();
+    this.widgetsEditionModeSub = null;
   }
 
-  async showNotifications() {
+  /* ------------------------------ Header ------------------------------ */
+
+  private refreshIdentity() {
+    let identity = this.didService.signedIdentity;
+    this.identityName = identity ? identity.name : '';
+    this.avatarDataUrl = identity?.avatar
+      ? `data:${identity.avatar.contentType};base64,${identity.avatar.base64ImageData}`
+      : null;
+  }
+
+  public async onNotifications() {
+    if (this.modal) return;
     this.modal = await this.launcherNotificationsService.showNotifications(() => {
       this.modal = null;
     });
   }
+
+  public onScan() {
+    void this.globalNav.navigateTo(App.SCANNER, '/scanner/scan');
+  }
+
+  public onSettings() {
+    void this.globalNav.navigateTo(App.SETTINGS, '/settings/menu');
+  }
+
+  /* -------------------------- Wallet summary -------------------------- */
+
+  private refreshWalletData() {
+    this.networkWallet = this.walletService.activeNetworkWallet.value;
+    if (!this.networkWallet) {
+      this.balanceVm = null;
+      this.tokenRows = null;
+      return;
+    }
+
+    let fiatBalance = this.networkWallet.getDisplayBalanceInActiveCurrency();
+    this.balanceVm = {
+      value: WalletUtil.getFriendlyBalance(this.networkWallet.getDisplayBalance(), this.networkWallet.getDecimalPlaces()),
+      unit: this.networkWallet.getDisplayTokenName(),
+      fiat: fiatBalance ? `${WalletUtil.getFriendlyBalance(fiatBalance)} ${this.currencyService.selectedCurrency.symbol}` : null
+    };
+
+    this.tokenRows = this.networkWallet
+      .getSubWallets(WalletSortType.BALANCE)
+      .filter(sw => sw.shouldShowOnHomeScreen())
+      .slice(0, 3)
+      .map(sw => this.buildTokenRow(sw));
+  }
+
+  private buildTokenRow(subWallet: AnySubWallet): HomeTokenRow {
+    let fiatAmount = subWallet.getAmountInExternalCurrency(subWallet.getDisplayBalance());
+    return {
+      icon: subWallet.getMainIcon(),
+      badge: subWallet.getSecondaryIcon(),
+      title: this.uiService.getSubwalletTitle(subWallet),
+      balance: this.uiService.getFixedBalance(subWallet.getDisplayBalance()),
+      fiat: fiatAmount ? `${fiatAmount.toString()} ${this.currencyService.selectedCurrency.symbol}` : null,
+      subWallet
+    };
+  }
+
+  private async loadHideBalances() {
+    try {
+      this.hideBalances = await this.globalPrefs.getPreference(
+        DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'ui.hidebalances');
+    } catch (e) {
+      this.hideBalances = false;
+    }
+  }
+
+  public toggleHideBalances() {
+    this.hideBalances = !this.hideBalances;
+    void this.globalPrefs.setPreference(
+      DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'ui.hidebalances', this.hideBalances);
+  }
+
+  public hasWallet(): boolean {
+    return !!this.networkWallet;
+  }
+
+  /** Send/Receive/Transfer/Stake land on the main token's coin home (v1 depth, D6). */
+  public onMainAction() {
+    let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
+    if (!main) return;
+    void this.globalNav.navigateTo(App.WALLET, '/wallet/coin', {
+      state: { masterWalletId: main.networkWallet.id, subWalletId: main.id }
+    });
+  }
+
+  public onTokenRow(row: HomeTokenRow) {
+    void this.globalNav.navigateTo(App.WALLET, '/wallet/coin', {
+      state: { masterWalletId: row.subWallet.networkWallet.id, subWalletId: row.subWallet.id }
+    });
+  }
+
+  public trackToken(_index: number, row: HomeTokenRow): string {
+    return row.subWallet.id;
+  }
+
+  /* ----------------------------- Pillars ------------------------------ */
+
+  public onValue() {
+    void this.globalNav.navigateTo(App.WALLET, '/wallet/wallet-home');
+  }
+
+  public onIdentity() {
+    void this.globalNav.navigateTo(App.IDENTITY, '/identity/myprofile/home');
+  }
+
+  public onApps() {
+    void this.globalNav.navigateTo(App.DAPP_BROWSER, '/dappbrowser/home');
+  }
+
+  /* --------------------------- Widget canvas -------------------------- */
 
   public toggleEditWidgets() {
     this.widgetsService.toggleEditionMode();
   }
 
   public addWidget() {
-    // Enter edition mode
     this.widgetsService.enterEditionMode();
-
-    // Pick a widget
     this.widgetContainers[this.activeScreenIndex].addWidget();
   }
 
-  /**
-   * Initialize slides visibility
-   */
   private initializeSlidesVisibility() {
-    if (this.slidesShown) {
-      console.log('Slides already shown, returning');
-      return; // Already initialized
-    }
+    if (this.slidesShown) return;
 
-    // With initialSlide: 1, slides should start at the correct position
-    // Just show them after a brief delay to ensure they're properly initialized
+    // With initialSlide 1 the slider starts on the main panel; reveal it after
+    // a short delay so it is positioned before becoming visible.
     setTimeout(() => {
       this.slidesShown = true;
-      console.log('Slides marked as shown after timeout');
     }, 50);
   }
 
   public onSlideTouchEnd() {
-    console.log('onSlideTouchEnd: user has interacted with slides');
     this.hasUserInteractedWithSlides = true;
-    if (this.showSwipeIndicator) {
-      console.log('Hiding swipe indicator due to user touch end');
-      this.showSwipeIndicator = false;
-      void this.storage.setSetting(
-        DIDSessionsStore.signedInDIDString,
-        NetworkTemplateStore.networkTemplate,
-        'launcher',
-        'swipanimationshown',
-        true
-      );
-    }
+    this.dismissSwipeIndicator();
   }
 
-  public async onSlideChange(evt) {
-    console.log('onSlideChange called, showSwipeIndicator:', this.showSwipeIndicator);
-    console.log('widgetsSlides exists:', !!this.widgetsSlides);
+  public async onSlideChange() {
+    // Ignore initial, non-user slide changes emitted during setup.
+    if (!this.hasUserInteractedWithSlides) return;
 
-      // Ignore initial non-user slide changes (from init)
-      if (!this.hasUserInteractedWithSlides) {
-        console.log('Ignoring slide change because user has not interacted yet');
-        return;
-      }
+    if (this.widgetsSlides) {
+      this.activeScreenIndex = await this.widgetsSlides.getActiveIndex();
+      void this.widgetsSlides.update();
+    }
 
-      // Try to get widgetsSlides if available
-      if (this.widgetsSlides) {
-        this.activeScreenIndex = await this.widgetsSlides.getActiveIndex();
-        console.log('Active screen index:', this.activeScreenIndex);
-        //void this.ionContent.scrollToTop(500);
+    this.dismissSwipeIndicator();
+  }
 
-        void this.widgetsSlides.update();
-      } else {
-        console.log('widgetsSlides not available yet, but still handling swipe indicator');
-      }
-
-      // User has swiped at least once so he knows. We can hide the swipe indicator and remember this.
-      // Hide indicator on any slide change (after user interaction)
-      if (this.showSwipeIndicator) {
-        console.log('Hiding swipe indicator due to slide change (after user interaction)');
-        this.showSwipeIndicator = false;
-
-        void this.storage.setSetting(
-          DIDSessionsStore.signedInDIDString,
-          NetworkTemplateStore.networkTemplate,
-          'launcher',
-          'swipanimationshown',
-          true
-        );
-      } else {
-        console.log('showSwipeIndicator is false, not hiding');
-      }
+  private dismissSwipeIndicator() {
+    if (!this.showSwipeIndicator) return;
+    this.showSwipeIndicator = false;
+    void this.storage.setSetting(
+      DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'launcher', 'swipanimationshown', true);
   }
 }

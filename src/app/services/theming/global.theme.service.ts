@@ -15,6 +15,7 @@ import {
   ALPHA_SECONDARY_ON_DARK, ALPHA_SECONDARY_ON_LIGHT, ALPHA_TERTIARY,
   DANGER_ON_DARK, DANGER_ON_LIGHT,
   DEFAULT_THEME_KEY,
+  PILLAR_APPS, PILLAR_IDENTITY,
   SIGNED_OUT_THEME_KEY,
   SUCCESS_ON_DARK, SUCCESS_ON_LIGHT
 } from './tokens';
@@ -188,6 +189,8 @@ export class GlobalThemeService extends GlobalService {
       '--essentials-danger',
       variant.dangerColor || (theme.usesDarkMode ? DANGER_ON_DARK : DANGER_ON_LIGHT)
     );
+    document.body.style.setProperty('--essentials-pillar-identity', PILLAR_IDENTITY);
+    document.body.style.setProperty('--essentials-pillar-apps', PILLAR_APPS);
 
     // Set ionic background color and variants
     document.body.style.setProperty('--ion-text-color', mainTextColor);

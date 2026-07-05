@@ -1,26 +1,168 @@
-@import "src/app/launcher/root.scss";
-
 ion-content {
     &::-webkit-scrollbar {
         display: none;
     }
 }
 
-/************************************** ALL THEMES **************************************/
-.container {
-    padding-left: 0;
-    padding-right: 0;
-    padding-bottom: 50px; // Footer
-    min-height: calc(
-        100% - 50px
-    ); // Remove titlebar and footer sizes - to be able to swipe empty areas of widget containers
-    display: flex; // Needed for let the slides scroll well to the top when swiping
+.home {
+    padding: calc(env(safe-area-inset-top) + 12px) 16px 62px; // Bottom clears the fixed footer
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .account {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px 6px 6px;
+            border: none;
+            border-radius: 22px;
+            background: var(--essentials-box-color);
+            color: var(--ion-text-color);
+            font-family: inherit;
+            cursor: pointer;
+            max-width: 55%;
+
+            .avatar {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                object-fit: cover;
+                flex-shrink: 0;
+            }
+
+            .name {
+                font-size: 14px;
+                font-weight: 600;
+                line-height: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            .icon-btn {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 38px;
+                height: 38px;
+                padding: 0;
+                border: none;
+                border-radius: 50%;
+                background: transparent;
+                color: var(--ion-text-color);
+                cursor: pointer;
+
+                ion-icon {
+                    font-size: 22px;
+                }
+
+                .dot {
+                    position: absolute;
+                    top: 7px;
+                    right: 7px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--essentials-danger);
+                }
+            }
+        }
+    }
+
+    .network-banner {
+        margin-top: 8px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--essentials-accent);
+    }
+
+    .balance-block {
+        margin-top: 22px;
+    }
+
+    .tiles {
+        display: block;
+        margin-top: 20px;
+    }
+
+    .pillars {
+        margin-top: 20px;
+        background: var(--essentials-box-color);
+        border-radius: 14px;
+        padding: 4px 14px;
+
+        .pillar:not(:last-child) {
+            border-bottom: 1px solid var(--essentials-border-separator-color);
+        }
+
+        // Each pillar gets its identity color on the icon circle.
+        .pillar.value ::ng-deep .icon-circle {
+            background: var(--essentials-accent) !important;
+        }
+
+        .pillar.identity ::ng-deep .icon-circle {
+            background: var(--essentials-pillar-identity) !important;
+        }
+
+        .pillar.apps ::ng-deep .icon-circle {
+            background: var(--essentials-pillar-apps) !important;
+        }
+    }
+
+    .tokens {
+        margin-top: 20px;
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0 0 10px;
+
+            h2 {
+                font-size: 15px;
+                font-weight: 700;
+                color: var(--ion-text-color);
+                margin: 0;
+            }
+
+            .see-all {
+                padding: 4px 0;
+                border: none;
+                background: transparent;
+                color: var(--essentials-accent);
+                font-family: inherit;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+        }
+
+        .card-group {
+            background: var(--essentials-box-color);
+            border-radius: 14px;
+            padding: 4px 14px;
+
+            ui-token-row:not(:last-child) {
+                border-bottom: 1px solid var(--essentials-border-separator-color);
+            }
+        }
+    }
 
     ion-slides {
-        //min-height: 100%;
         height: auto;
-        width: 100%;
-        min-width: 100%;
+        width: calc(100% + 32px);
+        margin: 20px -16px 0;
 
         .swiper-wrapper {
             height: auto !important;
@@ -31,7 +173,6 @@ ion-content {
         }
     }
 
-
     ion-slide {
         display: flex;
         flex-direction: column;
@@ -40,10 +181,6 @@ ion-content {
 
     widget-container {
         width: 100%;
-        // As ion-slides auto resize the height to match slides content, we want as least 100%
-        // screen height to be able to swipe from anywhere on the screen.
-        // hack: only 90vh to not make slide content scroll under the title bar...
-        //min-height: 90vh;
     }
 }
 
@@ -57,7 +194,6 @@ ion-content {
     display: flex;
     place-content: space-between;
     align-items: center;
-    //background: #fff;
     background: var(--ion-background-color);
 
     .edit,
@@ -73,162 +209,11 @@ ion-content {
             width: 10px;
             height: 10px;
             margin: 5px;
-            //background: #bbb;
             background: var(--ion-text-color);
             opacity: 0.5;
 
             &.active {
                 opacity: 1;
-            }
-        }
-    }
-}
-
-/************************************** LIGHT THEME **************************************/
-.light-container {
-    //background: #ffffff;
-
-    .id-row {
-        .mid-col {
-            h1,
-            h2 {
-                color: #000000;
-            }
-        }
-    }
-
-    .category-row,
-    .wallet-connect-row,
-    .dapps-row {
-        background-color: #ffffff;
-        box-shadow: 0 3px 15px 0 #ededf0;
-
-        .title-col {
-            color: #000000;
-        }
-
-        .app-col {
-            .app-row {
-                .left-col {
-                    #wallet {
-                        background: #fbebff;
-                    }
-
-                    #identity {
-                        background: #cff7ff;
-                    }
-
-                    #contacts {
-                        background: #ffebf0;
-                    }
-
-                    #hive {
-                        background: #fffdde;
-                    }
-
-                    #scanner {
-                        background: #fbebff;
-                    }
-
-                    #settings {
-                        background: #fff1eb;
-                    }
-
-                    #dpos {
-                        background: #fae9ff;
-                    }
-
-                    #crcouncil {
-                        background: #d0ffff;
-                    }
-
-                    #crproposal {
-                        background: #ddf2ff;
-                    }
-
-                    #crsuggestion {
-                        background: #f6ffde;
-                    }
-
-                    #browser {
-                        background: #d8f6ff;
-                    }
-                }
-
-                .widget-col {
-                    .wallet-widget {
-                        opacity: 0.8;
-                    }
-
-                    .hive-widget {
-                        span {
-                            color: #000000;
-                            opacity: 0.32;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/************************************** DARK THEME **************************************/
-.dark-container {
-    //background: #000;
-
-    .id-row {
-        .mid-col {
-            h1,
-            h2 {
-                color: #ffffff;
-            }
-        }
-    }
-
-    .category-row,
-    .wallet-connect-row,
-    .dapps-row {
-        background: #212021;
-        box-shadow: none;
-
-        .title-col {
-            color: #9d9d9d;
-        }
-
-        .app-col {
-            .add-border {
-                border-bottom: 1px solid #464646;
-            }
-
-            .app-row {
-                .left-col {
-                    .icon-container {
-                        box-shadow: 0px 0px 1px #000000e2;
-                        background: #363636;
-                    }
-                }
-
-                /* .mid-col {
-                    ion-label {
-                        h1 {
-                            color: #ffffff;
-                        }
-
-                        p {
-                            color: #acacac;
-                            opacity: 1;
-                        }
-                    }
-                }
-
-                .widget-col {
-                    .hive-widget {
-                        span {
-                            color: #7c7c7c;
-                            opacity: 1;
-                        }
-                    }
-                } */
             }
         }
     }

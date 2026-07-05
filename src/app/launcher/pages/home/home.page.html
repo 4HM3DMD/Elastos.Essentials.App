@@ -1,10 +1,79 @@
-<ion-content [class.lightmode]="!theme.darkMode" [class.dark-container]="theme.darkMode">
-  <app-titlebar></app-titlebar>
+<ion-content>
+  <div class="home">
+    <!-- In-page header: this screen hides the titlebar and handles the top inset itself -->
+    <div class="header">
+      <button type="button" class="account" (click)="onIdentity()" aria-label="My identity">
+        <img *ngIf="avatarDataUrl" class="avatar" [src]="avatarDataUrl" alt="" />
+        <img *ngIf="!avatarDataUrl" class="avatar" src="assets/launcher/default/default-avatar.svg" alt="" />
+        <span class="name">{{ identityName }}</span>
+      </button>
+      <div class="actions">
+        <button type="button" class="icon-btn" aria-label="Notifications" (click)="onNotifications()">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span *ngIf="hasNewNotifications" class="dot"></span>
+        </button>
+        <button type="button" class="icon-btn" aria-label="Scan" (click)="onScan()">
+          <ion-icon name="scan-outline"></ion-icon>
+        </button>
+        <button type="button" class="icon-btn" aria-label="Settings" (click)="onSettings()">
+          <ion-icon name="settings-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
 
-  <ion-grid class="container" [class.light-container]="!theme.darkMode" [class.dark-container]="theme.darkMode">
-    <ion-slides #widgetsslides [options]="widgetsSlidesOpts"
-      (ionSlideDidChange)="onSlideChange($event)" (ionSlideTouchEnd)="onSlideTouchEnd()"
-      class="widgets-containers-slides" [class.hidden]="!slidesShown">
+    <div *ngIf="networkBanner" class="network-banner">{{ networkBanner }}</div>
+
+    <!-- Active wallet balance -->
+    <div *ngIf="balanceVm" class="balance-block">
+      <ui-amount-display [size]="1" [value]="balanceVm.value" [unit]="balanceVm.unit" [fiat]="balanceVm.fiat"
+        [hidden]="hideBalances" [showToggle]="true" (toggleHidden)="toggleHideBalances()"></ui-amount-display>
+    </div>
+
+    <!-- Quick actions -->
+    <ui-action-grid *ngIf="hasWallet()" [columns]="4" class="tiles">
+      <ui-action-tile label="Send" (pressed)="onMainAction()">
+        <ion-icon name="arrow-up-outline"></ion-icon>
+      </ui-action-tile>
+      <ui-action-tile label="Receive" (pressed)="onMainAction()">
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </ui-action-tile>
+      <ui-action-tile label="Transfer" (pressed)="onMainAction()">
+        <ion-icon name="swap-horizontal-outline"></ion-icon>
+      </ui-action-tile>
+      <ui-action-tile label="Stake" (pressed)="onMainAction()">
+        <ion-icon name="layers-outline"></ion-icon>
+      </ui-action-tile>
+    </ui-action-grid>
+
+    <!-- Pillars -->
+    <div class="pillars">
+      <ui-token-row class="pillar value" icon="/assets/launcher/apps/app-icons/wallet.svg"
+        [title]="'launcher.home-pillar-value' | translate" [sub]="'launcher.home-pillar-value-sub' | translate"
+        [chevron]="true" (pressed)="onValue()"></ui-token-row>
+      <ui-token-row class="pillar identity" icon="/assets/launcher/apps/app-icons/identity.svg"
+        [title]="'launcher.app-identity' | translate" [sub]="'launcher.app-identity-description' | translate"
+        [chevron]="true" (pressed)="onIdentity()"></ui-token-row>
+      <ui-token-row class="pillar apps" icon="/assets/launcher/apps/app-icons/browser.svg"
+        [title]="'launcher.home-pillar-apps' | translate" [sub]="'launcher.home-pillar-apps-sub' | translate"
+        [chevron]="true" (pressed)="onApps()"></ui-token-row>
+    </div>
+
+    <!-- Tokens preview (top 3 by fiat value) -->
+    <div *ngIf="tokenRows && tokenRows.length > 0" class="tokens">
+      <div class="section-head">
+        <h2>{{ 'launcher.home-tokens' | translate }}</h2>
+        <button type="button" class="see-all" (click)="onValue()">{{ 'launcher.home-see-all' | translate }}</button>
+      </div>
+      <div class="card-group">
+        <ui-token-row *ngFor="let row of tokenRows; trackBy: trackToken" [icon]="row.icon" [badge]="row.badge"
+          [title]="row.title" [value]="hideBalances ? mask : row.balance"
+          [subValue]="hideBalances ? mask : row.fiat" (pressed)="onTokenRow(row)"></ui-token-row>
+      </div>
+    </div>
+
+    <!-- Widget canvas (below the fold; main panel centered, side panels by swipe) -->
+    <ion-slides #widgetsslides [options]="widgetsSlidesOpts" (ionSlideDidChange)="onSlideChange()"
+      (ionSlideTouchEnd)="onSlideTouchEnd()" class="widgets-containers-slides" [class.hidden]="!slidesShown">
       <ion-slide>
         <widget-container name="left"></widget-container>
       </ion-slide>
@@ -17,8 +86,7 @@
         <widget-container name="right"></widget-container>
       </ion-slide>
     </ion-slides>
-
-  </ion-grid>
+  </div>
 
   <div class="home-footer">
     <div class="edit" (click)="toggleEditWidgets()">
@@ -33,5 +101,4 @@
       <img [src]="theme.darkMode ? '/assets/launcher/icons/dark_mode/add.svg' : '/assets/launcher/icons/add.svg'" />
     </div>
   </div>
-
 </ion-content>

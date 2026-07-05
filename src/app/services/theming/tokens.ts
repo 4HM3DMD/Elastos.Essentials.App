@@ -20,6 +20,10 @@ export const SUCCESS_ON_LIGHT = '#178A4C';
 export const DANGER_ON_DARK = '#FF6B6B';
 export const DANGER_ON_LIGHT = '#DF3F44';
 
+// Pillar identity colors for the launcher home rows (doc 144 WO-9 / mock M0).
+export const PILLAR_IDENTITY = '#6C5CE7';
+export const PILLAR_APPS = '#3D7BFF';
+
 // Hex alpha suffixes appended to the main text color for dimmed text tiers.
 export const ALPHA_SECONDARY_ON_DARK = '8C'; // 55%
 export const ALPHA_SECONDARY_ON_LIGHT = '99'; // 60%
