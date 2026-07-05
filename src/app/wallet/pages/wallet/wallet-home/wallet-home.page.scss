@@ -1,385 +1,158 @@
-@import "src/app/wallet/root.scss";
-
-.network-container {
-    border-radius: 11px;
-    padding: 5px;
-    margin: 10px 10px;
-    background-color: var(--essentials-box-color);
-
-    .displayed-network {
-        ion-col {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            img {
-                height: 24px;
-                width: 24px;
-            }
-
-            ion-label {
-                margin-left: 12px;
-                font-size: 14px;
-                font-weight: 600;
-            }
-
-            .arrow-icon {
-                height: 16px;
-                width: 16px;
-            }
-        }
-    }
-
-    .network-options {
-        padding: 10px 20px 20px;
-
-        .header-row {
-            margin-bottom: 20px;
-
-            ion-col {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-
-                ion-label {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: flex-start;
-
-                    h1,
-                    p {
-                        margin: 0;
-                    }
-
-                    h1 {
-                        font-size: 22px;
-                        font-weight: 500;
-                        line-height: 0.8;
-                        text-align: left;
-                        margin: 0 0 10px;
-                    }
-
-                    p {
-                        height: 11px;
-                        font-size: 10px;
-                        font-weight: 500;
-                        letter-spacing: 1px;
-                        text-align: left;
-                        color: #000000;
-                        opacity: 0.7;
-                    }
-                }
-
-                .arrow-icon {
-                    transform: rotate(180deg);
-                }
-            }
-        }
-
-        .network-row {
-            border-radius: 17px;
-            padding: 5px 10px;
-            margin-bottom: 7.5px;
-            background-color: transparent;
-            border: 1px solid #ededf0;
-
-            ion-col {
-                display: flex;
-                align-items: center;
-            }
-
-            .left-col {
-                justify-content: flex-start;
-
-                img {
-                    width: 35px;
-                    height: 35px;
-                }
-
-                h1 {
-                    margin: 0 0 0 10px;
-                    font-size: 14px;
-                    font-weight: 600;
-                    letter-spacing: 0.7px;
-                    text-align: left;
-                }
-            }
-
-            .right-col {
-                justify-content: flex-end;
-
-                ion-icon {
-                    width: 15px;
-                    height: 12px;
-                    visibility: hidden;
-                }
-            }
-        }
-
-        .selected-network {
-            background-color: #ededf0;
-
-            .right-col {
-                ion-icon {
-                    visibility: visible;
-                }
-            }
-        }
-    }
+.wallet-home {
+    padding: 8px 16px 24px;
 }
 
-.networkOptions-container {
-    position: relative;
-}
-
-ion-slides {
-    min-height: 100%;
-}
-
-ion-slide {
-    padding: 15px 7.5px;
-}
-
-.single-slide {
-    padding: 15px 10px;
-}
-
-ion-slide,
-.single-slide {
-    min-height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 50px;
-
-    .main-title-row {
-        margin-bottom: 10px;
-        margin-left: 5px;
-
-        h1,
-        p {
-            margin: 0;
-        }
-
-        h1 {
-            font-size: 24px;
-            font-weight: 500;
-            letter-spacing: -0.6px;
-            line-height: 0.8;
-            text-align: left;
-            margin-bottom: 10px;
-        }
-
-        p {
-            height: 13px;
-            font-size: 10px;
-            font-weight: 500;
-            letter-spacing: 1px;
-            text-align: left;
-            color: #000000;
-            opacity: 0.7;
-        }
-    }
-
-    .list-title-row {
-        margin-bottom: 10px;
-        margin-left: 5px;
-
-        ion-col {
-            display: flex;
-            align-items: center;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 500;
-            line-height: 0.8;
-            letter-spacing: -0.45px;
-            text-align: left;
-        }
-
-        .sort {
-            width: 15px;
-            height: 15px;
-            margin-left: 10px;
-        }
-    }
-
-    .staked-assets-row {
-        align-items: center;
-        margin: 0;
-
-        .service-provider {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            margin-top: 3px;
-
-            .cell:first-of-type {
-                display: flex;
-                margin-bottom: 3px;
-                font-weight: 500;
-            }
-
-            .cell {
-                .go {
-                    height: 10px;
-                }
-            }
-
-            img {
-                padding-left: 3px;
-                padding-right: 6px;
-                height: 18px;
-            }
-        }
-    }
-
-    .reload-staked-assets {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-
-        img,
-        ion-spinner {
-            height: 36px;
-            width: 36px;
-            padding-bottom: 5px;
-        }
-
-        ion-label {
-            margin-left: 12px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-    }
-
-    .card-label-row {
-        padding: 20px 10px 25px;
-
-        .change-wallet {
-            ion-col {
-                padding: 0;
-            }
-
-            .change-wallet-col {
-                text-align: right;
-
-                img {
-                    vertical-align: middle;
-                    width: 22px;
-                    height: 22px;
-                }
-                .change {
-                    vertical-align: middle;
-                    margin-left: 5px;
-                }
-            }
-        }
-
-        .single-address {
-            position: absolute;
-            right: 10px;
-            bottom: 10px;
-            font-size: 12px;
-            font-weight: 400;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-
-            .bottom {
-                display: flex;
-                justify-content: center;
-                font-size: 10px;
-
-                img {
-                    margin-left: 5px;
-                }
-            }
-        }
-
-        .addresses {
-            position: absolute;
-            right: 10px;
-            bottom: 10px;
-            font-size: 12px;
-            font-weight: 400;
-            display: flex;
-            justify-content: center;
-
-            img {
-                margin-left: 3px;
-            }
-        }
-    }
-
-    .subwallet-row {
-        .providers {
-            .view-transactions,
-            .earn-providers,
-            .swap-providers,
-            .bridge-providers {
-                display: flex;
-                align-items: center;
-                padding: 2px;
-                border-radius: 10px;
-                font-weight: 500;
-                margin-top: 10px;
-                background: var(--essentials-box-color);
-
-                .logos {
-                    display: flex;
-                    flex-direction: row-reverse;
-
-                    .logo {
-                        height: 20px;
-                        margin-right: 5px;
-                    }
-                }
-            }
-
-            .view-transactions {
-                justify-content: left;
-                padding: 10px;
-                margin-top: 0;
-            }
-        }
-    }
-
-    .collectibles-title {
-        margin-top: 9.5px;
-    }
-
-    .setting-row {
-        h1 {
-            font-size: 11px;
-        }
-    }
-}
-
-.sticky-btn {
-    position: sticky;
-    top: 10px;
-    left: 7.5%;
-    width: 85%;
-    z-index: 10;
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--ion-text-color);
+    cursor: pointer;
 
     ion-icon {
-        color: white;
+        font-size: 20px;
     }
 }
 
-.dark-slides {
-    ion-slide {
-        .main-title-row {
-            p {
-                color: #9d9d9d;
-                opacity: 1;
-            }
+.wallet-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    .wallet-name {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--ion-text-color);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .wallet-actions {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+}
+
+.network-pill {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: var(--essentials-box-color);
+    color: var(--ion-text-color);
+    font-size: 13px;
+    font-weight: 500;
+
+    img {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+    }
+
+    ion-icon {
+        font-size: 14px;
+        color: var(--essentials-text-secondary);
+    }
+}
+
+.balance-block {
+    margin-top: 20px;
+
+    .label {
+        font-size: 13px;
+        color: var(--essentials-text-secondary);
+        margin-bottom: 6px;
+    }
+}
+
+.staked-line {
+    margin-top: 8px;
+    font-size: 13px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+
+    .dim {
+        color: var(--essentials-text-secondary);
+    }
+}
+
+.address-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: var(--essentials-box-color);
+    color: var(--essentials-text-secondary);
+    font-size: 13px;
+
+    ion-icon {
+        font-size: 15px;
+    }
+}
+
+.actions {
+    margin-top: 22px;
+
+    ion-icon {
+        font-size: 22px;
+    }
+}
+
+.notice {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--essentials-box-color);
+    color: var(--ion-text-color);
+    font-size: 14px;
+
+    ion-icon:first-child {
+        font-size: 20px;
+        color: var(--essentials-accent);
+    }
+
+    span {
+        flex: 1;
+    }
+
+    ion-icon:last-child {
+        font-size: 16px;
+        color: var(--essentials-text-secondary);
+    }
+}
+
+.lists {
+    margin-top: 26px;
+
+    .list-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 18px 0 6px;
+
+        span {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ion-text-color);
         }
     }
 }

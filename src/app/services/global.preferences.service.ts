@@ -40,6 +40,7 @@ export interface AllPreferences {
   /** Whether to use lightweight UI mode (all elastos or advanced features hidden) */
   'ui.lightweight': boolean;
   'ui.tabbar': boolean;
+  'ui.hidebalances': boolean;
   /** Startup screen setting */
   'ui.startupscreen': string;
   'network.template': string;
@@ -120,6 +121,7 @@ export class GlobalPreferencesService implements GlobalService {
       'ui.variant': 'light',
       'ui.lightweight': false, // Lightweight mode retired (WO-5); kept for the one-time migration in WidgetsService
       'ui.tabbar': true, // Bottom tab bar (WO-7); kill switch via developer tools
+      'ui.hidebalances': false, // Mask wallet balances (WO-8)
       'ui.startupscreen': 'home',
       'network.template': 'MainNet',
       'chain.network.config': '',

@@ -20,8 +20,8 @@
 * SOFTWARE.
 */
 
-import { Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { IonSlides, PopoverController } from '@ionic/angular';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { PopoverController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import BigNumber from 'bignumber.js';
 import { Subscription } from 'rxjs';
@@ -60,20 +60,59 @@ import { WalletService } from '../../../services/wallet.service';
 import { WalletEditionService } from '../../../services/walletedition.service';
 import { LedgerConnectType } from '../ledger/ledger-connect/ledger-connect.page';
 import { Logger } from 'src/app/logger';
+import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
+import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
+import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
+import { SubValueTone } from 'src/app/components/ui/ui-token-row/ui-token-row.component';
+
+/** Precomputed presentation model for one token row (keeps getters out of the template). */
+interface TokenRowViewModel {
+    icon: string;
+    badge: string;
+    title: string;
+    priceLine: string;
+    balance: string;
+    fiat: string;
+    tone: SubValueTone;
+    subWallet: AnySubWallet;
+}
+
+/** Precomputed presentation model for one collectible (NFT) row. */
+interface NftRowViewModel {
+    icon: string;
+    badge: string;
+    title: string;
+    sub: string;
+    count: string;
+    nft: NFT;
+}
+
+/** Precomputed presentation model for the total-balance display. */
+interface BalanceViewModel {
+    primary: string;
+    unit: string;
+    secondary: string;
+}
 
 @Component({
     selector: 'app-wallet-home',
     templateUrl: './wallet-home.page.html',
     styleUrls: ['./wallet-home.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WalletHomePage implements OnInit, OnDestroy {
     @ViewChild(TitleBarComponent, { static: true }) titleBar: TitleBarComponent;
-    @ViewChild('slider', { static: false }) slider: IonSlides;
 
     public masterWallet: MasterWallet = null;
     public networkWallet: AnyNetworkWallet = null;
     private displayableSubWallets: AnySubWallet[] = null;
     public stakingAssets: StakingData[] = null;
+
+    // Precomputed view-models consumed by the template (OnPush-friendly).
+    public tokenRows: TokenRowViewModel[] = null;
+    public nftRows: NftRowViewModel[] = [];
+    public balanceVm: BalanceViewModel = null;
+    public hideBalances = false;
 
     public walletAddresses: WalletAddressInfo[] = null;
 
@@ -89,6 +128,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
     private activeNetworkSubscription: Subscription = null;
     private subWalletsListChangeSubscription: Subscription = null;
     private stakedAssetsUpdateSubscription: Subscription = null;
+    private currencyChangeSubscription: Subscription = null;
 
     // Helpers
     public WalletUtil = WalletUtil;
@@ -125,13 +165,24 @@ export class WalletHomePage implements OnInit, OnDestroy {
         private storage: LocalStorage,
         private defiService: DefiService,
         private events: GlobalEvents,
-        private zone: NgZone
+        private zone: NgZone,
+        private prefs: GlobalPreferencesService,
+        private cdr: ChangeDetectorRef
     ) {
         GlobalFirebaseService.instance.logEvent("wallet_home_enter");
     }
 
     ngOnInit() {
         this.showRefresher();
+        void this.loadHideBalances();
+
+        // Re-render when the user toggles the native/fiat currency display.
+        this.currencyChangeSubscription = this.currencyService.currencyChangedSubject.subscribe(() => {
+            this.rebuildBalanceVm();
+            this.rebuildTokenRows();
+            this.cdr.markForCheck();
+        });
+
         this.activeNetworkWalletSubscription = this.walletManager.activeNetworkWallet.subscribe((activeNetworkWallet) => {
             this.networkWallet = activeNetworkWallet;
 
@@ -155,6 +206,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
                 // Know when a subwallet is added or removed, to refresh our list
                 this.subWalletsListChangeSubscription = this.networkWallet.subWalletsListChange.subscribe(() => {
                     this.refreshSubWalletsList();
+                    this.cdr.markForCheck();
                 });
 
                 if (this.stakedAssetsUpdateSubscription) {
@@ -162,6 +214,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
                 }
                 this.stakedAssetsUpdateSubscription = this.networkWallet.stakedAssetsUpdate.subscribe((data) => {
                     this.refreshStakingAssetsList();
+                    this.cdr.markForCheck();
                 })
 
                 void this.updateCurrentWalletInfo()
@@ -170,12 +223,15 @@ export class WalletHomePage implements OnInit, OnDestroy {
                 this.checkLedgerWallet();
                 // Nothing to do, unsupported wallet for the active network
             }
+            this.rebuildBalanceVm();
+            this.cdr.markForCheck();
         });
 
         // When switching network, if the current wallet does not support this network, you can still get the current network name.
         this.activeNetworkSubscription = this.networkService.activeNetwork.subscribe(activeNetwork => {
             this.currentNetwork = activeNetwork;
             this.checkLedgerWallet();
+            this.cdr.markForCheck();
         });
 
         this.sendTransactionSubscription = this.events.subscribe("wallet:transactionpublished", () => {
@@ -209,6 +265,11 @@ export class WalletHomePage implements OnInit, OnDestroy {
         if (this.stakedAssetsUpdateSubscription) {
             this.stakedAssetsUpdateSubscription.unsubscribe();
             this.stakedAssetsUpdateSubscription = null;
+        }
+
+        if (this.currencyChangeSubscription) {
+            this.currencyChangeSubscription.unsubscribe();
+            this.currencyChangeSubscription = null;
         }
     }
 
@@ -255,6 +316,120 @@ export class WalletHomePage implements OnInit, OnDestroy {
     private refreshSubWalletsList() {
         let sortType = this.uiService.getWalletSortType();
         this.displayableSubWallets = this.networkWallet.getSubWallets(sortType).filter(sw => sw.shouldShowOnHomeScreen());
+        this.rebuildTokenRows();
+        this.rebuildNftRows();
+    }
+
+    /** Precomputes a token row view-model per subwallet (keeps getters out of the template). */
+    private rebuildTokenRows() {
+        if (!this.displayableSubWallets) {
+            this.tokenRows = null;
+            return;
+        }
+        this.tokenRows = this.displayableSubWallets.map(sw => this.buildTokenRow(sw));
+    }
+
+    private buildTokenRow(subWallet: AnySubWallet): TokenRowViewModel {
+        let fiatAmount = subWallet.getAmountInExternalCurrency(subWallet.getDisplayBalance());
+        let fiat = fiatAmount ? `${fiatAmount.toString()} ${this.currencyService.selectedCurrency.symbol}` : null;
+        let priceLine: string = subWallet.getDisplayCoinPrice();
+        if (subWallet.type === CoinType.ERC20 || subWallet.type === CoinType.TRC20) {
+            // getDisplayableERC20TokenInfo lives on the ERC20/TRC20 subclasses (guarded above).
+            let tokenInfo: string = (subWallet as any).getDisplayableERC20TokenInfo();
+            if (tokenInfo) priceLine = priceLine ? `${priceLine} · ${tokenInfo}` : tokenInfo;
+        }
+        return {
+            icon: subWallet.getMainIcon(),
+            badge: subWallet.getSecondaryIcon(),
+            title: this.uiService.getSubwalletTitle(subWallet),
+            priceLine,
+            balance: this.uiService.getFixedBalance(subWallet.getDisplayBalance()),
+            fiat,
+            tone: 'muted',
+            subWallet
+        };
+    }
+
+    /** Precomputes a collectible row view-model per NFT (with a null-guarded main EVM subwallet icon). */
+    private rebuildNftRows() {
+        let nfts: NFT[] = this.networkWallet ? this.networkWallet.getNFTs() : [];
+        let mainEvm = this.networkWallet ? this.networkWallet.getMainEvmSubWallet() : null;
+        this.nftRows = (nfts || []).map(nft => ({
+            icon: mainEvm ? mainEvm.getMainIcon() : null,
+            badge: mainEvm ? mainEvm.getSecondaryIcon() : null,
+            title: nft.name,
+            sub: `${this.currentNetwork ? this.currentNetwork.getEffectiveName() : ''} ${nft.type} NFT`,
+            count: nft.balance >= 0 ? `${nft.balance}` : '',
+            nft
+        }));
+    }
+
+    /** Precomputes the total-balance display (primary/secondary follow the currency toggle). */
+    private rebuildBalanceVm() {
+        if (!this.networkWallet) {
+            this.balanceVm = null;
+            return;
+        }
+        let nativeWhole = WalletUtil.getWholeBalance(this.networkWallet.getDisplayBalance());
+        let nativeDecimals = WalletUtil.getDecimalBalance(this.networkWallet.getDisplayBalance(), this.networkWallet.getDecimalPlaces());
+        let native = nativeDecimals ? `${nativeWhole}.${nativeDecimals}` : nativeWhole;
+
+        let fiatWhole = WalletUtil.getWholeBalance(this.networkWallet.getDisplayBalanceInActiveCurrency());
+        let fiatDecimals = WalletUtil.getDecimalBalance(this.networkWallet.getDisplayBalanceInActiveCurrency());
+        let fiat = fiatDecimals ? `${fiatWhole}.${fiatDecimals}` : fiatWhole;
+
+        let tokenName = this.networkWallet.getDisplayTokenName();
+        let symbol = this.currencyService.selectedCurrency.symbol;
+
+        if (this.currencyService.useCurrency) {
+            this.balanceVm = { primary: fiat, unit: symbol, secondary: `${native} ${tokenName}` };
+        } else {
+            this.balanceVm = { primary: native, unit: tokenName, secondary: `${fiat} ${symbol}` };
+        }
+    }
+
+    private async loadHideBalances() {
+        try {
+            this.hideBalances = await this.prefs.getPreference(
+                DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'ui.hidebalances');
+            this.cdr.markForCheck();
+        } catch (e) {
+            this.hideBalances = false;
+        }
+    }
+
+    public toggleHideBalances() {
+        this.hideBalances = !this.hideBalances;
+        void this.prefs.setPreference(
+            DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'ui.hidebalances', this.hideBalances);
+        this.cdr.markForCheck();
+    }
+
+    public async toggleCurrency() {
+        // toggleCurrencyDisplay() flips useCurrency but does not emit currencyChangedSubject,
+        // so under OnPush we rebuild the affected view-models and request a check ourselves.
+        await this.currencyService.toggleCurrencyDisplay();
+        this.rebuildBalanceVm();
+        this.rebuildTokenRows();
+        this.cdr.markForCheck();
+    }
+
+    /** The main token subwallet (Send/Receive/Transfer/Stake land on its coin-home in v1). */
+    public getMainSubWallet(): AnySubWallet {
+        return this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
+    }
+
+    public onMainAction() {
+        let main = this.getMainSubWallet();
+        if (main) this.goCoinHome(main.networkWallet.id, main.id);
+    }
+
+    public trackRow(_index: number, row: TokenRowViewModel): string {
+        return row.subWallet.id;
+    }
+
+    public trackNft(_index: number, row: NftRowViewModel): string {
+        return row.nft.contractAddress;
     }
 
     private refreshStakingAssetsList() {
@@ -302,10 +477,6 @@ export class WalletHomePage implements OnInit, OnDestroy {
         return this.walletManager.getNetworkWalletsList();
     }
 
-    public getDisplayableSubWallets(): AnySubWallet[] {
-        return this.displayableSubWallets;
-    }
-
     public hasStakingAssets() {
         if (!this.stakingAssets || this.stakingAssets.length === 0) {
             return false;
@@ -348,6 +519,11 @@ export class WalletHomePage implements OnInit, OnDestroy {
             await this.getStakedBalance();
             await this.networkWallet.update();
             // TODO - FORCE REFRESH ALL COINS BALANCES ? this.currencyService.fetch();
+            // Balances may have changed: recompute the presentation models under OnPush.
+            this.rebuildBalanceVm();
+            this.rebuildTokenRows();
+            this.rebuildNftRows();
+            this.cdr.markForCheck();
         }
     }
 
@@ -423,6 +599,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
     public async onRefreshStakingAssetClicked() {
         this.zone.run(() => {
             this.refreshingStakedAssets = true;
+            this.cdr.markForCheck();
         })
 
         await this.networkWallet.fetchStakingAssets();
@@ -430,6 +607,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
         setTimeout(() => {
             this.zone.run(() => {
                 this.refreshingStakedAssets = false;
+                this.cdr.markForCheck();
             })
         }, 1000);
     }
@@ -438,7 +616,9 @@ export class WalletHomePage implements OnInit, OnDestroy {
      * Open tin.network in a browser view
      */
     public async openStakedAssetsProvider() {
-        let walletAddress = await this.networkWallet.getMainEvmSubWallet().getAccountAddress()
+        let mainEvm = this.networkWallet.getMainEvmSubWallet();
+        if (!mainEvm) return;
+        let walletAddress = await mainEvm.getAccountAddress();
         this.defiService.openStakedAssetsProvider(walletAddress);
     }
 
@@ -455,6 +635,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
         await this.uiService.setWalletSortTtype(newSortType);
 
         this.refreshSubWalletsList();
+        this.cdr.markForCheck();
     }
 
     private checkLedgerWallet() {

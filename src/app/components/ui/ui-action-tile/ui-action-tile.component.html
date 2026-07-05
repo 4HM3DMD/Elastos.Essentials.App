@@ -4,6 +4,9 @@
     <img *ngIf="isRemote(icon)" [src]="icon" alt="" />
     <div *ngIf="!isRemote(icon)" class="inline-icon" [inlineSVG]="icon"></div>
   </div>
+  <div *ngIf="!icon" class="icon">
+    <ng-content></ng-content>
+  </div>
   <div class="label">{{ label }}</div>
   <ion-ripple-effect *ngIf="!disabled"></ion-ripple-effect>
 </button>

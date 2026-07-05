@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedComponentsModule } from 'src/app/components/sharedcomponents.module';
+import { UiComponentsModule } from 'src/app/components/ui/ui-components.module';
 import { GlobalDirectivesModule } from 'src/app/helpers/directives/module';
 import { EthTransactionComponentModule } from 'src/app/wallet/components/eth-transaction/module';
 import { NetworkChooserComponentModule } from 'src/app/wallet/components/network-chooser/module';
@@ -15,6 +16,7 @@ import { WalletHomePage } from './wallet-home.page';
         declarations: [WalletHomePage],
         imports: [
                 SharedComponentsModule,
+                UiComponentsModule,
                 CommonModule,
                 FormsModule,
                 IonicModule,
