@@ -1,14 +1,13 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid class="container" [class.dark-container]="theme.darkMode">
-    <ion-row>
-      <ion-label>{{ 'didsessions.your-name' | translate }}</ion-label>
-    </ion-row>
-    <ion-input [placeholder]="'didsessions.enter-name-here'|translate" #input [(ngModel)]="name" name="name"
-      ngDefaultControl></ion-input>
+  <div class="name-identity" [class.dark-container]="theme.darkMode">
+    <h1 class="heading">{{ 'didsessions.your-name' | translate }}</h1>
+
+    <ion-input class="name-input" [placeholder]="'didsessions.enter-name-here' | translate" #input
+      [(ngModel)]="name" name="name" ngDefaultControl></ion-input>
 
     <div class="footer">
-      <ebutton [disabled]="creatingDid" (clicked)="next()" [title]="'common.continue' | translate"> </ebutton>
+      <ebutton [disabled]="creatingDid" (clicked)="next()" [title]="'common.continue' | translate"></ebutton>
     </div>
-  </ion-grid>
+  </div>
 </ion-content>

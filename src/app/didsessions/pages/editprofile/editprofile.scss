@@ -1,27 +1,32 @@
 @import "src/app/didsessions/root.scss";
 
-.container {
-  padding: 20px;
+.name-identity {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 24px 20px calc(env(safe-area-inset-bottom) + 24px);
 
-  ion-row {
-    margin: 0 0 10px 2.5px;
-
-    ion-label {
-      font-size: 16px;
-      font-weight: 600;
-    }
+  .heading {
+    margin: 12px 0 22px;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ion-text-color);
   }
 
-  ion-input {
-    --padding-start: 12px;
-    --padding-top: 13px;
-    --padding-bottom: 13px;
-    height: 47.5px;
+  .name-input {
+    --padding-start: 16px;
+    --padding-top: 15px;
+    --padding-bottom: 15px;
     width: 100%;
     background: var(--essentials-box-color);
-    border-radius: 8px;
-    font-size: 13px;
+    border-radius: 14px;
+    font-size: 15px;
     text-align: left;
-    letter-spacing: -0.5px;
+  }
+
+  // Continue button sits at the bottom of the screen.
+  .footer {
+    margin-top: auto;
+    padding-top: 24px;
   }
 }
