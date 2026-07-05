@@ -21,6 +21,7 @@ import { AnySubWallet } from 'src/app/wallet/model/networks/base/subwallets/subw
 import { WalletUtil } from 'src/app/wallet/model/wallet.util';
 import { WalletSortType } from 'src/app/wallet/model/walletaccount';
 import { CurrencyService } from 'src/app/wallet/services/currency.service';
+import { PriceHistoryService } from 'src/app/wallet/services/pricehistory.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { UiService } from 'src/app/wallet/services/ui.service';
 import { WalletService } from 'src/app/wallet/services/wallet.service';
@@ -80,6 +81,7 @@ export class HomePage implements OnInit, OnDestroy {
   // Wallet summary
   public balanceVm: HomeBalanceVm = null;
   public totalFiatDisplay: string = null; // active wallet fiat total, shown on the Value pillar
+  public pnlVm: { text: string; tone: 'up' | 'down' } = null; // local 24h PnL, null until enough history
   public tokenRows: HomeTokenRow[] = null;
   public walletUnavailable = false; // active wallet has no network wallet on the active network
   public readonly mask = HIDDEN_MASK;
@@ -235,6 +237,7 @@ export class HomePage implements OnInit, OnDestroy {
     if (!this.networkWallet) {
       this.balanceVm = null;
       this.totalFiatDisplay = null;
+      this.pnlVm = null;
       this.tokenRows = null;
       // Distinguish "no wallets at all" from "active wallet unsupported on this network"
       // so the section shows an explanation instead of silently disappearing.
@@ -256,9 +259,15 @@ export class HomePage implements OnInit, OnDestroy {
       let fiatAmount = WalletUtil.getFriendlyBalance(fiatBalance);
       this.balanceVm = { primary: fiatAmount, symbol, secondary: `${nativeAmount} ${tokenName}` };
       this.totalFiatDisplay = `${fiatAmount} ${symbol}`;
+      let pnl = PriceHistoryService.instance.getPortfolioPnl24h(this.networkWallet);
+      this.pnlVm = pnl ? {
+        text: `${pnl.absCurrency >= 0 ? '+' : '-'}${Math.abs(pnl.absCurrency).toFixed(2)} ${symbol} (${pnl.pct >= 0 ? '+' : ''}${pnl.pct.toFixed(2)}%)`,
+        tone: pnl.absCurrency >= 0 ? 'up' : 'down'
+      } : null;
     } else {
       this.balanceVm = { primary: nativeAmount, symbol: tokenName, secondary: null };
       this.totalFiatDisplay = null;
+      this.pnlVm = null;
     }
 
     this.tokenRows = this.networkWallet

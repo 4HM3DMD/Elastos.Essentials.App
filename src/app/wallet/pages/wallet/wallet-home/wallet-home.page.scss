@@ -74,6 +74,21 @@
         color: var(--essentials-text-secondary);
         margin-bottom: 6px;
     }
+
+    .pnl-line {
+        margin-top: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+
+        &.up {
+            color: var(--essentials-success);
+        }
+
+        &.down {
+            color: var(--essentials-danger);
+        }
+    }
 }
 
 .staked-line {

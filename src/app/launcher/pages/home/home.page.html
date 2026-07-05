@@ -27,6 +27,9 @@
     <div *ngIf="balanceVm" class="balance-block">
       <ui-amount-display [size]="3" [value]="balanceVm.primary" [unit]="balanceVm.symbol" [fiat]="balanceVm.secondary"
         [hidden]="effectiveHide" [showToggle]="true" (toggleHidden)="toggleHideBalances()"></ui-amount-display>
+      <div *ngIf="pnlVm" class="pnl-line" [class.up]="pnlVm.tone === 'up'" [class.down]="pnlVm.tone === 'down'">
+        {{ effectiveHide ? mask : pnlVm.text }}
+      </div>
     </div>
 
     <!-- Quick actions -->

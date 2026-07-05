@@ -37,6 +37,8 @@
             <div class="label">{{ 'wallet.total-amount' | translate }}</div>
             <ui-amount-display [value]="balanceVm.primary" [unit]="balanceVm.unit" [fiat]="balanceVm.secondary"
                 [size]="3" [hidden]="hideBalances"></ui-amount-display>
+            <div *ngIf="balanceVm.pnl" class="pnl-line" [class.up]="balanceVm.pnl.tone === 'up'"
+                [class.down]="balanceVm.pnl.tone === 'down'">{{ hideBalances ? '••••' : balanceVm.pnl.text }}</div>
         </div>
 
         <!-- Address row -->
@@ -98,7 +100,9 @@
 
                 <ui-token-row *ngFor="let row of tokenRows; trackBy: trackRow" [icon]="row.icon" [badge]="row.badge"
                     [title]="row.title" [sub]="row.priceLine" [value]="hideBalances ? '••••' : row.balance"
-                    [subValue]="hideBalances ? null : row.fiat" [subValueTone]="row.tone" (pressed)="viewTransactions(row.subWallet)">
+                    [subValue]="hideBalances ? null : row.fiat"
+                    [subValue2]="hideBalances ? null : row.changeSubValue" [subValue2Tone]="row.tone"
+                    (pressed)="viewTransactions(row.subWallet)">
                 </ui-token-row>
             </ng-container>
 

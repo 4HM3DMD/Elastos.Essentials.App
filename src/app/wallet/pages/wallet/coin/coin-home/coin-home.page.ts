@@ -63,6 +63,7 @@ import {
 } from '../../../../model/tx-providers/transaction.types';
 import { CoinTransferService, TransferType } from '../../../../services/cointransfer.service';
 import { CurrencyService } from '../../../../services/currency.service';
+import { ChartRange, PriceHistoryService } from '../../../../services/pricehistory.service';
 import { Native } from '../../../../services/native.service';
 import { LocalStorage } from '../../../../services/storage.service';
 import { UiService } from '../../../../services/ui.service';
@@ -95,6 +96,14 @@ export class CoinHomePage implements OnInit {
   public txTabs: { key: string; label: string }[] = [];
 
   public stakedBalance = null; // Staked on ELA main chain or Tron
+
+  // Local price-history driven chart + 24h change (null until enough history has accrued).
+  public chartRange: ChartRange = '1D';
+  public readonly rangeChips: { key: string; label: string }[] = [
+    { key: '1D', label: '1D' }, { key: '1W', label: '1W' }, { key: '1M', label: '1M' }, { key: '1Y', label: '1Y' }
+  ];
+  public priceSeriesVm: number[] | null = null;
+  public coinPercentChangeVm: { text: string; tone: 'up' | 'down' } | null = null;
 
   // Total transactions today
   public todaysTransactions = 0;
@@ -144,7 +153,8 @@ export class CoinHomePage implements OnInit {
     private didSessions: GlobalDIDSessionsService,
     private platform: Platform,
     public stakingInitService: StakingInitService,
-    private voteService: VoteService
+    private voteService: VoteService,
+    private priceHistoryService: PriceHistoryService
   ) {
     void this.init();
   }
@@ -201,6 +211,7 @@ export class CoinHomePage implements OnInit {
     this.titleBar.setTitle(this.translate.instant('wallet.coin-transactions'));
 
     this.rebuildTxTabs();
+    this.refreshPriceVm();
     void this.loadShowAllActions();
   }
 
@@ -297,6 +308,7 @@ export class CoinHomePage implements OnInit {
     // Update balance and get the latest transactions.
     await this.subWallet.update();
     await this.getStakedBalance();
+    this.refreshPriceVm();
     void this.initData();
   }
 
@@ -810,5 +822,30 @@ export class CoinHomePage implements OnInit {
     } else {
       this.goStakeApp();
     }
+  }
+
+  public setChartRange(range: string) {
+    this.chartRange = range as ChartRange;
+    this.refreshPriceVm();
+  }
+
+  /**
+   * Reads the local price history into the chart + %change view-models (stable references so the
+   * sparkline only recomputes when the data actually changes). Both stay null until enough history
+   * exists — nothing is fabricated.
+   */
+  private refreshPriceVm() {
+    if (!this.subWallet) {
+      this.priceSeriesVm = null;
+      this.coinPercentChangeVm = null;
+      return;
+    }
+    let networkKey = this.networkWallet.network.key;
+    let tokenId = String(this.subWallet.id).toLowerCase();
+    this.priceSeriesVm = this.priceHistoryService.getSeries(networkKey, tokenId, this.chartRange);
+    let pct = this.priceHistoryService.getPercentChange24h(networkKey, tokenId);
+    this.coinPercentChangeVm = pct === null
+      ? null
+      : { text: `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`, tone: pct >= 0 ? 'up' : 'down' };
   }
 }

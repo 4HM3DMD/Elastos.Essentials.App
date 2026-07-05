@@ -53,6 +53,7 @@ import { MasterWallet } from '../../../model/masterwallets/masterwallet';
 import { MainCoinSubWallet } from '../../../model/networks/base/subwallets/maincoin.subwallet';
 import { AnySubWallet } from '../../../model/networks/base/subwallets/subwallet';
 import { CurrencyService } from '../../../services/currency.service';
+import { PriceHistoryService } from '../../../services/pricehistory.service';
 import { Native } from '../../../services/native.service';
 import { LocalStorage } from '../../../services/storage.service';
 import { UiService } from '../../../services/ui.service';
@@ -74,7 +75,8 @@ interface TokenRowViewModel {
     priceLine: string;
     balance: string;
     fiat: string;
-    tone: SubValueTone;
+    changeSubValue: string | null; // local 24h %change label, null until enough history
+    tone: SubValueTone; // tone for the %change line
     subWallet: AnySubWallet;
 }
 
@@ -101,6 +103,7 @@ interface BalanceViewModel {
     primary: string;
     unit: string;
     secondary: string;
+    pnl: { text: string; tone: 'up' | 'down' } | null; // local 24h portfolio PnL, null until enough history
 }
 
 @Component({
@@ -361,6 +364,8 @@ export class WalletHomePage implements OnInit, OnDestroy {
             let tokenInfo: string = (subWallet as any).getDisplayableERC20TokenInfo();
             if (tokenInfo) priceLine = priceLine ? `${priceLine} · ${tokenInfo}` : tokenInfo;
         }
+        let pct = PriceHistoryService.instance.getPercentChange24h(
+            subWallet.networkWallet.network.key, String(subWallet.id).toLowerCase());
         return {
             icon: subWallet.getMainIcon(),
             badge: subWallet.getSecondaryIcon(),
@@ -368,7 +373,8 @@ export class WalletHomePage implements OnInit, OnDestroy {
             priceLine,
             balance: this.uiService.getFixedBalance(subWallet.getDisplayBalance()),
             fiat,
-            tone: 'muted',
+            changeSubValue: pct === null ? null : `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`,
+            tone: pct === null ? 'muted' : (pct >= 0 ? 'up' : 'down'),
             subWallet
         };
     }
@@ -404,10 +410,16 @@ export class WalletHomePage implements OnInit, OnDestroy {
         let tokenName = this.networkWallet.getDisplayTokenName();
         let symbol = this.currencyService.selectedCurrency.symbol;
 
+        let pnlData = PriceHistoryService.instance.getPortfolioPnl24h(this.networkWallet);
+        let pnl = pnlData ? {
+            text: `${pnlData.absCurrency >= 0 ? '+' : '-'}${WalletUtil.getFriendlyBalance(new BigNumber(Math.abs(pnlData.absCurrency)))} ${symbol} (${pnlData.pct >= 0 ? '+' : ''}${pnlData.pct.toFixed(2)}%)`,
+            tone: (pnlData.absCurrency >= 0 ? 'up' : 'down') as 'up' | 'down'
+        } : null;
+
         if (this.currencyService.useCurrency) {
-            this.balanceVm = { primary: fiat, unit: symbol, secondary: `${native} ${tokenName}` };
+            this.balanceVm = { primary: fiat, unit: symbol, secondary: `${native} ${tokenName}`, pnl };
         } else {
-            this.balanceVm = { primary: native, unit: tokenName, secondary: `${fiat} ${symbol}` };
+            this.balanceVm = { primary: native, unit: tokenName, secondary: `${fiat} ${symbol}`, pnl };
         }
     }
 

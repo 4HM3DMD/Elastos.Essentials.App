@@ -21,10 +21,19 @@
                 <h3 class="balance-label">{{ 'wallet.coin-balance' | translate }}</h3>
                 <ui-amount-display [size]="3" [value]="coinDisplayValue" [unit]="coinDisplayUnit"
                     [fiat]="coinDisplayFiat"></ui-amount-display>
+                <div *ngIf="coinPercentChangeVm" class="coin-change" [class.up]="coinPercentChangeVm.tone === 'up'"
+                    [class.down]="coinPercentChangeVm.tone === 'down'">{{ coinPercentChangeVm.text }}</div>
                 <div *ngIf="stakedBalance" class="staked-line">
                     <span class="staked-label">{{ getStakeTitle() | translate }}</span>
                     <span class="staked-value">{{ getStakedBalanceInNative() }} {{ networkWallet.getDisplayTokenName() }}</span>
                 </div>
+            </div>
+
+            <!-- Price chart from local history — hidden until enough points exist -->
+            <div *ngIf="priceSeriesVm" class="price-chart">
+                <ui-sparkline [points]="priceSeriesVm" [height]="120" tone="auto"></ui-sparkline>
+                <ui-chip-row [chips]="rangeChips" [active]="chartRange"
+                    (activeChange)="setChartRange($event)"></ui-chip-row>
             </div>
 
             <!-- Transactions list header: a single tab collapses to a plain header -->

@@ -59,6 +59,21 @@
             color: var(--essentials-text-secondary);
         }
 
+        .coin-change {
+            margin-top: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+
+            &.up {
+                color: var(--essentials-success);
+            }
+
+            &.down {
+                color: var(--essentials-danger);
+            }
+        }
+
         .staked-line {
             margin-top: 12px;
             display: flex;
@@ -75,6 +90,15 @@
                 font-weight: 600;
                 color: var(--ion-text-color);
             }
+        }
+    }
+
+    .price-chart {
+        margin: -8px 0 24px;
+
+        ui-chip-row {
+            display: block;
+            margin-top: 10px;
         }
     }
 
