@@ -58,6 +58,17 @@
       <ion-ripple-effect></ion-ripple-effect>
     </ion-row>
 
+    <!-- Bottom tab bar (WO-7 kill switch) -->
+    <ion-row class="section-row">
+      <ion-col size="9" class="left-col">
+        <h1>Bottom tab bar</h1>
+      </ion-col>
+      <ion-col size="3" class="right-col">
+        <ion-toggle [(ngModel)]="showTabBar" (ionChange)="onShowTabBarChanged()" mode="ios">
+        </ion-toggle>
+      </ion-col>
+    </ion-row>
+
     <!-- Core developer mode -->
     <ion-row class="section-row">
       <ion-col size="9" class="left-col">

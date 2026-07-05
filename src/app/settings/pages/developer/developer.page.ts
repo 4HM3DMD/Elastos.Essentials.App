@@ -26,6 +26,7 @@ export class DeveloperPage implements OnInit {
   public allowScreenCapture = false;
   public captureLogs = false;
   public coreDeveloperMode = false;
+  public showTabBar = true;
   // public allowBitcoinSignData = false; // Move to privacy page
 
   constructor(
@@ -49,6 +50,7 @@ export class DeveloperPage implements OnInit {
     this.allowScreenCapture = await this.globalSecurityService.getScreenCaptureAllowed();
     this.captureLogs = await this.globalPrefsService.getCollectLogs(DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate);
     this.coreDeveloperMode = await this.globalPrefsService.coreDeveloperModeEnabled(DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate);
+    this.showTabBar = await this.globalPrefsService.getPreference(DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'ui.tabbar');
     // this.allowBitcoinSignData = await this.globalPrefsService.getBitcoinSignData(DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate);
   }
 
@@ -84,6 +86,10 @@ export class DeveloperPage implements OnInit {
 
     void this.clipboard.copy(JSON.stringify(devLogs));
     this.native.genericToast('common.copied-to-clipboard', 2000);
+  }
+
+  public onShowTabBarChanged() {
+    void this.globalPrefsService.setPreference(DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'ui.tabbar', this.showTabBar);
   }
 
   public onCoreDeveloperModeChanged() {

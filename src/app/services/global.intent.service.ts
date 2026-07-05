@@ -27,6 +27,9 @@ export class GlobalIntentService {
 
   // Emits received intents from the app manager.
   public intentListener = new BehaviorSubject<EssentialsIntentPlugin.ReceivedIntent>(null);
+  // True while one or more intents are being processed (a request screen is up).
+  // The bottom tab bar hides while this is true so it never overlays an intent flow.
+  public hasUnansweredIntent$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private globalNav: GlobalNavService
@@ -47,8 +50,22 @@ export class GlobalIntentService {
   }
 
   // Clear the intent when signout.
+  /**
+   * Clears the "unanswered intent" flag if it got stuck true because an intent screen
+   * was dismissed without answering. Safe to call only when no request screen is shown
+   * (e.g. after returning to the launcher home), since the tab bar is hidden otherwise.
+   */
+  public resetUnansweredIntentFlagIfStuck() {
+    if (this.hasUnansweredIntent$.value && this.intentsBeingProcessed.length > 0) {
+      Logger.warn("Intents", "Clearing a stuck unanswered-intent flag on return to home");
+      this.intentsBeingProcessed = [];
+      this.hasUnansweredIntent$.next(false);
+    }
+  }
+
   public clear() {
     this.intentListener.next(null);
+    this.hasUnansweredIntent$.next(false);
   }
 
   public listen() {
@@ -184,6 +201,7 @@ export class GlobalIntentService {
       Logger.log("Intents", "Intent processing starting. Sending to listeners", nextProcessableIntent);
       nextProcessableIntent.status = "processing";
       this.intentsBeingProcessed.push(nextProcessableIntent);
+      this.hasUnansweredIntent$.next(true);
 
       if (!this.unprocessedIntentInterval) {
         this.unprocessedIntentInterval = setInterval(() => {
@@ -207,13 +225,17 @@ export class GlobalIntentService {
     // Can not show the data in logs. Private data, confidential. eg. mnemonic.
     Logger.log("Intents", "Sending intent response ", intentId, navigateBack);
 
-    // Find the processing intent in the list and clear it
-    this.intentsQueue.splice(this.intentsQueue.findIndex(i => i.intent.intentId === intentId), 1);
-    this.intentsBeingProcessed.splice(this.intentsBeingProcessed.findIndex(i => i.intent.intentId === intentId), 1);
+    // Find the processing intent in the list and clear it (guard against an unknown
+    // intentId: splice(-1, 1) would otherwise drop an unrelated intent).
+    let queueIndex = this.intentsQueue.findIndex(i => i.intent.intentId === intentId);
+    if (queueIndex !== -1) this.intentsQueue.splice(queueIndex, 1);
+    let processingIndex = this.intentsBeingProcessed.findIndex(i => i.intent.intentId === intentId);
+    if (processingIndex !== -1) this.intentsBeingProcessed.splice(processingIndex, 1);
 
     if (this.intentsBeingProcessed.length === 0) {
       clearInterval(this.unprocessedIntentInterval);
       this.unprocessedIntentInterval = null;
+      this.hasUnansweredIntent$.next(false);
     }
     if (navigateBack)
       await this.globalNav.exitCurrentContext();

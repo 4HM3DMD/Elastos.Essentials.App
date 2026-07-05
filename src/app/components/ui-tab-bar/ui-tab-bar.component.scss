@@ -1,0 +1,70 @@
+:host {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.tab-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  height: 64px;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--essentials-box-color);
+  border-top: 1px solid var(--essentials-border-separator-color);
+
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 64px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--essentials-text-tertiary);
+    font-family: inherit;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    ion-icon {
+      font-size: 22px;
+    }
+
+    .label {
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    &.active {
+      color: var(--essentials-accent);
+    }
+
+    &.center {
+      justify-content: flex-start;
+
+      .center-circle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        margin-top: -18px;
+        border-radius: 50%;
+        background: var(--essentials-accent);
+        color: var(--essentials-accent-ink);
+        // A ring in the bar's surface color separates the raised circle from the bar.
+        border: 3px solid var(--essentials-box-color);
+
+        ion-icon {
+          font-size: 24px;
+        }
+      }
+    }
+  }
+}

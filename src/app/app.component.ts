@@ -38,10 +38,12 @@ import { GlobalWalletConnectService } from './services/walletconnect/global.wall
 import { VoteService } from './voting/services/vote.service';
 import { AppMinimize } from '@ionic-native/app-minimize/ngx';
 import { GlobalTranslationService } from './services/global.translation.service';
+import { TabBarVisibilityService } from './services/tab-bar-visibility.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  template: '<ion-app><ion-router-outlet [swipeGesture]="false"></ion-router-outlet></ion-app>'
+  template: '<ion-app><ion-router-outlet [swipeGesture]="false"></ion-router-outlet><ui-tab-bar *ngIf="tabsVisible$ | async"></ui-tab-bar></ion-app>'
   // BPI 20200322: With the onpush detection strategy angular seems to work 5 to 10x faster for rendering
   // But this created some refresh bugs in some components, as we need to manually push more changes
   // To be continued. NOTE: Comment out the line below if too many problems for now!
@@ -49,6 +51,8 @@ import { GlobalTranslationService } from './services/global.translation.service'
 })
 export class AppComponent {
   @ViewChild(IonRouterOutlet, { static: true }) routerOutlet: IonRouterOutlet;
+
+  public tabsVisible$: Observable<boolean>;
 
   constructor(
     private platform: Platform,
@@ -84,7 +88,8 @@ export class AppComponent {
     private globalNativeService: GlobalNativeService, // IMPORTANT: Unused by this component, but keep it here for instantiation by angular
     private translate: GlobalTranslationService, // for init
     // private firebase: FirebaseX,
-    private widgetsService: WidgetsService
+    private widgetsService: WidgetsService,
+    private tabBarVisibility: TabBarVisibilityService
   ) {}
 
   ngOnInit() {
@@ -121,6 +126,8 @@ export class AppComponent {
 
       // Initialize mandatory services
       this.theme.init();
+      this.tabBarVisibility.init();
+      this.tabsVisible$ = this.tabBarVisibility.isVisible$;
       await this.language.init();
       await this.globalNetworksService.init();
       await this.globalElastosAPIService.init();
@@ -150,6 +157,9 @@ export class AppComponent {
       await this.didSessions.init();
 
       await this.globalStartupService.navigateToFirstScreen();
+
+      // Load the tab-bar kill-switch preference for the signed-in user.
+      void this.tabBarVisibility.refreshPreference();
 
       // Now that all services are initialized and the initial screen is shown,
       // we can start listening to external intents.

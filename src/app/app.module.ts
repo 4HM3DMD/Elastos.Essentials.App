@@ -19,6 +19,7 @@ import { Observable } from 'rxjs';
 import { TranslationsLoader } from 'src/translationsloader';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { UiTabBarComponent } from './components/ui-tab-bar/ui-tab-bar.component';
 import { ContactsInitModule } from './contacts/init.module';
 import { DeveloperToolsInitModule } from './developertools/init.module';
 import { DIDSessionsInitModule } from './didsessions/init.module';
@@ -266,7 +267,8 @@ providers.push({ provide: ErrorHandler, useClass: SentryErrorHandler });
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    UiTabBarComponent
   ],
   entryComponents: [
     AppComponent

@@ -1,0 +1,30 @@
+<nav class="tab-bar" role="tablist">
+  <button type="button" class="tab" role="tab" [class.active]="active === 'home'" aria-label="Home"
+    (click)="onHome()">
+    <ion-icon [name]="active === 'home' ? 'home' : 'home-outline'"></ion-icon>
+    <span class="label">Home</span>
+  </button>
+
+  <button type="button" class="tab" role="tab" [class.active]="active === 'wallet'" aria-label="Wallet"
+    (click)="onWallet()">
+    <ion-icon [name]="active === 'wallet' ? 'wallet' : 'wallet-outline'"></ion-icon>
+    <span class="label">Wallet</span>
+  </button>
+
+  <button type="button" class="tab center" role="tab" aria-label="Apps" (click)="onApps()">
+    <div class="center-circle">
+      <ion-icon name="apps"></ion-icon>
+    </div>
+  </button>
+
+  <button type="button" class="tab" role="tab" aria-label="Activity" (click)="onActivity()">
+    <ion-icon name="notifications-outline"></ion-icon>
+    <span class="label">Activity</span>
+  </button>
+
+  <button type="button" class="tab" role="tab" [class.active]="active === 'menu'" aria-label="Menu"
+    (click)="onMenu()">
+    <ion-icon [name]="active === 'menu' ? 'menu' : 'menu-outline'"></ion-icon>
+    <span class="label">Menu</span>
+  </button>
+</nav>
