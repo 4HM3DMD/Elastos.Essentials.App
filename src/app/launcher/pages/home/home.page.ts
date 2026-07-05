@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { IonSlides } from '@ionic/angular';
+import { IonContent, IonSlides } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Logger } from 'src/app/logger';
 import { App } from 'src/app/model/app.enum';
+import { GlobalEvents } from 'src/app/services/global.events.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import {
   GlobalNetworksService,
@@ -13,7 +14,6 @@ import {
 import { GlobalNotificationsService } from 'src/app/services/global.notifications.service';
 import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
 import { GlobalStartupService } from 'src/app/services/global.startup.service';
-import { GlobalStorageService } from 'src/app/services/global.storage.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
@@ -32,6 +32,8 @@ import { WidgetsServiceEvents } from '../../widgets/services/widgets.events';
 import { WidgetsService } from '../../widgets/services/widgets.service';
 
 const HIDDEN_MASK = '••••••';
+const BALANCE_REFRESH_INTERVAL_MS = 30000;
+const TOKENS_PREVIEW_COUNT = 3;
 
 /** Precomputed strings for the active wallet balance hero. */
 interface HomeBalanceVm {
@@ -56,18 +58,24 @@ interface HomeTokenRow {
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit, OnDestroy {
+  @ViewChild(IonContent, { static: false }) private ionContent: IonContent;
   @ViewChild('widgetsslides', { static: false }) widgetsSlides: IonSlides | undefined;
   @ViewChildren(WidgetContainerComponent) widgetContainersList: QueryList<WidgetContainerComponent>;
 
   private widgetContainers: WidgetContainerComponent[] = [];
   private modal: HTMLIonModalElement = null;
+  private openingNotifications = false;
 
   private walletServiceSub: Subscription = null;
   private networkWalletSub: Subscription = null;
   private activeNetworkSub: Subscription = null;
+  private subWalletsListChangeSub: Subscription = null;
+  private currencyChangeSub: Subscription = null;
+  private transactionPublishedSub: Subscription = null;
   private notificationsSub: Subscription = null;
   private networkTemplateSub: Subscription = null;
   private widgetsEditionModeSub: Subscription = null;
+  private balanceRefreshInterval: ReturnType<typeof setInterval> = null;
 
   // Header
   public identityName = '';
@@ -78,12 +86,13 @@ export class HomePage implements OnInit, OnDestroy {
   // Wallet summary
   public balanceVm: HomeBalanceVm = null;
   public tokenRows: HomeTokenRow[] = null;
-  public hideBalances = false;
+  public walletUnavailable = false; // active wallet has no network wallet on the active network
   public readonly mask = HIDDEN_MASK;
+  private hideBalances = false;
+  private hideBalancesLoaded = false;
   private networkWallet: AnyNetworkWallet = null;
 
   // Widget canvas
-  public showSwipeIndicator = false; // First time only, for new identities
   public widgetsSlidesOpts = {
     autoHeight: true,
     spaceBetween: 10,
@@ -92,16 +101,15 @@ export class HomePage implements OnInit, OnDestroy {
   public slidesShown = false;
   public activeScreenIndex = 1;
   public editingWidgets = false;
-  private hasUserInteractedWithSlides = false;
 
   constructor(
-    public storage: GlobalStorageService,
     public theme: GlobalThemeService,
     public didService: DIDManagerService,
     private globalNetworksService: GlobalNetworksService,
     private globalNav: GlobalNavService,
     private globalNotifications: GlobalNotificationsService,
     private globalPrefs: GlobalPreferencesService,
+    private events: GlobalEvents,
     private widgetsService: WidgetsService,
     private launcherNotificationsService: NotificationManagerService,
     private walletService: WalletService,
@@ -114,16 +122,17 @@ export class HomePage implements OnInit, OnDestroy {
     this.widgetsService.registerContainer('right');
   }
 
+  /** Masks amounts while the hide-balances pref is on, and (privacy-safe) while it is still loading. */
+  public get effectiveHide(): boolean {
+    return this.hideBalances || !this.hideBalancesLoaded;
+  }
+
   ngOnInit() {
     this.launcherNotificationsService.init();
 
-    void this.storage
-      .getSetting(DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'launcher', 'swipanimationshown', false)
-      .then(swipeAnimationShown => {
-        this.showSwipeIndicator = !swipeAnimationShown;
-      });
-
-    // The wallet summary refreshes on the same signals the active-wallet widget uses.
+    // The wallet summary refreshes on the same signals the active-wallet widget uses,
+    // plus the subwallet-list, currency and transaction-published signals wallet home
+    // uses to stay live.
     this.walletServiceSub = this.walletService.walletServiceStatus.subscribe(initializationComplete => {
       if (initializationComplete) this.refreshWalletData();
     });
@@ -132,6 +141,12 @@ export class HomePage implements OnInit, OnDestroy {
     });
     this.activeNetworkSub = this.walletNetworkService.activeNetwork.subscribe(() => {
       if (this.walletService.walletServiceStatus.value) this.refreshWalletData();
+    });
+    this.currencyChangeSub = this.currencyService.currencyChangedSubject.subscribe(() => {
+      this.rebuildWalletSummary();
+    });
+    this.transactionPublishedSub = this.events.subscribe('wallet:transactionpublished', () => {
+      void this.updateActiveWallet();
     });
 
     this.notificationsSub = this.globalNotifications.notifications.subscribe(notifications => {
@@ -148,18 +163,25 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    for (let sub of [this.walletServiceSub, this.networkWalletSub, this.activeNetworkSub, this.notificationsSub, this.networkTemplateSub]) {
+    for (let sub of [
+      this.walletServiceSub, this.networkWalletSub, this.activeNetworkSub,
+      this.subWalletsListChangeSub, this.currencyChangeSub, this.transactionPublishedSub,
+      this.notificationsSub, this.networkTemplateSub
+    ]) {
       sub?.unsubscribe();
     }
-    this.walletServiceSub = this.networkWalletSub = this.activeNetworkSub = this.notificationsSub = this.networkTemplateSub = null;
+    this.walletServiceSub = this.networkWalletSub = this.activeNetworkSub = null;
+    this.subWalletsListChangeSub = this.currencyChangeSub = this.transactionPublishedSub = null;
+    this.notificationsSub = this.networkTemplateSub = null;
+    this.stopBalanceRefreshInterval();
   }
 
   ionViewWillEnter() {
     Logger.log('launcher', 'Launcher home screen will enter');
 
     this.refreshIdentity();
-    this.refreshWalletData();
     void this.loadHideBalances();
+    this.refreshWalletData();
 
     this.widgetsEditionModeSub = WidgetsServiceEvents.editionMode.subscribe(editionMode => {
       this.editingWidgets = editionMode;
@@ -177,6 +199,7 @@ export class HomePage implements OnInit, OnDestroy {
     });
 
     this.initializeSlidesVisibility();
+    this.startBalanceRefreshInterval();
   }
 
   ionViewDidEnter() {
@@ -192,6 +215,7 @@ export class HomePage implements OnInit, OnDestroy {
   ionViewWillLeave() {
     this.widgetsEditionModeSub?.unsubscribe();
     this.widgetsEditionModeSub = null;
+    this.stopBalanceRefreshInterval();
   }
 
   /* ------------------------------ Header ------------------------------ */
@@ -205,10 +229,15 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   public async onNotifications() {
-    if (this.modal) return;
-    this.modal = await this.launcherNotificationsService.showNotifications(() => {
-      this.modal = null;
-    });
+    if (this.modal || this.openingNotifications) return;
+    this.openingNotifications = true;
+    try {
+      this.modal = await this.launcherNotificationsService.showNotifications(() => {
+        this.modal = null;
+      });
+    } finally {
+      this.openingNotifications = false;
+    }
   }
 
   public onScan() {
@@ -221,26 +250,55 @@ export class HomePage implements OnInit, OnDestroy {
 
   /* -------------------------- Wallet summary -------------------------- */
 
+  /** Rebuilds the summary and (re)binds to the active network wallet's subwallet-list changes. */
   private refreshWalletData() {
-    this.networkWallet = this.walletService.activeNetworkWallet.value;
+    let networkWallet = this.walletService.activeNetworkWallet.value;
+
+    if (networkWallet !== this.networkWallet) {
+      this.networkWallet = networkWallet;
+      this.subWalletsListChangeSub?.unsubscribe();
+      this.subWalletsListChangeSub = null;
+      if (networkWallet) {
+        this.subWalletsListChangeSub = networkWallet.subWalletsListChange.subscribe(() => this.rebuildWalletSummary());
+      }
+    }
+
+    this.rebuildWalletSummary();
+  }
+
+  private rebuildWalletSummary() {
     if (!this.networkWallet) {
       this.balanceVm = null;
       this.tokenRows = null;
+      // Distinguish "no wallets at all" from "active wallet unsupported on this network"
+      // so the section shows an explanation instead of silently disappearing.
+      this.walletUnavailable = this.walletService.getMasterWalletsCount() > 0;
       return;
     }
+    this.walletUnavailable = false;
 
     let fiatBalance = this.networkWallet.getDisplayBalanceInActiveCurrency();
+    let fiat = fiatBalance && !fiatBalance.isNaN()
+      ? `${WalletUtil.getFriendlyBalance(fiatBalance)} ${this.currencyService.selectedCurrency.symbol}`
+      : null;
     this.balanceVm = {
       value: WalletUtil.getFriendlyBalance(this.networkWallet.getDisplayBalance(), this.networkWallet.getDecimalPlaces()),
       unit: this.networkWallet.getDisplayTokenName(),
-      fiat: fiatBalance ? `${WalletUtil.getFriendlyBalance(fiatBalance)} ${this.currencyService.selectedCurrency.symbol}` : null
+      fiat
     };
 
     this.tokenRows = this.networkWallet
       .getSubWallets(WalletSortType.BALANCE)
       .filter(sw => sw.shouldShowOnHomeScreen())
-      .slice(0, 3)
+      .slice(0, TOKENS_PREVIEW_COUNT)
       .map(sw => this.buildTokenRow(sw));
+  }
+
+  /** Fetches fresh balances for the active wallet, then rebuilds the summary. */
+  private async updateActiveWallet() {
+    if (!this.networkWallet) return;
+    await this.networkWallet.update();
+    this.rebuildWalletSummary();
   }
 
   private buildTokenRow(subWallet: AnySubWallet): HomeTokenRow {
@@ -255,6 +313,20 @@ export class HomePage implements OnInit, OnDestroy {
     };
   }
 
+  private startBalanceRefreshInterval() {
+    if (this.balanceRefreshInterval !== null) return;
+    this.balanceRefreshInterval = setInterval(() => {
+      void this.updateActiveWallet();
+    }, BALANCE_REFRESH_INTERVAL_MS);
+  }
+
+  private stopBalanceRefreshInterval() {
+    if (this.balanceRefreshInterval !== null) {
+      clearInterval(this.balanceRefreshInterval);
+      this.balanceRefreshInterval = null;
+    }
+  }
+
   private async loadHideBalances() {
     try {
       this.hideBalances = await this.globalPrefs.getPreference(
@@ -262,6 +334,7 @@ export class HomePage implements OnInit, OnDestroy {
     } catch (e) {
       this.hideBalances = false;
     }
+    this.hideBalancesLoaded = true;
   }
 
   public toggleHideBalances() {
@@ -311,11 +384,18 @@ export class HomePage implements OnInit, OnDestroy {
 
   public toggleEditWidgets() {
     this.widgetsService.toggleEditionMode();
+    this.scrollToWidgetCanvas();
   }
 
   public addWidget() {
     this.widgetsService.enterEditionMode();
     this.widgetContainers[this.activeScreenIndex].addWidget();
+    this.scrollToWidgetCanvas();
+  }
+
+  /** The widget canvas sits below the fold; the fixed footer controls scroll it into view. */
+  private scrollToWidgetCanvas() {
+    void this.ionContent?.scrollToBottom(400);
   }
 
   private initializeSlidesVisibility() {
@@ -328,27 +408,10 @@ export class HomePage implements OnInit, OnDestroy {
     }, 50);
   }
 
-  public onSlideTouchEnd() {
-    this.hasUserInteractedWithSlides = true;
-    this.dismissSwipeIndicator();
-  }
-
   public async onSlideChange() {
-    // Ignore initial, non-user slide changes emitted during setup.
-    if (!this.hasUserInteractedWithSlides) return;
-
     if (this.widgetsSlides) {
       this.activeScreenIndex = await this.widgetsSlides.getActiveIndex();
       void this.widgetsSlides.update();
     }
-
-    this.dismissSwipeIndicator();
-  }
-
-  private dismissSwipeIndicator() {
-    if (!this.showSwipeIndicator) return;
-    this.showSwipeIndicator = false;
-    void this.storage.setSetting(
-      DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'launcher', 'swipanimationshown', true);
   }
 }

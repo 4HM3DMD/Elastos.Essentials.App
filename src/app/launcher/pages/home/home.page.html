@@ -26,7 +26,7 @@
     <!-- Active wallet balance -->
     <div *ngIf="balanceVm" class="balance-block">
       <ui-amount-display [size]="3" [value]="balanceVm.value" [unit]="balanceVm.unit" [fiat]="balanceVm.fiat"
-        [hidden]="hideBalances" [showToggle]="true" (toggleHidden)="toggleHideBalances()"></ui-amount-display>
+        [hidden]="effectiveHide" [showToggle]="true" (toggleHidden)="toggleHideBalances()"></ui-amount-display>
     </div>
 
     <!-- Quick actions -->
@@ -44,6 +44,12 @@
         <ion-icon name="layers-outline"></ion-icon>
       </ui-action-tile>
     </ui-action-grid>
+
+    <!-- Active wallet not available on the current network -->
+    <div *ngIf="walletUnavailable" class="wallet-unavailable">
+      <ui-empty-state [message]="'launcher.home-wallet-unavailable' | translate"
+        [actionLabel]="'launcher.home-pillar-value' | translate" (action)="onValue()"></ui-empty-state>
+    </div>
 
     <!-- Pillars -->
     <div class="pillars">
@@ -66,20 +72,18 @@
       </div>
       <div class="card-group">
         <ui-token-row *ngFor="let row of tokenRows; trackBy: trackToken" [icon]="row.icon" [badge]="row.badge"
-          [title]="row.title" [value]="hideBalances ? mask : row.balance"
-          [subValue]="hideBalances ? mask : row.fiat" (pressed)="onTokenRow(row)"></ui-token-row>
+          [title]="row.title" [value]="effectiveHide ? mask : row.balance"
+          [subValue]="row.fiat ? (effectiveHide ? mask : row.fiat) : null" (pressed)="onTokenRow(row)"></ui-token-row>
       </div>
     </div>
 
     <!-- Widget canvas (below the fold; main panel centered, side panels by swipe) -->
     <ion-slides #widgetsslides [options]="widgetsSlidesOpts" (ionSlideDidChange)="onSlideChange()"
-      (ionSlideTouchEnd)="onSlideTouchEnd()" class="widgets-containers-slides" [class.hidden]="!slidesShown">
+      class="widgets-containers-slides" [class.hidden]="!slidesShown">
       <ion-slide>
         <widget-container name="left"></widget-container>
       </ion-slide>
       <ion-slide>
-        <lottie-player *ngIf="showSwipeIndicator" src="/assets/launcher/animations/104585-swipe.json"
-          background="transparent" speed="0.8" style="width: 80px; height: 80px;" autoplay loop></lottie-player>
         <widget-container name="main"></widget-container>
       </ion-slide>
       <ion-slide>

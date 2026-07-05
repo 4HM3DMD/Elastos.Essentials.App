@@ -86,6 +86,7 @@ export const zh = {
         'home-pillar-apps-sub': '浏览可与 Essentials 配合使用的 dApp',
         'home-tokens': '代币',
         'home-see-all': '查看全部',
+        'home-wallet-unavailable': '您的当前钱包在此网络上不可用。',
         'cyber-republic': 'Elastos DAO',
         'elastos-staking': 'Elastos 质押',
         'app-elastos-staking': 'ELA 质押',

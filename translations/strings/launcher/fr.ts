@@ -86,6 +86,7 @@ export const fr = {
         'home-pillar-apps-sub': 'Parcourir les dApps compatibles avec Essentials',
         'home-tokens': 'Jetons',
         'home-see-all': 'Tout voir',
+        'home-wallet-unavailable': "Votre portefeuille actif n'est pas disponible sur ce réseau.",
         'cyber-republic': 'Elastos DAO',
         'elastos-staking': 'Elastos Staking',
         'app-elastos-staking': 'ELA Staking',
