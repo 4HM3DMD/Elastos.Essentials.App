@@ -1,0 +1,29 @@
+.hub {
+    padding: 8px 16px 24px;
+}
+
+.section {
+    margin-top: 20px;
+
+    .section-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--ion-text-color);
+        margin: 0 0 10px;
+    }
+
+    .card-group {
+        background: var(--essentials-box-color);
+        border-radius: 14px;
+        padding: 4px 14px;
+
+        // Rows sit on the card surface; give their icon circles the page tone for contrast.
+        ::ng-deep .icon-circle {
+            background: var(--ion-background-color) !important;
+        }
+
+        ui-token-row:not(:last-child) {
+            border-bottom: 1px solid var(--essentials-border-separator-color);
+        }
+    }
+}

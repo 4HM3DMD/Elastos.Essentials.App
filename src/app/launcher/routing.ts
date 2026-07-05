@@ -8,6 +8,7 @@ export class EmptyPage { }
 const routes: Routes = [
   { path: 'onboard', component: OnboardPage },
   { path: 'home', loadChildren: () => import("./pages/home/module").then(m => m.HomePageModule) },
+  { path: 'elastos', loadChildren: () => import("./pages/elastos-hub/module").then(m => m.ElastosHubPageModule) },
   { path: 'intents/picklauncherwidget', loadChildren: () => import("./widgets/base/widget-chooser/module").then(m => m.WidgetChooserComponentModule) },
 ];
 

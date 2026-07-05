@@ -31,6 +31,8 @@
     <div *ngIf="sub" class="sub">{{ sub }}</div>
   </div>
 
+  <ion-icon *ngIf="chevron && !value && !subValue" class="chevron" name="chevron-forward" aria-hidden="true"></ion-icon>
+
   <div *ngIf="value || subValue" class="values">
     <div *ngIf="value" class="value tabular">{{ value }}</div>
     <div *ngIf="subValue" class="sub-value tabular" [class.up]="subValueTone === 'up'"

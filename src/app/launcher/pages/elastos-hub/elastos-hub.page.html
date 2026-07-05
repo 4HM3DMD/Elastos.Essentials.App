@@ -1,0 +1,43 @@
+<ion-content>
+  <app-titlebar></app-titlebar>
+
+  <div class="hub">
+    <!-- Elastos Blockchain -->
+    <div class="section">
+      <h2 class="section-title">{{ 'launcher.hub-section-blockchain' | translate }}</h2>
+      <div class="card-group">
+        <ui-token-row icon="/assets/launcher/apps/app-icons/staking.svg"
+          [title]="'launcher.app-elastos-staking' | translate"
+          [sub]="'launcher.app-elastos-staking-description' | translate" [chevron]="true"
+          (pressed)="onStaking()"></ui-token-row>
+        <ui-token-row icon="/assets/launcher/apps/app-icons/dpos.svg"
+          [title]="'launcher.app-dpos2-voting' | translate"
+          [sub]="'launcher.app-dpos2-description' | translate" [chevron]="true"
+          (pressed)="onVoting()"></ui-token-row>
+        <ui-token-row icon="/assets/launcher/apps/app-icons/dpos.svg"
+          [title]="'dposvoting.menu-stat' | translate"
+          [sub]="'launcher.hub-statistics-description' | translate" [chevron]="true"
+          (pressed)="onStatistics()"></ui-token-row>
+      </div>
+    </div>
+
+    <!-- Elastos DAO -->
+    <div class="section">
+      <h2 class="section-title">{{ 'launcher.hub-section-dao' | translate }}</h2>
+      <div class="card-group">
+        <ui-token-row icon="/assets/launcher/apps/app-icons/identity.svg"
+          [title]="'launcher.app-identity' | translate"
+          [sub]="'launcher.app-identity-description' | translate" [chevron]="true"
+          (pressed)="onIdentity()"></ui-token-row>
+        <ui-token-row icon="/assets/launcher/apps/app-icons/proposal.svg"
+          [title]="'launcher.app-cr-proposal' | translate"
+          [sub]="'launcher.app-crproposal-description' | translate" [chevron]="true"
+          (pressed)="onProposals()"></ui-token-row>
+        <ui-token-row icon="/assets/launcher/apps/app-icons/council.svg"
+          [title]="'launcher.app-cr-council' | translate"
+          [sub]="'launcher.app-crcouncil-description' | translate" [chevron]="true"
+          (pressed)="onCouncil()"></ui-token-row>
+      </div>
+    </div>
+  </div>
+</ion-content>

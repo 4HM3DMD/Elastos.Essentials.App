@@ -23,6 +23,8 @@ export class UiTokenRowComponent {
   @Input() public subValue: string = null;
   @Input() public subValueTone: SubValueTone = 'muted';
   @Input() public skeleton = false;
+  /** Renders a right chevron (for navigation rows with no value column). */
+  @Input() public chevron = false;
 
   @Output() public pressed = new EventEmitter<void>();
 
