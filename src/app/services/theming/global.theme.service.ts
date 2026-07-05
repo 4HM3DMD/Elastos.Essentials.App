@@ -69,11 +69,27 @@ export class GlobalThemeService extends GlobalService {
     );
     let themeConfig = availableThemes.find(theme => theme.key === themeKey);
 
+    // Users may have a retired theme key persisted (legacy novelty themes).
+    // Fall back to the default theme and migrate the preference once, otherwise
+    // applyThemeConfig() would dereference undefined and break sign-in.
+    if (!themeConfig) {
+      themeConfig = this.defaultThemeConfig().theme;
+      await this.prefs.setPreference(
+        DIDSessionsStore.signedInDIDString,
+        NetworkTemplateStore.networkTemplate,
+        'ui.theme',
+        themeConfig.key
+      );
+    }
+
     let themeVariant = await this.prefs.getPreference(
       DIDSessionsStore.signedInDIDString,
       NetworkTemplateStore.networkTemplate,
       'ui.variant'
     );
+    if (themeVariant !== 'light' && themeVariant !== 'dark') {
+      themeVariant = 'light';
+    }
 
     await this.applyThemeConfig(themeConfig, themeVariant);
   }
@@ -87,7 +103,8 @@ export class GlobalThemeService extends GlobalService {
   }
 
   private defaultThemeConfig(): { theme: ThemeConfig; themeVariant: 'light' | 'dark' } {
-    let blackTheme = availableThemes.find(theme => theme.key === 'white');
+    // Dark-first: "black" is the app default (doc 144 D2).
+    let blackTheme = availableThemes.find(theme => theme.key === 'black');
     return { theme: blackTheme, themeVariant: 'light' };
   }
 
@@ -117,6 +134,18 @@ export class GlobalThemeService extends GlobalService {
       variant.buttonBackgroundColor || mainTextColor
     );
     document.body.style.setProperty('--essentials-button-text-color', variant.buttonTextColor || variant.color);
+
+    // Semantic tokens derived from the palette (doc 144 II.1). Alpha suffixes on the
+    // text color: 8C = 55%, 99 = 60%, 61 = 38%.
+    document.body.style.setProperty(
+      '--essentials-text-secondary',
+      theme.usesDarkMode ? `${mainTextColor}8C` : `${mainTextColor}99`
+    );
+    document.body.style.setProperty('--essentials-text-tertiary', `${mainTextColor}61`);
+    document.body.style.setProperty('--essentials-accent', '#F6921A');
+    document.body.style.setProperty('--essentials-accent-ink', '#1A1208');
+    document.body.style.setProperty('--essentials-success', theme.usesDarkMode ? '#2BC76A' : '#178A4C');
+    document.body.style.setProperty('--essentials-danger', theme.usesDarkMode ? '#FF6B6B' : '#DF3F44');
 
     // Set ionic background color and variants
     document.body.style.setProperty('--ion-text-color', mainTextColor);

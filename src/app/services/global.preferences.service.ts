@@ -114,7 +114,7 @@ export class GlobalPreferencesService implements GlobalService {
       'privacy.credentialtoolbox.stats': false,
       'privacy.hive.sync': false,
       'ui.darkmode': true,
-      'ui.theme': 'white',
+      'ui.theme': 'black', // Dark-first default (doc 144 D2); retired theme keys migrate in GlobalThemeService
       'ui.variant': 'light',
       'ui.lightweight': lightweightDefault,
       'ui.startupscreen': 'home',

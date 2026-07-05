@@ -39,6 +39,12 @@
     font-style: normal;
     src: url("assets/fonts/circular/CircularStd-Bold.otf");
 }
+@font-face {
+    font-family: "CircularStd";
+    font-weight: 800;
+    font-style: normal;
+    src: url("assets/fonts/circular/CircularStd-Black.otf");
+}
 
 /** Global font family **/
 body {
@@ -69,13 +75,18 @@ body {
 
 /** Color for warning texts  **/
 .warning-text {
-    color: #f04141;
+    color: var(--essentials-danger, #f04141);
 }
 
 .secondary-text {
-    font-weight: 300;
+    font-weight: 400;
     font-size: 12px;
-    opacity: 0.8;
+    color: var(--essentials-text-secondary);
+}
+
+/** Tabular (equal-width) digits for amounts, so columns line up **/
+.tabular {
+    font-variant-numeric: tabular-nums;
 }
 
 // For "primary" ion-buttons
