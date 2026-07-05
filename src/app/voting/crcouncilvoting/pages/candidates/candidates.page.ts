@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
+import { STD_TOAST_CLASS } from 'src/app/services/theming/tokens';
 import { ToastController } from "@ionic/angular";
 import { TranslateService } from '@ngx-translate/core';
 import moment from 'moment';
@@ -175,6 +176,7 @@ export class CandidatesPage implements OnInit {
     async toastWalletErr() {
         const toast = await this.toastCtrl.create({
             mode: "ios",
+            cssClass: STD_TOAST_CLASS,
             position: "top",
             color: "primary",
             header: this.translate.instant("crcouncilvoting.get-ela-failed-header"),

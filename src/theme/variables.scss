@@ -364,7 +364,7 @@ body {
 
 ion-toggle {
   --background-checked: var(--essentials-button-background-color);
-  --handle-background-checked: var(--ion-background-color);
+  --handle-background-checked: var(--essentials-button-text-color);
 }
 
 ion-checkbox {

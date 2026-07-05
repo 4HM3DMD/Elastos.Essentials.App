@@ -25,8 +25,6 @@
     <preference name="LottieAnimationLocation" value="www/assets/essentials_anim.json" />
     <preference name="LottieBackgroundColor" value="000000" />
     <preference name="LottieCacheDisabled" value="true" />
-    <!-- Underlying WebView color: matches the dark default theme so overscroll and
-         rotation never flash white (doc 144 WO-1) -->
     <preference name="BackgroundColor" value="0xff0b0b0d" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="KeyboardResizeMode" value="ionic" />

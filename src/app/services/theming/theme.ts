@@ -4,6 +4,8 @@ export type ThemeVariant = {
   textColor?: string;
   buttonBackgroundColor?: string;
   buttonTextColor?: string;
+  successColor?: string; // Optional per-theme override; defaults derive from usesDarkMode
+  dangerColor?: string; // Optional per-theme override; defaults derive from usesDarkMode
 };
 
 export type ThemeConfig = {

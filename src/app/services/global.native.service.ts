@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { STD_TOAST_CLASS } from './theming/tokens';
 import { Clipboard } from "@awesome-cordova-plugins/clipboard/ngx";
 import {
   AlertController,
@@ -44,32 +45,24 @@ export class GlobalNativeService {
     return this.clipboard.paste();
   }
 
-  errToast(msg: string, duration = 3000) {
-    const msgTranslated = this.translate.instant(msg);
+  /** Creates and presents a toast with the app-wide base options applied. */
+  private presentToast(options: { header: string; message?: string; duration: number; color: string }) {
     void this.toastCtrl
       .create({
         mode: "ios",
-        cssClass: "std-toast",
-        header: msgTranslated,
-        duration: duration,
+        cssClass: STD_TOAST_CLASS,
         position: "bottom",
-        color: "danger",
+        ...options,
       })
       .then((toast) => toast.present());
   }
 
+  errToast(msg: string, duration = 3000) {
+    this.presentToast({ header: this.translate.instant(msg), duration, color: "danger" });
+  }
+
   genericToast(msg: string, duration = 2000) {
-    const translation = this.translate.instant(msg);
-    void this.toastCtrl
-      .create({
-        mode: "ios",
-        cssClass: "std-toast",
-        header: translation,
-        duration: duration,
-        position: "bottom",
-        color: "primary",
-      })
-      .then((toast) => toast.present());
+    this.presentToast({ header: this.translate.instant(msg), duration, color: "primary" });
   }
 
   toastWithTitle(
@@ -78,19 +71,12 @@ export class GlobalNativeService {
     duration = 2000,
     color = "primary"
   ) {
-    const translatedHeader = this.translate.instant(header);
-    const translatedMsg = this.translate.instant(msg);
-    void this.toastCtrl
-      .create({
-        mode: "ios",
-        cssClass: "std-toast",
-        header: translatedHeader,
-        message: translatedMsg,
-        duration: duration,
-        position: "bottom",
-        color: color,
-      })
-      .then((toast) => toast.present());
+    this.presentToast({
+      header: this.translate.instant(header),
+      message: this.translate.instant(msg),
+      duration,
+      color,
+    });
   }
 
   async genericAlert(msg: string, title?: string, skipIfAlreadyPopup = false) {

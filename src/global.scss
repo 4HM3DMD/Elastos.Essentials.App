@@ -46,6 +46,17 @@
     src: url("assets/fonts/circular/CircularStd-Black.otf");
 }
 
+/** Semantic token defaults (dark-first). GlobalThemeService overrides these on body
+    at runtime; these values only cover the moment before it runs. **/
+:root {
+    --essentials-accent: #F6921A;
+    --essentials-accent-ink: #1A1208;
+    --essentials-success: #2BC76A;
+    --essentials-danger: #FF6B6B;
+    --essentials-text-secondary: #F5F5F78C;
+    --essentials-text-tertiary: #F5F5F761;
+}
+
 /** Global font family **/
 body {
     font-family: "CircularStd" !important;
@@ -75,13 +86,13 @@ body {
 
 /** Color for warning texts  **/
 .warning-text {
-    color: var(--essentials-danger, #f04141);
+    color: var(--essentials-danger);
 }
 
 .secondary-text {
     font-weight: 400;
     font-size: 12px;
-    color: var(--essentials-text-secondary);
+    opacity: 0.8;
 }
 
 /** Tabular (equal-width) digits for amounts, so columns line up **/
@@ -89,9 +100,9 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
-// For "primary" ion-buttons
+// For "primary" ion-buttons: match the ebutton accent so all primary actions look alike
 .ion-color-primary {
-    --ion-color-base: var(--ion-text-color) !important;
-    --ion-color-contrast: var(--ion-background-color) !important;
+    --ion-color-base: var(--essentials-button-background-color) !important;
+    --ion-color-contrast: var(--essentials-button-text-color) !important;
     --ion-color-shade: red !important;
 }

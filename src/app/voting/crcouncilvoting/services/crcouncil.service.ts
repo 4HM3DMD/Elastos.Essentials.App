@@ -1,4 +1,5 @@
 import { HttpHeaders } from '@angular/common/http';
+import { STD_TOAST_CLASS } from 'src/app/services/theming/tokens';
 import { Injectable } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -406,6 +407,7 @@ export class CRCouncilService {
   async votingEndedToast() {
     const toast = await this.toastCtrl.create({
       mode: 'ios',
+      cssClass: STD_TOAST_CLASS,
       position: 'bottom',
       color: 'primary',
       header: this.translate.instant('crcouncilvoting.cr-voting-ended'),

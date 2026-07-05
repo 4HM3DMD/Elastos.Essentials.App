@@ -1,14 +1,26 @@
 import { Injectable } from '@angular/core';
+import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
 import { IdentityEntry } from '../../model/didsessions/identityentry';
+import { Logger } from '../../logger';
 import { GlobalPreferencesService } from '../global.preferences.service';
 import { GlobalService, GlobalServiceManager } from '../global.service.manager';
 import { DIDSessionsStore } from '../stores/didsessions.store';
 import { NetworkTemplateStore } from '../stores/networktemplate.store';
 import { ThemeConfig } from './theme';
 import { availableThemes } from './themes';
+import {
+  ACCENT, ACCENT_INK,
+  ALPHA_SECONDARY_ON_DARK, ALPHA_SECONDARY_ON_LIGHT, ALPHA_TERTIARY,
+  DANGER_ON_DARK, DANGER_ON_LIGHT,
+  DEFAULT_THEME_KEY,
+  SIGNED_OUT_THEME_KEY,
+  SUCCESS_ON_DARK, SUCCESS_ON_LIGHT
+} from './tokens';
+
+const RGB_HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
 
 export enum GlobalThemeMode {
   LIGHT,
@@ -34,7 +46,8 @@ export class GlobalThemeService extends GlobalService {
   constructor(
     private prefs: GlobalPreferencesService,
     private platform: Platform,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private statusBar: StatusBar
   ) {
     super();
 
@@ -70,16 +83,12 @@ export class GlobalThemeService extends GlobalService {
     let themeConfig = availableThemes.find(theme => theme.key === themeKey);
 
     // Users may have a retired theme key persisted (legacy novelty themes).
-    // Fall back to the default theme and migrate the preference once, otherwise
-    // applyThemeConfig() would dereference undefined and break sign-in.
+    // Fall back to the signed-in default, otherwise applyThemeConfig() would
+    // dereference undefined and break sign-in.
+    let themeKeyMigrated = false;
     if (!themeConfig) {
-      themeConfig = this.defaultThemeConfig().theme;
-      await this.prefs.setPreference(
-        DIDSessionsStore.signedInDIDString,
-        NetworkTemplateStore.networkTemplate,
-        'ui.theme',
-        themeConfig.key
-      );
+      themeConfig = availableThemes.find(theme => theme.key === DEFAULT_THEME_KEY);
+      themeKeyMigrated = true;
     }
 
     let themeVariant = await this.prefs.getPreference(
@@ -87,11 +96,36 @@ export class GlobalThemeService extends GlobalService {
       NetworkTemplateStore.networkTemplate,
       'ui.variant'
     );
+    let variantMigrated = false;
     if (themeVariant !== 'light' && themeVariant !== 'dark') {
       themeVariant = 'light';
+      variantMigrated = true;
     }
 
+    // Apply first: theming must never depend on storage writes succeeding.
     await this.applyThemeConfig(themeConfig, themeVariant);
+
+    // Persist the corrected values best-effort, so the migration happens once.
+    try {
+      if (themeKeyMigrated) {
+        await this.prefs.setPreference(
+          DIDSessionsStore.signedInDIDString,
+          NetworkTemplateStore.networkTemplate,
+          'ui.theme',
+          themeConfig.key
+        );
+      }
+      if (variantMigrated) {
+        await this.prefs.setPreference(
+          DIDSessionsStore.signedInDIDString,
+          NetworkTemplateStore.networkTemplate,
+          'ui.variant',
+          themeVariant
+        );
+      }
+    } catch (e) {
+      Logger.warn('theme', 'Could not persist migrated theme preference', e);
+    }
   }
 
   public get darkMode() {
@@ -103,9 +137,11 @@ export class GlobalThemeService extends GlobalService {
   }
 
   private defaultThemeConfig(): { theme: ThemeConfig; themeVariant: 'light' | 'dark' } {
-    // Dark-first: "black" is the app default (doc 144 D2).
-    let blackTheme = availableThemes.find(theme => theme.key === 'black');
-    return { theme: blackTheme, themeVariant: 'light' };
+    // Signed-out (DID sessions / onboarding) theme. Stays light until those screens
+    // support dark surfaces (doc 144 WO-17); the signed-in default is DEFAULT_THEME_KEY
+    // via the 'ui.theme' preference default.
+    let signedOutTheme = availableThemes.find(theme => theme.key === SIGNED_OUT_THEME_KEY);
+    return { theme: signedOutTheme, themeVariant: 'light' };
   }
 
   /**
@@ -135,17 +171,23 @@ export class GlobalThemeService extends GlobalService {
     );
     document.body.style.setProperty('--essentials-button-text-color', variant.buttonTextColor || variant.color);
 
-    // Semantic tokens derived from the palette (doc 144 II.1). Alpha suffixes on the
-    // text color: 8C = 55%, 99 = 60%, 61 = 38%.
+    // Semantic tokens derived from the palette (doc 144 II.1). The accent pair follows
+    // the theme's own button colors so themes stay the single source of truth.
     document.body.style.setProperty(
       '--essentials-text-secondary',
-      theme.usesDarkMode ? `${mainTextColor}8C` : `${mainTextColor}99`
+      `${mainTextColor}${theme.usesDarkMode ? ALPHA_SECONDARY_ON_DARK : ALPHA_SECONDARY_ON_LIGHT}`
     );
-    document.body.style.setProperty('--essentials-text-tertiary', `${mainTextColor}61`);
-    document.body.style.setProperty('--essentials-accent', '#F6921A');
-    document.body.style.setProperty('--essentials-accent-ink', '#1A1208');
-    document.body.style.setProperty('--essentials-success', theme.usesDarkMode ? '#2BC76A' : '#178A4C');
-    document.body.style.setProperty('--essentials-danger', theme.usesDarkMode ? '#FF6B6B' : '#DF3F44');
+    document.body.style.setProperty('--essentials-text-tertiary', `${mainTextColor}${ALPHA_TERTIARY}`);
+    document.body.style.setProperty('--essentials-accent', variant.buttonBackgroundColor || ACCENT);
+    document.body.style.setProperty('--essentials-accent-ink', variant.buttonTextColor || ACCENT_INK);
+    document.body.style.setProperty(
+      '--essentials-success',
+      variant.successColor || (theme.usesDarkMode ? SUCCESS_ON_DARK : SUCCESS_ON_LIGHT)
+    );
+    document.body.style.setProperty(
+      '--essentials-danger',
+      variant.dangerColor || (theme.usesDarkMode ? DANGER_ON_DARK : DANGER_ON_LIGHT)
+    );
 
     // Set ionic background color and variants
     document.body.style.setProperty('--ion-text-color', mainTextColor);
@@ -162,13 +204,38 @@ export class GlobalThemeService extends GlobalService {
     document.body.style.setProperty('--ion-color-step-250', variant.color);
     // Are other needed up to 950 ?
 
+    // Native chrome follows the theme. All native theming side effects live here,
+    // next to each other, so they cannot drift apart.
     await passwordManager.setDarkMode(theme.usesDarkMode);
+    this.applyNativeStatusBar(variant.color, theme.usesDarkMode);
+
+    // The document background is what shows on overscroll/rotation gaps; the static
+    // BackgroundColor preference in config.xml only covers the pre-bootstrap moment.
+    document.documentElement.style.backgroundColor = variant.color;
 
     // Notify
     this.activeTheme.next({
       config: theme,
       variant: themeVariant
     });
+  }
+
+  /**
+   * Sets the native status bar background and pairs the icon style with the theme
+   * darkness (light icons on dark backgrounds, dark icons on light backgrounds).
+   */
+  private applyNativeStatusBar(backgroundColor: string, usesDarkMode: boolean) {
+    if (RGB_HEX_COLOR.test(backgroundColor)) {
+      this.statusBar.backgroundColorByHexString('#ff' + backgroundColor.substring(1));
+    } else {
+      Logger.warn('theme', 'Theme background is not #RRGGBB, keeping previous status bar color:', backgroundColor);
+    }
+
+    if (usesDarkMode) {
+      this.statusBar.styleLightContent(); // light icons
+    } else {
+      this.statusBar.styleDefault(); // dark icons
+    }
   }
 
   /**

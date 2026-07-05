@@ -103,13 +103,9 @@ export class AppComponent {
       void this.screenOrientation.lock('portrait');
 
       // Must do it in ios, otherwise the titlebar and status bar will overlap.
+      // Background color and icon style are applied by GlobalThemeService together
+      // with the rest of the native theming side effects.
       this.statusBar.overlaysWebView(false);
-      // Follow the active theme's background instead of a fixed black, so the
-      // native status bar matches both light and dark themes.
-      this.theme.activeTheme.subscribe(active => {
-        let bg = active.config.variants[active.variant].color; // '#RRGGBB'
-        this.statusBar.backgroundColorByHexString('#ff' + bg.substring(1));
-      });
 
       // Initialize our connectivity SDK helper (customize the connectivity SDK logger, storage layers)
       ElastosSDKHelper.init();
