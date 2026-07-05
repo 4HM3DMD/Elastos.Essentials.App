@@ -96,6 +96,13 @@ export class PriceHistoryService {
       clearInterval(this.recordTimer);
       this.recordTimer = null;
     }
+    // Drop in-memory state so a later sign-in reloads fresh caches and can snapshot immediately
+    // (a stale lastRecordedAt would otherwise throttle the first post-login snapshot).
+    this.lastRecordedAt.clear();
+    this.fineCaches.clear();
+    this.dailyCaches.clear();
+    this.fineCacheLoads.clear();
+    this.dailyCacheLoads.clear();
     this.started = false;
   }
 
@@ -280,6 +287,9 @@ export class PriceHistoryService {
     if (!qualified || !(prevUSD > 0)) return null;
     let pct = (absUSD / prevUSD) * 100;
     let absCurrency = CurrencyService.instance.usdToCurrencyAmount(new BigNumber(absUSD)).toNumber();
+    // A non-zero USD delta that converts to exactly 0 means the selected currency's exchange rate
+    // isn't loaded yet — treat as insufficient data rather than fabricating a "+0.00" amount.
+    if (absUSD !== 0 && absCurrency === 0) return null;
     return { absUSD, absCurrency, pct };
   }
 
@@ -308,7 +318,10 @@ export class PriceHistoryService {
 
     if (points.length > 120) {
       let stride = Math.ceil(points.length / 120);
+      let newest = points[points.length - 1];
       points = points.filter((_, index) => index % stride === 0);
+      // Always keep the newest point so the chart endpoint (and its tone) matches the latest price.
+      if (points[points.length - 1] !== newest) points.push(newest);
     }
     return points.map(point => point.p);
   }

@@ -45,14 +45,15 @@ export class UiSparklineComponent implements OnChanges {
     let count = points.length;
     let min = Math.min(...points);
     let max = Math.max(...points);
-    let range = max - min || 1; // guard a flat series (draws a horizontal mid-line)
+    let span = max - min;
     let innerWidth = this.width - 2 * this.padding;
     let innerHeight = this.height - 2 * this.padding;
 
     let coords = points.map((value, index) => {
       let x = this.padding + (index / (count - 1)) * innerWidth;
-      // SVG y grows downward, so invert.
-      let y = this.height - this.padding - ((value - min) / range) * innerHeight;
+      // A flat series (span 0) draws a horizontal mid-line. SVG y grows downward, so invert.
+      let norm = span === 0 ? 0.5 : (value - min) / span;
+      let y = this.height - this.padding - norm * innerHeight;
       return { x, y };
     });
 

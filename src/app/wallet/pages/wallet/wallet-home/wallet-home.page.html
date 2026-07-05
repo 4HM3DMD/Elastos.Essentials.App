@@ -112,7 +112,7 @@
                     [title]="row.title" [sub]="row.sub" [value]="row.count" (pressed)="goNFTHome(networkWallet, row.nft)">
                 </ui-token-row>
                 <ui-empty-state *ngIf="!nftRows.length" icon="images-outline"
-                    message="No collectibles yet"></ui-empty-state>
+                    [message]="'wallet.no-collectibles' | translate"></ui-empty-state>
             </ng-container>
 
             <!-- Staked -->
@@ -133,7 +133,7 @@
                     [title]="row.title" [value]="hideBalances ? '••••' : row.fiat" (pressed)="onStakingAssetClicked(row.data)">
                 </ui-token-row>
                 <ui-empty-state *ngIf="!stakingRows.length && !stakedBalance" icon="cube-outline"
-                    message="No staked assets yet"></ui-empty-state>
+                    [message]="'wallet.no-staked' | translate"></ui-empty-state>
             </ng-container>
         </div>
     </div>

@@ -67,6 +67,8 @@ export const zh = {
     'hive-not-configured-not-now': '暂不',
     'hive-not-configured-configure': '配置',
     collectibles: '收藏品',
+    'no-collectibles': '暂无收藏品',
+    'no-staked': '暂无质押资产',
     networks: '网络',
     'choose-active-network': '选择网络',
     'change-wallet': '切换钱包',

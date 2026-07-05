@@ -68,6 +68,8 @@ export const it = {
     'hive-not-configured-not-now': 'Non adesso',
     'hive-not-configured-configure': 'Configura',
     collectibles: 'Collezioni',
+    'no-collectibles': 'Nessun oggetto da collezione',
+    'no-staked': 'Nessun asset in staking',
     networks: 'Reti',
     'choose-active-network': 'Scegli la rete attiva',
     'change-wallet': 'Cambia portafoglio',
