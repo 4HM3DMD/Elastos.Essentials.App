@@ -1,32 +1,38 @@
 <ion-content>
-    <div class="network-container networkOptions-container" [class.dark-network-container]="theme.darkMode">
-        <div class="network-options">
-            <ion-row class="header-row">
-                <ion-col size="9">
-                    <h1>{{ 'wallet.networks' | translate }}</h1>
-                    <p>{{ 'wallet.choose-active-network' | translate }}</p>
-                </ion-col>
-                <ion-col size="3" class="settings-col">
-                    <img (click)="manageNetworks()"
-                        [src]="theme.darkMode ? 'assets/components/titlebar/darkmode/settings.svg' : 'assets/components/titlebar/settings.svg'" />
-                </ion-col>
-            </ion-row>
-            <ion-row *ngFor="let network of networksToShowInList" class="network-row ion-activatable ripple"
-                [class.selected-network]="currentNetwork && network.key === currentNetwork.key"
-                (click)="selectNetwork(network)">
-                <ion-col size="10" class="left-col">
-                    <img [src]="network.logo">
-                    <h1>{{ network.getEffectiveName() }}</h1>
-                </ion-col>
-                <ion-col size="2" class="right-col">
-                    <ion-icon name="checkmark"></ion-icon>
-                </ion-col>
-                <ion-ripple-effect></ion-ripple-effect>
-            </ion-row>
-        </div>
+  <div class="network-sheet">
+    <div class="sheet-header">
+      <div class="titles">
+        <h1>{{ 'wallet.networks' | translate }}</h1>
+        <p>{{ 'wallet.choose-active-network' | translate }}</p>
+      </div>
+      <button type="button" class="settings" aria-label="Manage networks" (click)="manageNetworks()">
+        <ion-icon name="settings-outline"></ion-icon>
+      </button>
     </div>
+
+    <div class="search-row">
+      <ion-icon name="search-outline"></ion-icon>
+      <input type="text" [(ngModel)]="searchInput" [placeholder]="'wallet.search-network' | translate"
+        autocapitalize="off" autocomplete="off" spellcheck="false" />
+    </div>
+
+    <div class="network-list">
+      <button type="button" *ngFor="let network of displayedNetworks" class="network-row ion-activatable"
+        [class.selected]="currentNetwork && network.key === currentNetwork.key" (click)="selectNetwork(network)">
+        <img class="logo" [src]="network.logo" alt="" />
+        <span class="name">{{ network.getEffectiveName() }}</span>
+        <span *ngIf="isMainChain(network)" class="tools-chip">{{ 'wallet.network-tools-chip' | translate }}</span>
+        <ion-icon class="check" name="checkmark"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+
+      <div *ngIf="displayedNetworks.length === 0" class="no-results">
+        {{ 'wallet.network-no-results' | translate }}
+      </div>
+    </div>
+  </div>
 </ion-content>
 
-<ion-footer class="ion-no-border" [class.lightmode]="!theme.darkMode" [class.darkmode]="theme.darkMode">
-    <ebutton (clicked)="cancelOperation()" [title]="'common.cancel' | translate"> </ebutton>
+<ion-footer class="ion-no-border">
+  <ebutton (clicked)="cancelOperation()" [title]="'common.cancel' | translate"> </ebutton>
 </ion-footer>

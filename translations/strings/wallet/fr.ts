@@ -455,6 +455,9 @@ export const fr = {
     'new-coins': 'Nouveaux jetons',
     'all-coins': 'Tous les jetons',
     'search-coin': 'Rechercher des jetons',
+        'search-network': 'Rechercher des réseaux',
+        'network-tools-chip': 'Outils',
+        'network-no-results': 'Aucun réseau ne correspond à votre recherche.',
 
     /***********************
      * Export Mnemonic Page *

@@ -452,6 +452,9 @@ export const it = {
     'new-coins': 'Nuove monete',
     'all-coins': 'Tutte le monete',
     'search-coin': 'Cerca monete',
+        'search-network': 'Cerca reti',
+        'network-tools-chip': 'Strumenti',
+        'network-no-results': 'Nessuna rete corrisponde alla ricerca.',
 
     /***********************
      * Export Mnemonic Page *

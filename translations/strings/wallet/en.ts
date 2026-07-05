@@ -451,6 +451,9 @@ export const en = {
     'new-coins': 'New Coins',
     'all-coins': 'All Coins',
     'search-coin': 'Search Coins',
+        'search-network': 'Search networks',
+        'network-tools-chip': 'Tools',
+        'network-no-results': 'No networks match your search.',
 
     /***********************
      * Export Mnemonic Page *

@@ -63,7 +63,8 @@ export class WalletNetworkUIService {
 
     let modal = await this.modalCtrl.create({
       component: NetworkChooserComponent,
-      componentProps: options
+      componentProps: options,
+      cssClass: 'network-chooser-component'
     });
 
     return new Promise(resolve => {
@@ -93,7 +94,8 @@ export class WalletNetworkUIService {
 
     let modal = await this.modalCtrl.create({
       component: NetworkChooserComponent,
-      componentProps: options
+      componentProps: options,
+      cssClass: 'network-chooser-component'
     });
 
     return new Promise(resolve => {

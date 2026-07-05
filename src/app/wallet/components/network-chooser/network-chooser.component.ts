@@ -41,6 +41,7 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
   public options: NetworkChooserComponentOptions = null;
   public currentNetwork: AnyNetwork;
   public networksToShowInList: AnyNetwork[] = [];
+  public searchInput = '';
 
   private netListSubscription: Subscription = null;
 
@@ -77,6 +78,18 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
       this.netListSubscription.unsubscribe();
       this.netListSubscription = null;
     }
+  }
+
+  /** The networks to render, narrowed by the search box (case-insensitive name match). */
+  public get displayedNetworks(): AnyNetwork[] {
+    let query = this.searchInput.trim().toLowerCase();
+    if (!query) return this.networksToShowInList;
+    return this.networksToShowInList.filter(n => n.getEffectiveName().toLowerCase().includes(query));
+  }
+
+  /** The Elastos main chain hosts governance and staking tools; its row carries a tools tag. */
+  public isMainChain(network: AnyNetwork): boolean {
+    return network.key === 'elastos';
   }
 
   selectNetwork(network: AnyNetwork) {

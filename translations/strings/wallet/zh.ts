@@ -444,6 +444,9 @@ export const zh = {
     'new-coins': '新币种',
     'all-coins': '全部币种',
     'search-coin': '搜索币种',
+        'search-network': '搜索网络',
+        'network-tools-chip': '工具',
+        'network-no-results': '没有符合搜索条件的网络。',
 
     /***********************
      * Export Mnemonic Page *
