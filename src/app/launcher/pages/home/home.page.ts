@@ -1,5 +1,4 @@
-import { Component, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { IonContent, IonSlides } from '@ionic/angular';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Logger } from 'src/app/logger';
 import { App } from 'src/app/model/app.enum';
@@ -27,9 +26,6 @@ import { UiService } from 'src/app/wallet/services/ui.service';
 import { WalletService } from 'src/app/wallet/services/wallet.service';
 import { DIDManagerService } from '../../services/didmanager.service';
 import { NotificationManagerService } from '../../services/notificationmanager.service';
-import { WidgetContainerComponent } from '../../widgets/base/widget-container/widget-container.component';
-import { WidgetsServiceEvents } from '../../widgets/services/widgets.events';
-import { WidgetsService } from '../../widgets/services/widgets.service';
 
 const HIDDEN_MASK = '••••••';
 const BALANCE_REFRESH_INTERVAL_MS = 30000;
@@ -58,11 +54,6 @@ interface HomeTokenRow {
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit, OnDestroy {
-  @ViewChild(IonContent, { static: false }) private ionContent: IonContent;
-  @ViewChild('widgetsslides', { static: false }) widgetsSlides: IonSlides | undefined;
-  @ViewChildren(WidgetContainerComponent) widgetContainersList: QueryList<WidgetContainerComponent>;
-
-  private widgetContainers: WidgetContainerComponent[] = [];
   private modal: HTMLIonModalElement = null;
   private openingNotifications = false;
 
@@ -74,7 +65,6 @@ export class HomePage implements OnInit, OnDestroy {
   private transactionPublishedSub: Subscription = null;
   private notificationsSub: Subscription = null;
   private networkTemplateSub: Subscription = null;
-  private widgetsEditionModeSub: Subscription = null;
   private balanceRefreshInterval: ReturnType<typeof setInterval> = null;
 
   // Header
@@ -92,16 +82,6 @@ export class HomePage implements OnInit, OnDestroy {
   private hideBalancesLoaded = false;
   private networkWallet: AnyNetworkWallet = null;
 
-  // Widget canvas
-  public widgetsSlidesOpts = {
-    autoHeight: true,
-    spaceBetween: 10,
-    initialSlide: 1 // Start at the middle (main) panel
-  };
-  public slidesShown = false;
-  public activeScreenIndex = 1;
-  public editingWidgets = false;
-
   constructor(
     public theme: GlobalThemeService,
     public didService: DIDManagerService,
@@ -110,17 +90,12 @@ export class HomePage implements OnInit, OnDestroy {
     private globalNotifications: GlobalNotificationsService,
     private globalPrefs: GlobalPreferencesService,
     private events: GlobalEvents,
-    private widgetsService: WidgetsService,
     private launcherNotificationsService: NotificationManagerService,
     private walletService: WalletService,
     private walletNetworkService: WalletNetworkService,
     private currencyService: CurrencyService,
     private uiService: UiService
-  ) {
-    this.widgetsService.registerContainer('left');
-    this.widgetsService.registerContainer('main');
-    this.widgetsService.registerContainer('right');
-  }
+  ) {}
 
   /** Masks amounts while the hide-balances pref is on, and (privacy-safe) while it is still loading. */
   public get effectiveHide(): boolean {
@@ -130,9 +105,9 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnInit() {
     this.launcherNotificationsService.init();
 
-    // The wallet summary refreshes on the same signals the active-wallet widget uses,
-    // plus the subwallet-list, currency and transaction-published signals wallet home
-    // uses to stay live.
+    // The wallet summary refreshes on the same signals wallet home uses to stay live:
+    // wallet init, active network wallet / network, subwallet-list, currency and
+    // transaction-published.
     this.walletServiceSub = this.walletService.walletServiceStatus.subscribe(initializationComplete => {
       if (initializationComplete) this.refreshWalletData();
     });
@@ -182,39 +157,15 @@ export class HomePage implements OnInit, OnDestroy {
     this.refreshIdentity();
     void this.loadHideBalances();
     this.refreshWalletData();
-
-    this.widgetsEditionModeSub = WidgetsServiceEvents.editionMode.subscribe(editionMode => {
-      this.editingWidgets = editionMode;
-
-      if (this.widgetsSlides) {
-        // Lock the slider during edition to avoid horizontal scrolling.
-        void this.widgetsSlides.lockSwipes(editionMode);
-
-        // Entering edition reveals extra content; the slider height must be
-        // recomputed once that content is rendered or the page cannot scroll.
-        setTimeout(() => {
-          void this.widgetsSlides.updateAutoHeight(0);
-        }, 500);
-      }
-    });
-
-    this.initializeSlidesVisibility();
     this.startBalanceRefreshInterval();
   }
 
   ionViewDidEnter() {
     Logger.log('launcher', 'Launcher home screen did enter');
-
     GlobalStartupService.instance.setStartupScreenReady();
-
-    this.widgetContainers = this.widgetContainersList.toArray();
-
-    if (!this.slidesShown) this.initializeSlidesVisibility();
   }
 
   ionViewWillLeave() {
-    this.widgetsEditionModeSub?.unsubscribe();
-    this.widgetsEditionModeSub = null;
     this.stopBalanceRefreshInterval();
   }
 
@@ -378,40 +329,5 @@ export class HomePage implements OnInit, OnDestroy {
 
   public onApps() {
     void this.globalNav.navigateTo(App.DAPP_BROWSER, '/dappbrowser/home');
-  }
-
-  /* --------------------------- Widget canvas -------------------------- */
-
-  public toggleEditWidgets() {
-    this.widgetsService.toggleEditionMode();
-    this.scrollToWidgetCanvas();
-  }
-
-  public addWidget() {
-    this.widgetsService.enterEditionMode();
-    this.widgetContainers[this.activeScreenIndex].addWidget();
-    this.scrollToWidgetCanvas();
-  }
-
-  /** The widget canvas sits below the fold; the fixed footer controls scroll it into view. */
-  private scrollToWidgetCanvas() {
-    void this.ionContent?.scrollToBottom(400);
-  }
-
-  private initializeSlidesVisibility() {
-    if (this.slidesShown) return;
-
-    // With initialSlide 1 the slider starts on the main panel; reveal it after
-    // a short delay so it is positioned before becoming visible.
-    setTimeout(() => {
-      this.slidesShown = true;
-    }, 50);
-  }
-
-  public async onSlideChange() {
-    if (this.widgetsSlides) {
-      this.activeScreenIndex = await this.widgetsSlides.getActiveIndex();
-      void this.widgetsSlides.update();
-    }
   }
 }

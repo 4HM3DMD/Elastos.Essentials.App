@@ -107,13 +107,6 @@ body.has-tabbar :where(ion-content) {
     --padding-bottom: calc(64px + env(safe-area-inset-bottom));
 }
 
-/** The launcher home has its own fixed footer (edit widgets / add). While the tab bar
-    is shown, lift that footer above it so its controls stay reachable (the footer is
-    removed entirely in a later phase). **/
-body.has-tabbar .home-footer {
-    bottom: calc(64px + env(safe-area-inset-bottom));
-}
-
 // For "primary" ion-buttons: match the ebutton accent so all primary actions look alike
 .ion-color-primary {
     --ion-color-base: var(--essentials-button-background-color) !important;

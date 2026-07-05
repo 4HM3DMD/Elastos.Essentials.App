@@ -76,33 +76,5 @@
           [subValue]="row.fiat ? (effectiveHide ? mask : row.fiat) : null" (pressed)="onTokenRow(row)"></ui-token-row>
       </div>
     </div>
-
-    <!-- Widget canvas (below the fold; main panel centered, side panels by swipe) -->
-    <ion-slides #widgetsslides [options]="widgetsSlidesOpts" (ionSlideDidChange)="onSlideChange()"
-      class="widgets-containers-slides" [class.hidden]="!slidesShown">
-      <ion-slide>
-        <widget-container name="left"></widget-container>
-      </ion-slide>
-      <ion-slide>
-        <widget-container name="main"></widget-container>
-      </ion-slide>
-      <ion-slide>
-        <widget-container name="right"></widget-container>
-      </ion-slide>
-    </ion-slides>
-  </div>
-
-  <div class="home-footer">
-    <div class="edit" (click)="toggleEditWidgets()">
-      <img [src]="theme.darkMode ? '/assets/launcher/icons/dark_mode/edit.svg' : '/assets/launcher/icons/edit.svg'" />
-    </div>
-    <div class="nav">
-      <div class="dot" [class.active]="activeScreenIndex === 0"></div>
-      <div class="dot" [class.active]="activeScreenIndex === 1"></div>
-      <div class="dot" [class.active]="activeScreenIndex === 2"></div>
-    </div>
-    <div class="add" (click)="addWidget()">
-      <img [src]="theme.darkMode ? '/assets/launcher/icons/dark_mode/add.svg' : '/assets/launcher/icons/add.svg'" />
-    </div>
   </div>
 </ion-content>
