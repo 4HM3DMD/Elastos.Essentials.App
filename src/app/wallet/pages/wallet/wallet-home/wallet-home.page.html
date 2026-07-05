@@ -39,13 +39,6 @@
                 [size]="3" [hidden]="hideBalances"></ui-amount-display>
         </div>
 
-        <!-- Staked sub-line -->
-        <div *ngIf="stakedBalance" class="staked-line" (click)="toggleCurrency()">
-            <span class="dim">{{ getStakeTitle() | translate }}:</span>
-            <span class="tabular">{{ hideBalances ? '••••' : (currencyService.useCurrency ? getStakedBalanceInCurrency() : getStakedBalanceInNative()) }}</span>
-            <span class="dim">{{ currencyService.useCurrency ? currencyService.selectedCurrency.symbol : networkWallet.getDisplayTokenName() }}</span>
-        </div>
-
         <!-- Address row -->
         <div *ngIf="networkWallet && walletAddresses && walletAddresses.length === 1" class="address-chip"
             (click)="copySingleAddressToClipboard($event, walletAddresses[0].address)">
@@ -67,7 +60,7 @@
             <ui-action-tile label="Receive" (pressed)="onMainAction()">
                 <ion-icon name="arrow-down-outline"></ion-icon>
             </ui-action-tile>
-            <ui-action-tile label="Transfer" (pressed)="onMainAction()">
+            <ui-action-tile label="Swap" (pressed)="onMainAction()">
                 <ion-icon name="swap-horizontal-outline"></ion-icon>
             </ui-action-tile>
             <ui-action-tile label="Stake" (pressed)="onMainAction()">
@@ -89,29 +82,54 @@
         </ui-empty-state>
 
         <div *ngIf="networkWallet && !noAddressForLedgerWallet" class="lists">
+            <ui-chip-row class="wallet-tabs" [chips]="walletTabs" [active]="activeTab"
+                (activeChange)="onTabChange($event)"></ui-chip-row>
+
             <!-- Tokens -->
-            <div class="list-header">
-                <span>{{ 'wallet.coin-list' | translate }}</span>
-                <button type="button" class="icon-btn" aria-label="Sort tokens" (click)="setSortMode()">
-                    <ion-icon name="swap-vertical-outline"></ion-icon>
-                </button>
-            </div>
+            <ng-container *ngIf="activeTab === 'tokens'">
+                <div class="list-header">
+                    <span>{{ 'wallet.coin-list' | translate }}</span>
+                    <button type="button" class="icon-btn" aria-label="Sort tokens" (click)="setSortMode()">
+                        <ion-icon name="swap-vertical-outline"></ion-icon>
+                    </button>
+                </div>
 
-            <ui-skeleton *ngIf="!tokenRows" [rows]="4" kind="row"></ui-skeleton>
+                <ui-skeleton *ngIf="!tokenRows" [rows]="4" kind="row"></ui-skeleton>
 
-            <ui-token-row *ngFor="let row of tokenRows; trackBy: trackRow" [icon]="row.icon" [badge]="row.badge"
-                [title]="row.title" [sub]="row.priceLine" [value]="hideBalances ? '••••' : row.balance"
-                [subValue]="hideBalances ? null : row.fiat" [subValueTone]="row.tone" (pressed)="viewTransactions(row.subWallet)">
-            </ui-token-row>
+                <ui-token-row *ngFor="let row of tokenRows; trackBy: trackRow" [icon]="row.icon" [badge]="row.badge"
+                    [title]="row.title" [sub]="row.priceLine" [value]="hideBalances ? '••••' : row.balance"
+                    [subValue]="hideBalances ? null : row.fiat" [subValueTone]="row.tone" (pressed)="viewTransactions(row.subWallet)">
+                </ui-token-row>
+            </ng-container>
 
             <!-- Collectibles -->
-            <ng-container *ngIf="nftRows.length">
-                <div class="list-header">
-                    <span>{{ 'wallet.collectibles' | translate }}</span>
-                </div>
+            <ng-container *ngIf="activeTab === 'nfts'">
                 <ui-token-row *ngFor="let row of nftRows; trackBy: trackNft" [icon]="row.icon" [badge]="row.badge"
                     [title]="row.title" [sub]="row.sub" [value]="row.count" (pressed)="goNFTHome(networkWallet, row.nft)">
                 </ui-token-row>
+                <ui-empty-state *ngIf="!nftRows.length" icon="images-outline"
+                    message="No collectibles yet"></ui-empty-state>
+            </ng-container>
+
+            <!-- Staked -->
+            <ng-container *ngIf="activeTab === 'staked'">
+                <div *ngIf="stakedBalance" class="staked-line" (click)="toggleCurrency()">
+                    <span class="dim">{{ getStakeTitle() | translate }}:</span>
+                    <span class="tabular">{{ hideBalances ? '••••' : (currencyService.useCurrency ? getStakedBalanceInCurrency() : getStakedBalanceInNative()) }}</span>
+                    <span class="dim">{{ currencyService.useCurrency ? currencyService.selectedCurrency.symbol : networkWallet.getDisplayTokenName() }}</span>
+                </div>
+                <div class="list-header">
+                    <span>{{ 'wallet.staking-assets' | translate }}</span>
+                    <button type="button" class="icon-btn" aria-label="Refresh staked assets"
+                        (click)="onRefreshStakingAssetClicked()">
+                        <ion-icon [name]="refreshingStakedAssets ? 'hourglass-outline' : 'refresh-outline'"></ion-icon>
+                    </button>
+                </div>
+                <ui-token-row *ngFor="let row of stakingRows; trackBy: trackStaking" [icon]="row.icon"
+                    [title]="row.title" [value]="hideBalances ? '••••' : row.fiat" (pressed)="onStakingAssetClicked(row.data)">
+                </ui-token-row>
+                <ui-empty-state *ngIf="!stakingRows.length && !stakedBalance" icon="cube-outline"
+                    message="No staked assets yet"></ui-empty-state>
             </ng-container>
         </div>
     </div>

@@ -23,9 +23,9 @@
 
     <div *ngIf="networkBanner" class="network-banner">{{ networkBanner }}</div>
 
-    <!-- Active wallet balance -->
+    <!-- Active wallet balance (fiat-first; native as the secondary line) -->
     <div *ngIf="balanceVm" class="balance-block">
-      <ui-amount-display [size]="3" [value]="balanceVm.value" [unit]="balanceVm.unit" [fiat]="balanceVm.fiat"
+      <ui-amount-display [size]="3" [value]="balanceVm.primary" [unit]="balanceVm.symbol" [fiat]="balanceVm.secondary"
         [hidden]="effectiveHide" [showToggle]="true" (toggleHidden)="toggleHideBalances()"></ui-amount-display>
     </div>
 
@@ -37,7 +37,7 @@
       <ui-action-tile label="Receive" (pressed)="onMainAction()">
         <ion-icon name="arrow-down-outline"></ion-icon>
       </ui-action-tile>
-      <ui-action-tile label="Transfer" (pressed)="onMainAction()">
+      <ui-action-tile label="Swap" (pressed)="onMainAction()">
         <ion-icon name="swap-horizontal-outline"></ion-icon>
       </ui-action-tile>
       <ui-action-tile label="Stake" (pressed)="onMainAction()">
@@ -54,10 +54,13 @@
     <!-- Pillars -->
     <div class="pillars">
       <ui-token-row class="pillar value" icon="/assets/launcher/apps/app-icons/wallet.svg"
-        [title]="'launcher.home-pillar-value' | translate" [sub]="'launcher.home-pillar-value-sub' | translate"
+        [title]="identityName || ('launcher.home-pillar-value' | translate)"
+        [sub]="'launcher.home-pillar-value-sub' | translate"
+        [value]="totalFiatDisplay ? (effectiveHide ? mask : totalFiatDisplay) : null"
         [chevron]="true" (pressed)="onValue()"></ui-token-row>
       <ui-token-row class="pillar identity" icon="/assets/launcher/apps/app-icons/identity.svg"
-        [title]="'launcher.app-identity' | translate" [sub]="'launcher.app-identity-description' | translate"
+        [title]="'launcher.app-identity' | translate"
+        [sub]="didShort || ('launcher.app-identity-description' | translate)"
         [chevron]="true" (pressed)="onIdentity()"></ui-token-row>
       <ui-token-row class="pillar apps" icon="/assets/launcher/apps/app-icons/browser.svg"
         [title]="'launcher.home-pillar-apps' | translate" [sub]="'launcher.home-pillar-apps-sub' | translate"

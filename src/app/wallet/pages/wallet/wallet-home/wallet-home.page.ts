@@ -64,6 +64,7 @@ import { GlobalPreferencesService } from 'src/app/services/global.preferences.se
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { SubValueTone } from 'src/app/components/ui/ui-token-row/ui-token-row.component';
+import { UiChip } from 'src/app/components/ui/ui-chip-row/ui-chip-row.component';
 
 /** Precomputed presentation model for one token row (keeps getters out of the template). */
 interface TokenRowViewModel {
@@ -85,6 +86,14 @@ interface NftRowViewModel {
     sub: string;
     count: string;
     nft: NFT;
+}
+
+/** Precomputed presentation model for one staked-asset (DeFi) row. */
+interface StakingRowViewModel {
+    icon: string;
+    title: string;
+    fiat: string;
+    data: StakingData;
 }
 
 /** Precomputed presentation model for the total-balance display. */
@@ -111,8 +120,13 @@ export class WalletHomePage implements OnInit, OnDestroy {
     // Precomputed view-models consumed by the template (OnPush-friendly).
     public tokenRows: TokenRowViewModel[] = null;
     public nftRows: NftRowViewModel[] = [];
+    public stakingRows: StakingRowViewModel[] = [];
     public balanceVm: BalanceViewModel = null;
     public hideBalances = false;
+
+    // Figma Value screen groups holdings under Tokens / NFTs / Staked chips.
+    public activeTab: 'tokens' | 'nfts' | 'staked' = 'tokens';
+    public walletTabs: UiChip[] = [];
 
     public walletAddresses: WalletAddressInfo[] = null;
 
@@ -180,6 +194,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
         this.currencyChangeSubscription = this.currencyService.currencyChangedSubject.subscribe(() => {
             this.rebuildBalanceVm();
             this.rebuildTokenRows();
+            this.rebuildStakingRows();
             this.cdr.markForCheck();
         });
 
@@ -274,6 +289,14 @@ export class WalletHomePage implements OnInit, OnDestroy {
     }
 
     ionViewWillEnter() {
+        if (!this.walletTabs.length) {
+            this.walletTabs = [
+                { key: 'tokens', label: this.translate.instant('wallet.coin-list') },
+                { key: 'nfts', label: this.translate.instant('wallet.collectibles') },
+                { key: 'staked', label: this.translate.instant('staking.staked') }
+            ];
+            this.cdr.markForCheck();
+        }
         this.titleBar.setTitle(this.translate.instant("wallet.wallet-home-title"));
         this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, {
             key: "settings",
@@ -411,10 +434,11 @@ export class WalletHomePage implements OnInit, OnDestroy {
         await this.currencyService.toggleCurrencyDisplay();
         this.rebuildBalanceVm();
         this.rebuildTokenRows();
+        this.rebuildStakingRows();
         this.cdr.markForCheck();
     }
 
-    /** The main token subwallet (Send/Receive/Transfer/Stake land on its coin-home in v1). */
+    /** The main token subwallet (Send/Receive/Swap/Stake land on its coin-home in v1). */
     public getMainSubWallet(): AnySubWallet {
         return this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
     }
@@ -435,7 +459,27 @@ export class WalletHomePage implements OnInit, OnDestroy {
     private refreshStakingAssetsList() {
         this.zone.run(() => {
             this.stakingAssets = this.networkWallet.getStakingAssets();
+            this.rebuildStakingRows();
         })
+    }
+
+    /** Precomputes a staked-asset row per DeFi position (keeps getters out of the template). */
+    private rebuildStakingRows() {
+        this.stakingRows = (this.stakingAssets || []).map(asset => ({
+            icon: asset.farmIconUrl,
+            title: asset.farmName,
+            fiat: `${this.usdToCurrencyAmount(String(asset.amountUSD))} ${this.currencyService.selectedCurrency.symbol}`,
+            data: asset
+        }));
+    }
+
+    public onTabChange(key: string) {
+        this.activeTab = key as 'tokens' | 'nfts' | 'staked';
+        this.cdr.markForCheck();
+    }
+
+    public trackStaking(_index: number, row: StakingRowViewModel): string {
+        return row.data.farmUrl;
     }
 
     showRefresher() {

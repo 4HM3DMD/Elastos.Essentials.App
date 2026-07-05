@@ -143,6 +143,17 @@
 .lists {
     margin-top: 26px;
 
+    .wallet-tabs {
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    // The first list-header under a tab sits right beneath the chips.
+    .wallet-tabs + * .list-header:first-child,
+    .wallet-tabs + .list-header {
+        margin-top: 8px;
+    }
+
     .list-header {
         display: flex;
         align-items: center;
