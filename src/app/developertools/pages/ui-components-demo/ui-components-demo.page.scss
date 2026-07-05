@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.demo {
+  padding: 8px 16px 40px;
+
+  section {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--essentials-border-separator-color);
+
+    h2 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--essentials-text-secondary);
+      margin: 8px 0 12px;
+    }
+  }
+
+  .note {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--essentials-text-secondary);
+  }
+
+  .mini {
+    margin: 8px 0;
+    padding: 6px 12px;
+    border: 1px solid var(--essentials-border-separator-color);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ion-text-color);
+    font-family: inherit;
+    font-size: 12px;
+  }
+}

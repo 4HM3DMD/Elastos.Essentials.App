@@ -1,0 +1,19 @@
+<div class="sheet-header">
+  <div class="grabber" aria-hidden="true"></div>
+
+  <div *ngIf="title" class="title">{{ title }}</div>
+
+  <div *ngIf="origin" class="origin">
+    <div class="origin-icon">
+      <img *ngIf="isRemote(origin.icon)" [src]="origin.icon" alt="" />
+      <div *ngIf="!isRemote(origin.icon)" class="inline-icon" [inlineSVG]="origin.icon"></div>
+    </div>
+    <div class="origin-text">
+      <div class="name">
+        {{ origin.name }}
+        <span *ngIf="origin.verified" class="verified" aria-hidden="true">✓</span>
+      </div>
+      <div *ngIf="origin.domain" class="domain">{{ origin.domain }}</div>
+    </div>
+  </div>
+</div>

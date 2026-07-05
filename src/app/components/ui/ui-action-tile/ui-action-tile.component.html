@@ -1,0 +1,9 @@
+<button type="button" class="tile ion-activatable" [class.disabled]="disabled" [disabled]="disabled"
+  [attr.aria-label]="label" (click)="onPressed()">
+  <div *ngIf="icon" class="icon">
+    <img *ngIf="isRemote(icon)" [src]="icon" alt="" />
+    <div *ngIf="!isRemote(icon)" class="inline-icon" [inlineSVG]="icon"></div>
+  </div>
+  <div class="label">{{ label }}</div>
+  <ion-ripple-effect *ngIf="!disabled"></ion-ripple-effect>
+</button>

@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.chip-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip {
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--essentials-box-color);
+    color: var(--essentials-text-secondary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .badge {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    &.active {
+      background: var(--essentials-accent);
+      color: var(--essentials-accent-ink);
+    }
+
+    ion-ripple-effect {
+      --ripple-color: var(--ion-text-color);
+    }
+  }
+}

@@ -1,0 +1,41 @@
+<!-- Skeleton state -->
+<div *ngIf="skeleton" class="row skeleton" aria-hidden="true">
+  <div class="icon-circle">
+    <ion-skeleton-text animated></ion-skeleton-text>
+  </div>
+  <div class="text">
+    <ion-skeleton-text animated style="width: 55%"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 35%"></ion-skeleton-text>
+  </div>
+  <div class="values">
+    <ion-skeleton-text animated style="width: 60px"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+  </div>
+</div>
+
+<!-- Content state -->
+<div *ngIf="!skeleton" class="row" [class.ion-activatable]="interactive"
+  [class.interactive]="interactive" [attr.role]="interactive ? 'button' : null"
+  [attr.aria-label]="interactive && title ? title : null" (click)="interactive && onPressed()">
+  <div class="icon-circle">
+    <img *ngIf="icon && isRemote(icon)" [src]="icon" alt="" />
+    <div *ngIf="icon && !isRemote(icon)" class="inline-icon" [inlineSVG]="icon"></div>
+    <div *ngIf="badge" class="badge">
+      <img *ngIf="isRemote(badge)" [src]="badge" alt="" />
+      <div *ngIf="!isRemote(badge)" class="inline-icon" [inlineSVG]="badge"></div>
+    </div>
+  </div>
+
+  <div class="text">
+    <div class="title">{{ title }}</div>
+    <div *ngIf="sub" class="sub">{{ sub }}</div>
+  </div>
+
+  <div *ngIf="value || subValue" class="values">
+    <div *ngIf="value" class="value tabular">{{ value }}</div>
+    <div *ngIf="subValue" class="sub-value tabular" [class.up]="subValueTone === 'up'"
+      [class.down]="subValueTone === 'down'">{{ subValue }}</div>
+  </div>
+
+  <ion-ripple-effect *ngIf="interactive"></ion-ripple-effect>
+</div>

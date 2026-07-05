@@ -1,0 +1,93 @@
+<ion-content>
+  <app-titlebar></app-titlebar>
+
+  <div class="demo">
+    <!-- ui-token-row -->
+    <section>
+      <h2>ui-token-row</h2>
+      <ui-token-row [icon]="icon" [badge]="badge" title="Elastos" sub="ELA · $1.65" value="1,240.52"
+        subValue="+2.4%" subValueTone="up" (pressed)="noop()"></ui-token-row>
+      <ui-token-row [icon]="icon" title="Bitcoin" sub="BTC" value="0.0123" subValue="-1.1%"
+        subValueTone="down"></ui-token-row>
+      <ui-token-row [icon]="icon" title="A token with a very very long name that must ellipsize cleanly"
+        sub="LONGSYMBOL · $0.00001234" value="9,999,999.99" subValue="muted line" subValueTone="muted">
+      </ui-token-row>
+      <ui-token-row title="No icon, no values"></ui-token-row>
+      <ui-token-row [skeleton]="true"></ui-token-row>
+    </section>
+
+    <!-- ui-amount-display -->
+    <section>
+      <h2>ui-amount-display</h2>
+      <ui-amount-display value="1,240.5234" unit="ELA" fiat="$2,046.85" [size]="3" [hidden]="hiddenAmount"
+        [showToggle]="true" (toggleHidden)="onToggleHidden()"></ui-amount-display>
+      <ui-amount-display value="42.00" unit="USDC" [size]="2"></ui-amount-display>
+      <ui-amount-display value="0.000000000123456789" unit="ETH" fiat="$0.01" [size]="1"></ui-amount-display>
+      <ui-amount-display value="123456789012345.678901" unit="ELA" fiat="$999,999,999.99" [size]="3">
+      </ui-amount-display>
+    </section>
+
+    <!-- ui-action-tile / ui-action-grid -->
+    <section>
+      <h2>ui-action-grid [columns]=4</h2>
+      <ui-action-grid [columns]="4">
+        <ui-action-tile [icon]="icon" label="Send" (pressed)="noop()"></ui-action-tile>
+        <ui-action-tile [icon]="icon" label="Receive" (pressed)="noop()"></ui-action-tile>
+        <ui-action-tile [icon]="icon" label="Transfer" (pressed)="noop()"></ui-action-tile>
+        <ui-action-tile [icon]="icon" label="Earn" [disabled]="true"></ui-action-tile>
+      </ui-action-grid>
+      <h2>[columns]=3</h2>
+      <ui-action-grid [columns]="3">
+        <ui-action-tile [icon]="icon" label="Stake"></ui-action-tile>
+        <ui-action-tile [icon]="icon" label="Vote"></ui-action-tile>
+        <ui-action-tile [icon]="icon" label="Scan"></ui-action-tile>
+      </ui-action-grid>
+    </section>
+
+    <!-- ui-chip-row -->
+    <section>
+      <h2>ui-chip-row</h2>
+      <ui-chip-row [chips]="chips" [active]="activeChip" (activeChange)="onChipChange($event)"></ui-chip-row>
+      <div class="note">active: {{ activeChip }}</div>
+    </section>
+
+    <!-- ui-sheet-header -->
+    <section>
+      <h2>ui-sheet-header</h2>
+      <ui-sheet-header title="Confirm transaction"></ui-sheet-header>
+      <ui-sheet-header title="Connection request"
+        [origin]="{ icon: icon, name: 'Glide Finance', verified: true, domain: 'glidefinance.io' }">
+      </ui-sheet-header>
+    </section>
+
+    <!-- ui-kv-row -->
+    <section>
+      <h2>ui-kv-row</h2>
+      <ui-kv-row label="Amount" value="1,240.52 ELA"></ui-kv-row>
+      <ui-kv-row label="Network fee" value="0.001 ELA" tone="success"></ui-kv-row>
+      <ui-kv-row label="Spending cap" value="Unlimited" tone="danger"></ui-kv-row>
+      <ui-kv-row label="To" value="EaawH...r2zMQ" copyValue="EaawHfullAddress"></ui-kv-row>
+      <ui-kv-row label="TXID" value="0xabc...def" copyValue="0xabcdef" explorerUrl="https://example.com/tx">
+      </ui-kv-row>
+    </section>
+
+    <!-- ui-empty-state -->
+    <section>
+      <h2>ui-empty-state</h2>
+      <ui-empty-state [icon]="icon" message="No transactions yet. Your activity will show up here.">
+      </ui-empty-state>
+      <ui-empty-state [icon]="icon" message="Nothing connected." actionLabel="Connect an app"
+        (action)="noop()"></ui-empty-state>
+    </section>
+
+    <!-- ui-skeleton -->
+    <section>
+      <h2>ui-skeleton kind=row</h2>
+      <ui-skeleton [rows]="3" kind="row"></ui-skeleton>
+      <h2>kind=card</h2>
+      <ui-skeleton [rows]="2" kind="card"></ui-skeleton>
+      <h2>kind=block</h2>
+      <ui-skeleton [rows]="4" kind="block"></ui-skeleton>
+    </section>
+  </div>
+</ion-content>

@@ -1,0 +1,22 @@
+<div class="skeleton" [class.kind-row]="kind === 'row'" [class.kind-card]="kind === 'card'"
+  [class.kind-block]="kind === 'block'" aria-hidden="true">
+  <!-- Row: icon circle + two text lines -->
+  <ng-container *ngIf="kind === 'row'">
+    <div *ngFor="let i of items; trackBy: trackByIndex" class="row-item">
+      <div class="circle">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </div>
+      <div class="lines">
+        <ion-skeleton-text animated style="width: 55%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 35%"></ion-skeleton-text>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Card / block: full-width rounded blocks -->
+  <ng-container *ngIf="kind !== 'row'">
+    <div *ngFor="let i of items; trackBy: trackByIndex" class="block-item">
+      <ion-skeleton-text animated></ion-skeleton-text>
+    </div>
+  </ng-container>
+</div>

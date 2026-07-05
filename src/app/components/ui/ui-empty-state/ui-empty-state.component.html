@@ -1,0 +1,11 @@
+<div class="empty-state">
+  <div *ngIf="icon" class="icon">
+    <img *ngIf="isRemote(icon)" [src]="icon" alt="" />
+    <div *ngIf="!isRemote(icon)" class="inline-icon" [inlineSVG]="icon"></div>
+  </div>
+  <div class="message">{{ message }}</div>
+  <button *ngIf="actionLabel" type="button" class="action ion-activatable" (click)="onAction()">
+    {{ actionLabel }}
+    <ion-ripple-effect></ion-ripple-effect>
+  </button>
+</div>

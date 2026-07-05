@@ -1,0 +1,54 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+  padding: 40px 24px;
+
+  .icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--essentials-text-tertiary);
+
+    img,
+    .inline-icon {
+      width: 56px;
+      height: 56px;
+    }
+  }
+
+  .message {
+    font-size: 14px;
+    color: var(--essentials-text-secondary);
+    max-width: 260px;
+    line-height: 1.4;
+  }
+
+  .action {
+    position: relative;
+    overflow: hidden;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 14px;
+    background: var(--essentials-button-background-color);
+    color: var(--essentials-button-text-color);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+
+    ion-ripple-effect {
+      --ripple-color: var(--ion-text-color);
+    }
+  }
+}

@@ -1,0 +1,64 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.skeleton {
+  width: 100%;
+
+  // Skeleton shimmer is an opacity pulse only (no gradients). Respect reduced motion.
+  @media (prefers-reduced-motion: reduce) {
+    ion-skeleton-text {
+      --animation: none;
+    }
+  }
+
+  .row-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 0;
+
+    .circle {
+      flex-shrink: 0;
+      width: 38px;
+      height: 38px;
+
+      ion-skeleton-text {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+      }
+    }
+
+    .lines {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      ion-skeleton-text {
+        height: 12px;
+        border-radius: 4px;
+      }
+    }
+  }
+
+  .block-item {
+    margin-bottom: 12px;
+
+    ion-skeleton-text {
+      width: 100%;
+      border-radius: 14px;
+    }
+  }
+
+  &.kind-card .block-item ion-skeleton-text {
+    height: 96px;
+  }
+
+  &.kind-block .block-item ion-skeleton-text {
+    height: 20px;
+    border-radius: 6px;
+  }
+}

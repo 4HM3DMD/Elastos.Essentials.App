@@ -11,6 +11,8 @@ import { DeleteComponent } from './components/delete/delete.component';
 import { AppDetailsPage } from './pages/appdetails/appdetails';
 import { CreateAppPage } from './pages/createapp/createapp';
 import { HomePage } from './pages/home/home';
+import { UiComponentsDemoPage } from './pages/ui-components-demo/ui-components-demo.page';
+import { UiComponentsModule } from '../components/ui/ui-components.module';
 import { DeveloperToolsRoutingModule } from './routing';
 
 
@@ -20,11 +22,13 @@ import { DeveloperToolsRoutingModule } from './routing';
     HomePage,
     CreateAppPage,
     AppDetailsPage,
+    UiComponentsDemoPage,
     DeleteComponent,
   ],
   imports: [
     CommonModule,
     SharedComponentsModule,
+    UiComponentsModule,
     DeveloperToolsRoutingModule,
     HttpClientModule,
     FormsModule,
@@ -37,6 +41,7 @@ import { DeveloperToolsRoutingModule } from './routing';
     HomePage,
     CreateAppPage,
     AppDetailsPage,
+    UiComponentsDemoPage,
     DeleteComponent
   ],
   providers: [

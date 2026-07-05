@@ -1,0 +1,59 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.amount {
+  width: 100%;
+
+  .value-line {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    max-width: 100%;
+
+    .value {
+      font-weight: 600;
+      color: var(--ion-text-color);
+      line-height: 1.1;
+      // The component measures against this box; overflow is resolved in TS
+      // (font shrink then middle-ellipsis), so keep the text on one line.
+      overflow: hidden;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .unit {
+      flex-shrink: 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--essentials-text-secondary);
+    }
+
+    .toggle {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin-left: auto;
+      border: none;
+      background: transparent;
+      color: var(--essentials-text-secondary);
+      cursor: pointer;
+
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .fiat {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--essentials-text-secondary);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}

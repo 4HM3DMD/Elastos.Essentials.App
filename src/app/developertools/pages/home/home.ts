@@ -33,6 +33,10 @@ export class HomePage {
     void this.nav.navigateTo(App.DEVELOPER_TOOLS, "/developertools/createapp");
   }
 
+  openUiComponentsDemo() {
+    void this.nav.navigateTo(App.DEVELOPER_TOOLS, "/developertools/ui-components-demo");
+  }
+
   openApp(app: StorageDApp) {
     void this.nav.navigateTo(
       App.DEVELOPER_TOOLS, "/developertools/appdetails", { state: { "app": app } }

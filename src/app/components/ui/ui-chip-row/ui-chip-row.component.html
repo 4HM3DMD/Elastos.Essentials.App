@@ -1,0 +1,9 @@
+<div class="chip-row" role="tablist">
+  <button type="button" *ngFor="let chip of chips; trackBy: trackByKey" class="chip ion-activatable"
+    role="tab" [attr.aria-selected]="chip.key === active" [class.active]="chip.key === active"
+    (click)="onSelect(chip)">
+    <span class="label">{{ chip.label }}</span>
+    <span *ngIf="chip.badge" class="badge">{{ chip.badge }}</span>
+    <ion-ripple-effect></ion-ripple-effect>
+  </button>
+</div>

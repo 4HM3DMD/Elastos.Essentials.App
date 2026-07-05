@@ -1,0 +1,12 @@
+<div class="kv-row">
+  <div class="label">{{ label }}</div>
+  <div class="value-wrap">
+    <span class="value tabular" [class.danger]="tone === 'danger'" [class.success]="tone === 'success'">{{ value }}</span>
+    <button *ngIf="copyValue" type="button" class="action" [attr.aria-label]="copyLabel" (click)="onCopy()">
+      <ion-icon name="copy-outline"></ion-icon>
+    </button>
+    <button *ngIf="explorerUrl" type="button" class="action" [attr.aria-label]="explorerLabel" (click)="onOpenExplorer()">
+      <ion-icon name="open-outline"></ion-icon>
+    </button>
+  </div>
+</div>
