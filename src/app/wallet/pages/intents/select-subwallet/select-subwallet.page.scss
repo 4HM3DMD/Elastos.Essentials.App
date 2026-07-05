@@ -1,41 +1,29 @@
-@import "src/app/wallet/root.scss";
+.picker {
+  padding: 8px 16px 12px;
 
-.container {
-    min-height: 100%;
-    padding: 20px;
-    object-fit: cover;
+  .wallet-group {
+    margin-top: 16px;
 
-    .main-title-row {
-        margin-left: 5px;
-
-        p {
-            margin: 0;
-            font-size: 13px;
-            font-weight: 500;
-            line-height: 1;
-            letter-spacing: -0.33px;
-            text-align: left;
-        }
+    .group-title {
+      margin: 0 2px 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--essentials-text-secondary);
     }
 
-    .subwallet-row {
-        margin-bottom: 10px;
+    .card-group {
+      background: var(--essentials-box-color);
+      border-radius: 14px;
+      padding: 4px 14px;
     }
-
-    .btn {
-        left: 2%;
-        right: 2%;
-        width: 96%;
-        position: fixed;
-        bottom: 20px;
-    }
+  }
 }
 
-ion-footer {
-    background: transparent;
-    padding: 30px;
+.sheet-footer {
+  display: flex;
+  padding: 8px 16px calc(env(safe-area-inset-bottom) + 12px);
 
-    .btn-container {
-        width: 100%;
-    }
+  .btn {
+    flex: 1;
+  }
 }
