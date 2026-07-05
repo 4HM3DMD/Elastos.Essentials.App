@@ -14,7 +14,7 @@
     .root {
         background: var(--essentials-button-background-color);
         color: var(--essentials-button-text-color);
-        border-radius: 10px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         place-content: center;
@@ -28,7 +28,7 @@
         }
 
         &.danger {
-            background: #ff4d4d;
+            background: var(--essentials-danger, #ff4d4d);
             color: white;
         }
 

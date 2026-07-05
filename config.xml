@@ -25,6 +25,9 @@
     <preference name="LottieAnimationLocation" value="www/assets/essentials_anim.json" />
     <preference name="LottieBackgroundColor" value="000000" />
     <preference name="LottieCacheDisabled" value="true" />
+    <!-- Underlying WebView color: matches the dark default theme so overscroll and
+         rotation never flash white (doc 144 WO-1) -->
+    <preference name="BackgroundColor" value="0xff0b0b0d" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="KeyboardResizeMode" value="ionic" />
     <preference name="InternalIntentFilters" value="https://packet.web3essentials.io https://did.elastos.net https://wallet.elastos.net https://hive.elastos.net https://contact.elastos.net https://scanner.elastos.net https://elink.elastos.net https://essentials.web3essentials.io https://did.web3essentials.io https://wallet.web3essentials.io https://hive.web3essentials.io https://contact.web3essentials.io https://scanner.web3essentials.io https://elink.web3essentials.io" />

@@ -104,7 +104,12 @@ export class AppComponent {
 
       // Must do it in ios, otherwise the titlebar and status bar will overlap.
       this.statusBar.overlaysWebView(false);
-      this.statusBar.backgroundColorByHexString('#ff000000');
+      // Follow the active theme's background instead of a fixed black, so the
+      // native status bar matches both light and dark themes.
+      this.theme.activeTheme.subscribe(active => {
+        let bg = active.config.variants[active.variant].color; // '#RRGGBB'
+        this.statusBar.backgroundColorByHexString('#ff' + bg.substring(1));
+      });
 
       // Initialize our connectivity SDK helper (customize the connectivity SDK logger, storage layers)
       ElastosSDKHelper.init();

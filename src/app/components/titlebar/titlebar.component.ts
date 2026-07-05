@@ -147,9 +147,9 @@ export class TitleBarComponent {
         this.foregroundModeWasExternallySet = externallySet;
 
         if (foregroundMode == TitleBarForegroundMode.LIGHT)
-            this.theme.color = "#FFFFFF";
+            this.theme.color = "#F5F5F7"; // light-on-dark text token
         else
-            this.theme.color = "#000000";
+            this.theme.color = "#111114"; // dark-on-light text token
     }
 
     /**

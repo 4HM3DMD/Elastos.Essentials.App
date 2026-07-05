@@ -49,6 +49,7 @@ export class GlobalNativeService {
     void this.toastCtrl
       .create({
         mode: "ios",
+        cssClass: "std-toast",
         header: msgTranslated,
         duration: duration,
         position: "bottom",
@@ -62,6 +63,7 @@ export class GlobalNativeService {
     void this.toastCtrl
       .create({
         mode: "ios",
+        cssClass: "std-toast",
         header: translation,
         duration: duration,
         position: "bottom",
@@ -81,6 +83,7 @@ export class GlobalNativeService {
     void this.toastCtrl
       .create({
         mode: "ios",
+        cssClass: "std-toast",
         header: translatedHeader,
         message: translatedMsg,
         duration: duration,

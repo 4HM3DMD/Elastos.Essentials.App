@@ -503,18 +503,18 @@ a {
 
 /********************** VOTING **********************/
 .milestone-options-component {
-  --background: #ffffff;
+  --background: var(--essentials-box-color);
   box-shadow: 0 3px 10px 0 rgba(22, 23, 64, 0.12);
 }
 
 .milestone-options-component-dark {
-  --background: #212021;
+  --background: var(--essentials-box-color);
   box-shadow: 0 3px 10px 0 rgba(22, 23, 64, 0.12);
 }
 
 /********************** DEVELOPER TOOLS **********************/
 .developertools-help-component {
-  --background: linear-gradient(to bottom, #181d20 0%, #21313d 100%);
+  --background: var(--essentials-box-color);
   --width: 60%;
   box-shadow: 0 3px 10px 0 rgba(22, 23, 64, 0.12);
 }
@@ -571,5 +571,26 @@ a {
     top: auto !important;
     width: 85vw !important;
     max-width: 400px;
+  }
+}
+
+/********************** GLOBAL TOASTS & ALERTS (theme tokens) **********************/
+ion-toast.std-toast {
+  --background: var(--essentials-box-color);
+  --color: var(--ion-text-color);
+  --border-radius: 14px;
+  font-family: "CircularStd";
+
+  &::part(header) {
+    font-weight: 500;
+  }
+}
+
+// Used by GlobalNativeService.genericAlert (was previously undefined)
+ion-alert.custom-alert {
+  --background: var(--essentials-box-color);
+
+  .alert-title, .alert-message {
+    color: var(--ion-text-color);
   }
 }
