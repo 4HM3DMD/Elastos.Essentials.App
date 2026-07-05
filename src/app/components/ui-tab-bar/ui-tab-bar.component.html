@@ -25,15 +25,15 @@
     </div>
   </button>
 
-  <button type="button" class="tab" role="tab" [class.active]="active === 'browser'" aria-label="Browser"
+  <button type="button" class="tab" role="tab" [class.active]="active === 'browser'" aria-label="dApps"
     (click)="onBrowser()">
-    <ion-icon [name]="active === 'browser' ? 'compass' : 'compass-outline'"></ion-icon>
-    <span class="label">Browser</span>
+    <ion-icon [name]="active === 'browser' ? 'apps' : 'apps-outline'"></ion-icon>
+    <span class="label">dApps</span>
   </button>
 
-  <button type="button" class="tab" role="tab" [class.active]="active === 'menu'" aria-label="Menu"
+  <button type="button" class="tab" role="tab" [class.active]="active === 'menu'" aria-label="Settings"
     (click)="onMenu()">
-    <ion-icon [name]="active === 'menu' ? 'menu' : 'menu-outline'"></ion-icon>
-    <span class="label">Menu</span>
+    <ion-icon [name]="active === 'menu' ? 'settings' : 'settings-outline'"></ion-icon>
+    <span class="label">Settings</span>
   </button>
 </nav>
