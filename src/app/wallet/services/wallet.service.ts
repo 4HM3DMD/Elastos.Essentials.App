@@ -72,6 +72,7 @@ import { Native } from './native.service';
 import { WalletNetworkService } from './network.service';
 import { OfflineTransactionsService } from './offlinetransactions.service';
 import { SafeService } from './safe.service';
+import { PriceHistoryService } from './pricehistory.service';
 import { LocalStorage } from './storage.service';
 
 class SubwalletTransactionStatus {
@@ -147,7 +148,8 @@ export class WalletService {
     public globalPopupService: GlobalPopupService,
     private multiSigService: MultiSigService, // Keep for init
     private offlineTransactionsService: OfflineTransactionsService, // Keep for init
-    private didSessions: GlobalDIDSessionsService
+    private didSessions: GlobalDIDSessionsService,
+    private priceHistoryService: PriceHistoryService
   ) {
     WalletService.instance = this;
   }
@@ -156,6 +158,9 @@ export class WalletService {
     Logger.log('wallet', 'Wallet service is initializing');
     this.masterWallets = {};
     this.networkWallets = {};
+
+    // Start the local price-history recorder (records the active wallet's token prices over time).
+    void this.priceHistoryService.init(this.activeNetworkWallet);
 
     const hasWallets = await this.initWallets();
 
@@ -182,6 +187,7 @@ export class WalletService {
 
   async stop() {
     Logger.log('wallet', 'Wallet service is stopping');
+    this.priceHistoryService.stop();
     await this.terminateActiveNetworkWallets();
     this.activeNetworkWallet.next(null);
     this.activeMasterWalletId = null;
