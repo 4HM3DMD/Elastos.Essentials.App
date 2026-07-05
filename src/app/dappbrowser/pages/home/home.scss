@@ -1,7 +1,8 @@
 .container {
     min-height: 100%;
     padding: 15px;
-    padding-bottom: 15%;
+    // Tab bar clearance comes from the global has-tabbar ion-content rule.
+    padding-bottom: 24px;
     text-align: left;
 
     .no-favorite {
@@ -112,7 +113,7 @@
 
     .dapp-row {
         margin-bottom: 10px;
-        border-radius: 17px;
+        border-radius: 14px;
         font-weight: 500;
         padding: 10px;
         background-color: var(--essentials-box-color);
