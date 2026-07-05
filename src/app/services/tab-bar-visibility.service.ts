@@ -12,7 +12,9 @@ import { NetworkTemplateStore } from './stores/networktemplate.store';
 // the scanner (full-screen, no signed-in shell), any intent request screen, the
 // active dApp browsing session and its menu (the native webview paints over the
 // DOM on Android; the browser HOME is a plain page and keeps the bar), and the
-// two modules that render their own bottom tab bar (would otherwise double up).
+// modules that render their own bottom chrome — local tab bars (identity, dpos2)
+// or fixed bottom action buttons (staking ion-footer, council vote button) that
+// the global bar would cover.
 const HIDE_TABBAR_ROUTE_PREFIXES = [
   '/didsessions/',
   '/scanner/',
@@ -20,7 +22,9 @@ const HIDE_TABBAR_ROUTE_PREFIXES = [
   '/dappbrowser/browser',
   '/dappbrowser/menu',
   '/identity/myprofile/',
-  '/dpos2/menu/'
+  '/dpos2/menu/',
+  '/staking/',
+  '/crcouncilvoting/'
 ];
 
 /**
