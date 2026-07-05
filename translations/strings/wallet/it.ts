@@ -11,6 +11,7 @@ export const it = {
     recharge: 'Ricarica',
     withdraw: 'Trasferisci',
     send: 'Invia',
+    'send-coin': 'Invia {{coin}}',
     from: 'Da',
     to: 'Verso',
     amount: 'Importo',

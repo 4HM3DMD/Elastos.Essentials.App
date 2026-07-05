@@ -11,6 +11,7 @@ export const en = {
     recharge: 'Recharge',
     withdraw: 'Transfer',
     send: 'Send',
+    'send-coin': 'Send {{coin}}',
     from: 'From',
     to: 'To',
     amount: 'Amount',

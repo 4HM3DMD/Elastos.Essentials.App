@@ -11,6 +11,7 @@ export const zh = {
     recharge: '侧链充值',
     withdraw: '主链提现',
     send: '发送',
+    'send-coin': '发送 {{coin}}',
     from: '从',
     to: '至',
     amount: '金额',

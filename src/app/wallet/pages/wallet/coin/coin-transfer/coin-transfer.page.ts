@@ -1241,6 +1241,14 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     }
   }
 
+  /** A plain Send shows "Send {coin}" (2026 design); other transfer types keep their label. */
+  buttonTitle(): string {
+    if (this.transferType === TransferType.SEND && this.fromSubWallet) {
+      return this.translate.instant('wallet.send-coin', { coin: this.fromSubWallet.getDisplayTokenName() });
+    }
+    return this.translate.instant(this.getButtonLabel());
+  }
+
   showKeyboard() {
     this.keyboard.show();
   }
