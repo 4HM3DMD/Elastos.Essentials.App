@@ -89,20 +89,11 @@ export class IntentReceiverService {
     }
 
     private handleOnBoardIntent(intent: EssentialsIntentPlugin.ReceivedIntent) {
-        // Make sure at least "feature" is provided in params
-        if (!intent.params.feature) {
-            // Silent answer
-            void this.globalIntentService.sendIntentResponse({ error: "Missing feature param" }, intent.intentId, false);
-            return;
-        }
-
-        void this.globalNav.navigateTo(App.LAUNCHER, "/intents/onboard", {
-            state: {
-                intent
-            }
-        });
-
-        void this.globalIntentService.sendIntentResponse({}, intent.intentId, false);
+        // The onboard intent's only feature (easybridge) was removed, so all callers
+        // get answered without navigating anywhere. The intent still brings Essentials
+        // to the foreground, so tell the user why nothing else happens.
+        this.native.genericToast("launcher.onboard-feature-unavailable", 2000);
+        void this.globalIntentService.sendIntentResponse({ error: "Unsupported feature" }, intent.intentId, false);
     }
 
     private handlePickWidgetIntent(intent: EssentialsIntentPlugin.ReceivedIntent) {

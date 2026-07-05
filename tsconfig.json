@@ -9,8 +9,7 @@
     "node_modules",
     "plugins",
     "platforms",
-    "origin_platforms",
-    "src/app/easybridge"
+    "origin_platforms"
   ],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,

@@ -21,7 +21,6 @@ class TranslationsLoader {
         "security",
         "voting",
         "migrator",
-        "easybridge",
         "multiswap",
         "staking",
         "mainchainpolls",

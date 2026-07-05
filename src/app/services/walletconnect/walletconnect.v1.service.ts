@@ -385,12 +385,7 @@ export class WalletConnectV1Service extends GlobalService {
         result: response
       });
 
-      // Special case: "onboard" intent should not show a return message to user as it finishes instantly without response value,
-      // but user should continue in Essetials after that.
-      if (intentUrl.includes("/onboard"))
-        return false;
-      else
-        return true;
+      return true;
     }
     catch (e) {
       Logger.error("walletconnectv1", "Send intent error", e);
