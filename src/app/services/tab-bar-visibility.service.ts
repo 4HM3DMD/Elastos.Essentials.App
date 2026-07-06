@@ -28,6 +28,14 @@ const HIDE_TABBAR_ROUTE_PREFIXES = [
   '/crcouncilvoting/'
 ];
 
+// Exact routes (matched against the path, ignoring query/state) where the bar is
+// hidden. The token-detail page '/wallet/coin' has its own fixed Send/Receive/
+// Transfer footer the global bar would cover; an exact match keeps its
+// '/wallet/coin-*' siblings (receive, transfer, tx-info, ...) unaffected.
+const HIDE_TABBAR_EXACT_ROUTES = [
+  '/wallet/coin'
+];
+
 /**
  * Decides whether the global bottom tab bar is visible. It combines the current
  * route, the keyboard state, whether an intent is being answered, whether a user
@@ -116,6 +124,8 @@ export class TabBarVisibilityService {
     if (!DIDSessionsStore.signedInDIDString) return false;
     if (keyboardOpen) return false;
     if (hasIntent) return false;
-    return !HIDE_TABBAR_ROUTE_PREFIXES.some(prefix => url.startsWith(prefix));
+    if (HIDE_TABBAR_ROUTE_PREFIXES.some(prefix => url.startsWith(prefix))) return false;
+    const path = url.split('?')[0];
+    return !HIDE_TABBAR_EXACT_ROUTES.includes(path);
   }
 }

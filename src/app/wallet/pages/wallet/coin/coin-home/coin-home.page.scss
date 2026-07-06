@@ -1,5 +1,13 @@
 @import "src/app/wallet/root.scss";
 
+// The Send/Receive/Transfer action bar is fixed at the bottom and the global tab
+// bar is hidden on this page, so reserve the footer's height on the scroll view
+// (tile height + its padding) so the last transactions clear it — the global
+// has-tabbar clearance no longer applies here.
+ion-content {
+    --padding-bottom: calc(112px + env(safe-area-inset-bottom));
+}
+
 .container {
     min-height: 100%;
     margin: 0;
