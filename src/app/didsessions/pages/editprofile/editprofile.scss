@@ -14,10 +14,13 @@
   }
 
   .name-input {
-    --padding-start: 16px;
-    --padding-top: 15px;
-    --padding-bottom: 15px;
+    // Fixed height + no grow so the field never stretches to fill the flex column.
+    flex: 0 0 auto;
+    height: 52px;
     width: 100%;
+    --padding-start: 16px;
+    --padding-top: 0;
+    --padding-bottom: 0;
     background: var(--essentials-box-color);
     border-radius: 14px;
     font-size: 15px;
