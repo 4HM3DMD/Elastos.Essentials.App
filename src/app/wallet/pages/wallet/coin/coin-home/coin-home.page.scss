@@ -276,10 +276,6 @@
     background: var(--ion-background-color);
     padding: 8px 16px calc(env(safe-area-inset-bottom) + 12px);
 
-    .footer-actions {
-        display: block;
-    }
-
     .card-btn-row {
         display: flex;
         align-items: center;

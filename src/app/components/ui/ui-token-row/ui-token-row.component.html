@@ -18,11 +18,11 @@
   [class.interactive]="interactive" [attr.role]="interactive ? 'button' : null"
   [attr.aria-label]="interactive && title ? title : null" (click)="interactive && onPressed()">
   <div class="icon-circle">
-    <img *ngIf="icon && isRemote(icon)" [src]="icon" alt="" />
-    <div *ngIf="icon && !isRemote(icon)" class="inline-icon" [inlineSVG]="icon"></div>
+    <img *ngIf="icon && !isInlineSvg(icon)" [src]="icon" alt="" />
+    <div *ngIf="icon && isInlineSvg(icon)" class="inline-icon" [inlineSVG]="icon"></div>
     <div *ngIf="badge" class="badge">
-      <img *ngIf="isRemote(badge)" [src]="badge" alt="" />
-      <div *ngIf="!isRemote(badge)" class="inline-icon" [inlineSVG]="badge"></div>
+      <img *ngIf="!isInlineSvg(badge)" [src]="badge" alt="" />
+      <div *ngIf="isInlineSvg(badge)" class="inline-icon" [inlineSVG]="badge"></div>
     </div>
   </div>
 

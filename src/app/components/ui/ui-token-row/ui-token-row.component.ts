@@ -43,6 +43,14 @@ export class UiTokenRowComponent {
     return !!icon && icon.startsWith('http');
   }
 
+  /**
+   * Only local .svg files are inlined (so they can be tinted). Everything else — remote urls and
+   * local raster icons like .png/.jpg — must render as an <img>, or inlineSVG fails silently.
+   */
+  public isInlineSvg(icon: string): boolean {
+    return !!icon && !this.isRemote(icon) && icon.toLowerCase().split('?')[0].endsWith('.svg');
+  }
+
   public onPressed(): void {
     if (!this.skeleton) this.pressed.emit();
   }
