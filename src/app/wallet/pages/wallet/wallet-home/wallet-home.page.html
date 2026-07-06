@@ -56,18 +56,10 @@
 
         <!-- Actions -->
         <ui-action-grid *ngIf="networkWallet && !noAddressForLedgerWallet" [columns]="4" class="actions">
-            <ui-action-tile label="Send" (pressed)="onSend()">
-                <ion-icon name="arrow-up-outline"></ion-icon>
-            </ui-action-tile>
-            <ui-action-tile label="Receive" (pressed)="onMainAction()">
-                <ion-icon name="arrow-down-outline"></ion-icon>
-            </ui-action-tile>
-            <ui-action-tile label="Swap" (pressed)="onMainAction()">
-                <ion-icon name="swap-horizontal-outline"></ion-icon>
-            </ui-action-tile>
-            <ui-action-tile label="Stake" (pressed)="onMainAction()">
-                <ion-icon name="layers-outline"></ion-icon>
-            </ui-action-tile>
+            <ui-action-tile label="Send" icon="assets/wallet/action/send.png" (pressed)="onSend()"></ui-action-tile>
+            <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png" (pressed)="onMainAction()"></ui-action-tile>
+            <ui-action-tile label="Swap" icon="assets/wallet/action/swap.png" (pressed)="onMainAction()"></ui-action-tile>
+            <ui-action-tile label="Stake" icon="assets/wallet/action/stake.png" (pressed)="onMainAction()"></ui-action-tile>
         </ui-action-grid>
 
         <!-- Ledger prompt -->

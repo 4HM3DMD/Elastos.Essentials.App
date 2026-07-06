@@ -80,19 +80,11 @@
 
     <div class="footer" ngxHideOnScroll *ngIf="subWallet">
         <ui-action-grid [columns]="4" class="footer-actions">
-            <ui-action-tile *ngIf="coinCanBeSent()" label="Send" (pressed)="sendFunds()">
-                <ion-icon name="arrow-up-outline"></ion-icon>
-            </ui-action-tile>
-            <ui-action-tile label="Receive" (pressed)="receiveFunds()">
-                <ion-icon name="arrow-down-outline"></ion-icon>
-            </ui-action-tile>
-            <ui-action-tile *ngIf="canStakeELA() || canStakeTRX()" label="Stake" (pressed)="onStakeAction()">
-                <ion-icon name="layers-outline"></ion-icon>
-            </ui-action-tile>
+            <ui-action-tile *ngIf="coinCanBeSent()" label="Send" icon="assets/wallet/action/send.png" (pressed)="sendFunds()"></ui-action-tile>
+            <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png" (pressed)="receiveFunds()"></ui-action-tile>
+            <ui-action-tile *ngIf="canStakeELA() || canStakeTRX()" label="Stake" icon="assets/wallet/action/stake.png" (pressed)="onStakeAction()"></ui-action-tile>
             <!-- Transfer = cross-chain move, only on the Elastos mainchain and its sidechains -->
-            <ui-action-tile *ngIf="coinCanBeTransferred()" label="Transfer" (pressed)="transferFunds()">
-                <ion-icon name="swap-horizontal-outline"></ion-icon>
-            </ui-action-tile>
+            <ui-action-tile *ngIf="coinCanBeTransferred()" label="Transfer" icon="assets/wallet/action/swap.png" (pressed)="transferFunds()"></ui-action-tile>
         </ui-action-grid>
     </div>
 </ion-content>

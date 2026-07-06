@@ -9,10 +9,10 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
-  min-height: 92px;
-  padding: 12px 12px 10px;
+  min-height: 84px;
+  padding: 11px 11px 9px;
   border: none;
   border-radius: 16px;
   background: var(--essentials-box-color);
@@ -36,10 +36,24 @@
     font-size: 30px;
     color: var(--essentials-accent);
 
-    img,
     .inline-icon {
       width: 40px;
       height: 40px;
+    }
+
+    // Premium 3D action glyphs exported from Figma: full-colour rasters with
+    // baked-in lighting/shadow. Keep their aspect ratio (they are not square)
+    // and let them sit large in the tile, bottom-right, matching the design.
+    &.raster {
+      width: 56px;
+      height: 50px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: bottom right;
+      }
     }
   }
 

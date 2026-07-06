@@ -1,9 +1,9 @@
 <button type="button" class="tile ion-activatable" [class.disabled]="disabled" [disabled]="disabled"
   [attr.aria-label]="label" (click)="onPressed()">
   <div class="label">{{ label }}</div>
-  <div *ngIf="icon" class="icon">
-    <img *ngIf="isRemote(icon)" [src]="icon" alt="" />
-    <div *ngIf="!isRemote(icon)" class="inline-icon" [inlineSVG]="icon"></div>
+  <div *ngIf="icon" class="icon" [class.raster]="!isInlineSvg(icon)">
+    <img *ngIf="!isInlineSvg(icon)" [src]="icon" alt="" />
+    <div *ngIf="isInlineSvg(icon)" class="inline-icon" [inlineSVG]="icon"></div>
   </div>
   <div *ngIf="!icon" class="icon">
     <ng-content></ng-content>
