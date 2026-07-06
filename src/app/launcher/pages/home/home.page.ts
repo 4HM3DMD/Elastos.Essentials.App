@@ -32,6 +32,13 @@ const HIDDEN_MASK = '••••••';
 const BALANCE_REFRESH_INTERVAL_MS = 30000;
 const TOKENS_PREVIEW_COUNT = 3;
 
+/** Common currency glyphs so the balance reads "$0.00" (Figma) instead of "0.00 USD". */
+const CURRENCY_GLYPHS: { [code: string]: string } = {
+  USD: '$', AUD: '$', CAD: '$', HKD: '$', SGD: '$', NZD: '$',
+  EUR: '€', GBP: '£', JPY: '¥', CNY: '¥', KRW: '₩', INR: '₹',
+  RUB: '₽', BRL: 'R$', TRY: '₺', BTC: '₿', ETH: 'Ξ'
+};
+
 /** Precomputed strings for the active wallet balance hero. */
 interface HomeBalanceVm {
   /** Hero amount — the fiat total when priced, otherwise the native balance. */
@@ -233,6 +240,13 @@ export class HomePage implements OnInit, OnDestroy {
     this.rebuildWalletSummary();
   }
 
+  /** Formats a fiat amount with the currency glyph prefix (e.g. "$4,286.40"), else a code suffix. */
+  private formatFiat(amount: number, symbol: string): string {
+    let formatted = amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    let glyph = CURRENCY_GLYPHS[symbol];
+    return glyph ? `${glyph}${formatted}` : `${formatted} ${symbol}`;
+  }
+
   private rebuildWalletSummary() {
     if (!this.networkWallet) {
       this.balanceVm = null;
@@ -256,12 +270,12 @@ export class HomePage implements OnInit, OnDestroy {
     let tokenName = this.networkWallet.getDisplayTokenName();
     let symbol = this.currencyService.selectedCurrency.symbol;
     if (hasFiat) {
-      let fiatAmount = WalletUtil.getFriendlyBalance(fiatBalance);
-      this.balanceVm = { primary: fiatAmount, symbol, secondary: `${nativeAmount} ${tokenName}` };
-      this.totalFiatDisplay = `${fiatAmount} ${symbol}`;
+      let fiatStr = this.formatFiat(fiatBalance.toNumber(), symbol);
+      this.balanceVm = { primary: fiatStr, symbol: '', secondary: `${nativeAmount} ${tokenName}` };
+      this.totalFiatDisplay = fiatStr;
       let pnl = PriceHistoryService.instance.getPortfolioPnl24h(this.networkWallet);
       this.pnlVm = pnl ? {
-        text: `${pnl.absCurrency >= 0 ? '+' : '-'}${Math.abs(pnl.absCurrency).toFixed(2)} ${symbol} (${pnl.pct >= 0 ? '+' : ''}${pnl.pct.toFixed(2)}%)`,
+        text: `${pnl.absCurrency >= 0 ? '+' : '-'}${this.formatFiat(Math.abs(pnl.absCurrency), symbol)} (${pnl.pct >= 0 ? '+' : ''}${pnl.pct.toFixed(2)}%)`,
         tone: pnl.absCurrency >= 0 ? 'up' : 'down'
       } : null;
     } else {
