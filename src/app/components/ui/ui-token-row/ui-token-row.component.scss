@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 0;
+  padding: 8px 0;
   width: 100%;
 
   &.interactive {
@@ -23,7 +23,10 @@
     height: 38px;
     border-radius: 50%;
     overflow: visible;
-    background: var(--essentials-box-color);
+    // Navy coin disc (shows behind transparent marks like the Elastos icon; hidden
+    // behind tokens that carry their own coloured logo), with a hairline edge.
+    background: #16233F;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -95,8 +98,8 @@
     max-width: 45%;
 
     .value {
-      font-size: 15px;
-      font-weight: 500;
+      font-size: 18px;
+      font-weight: 600;
       color: var(--ion-text-color);
 
       &.up {
