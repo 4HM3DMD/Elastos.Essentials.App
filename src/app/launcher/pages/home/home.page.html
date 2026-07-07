@@ -4,8 +4,9 @@
     <div class="header">
       <button type="button" class="account" (click)="onIdentity()" aria-label="My identity">
         <img *ngIf="avatarDataUrl" class="avatar" [src]="avatarDataUrl" alt="" />
-        <img *ngIf="!avatarDataUrl" class="avatar" src="assets/launcher/default/default-avatar.svg" alt="" />
+        <span *ngIf="!avatarDataUrl" class="avatar avatar-initial">{{ (identityName || 'E').charAt(0) | uppercase }}</span>
         <span class="name">{{ identityName }}</span>
+        <ion-icon class="chev" name="chevron-down" aria-hidden="true"></ion-icon>
       </button>
       <div class="actions">
         <button type="button" class="icon-btn" aria-label="Notifications" (click)="onNotifications()">
@@ -49,10 +50,10 @@
     <!-- Pillars -->
     <div class="pillars">
       <ui-token-row class="pillar value" icon="/assets/launcher/apps/app-icons/wallet.svg"
-        [title]="identityName || ('launcher.home-pillar-value' | translate)"
+        [title]="'launcher.home-pillar-value' | translate"
         [sub]="'launcher.home-pillar-value-sub' | translate"
         [value]="totalFiatDisplay ? (effectiveHide ? mask : totalFiatDisplay) : null"
-        [chevron]="true" (pressed)="onValue()"></ui-token-row>
+        [chevron]="!totalFiatDisplay" (pressed)="onValue()"></ui-token-row>
       <ui-token-row class="pillar identity" icon="/assets/launcher/apps/app-icons/identity.svg"
         [title]="'launcher.app-identity' | translate"
         [sub]="didShort || ('launcher.app-identity-description' | translate)"

@@ -42,6 +42,18 @@ ion-content {
                 flex-shrink: 0;
             }
 
+            // The default avatar (no custom picture) is an orange disc with the
+            // identity's initial, matching the design's account pill.
+            .avatar-initial {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--essentials-accent);
+                color: var(--essentials-accent-ink);
+                font-size: 15px;
+                font-weight: 700;
+            }
+
             .name {
                 font-size: 14px;
                 font-weight: 600;
@@ -49,6 +61,12 @@ ion-content {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+            }
+
+            .chev {
+                flex-shrink: 0;
+                font-size: 13px;
+                color: var(--essentials-text-secondary);
             }
         }
 
