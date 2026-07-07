@@ -83,11 +83,13 @@
     --essentials-text-tertiary: #F5F5F761;
 }
 
-/** Global font family. The fallback chain covers the brief window before the brand
-    face finishes loading (font-display: swap) and any weight it lacks. **/
+/** Global font family. The 2026 design is set entirely in Manrope Medium with a
+    small +2% tracking (numbers override the tracking to 0 via .tabular). The
+    fallback chain covers the brief window before the face loads (font-display: swap). **/
 body {
-    font-family: "CircularStd", -apple-system, "Helvetica Neue", sans-serif !important;
-    --ion-font-family: "CircularStd", -apple-system, "Helvetica Neue", sans-serif !important;
+    font-family: "Manrope", -apple-system, "Helvetica Neue", sans-serif !important;
+    --ion-font-family: "Manrope", -apple-system, "Helvetica Neue", sans-serif !important;
+    letter-spacing: 0.02em;
 }
 
 /** Remove 'box' outline on clicked items **/
@@ -125,8 +127,9 @@ body {
 /** Numeric displays use Manrope with tabular (equal-width) digits, per the 2026
     design, so amounts and columns line up. **/
 .tabular {
-    font-family: "Manrope", "CircularStd", -apple-system, sans-serif;
+    font-family: "Manrope", -apple-system, sans-serif;
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0; // numbers use no tracking in the design (text uses +2%)
 }
 
 /** When the bottom tab bar is shown, reserve space at the bottom of scroll views.
