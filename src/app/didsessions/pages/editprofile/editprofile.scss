@@ -4,7 +4,9 @@
 // design (the "Name Your Identity" frame). The dark page beneath it comes from the
 // signed-out theme now being dark.
 ion-content {
-  --background: radial-gradient(140% 50% at 50% -5%, rgba(237, 110, 43, 0.62) 0%, rgba(237, 110, 43, 0.18) 38%, transparent 62%),
+  --background:
+    url("/assets/components/backgrounds/top-waves.svg") top center / 100% auto no-repeat,
+    radial-gradient(140% 50% at 50% -5%, rgba(237, 110, 43, 0.62) 0%, rgba(237, 110, 43, 0.18) 38%, transparent 62%),
     var(--ion-background-color);
 }
 

@@ -7,11 +7,13 @@ ion-content {
 .home {
     min-height: 100%;
     padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 20px);
-    // Warm orange header glow fading into the page — the signature of the 2026 design.
+    // Warm orange header glow with the woven wave texture over it — the signature
+    // of the 2026 design (waves recreated as a vector, layered on the gradient).
     background:
+        url("/assets/components/backgrounds/top-waves.svg") top center / 100% auto no-repeat,
         radial-gradient(130% 44% at 50% -6%,
-            rgba(246, 146, 26, 0.55) 0%,
-            rgba(246, 146, 26, 0.12) 34%,
+            rgba(237, 110, 43, 0.55) 0%,
+            rgba(237, 110, 43, 0.12) 34%,
             transparent 54%),
         var(--ion-background-color);
 
