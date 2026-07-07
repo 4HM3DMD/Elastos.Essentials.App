@@ -11,10 +11,10 @@
   justify-content: space-between;
   gap: 6px;
   width: 100%;
-  min-height: 84px;
+  min-height: 74px;
   padding: 11px 12px 10px;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 18px;
+  border-radius: 16px;
   // A dark charcoal panel with a faint top-down gloss and inset top highlight,
   // so the tile reads as a raised premium surface against the black background.
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 60%, rgba(255, 255, 255, 0) 100%),
@@ -31,6 +31,8 @@
   }
 
   .label {
+    position: relative;
+    z-index: 1; // Stays readable above the large bottom-right glyph.
     font-size: 13px;
     font-weight: 500;
     color: var(--ion-text-color);
@@ -54,7 +56,12 @@
     // Premium 3D action glyphs exported from Figma: full-colour rasters with
     // baked-in lighting/shadow. Keep their aspect ratio (they are not square)
     // and let them sit large in the tile, bottom-right, matching the design.
+    // The glyph sits absolute in the bottom-right so it can be large (filling most
+    // of the tile, as in the design) without inflating the compact tile height.
     &.raster {
+      position: absolute;
+      right: 10px;
+      bottom: 9px;
       width: 56px;
       height: 50px;
 
