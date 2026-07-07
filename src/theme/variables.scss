@@ -337,7 +337,8 @@ body {
 }
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  // Font family is owned by global.scss (CircularStd). Roboto was never bundled,
+  // so this stale rule only forced the system fallback.
 }
 
 .footer {

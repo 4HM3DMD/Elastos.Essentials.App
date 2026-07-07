@@ -25,7 +25,7 @@
     <preference name="LottieAnimationLocation" value="www/assets/essentials_anim.json" />
     <preference name="LottieBackgroundColor" value="000000" />
     <preference name="LottieCacheDisabled" value="true" />
-    <preference name="BackgroundColor" value="0xff0b0b0d" />
+    <preference name="BackgroundColor" value="0xff111111" />
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="KeyboardResizeMode" value="ionic" />

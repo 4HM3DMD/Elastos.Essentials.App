@@ -18,8 +18,11 @@ export const availableThemes: ThemeConfig[] = [
   {
     key: "black",
     variants: {
-      "light": { color: "#0B0B0D", boxColor: "#161619", textColor: TEXT_ON_DARK, buttonBackgroundColor: ACCENT, buttonTextColor: ACCENT_INK },
-      "dark": { color: "#161619", boxColor: "#0B0B0D", textColor: TEXT_ON_DARK, buttonBackgroundColor: ACCENT, buttonTextColor: ACCENT_INK }
+      // Both variants render the single 2026 dark design: #111111 page with #1E1E1E
+      // raised surfaces (measured from Figma). The old #0B0B0D/#161619 pair sat only
+      // ~11 luminance points apart, so cards never read as raised.
+      "light": { color: "#111111", boxColor: "#1E1E1E", textColor: TEXT_ON_DARK, buttonBackgroundColor: ACCENT, buttonTextColor: ACCENT_INK },
+      "dark": { color: "#111111", boxColor: "#1E1E1E", textColor: TEXT_ON_DARK, buttonBackgroundColor: ACCENT, buttonTextColor: ACCENT_INK }
     },
     usesDarkMode: true
   },

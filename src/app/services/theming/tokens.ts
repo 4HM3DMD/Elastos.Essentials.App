@@ -7,7 +7,8 @@
  */
 
 // Brand accent (actions, active states) and the text color used on top of it.
-export const ACCENT = '#F6921A';
+// Burnt orange measured from the 2026 design (was the yellow-leaning #F6921A).
+export const ACCENT = '#ED6E2B';
 export const ACCENT_INK = '#1A1208';
 
 // Primary text colors per surface darkness.

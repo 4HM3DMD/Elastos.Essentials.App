@@ -15,7 +15,7 @@ const MIN_FONT_SIZE_PX = 14;
 const SHRINK_STEP_PX = 2;
 const HIDDEN_MASK = '••••••';
 const ELLIPSIS = '…';
-const BASE_FONT_SIZE_BY_SIZE: { [size: number]: number } = { 1: 18, 2: 28, 3: 40 };
+const BASE_FONT_SIZE_BY_SIZE: { [size: number]: number } = { 1: 18, 2: 28, 3: 64 };
 
 /**
  * A large amount value with an optional unit and fiat sub-line. Steps its font

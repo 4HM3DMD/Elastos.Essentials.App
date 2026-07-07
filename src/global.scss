@@ -15,41 +15,57 @@
 @import "./popups.scss";
 
 /********************** SHARED FONTS **********************/
+// The .otf sources need an explicit format() hint or WKWebView silently fails to
+// load them and falls back to the system font (San Francisco); font-display keeps
+// text visible in the fallback until the brand face swaps in. 700 maps to Bold so
+// the common bold weight is covered without synthetic bolding.
 @font-face {
     font-family: "CircularStd";
     font-weight: 300;
     font-style: normal;
-    src: url("assets/fonts/circular/CircularStd-Light.otf");
+    font-display: swap;
+    src: url("assets/fonts/circular/CircularStd-Light.otf") format("opentype");
 }
 @font-face {
     font-family: "CircularStd";
     font-weight: 400;
     font-style: normal;
-    src: url("assets/fonts/circular/CircularStd-Book.otf");
+    font-display: swap;
+    src: url("assets/fonts/circular/CircularStd-Book.otf") format("opentype");
 }
 @font-face {
     font-family: "CircularStd";
     font-weight: 500;
     font-style: normal;
-    src: url("assets/fonts/circular/CircularStd-Medium.otf");
+    font-display: swap;
+    src: url("assets/fonts/circular/CircularStd-Medium.otf") format("opentype");
 }
 @font-face {
     font-family: "CircularStd";
     font-weight: 600;
     font-style: normal;
-    src: url("assets/fonts/circular/CircularStd-Bold.otf");
+    font-display: swap;
+    src: url("assets/fonts/circular/CircularStd-Bold.otf") format("opentype");
+}
+@font-face {
+    font-family: "CircularStd";
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url("assets/fonts/circular/CircularStd-Bold.otf") format("opentype");
 }
 @font-face {
     font-family: "CircularStd";
     font-weight: 800;
     font-style: normal;
-    src: url("assets/fonts/circular/CircularStd-Black.otf");
+    font-display: swap;
+    src: url("assets/fonts/circular/CircularStd-Black.otf") format("opentype");
 }
 
 /** Semantic token defaults (dark-first). GlobalThemeService overrides these on body
     at runtime; these values only cover the moment before it runs. **/
 :root {
-    --essentials-accent: #F6921A;
+    --essentials-accent: #ED6E2B;
     --essentials-accent-ink: #1A1208;
     --essentials-success: #2BC76A;
     --essentials-danger: #FF6B6B;
@@ -57,10 +73,11 @@
     --essentials-text-tertiary: #F5F5F761;
 }
 
-/** Global font family **/
+/** Global font family. The fallback chain covers the brief window before the brand
+    face finishes loading (font-display: swap) and any weight it lacks. **/
 body {
-    font-family: "CircularStd" !important;
-    --ion-font-family: "CircularStd" !important;
+    font-family: "CircularStd", -apple-system, "Helvetica Neue", sans-serif !important;
+    --ion-font-family: "CircularStd", -apple-system, "Helvetica Neue", sans-serif !important;
 }
 
 /** Remove 'box' outline on clicked items **/
