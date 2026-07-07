@@ -32,9 +32,9 @@ export const ALPHA_TERTIARY = '61'; // 38%
 
 // Theme selection defaults.
 export const DEFAULT_THEME_KEY = 'black'; // Signed-in default (dark-first, doc 144 D2)
-// Signed-out (DID sessions / onboarding) default stays light until those screens are
-// rebuilt for dark surfaces (doc 144 WO-17): several of them hardcode light backgrounds.
-export const SIGNED_OUT_THEME_KEY = 'white';
+// Signed-out (DID sessions / onboarding) now also uses the dark design, matching the
+// 2026 onboarding frames. Screens that hardcoded light backgrounds are being migrated.
+export const SIGNED_OUT_THEME_KEY = 'black';
 
 // cssClass applied to every toast so declared.scss can theme them in one place.
 export const STD_TOAST_CLASS = 'std-toast';

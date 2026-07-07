@@ -1,5 +1,13 @@
 @import "src/app/didsessions/root.scss";
 
+// Warm gradient wash across the top of the screen, matching the 2026 onboarding
+// design (the "Name Your Identity" frame). The dark page beneath it comes from the
+// signed-out theme now being dark.
+ion-content {
+  --background: radial-gradient(140% 50% at 50% -5%, rgba(237, 110, 43, 0.62) 0%, rgba(237, 110, 43, 0.18) 38%, transparent 62%),
+    var(--ion-background-color);
+}
+
 .name-identity {
   display: flex;
   flex-direction: column;
@@ -8,8 +16,9 @@
 
   .heading {
     margin: 12px 0 22px;
-    font-size: 26px;
+    font-size: 30px;
     font-weight: 700;
+    line-height: 1.15;
     color: var(--ion-text-color);
   }
 
