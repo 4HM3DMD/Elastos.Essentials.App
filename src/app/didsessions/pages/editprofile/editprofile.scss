@@ -5,7 +5,6 @@
 // signed-out theme now being dark.
 ion-content {
   --background:
-    url("/assets/components/backgrounds/top-waves.svg") top center / 100% auto no-repeat,
     radial-gradient(140% 50% at 50% -5%, rgba(237, 110, 43, 0.62) 0%, rgba(237, 110, 43, 0.18) 38%, transparent 62%),
     var(--ion-background-color);
 }
