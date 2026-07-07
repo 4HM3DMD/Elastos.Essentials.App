@@ -13,10 +13,11 @@
     max-width: 100%;
 
     .value {
-      font-weight: 700;
+      font-family: "Manrope", "CircularStd", sans-serif;
+      font-weight: 500;
       color: var(--ion-text-color);
       line-height: 1.05;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
       // The component measures against this box; overflow is resolved in TS
       // (font shrink then middle-ellipsis), so keep the text on one line.
       overflow: hidden;

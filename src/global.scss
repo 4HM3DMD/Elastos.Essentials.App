@@ -62,6 +62,16 @@
     src: url("assets/fonts/circular/CircularStd-Black.otf") format("opentype");
 }
 
+// Manrope (variable) is the numeric face in the 2026 design: tabular figures for
+// balances, amounts and percentages. Text stays on CircularStd.
+@font-face {
+    font-family: "Manrope";
+    font-weight: 200 800;
+    font-style: normal;
+    font-display: swap;
+    src: url("assets/fonts/manrope/Manrope-Variable.ttf") format("truetype-variations");
+}
+
 /** Semantic token defaults (dark-first). GlobalThemeService overrides these on body
     at runtime; these values only cover the moment before it runs. **/
 :root {
@@ -112,8 +122,10 @@ body {
     opacity: 0.8;
 }
 
-/** Tabular (equal-width) digits for amounts, so columns line up **/
+/** Numeric displays use Manrope with tabular (equal-width) digits, per the 2026
+    design, so amounts and columns line up. **/
 .tabular {
+    font-family: "Manrope", "CircularStd", -apple-system, sans-serif;
     font-variant-numeric: tabular-nums;
 }
 
