@@ -56,18 +56,21 @@
         height: 52px;
         margin-top: -18px;
         border-radius: 50%;
-        background: var(--essentials-accent);
-        color: var(--essentials-accent-ink);
+        // White disc so the official two-tone Elastos icon (orange + cream) reads.
+        background: #ffffff;
         // A ring in the bar's surface color separates the raised circle from the bar.
         border: 3px solid var(--essentials-box-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 
-        svg {
+        img {
           display: block;
+          width: 34px;
+          height: 34px;
         }
       }
 
       &.active .center-circle {
-        border-color: var(--essentials-accent-ink);
+        border-color: var(--essentials-accent);
       }
     }
   }
