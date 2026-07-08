@@ -745,13 +745,18 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   }
 
   async pasteFromClipboard() {
-    this.toAddress = (await this.native.pasteFromClipboard()).trim();
+    const pasted = (await this.native.pasteFromClipboard()).trim();
 
-    const isAddressValid = await this.isAddressValid(this.toAddress);
+    const isAddressValid = await this.isAddressValid(pasted);
     if (!isAddressValid) {
+      // Do NOT keep the invalid value in the field - leaving it there let the Send
+      // CTA enable with an unusable address. Clear it and surface the error.
+      this.toAddress = null;
+      this.addressName = null;
       this.native.toast_trans('wallet.not-a-valid-address');
       return;
     }
+    this.toAddress = pasted;
   }
 
   /** SCR-025: press-and-hold the address field to paste from the clipboard. */
@@ -1829,7 +1834,10 @@ export class CoinTransferPage implements OnInit, OnDestroy {
    */
   private async approveSpendingIfNeeded(targetAddress: string): Promise<boolean> {
       let mainCoinSubWallet = this.networkWallet.getMainEvmSubWallet();
-      let amount = new BigNumber(this.amount).multipliedBy(this.fromSubWallet.tokenDecimals)
+      // Raw on-chain amount is value * 10^decimals (tokenAmountMulipleTimes), NOT
+      // value * decimals. The old code multiplied by the decimal COUNT, approving a
+      // wildly wrong allowance. Match every other raw-unit conversion in this file.
+      let amount = new BigNumber(this.amount).multipliedBy(this.fromSubWallet.tokenAmountMulipleTimes)
       return await this.erc20CoinService.approveSpendingIfNeeded(mainCoinSubWallet, this.fromSubWallet.id, this.fromSubWallet.tokenDecimals, targetAddress, amount);
   }
 }

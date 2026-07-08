@@ -5,7 +5,9 @@
     <!-- QR card -->
     <!-- SCR-068: #qrCard ref lets saveImage() grab the rendered QR canvas for PNG export. -->
     <div *ngIf="qrcode" #qrCard class="qr-card">
-      <qrcode class="qrcode" [qrdata]="qrcode" [width]="200" colorDark="#FFFFFF" colorLight="#161616" [margin]="2"></qrcode>
+      <!-- Standard dark-on-light QR so any scanner reads it (was inverted). The dark
+           .qr-card frames the white code; colorLight provides the light quiet-zone. -->
+      <qrcode class="qrcode" [qrdata]="qrcode" [width]="200" colorDark="#000000" colorLight="#FFFFFF" [margin]="2"></qrcode>
     </div>
 
     <!-- Network -->

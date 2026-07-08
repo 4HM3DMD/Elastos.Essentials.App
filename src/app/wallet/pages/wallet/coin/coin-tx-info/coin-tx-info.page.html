@@ -10,7 +10,7 @@
             </div>
             <div class="tx-amount" [class.up]="amountTone === 'success'" [class.down]="amountTone === 'danger'">
                 <span class="amount-num">{{ heroSign }}{{ heroAmount }}</span>
-                <span class="amount-ticker">{{ symbol }}</span>
+                <span class="amount-ticker">{{ ticker }}</span>
             </div>
             <div class="tx-status" [class.complete]="status === 'confirmed'" [class.pending]="status === 'pending'"
                 [class.incomplete]="status === 'incomplete'">

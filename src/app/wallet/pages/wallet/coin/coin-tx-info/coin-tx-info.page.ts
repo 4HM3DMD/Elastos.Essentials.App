@@ -97,6 +97,9 @@ export class CoinTxInfoPage implements OnInit {
   public heroIcon = '';
   public heroSign = '';
   public heroAmount = '';
+  // Real token ticker (e.g. "ELA"). transactionInfo.symbol is only a +/- SIGN, not a
+  // ticker, so it must never be shown as one (heroSign carries the sign separately).
+  public ticker = '';
   public amountTone: 'success' | 'danger' | 'neutral' = 'neutral';
   public memo = '';
   public height = 0;
@@ -195,6 +198,7 @@ export class CoinTxInfoPage implements OnInit {
       this.type = this.transactionInfo.type;
       this.amount = this.transactionInfo.amount;
       this.symbol = this.transactionInfo.symbol;
+      this.ticker = this.subWallet.getDisplayTokenName();
       this.status = this.transactionInfo.status;
       this.statusName = this.transactionInfo.statusName;
       this.payStatusIcon = this.transactionInfo.payStatusIcon;
@@ -219,7 +223,11 @@ export class CoinTxInfoPage implements OnInit {
         this.heroSign = '';
         this.amountTone = 'neutral';
       }
-      this.heroAmount = this.amount ? new BigNumber(this.amount).abs().toFixed(2) : '0.00';
+      // Full token precision, not toFixed(2) - rounding misrepresents crypto amounts
+      // and contradicted the full-precision Amount row below.
+      this.heroAmount = this.amount
+        ? WalletUtil.getAmountWithoutScientificNotation(new BigNumber(this.amount).abs(), this.subWallet.tokenDecimals)
+        : '0';
       this.payFee =
         this.transactionInfo.fee !== null
           ? WalletUtil.getAmountWithoutScientificNotation(new BigNumber(this.transactionInfo.fee), 8)
@@ -495,8 +503,8 @@ export class CoinTxInfoPage implements OnInit {
       });
     }
 
-    // SYS-006: itemised amount rows.
-    const amountWithSymbol = `${this.displayAmount} ${this.symbol}`;
+    // SYS-006: itemised amount rows. Use the real ticker, not the +/- sign.
+    const amountWithSymbol = `${this.displayAmount} ${this.ticker}`;
     if (this.direction === TransactionDirection.RECEIVED) {
       this.txDetails.unshift({
         type: TransactionInfoType.AMOUNT,
@@ -505,13 +513,14 @@ export class CoinTxInfoPage implements OnInit {
         show: true
       });
     } else {
-      // Total deducted = amount + fee, only when the fee is paid in the same (native) token.
-      if (this.payFee !== null && this.symbol === this.mainTokenSymbol) {
+      // Total deducted = amount + fee, only when the sent token IS the native token
+      // (so amount and fee are in the same unit). Compare the real ticker, not the sign.
+      if (this.payFee !== null && this.ticker === this.mainTokenSymbol) {
         const total = new BigNumber(String(this.displayAmount).replace(/,/g, '')).plus(new BigNumber(this.payFee));
         this.txDetails.unshift({
           type: TransactionInfoType.AMOUNT,
           title: 'wallet.tx-info-total',
-          value: `${WalletUtil.getAmountWithoutScientificNotation(total, this.subWallet.tokenDecimals)} ${this.symbol}`,
+          value: `${WalletUtil.getAmountWithoutScientificNotation(total, this.subWallet.tokenDecimals)} ${this.ticker}`,
           show: true
         });
       }
@@ -578,7 +587,7 @@ export class CoinTxInfoPage implements OnInit {
       default:
         verb = this.getTransactionTitle();
     }
-    return this.symbol ? `${verb} ${this.symbol}` : verb;
+    return this.ticker ? `${verb} ${this.ticker}` : verb;
   }
 
   /**
