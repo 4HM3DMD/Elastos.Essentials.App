@@ -14,6 +14,7 @@ export const en = {
         /********** Bottom Tab Bar **********/
         'tabbar-home': 'Home',
         'tabbar-wallet': 'Wallet',
+        'tabbar-hub': 'Hub',
         'tabbar-dapps': 'dApps',
         'tabbar-settings': 'Settings',
 

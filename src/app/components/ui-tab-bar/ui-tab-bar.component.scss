@@ -49,31 +49,29 @@
     }
 
     &.center {
-      justify-content: flex-start;
-
       .center-circle {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 52px;
-        height: 52px;
-        margin-top: -18px;
+        width: 46px;
+        height: 46px;
+        margin-top: -16px;
         border-radius: 50%;
-        // White disc so the official two-tone Elastos icon (orange + cream) reads.
-        background: #ffffff;
-        // A ring in the bar's surface color separates the raised circle from the bar.
+        // Orange gradient Hub disc (same accent gradient as the Value pillar).
+        background: linear-gradient(158deg, #FFA971 0%, #F07A38 50%, #E24A00 100%);
+        // A ring in the bar's surface color separates the raised disc from the bar.
         border: 3px solid var(--essentials-box-color);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 
         img {
           display: block;
-          width: 34px;
-          height: 34px;
+          width: 26px;
+          height: 26px;
         }
       }
 
       &.active .center-circle {
-        border-color: var(--essentials-accent);
+        box-shadow: 0 4px 14px rgba(237, 110, 43, 0.5);
       }
     }
   }

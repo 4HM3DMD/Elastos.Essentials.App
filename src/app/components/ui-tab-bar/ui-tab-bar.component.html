@@ -11,12 +11,13 @@
     <span class="label">{{ 'launcher.tabbar-wallet' | translate }}</span>
   </button>
 
-  <button type="button" class="tab center" role="tab" [class.active]="active === 'elastos'" aria-label="Elastos"
+  <button type="button" class="tab center" role="tab" [class.active]="active === 'elastos'" aria-label="Hub"
     (click)="onElastos()">
     <div class="center-circle">
-      <!-- Official 2025 Elastos brand icon (two-tone, self-coloured). -->
-      <img src="assets/components/tab-bar/elastos-icon.svg" alt="Elastos" />
+      <!-- Elastos glyph on the orange gradient Hub disc (2026 design). -->
+      <img src="assets/components/tab-bar/hub-icon.png" alt="Hub" />
     </div>
+    <span class="label">{{ 'launcher.tabbar-hub' | translate }}</span>
   </button>
 
   <button type="button" class="tab" role="tab" [class.active]="active === 'browser'" aria-label="dApps"
