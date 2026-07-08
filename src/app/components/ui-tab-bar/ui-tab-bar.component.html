@@ -1,13 +1,13 @@
 <nav class="tab-bar" role="tablist">
   <button type="button" class="tab" role="tab" [class.active]="active === 'home'" aria-label="Home"
     (click)="onHome()">
-    <ion-icon name="home-outline"></ion-icon>
+    <ion-icon src="assets/components/tab-bar/tab-home.svg"></ion-icon>
     <span class="label">{{ 'launcher.tabbar-home' | translate }}</span>
   </button>
 
   <button type="button" class="tab" role="tab" [class.active]="active === 'wallet'" aria-label="Wallet"
     (click)="onWallet()">
-    <ion-icon name="wallet-outline"></ion-icon>
+    <ion-icon src="assets/components/tab-bar/tab-wallet.svg"></ion-icon>
     <span class="label">{{ 'launcher.tabbar-wallet' | translate }}</span>
   </button>
 
@@ -21,13 +21,13 @@
 
   <button type="button" class="tab" role="tab" [class.active]="active === 'browser'" aria-label="dApps"
     (click)="onBrowser()">
-    <ion-icon name="apps-outline"></ion-icon>
+    <ion-icon name="apps"></ion-icon>
     <span class="label">{{ 'launcher.tabbar-dapps' | translate }}</span>
   </button>
 
   <button type="button" class="tab" role="tab" [class.active]="active === 'menu'" aria-label="Settings"
     (click)="onMenu()">
-    <ion-icon name="settings-outline"></ion-icon>
+    <ion-icon name="settings"></ion-icon>
     <span class="label">{{ 'launcher.tabbar-settings' | translate }}</span>
   </button>
 </nav>
