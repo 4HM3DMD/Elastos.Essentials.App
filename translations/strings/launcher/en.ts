@@ -94,6 +94,8 @@ export const en = {
         'home-see-all': 'See all',
         'home-todays-pnl': "Today's PnL",
         'home-no-tokens': 'No tokens yet',
+        'identity-published': 'Published ✓✓',
+        'apps-connected': '{{count}} Connected',
         'home-wallet-unavailable': 'Your active wallet is not available on this network.',
         'cyber-republic': 'Elastos DAO',
         'elastos-staking': 'Elastos Staking',

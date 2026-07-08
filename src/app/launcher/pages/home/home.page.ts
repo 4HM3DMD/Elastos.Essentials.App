@@ -23,6 +23,7 @@ import { WalletSortType } from 'src/app/wallet/model/walletaccount';
 import { CurrencyService } from 'src/app/wallet/services/currency.service';
 import { PriceHistoryService } from 'src/app/wallet/services/pricehistory.service';
 import { formatFiatAmount } from 'src/app/helpers/currency-format';
+import { ProfileService } from 'src/app/identity/services/profile.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { UiService } from 'src/app/wallet/services/ui.service';
 import { WalletService } from 'src/app/wallet/services/wallet.service';
@@ -80,6 +81,17 @@ export class HomePage implements OnInit, OnDestroy {
   public avatarDataUrl: string = null;
   public hasNewNotifications = false;
   public networkBanner: string = null;
+
+  /** Value pillar sub, matching Figma's "N networks · M staked" (SCR-054; staked is data-gated). */
+  public get valuePillarSub(): string {
+    let networks = this.walletNetworkService.getDisplayableNetworks().length;
+    return `${networks} networks · 0 staked`;
+  }
+
+  /** Identity pillar status: "Published" (green) once the DID document is on chain (SCR-049). */
+  public get identityPublished(): boolean {
+    return !!(ProfileService.instance && ProfileService.instance.publishedDIDDocument);
+  }
 
   // Wallet summary
   public balanceVm: HomeBalanceVm = null;

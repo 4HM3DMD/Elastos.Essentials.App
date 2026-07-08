@@ -52,16 +52,18 @@
     <div class="pillars">
       <ui-token-row class="pillar value" icon="/assets/launcher/apps/app-icons/value-coin.svg"
         [title]="'launcher.home-pillar-value' | translate"
-        [sub]="'launcher.home-pillar-value-sub' | translate"
+        [sub]="valuePillarSub"
         [value]="totalFiatDisplay ? (effectiveHide ? mask : totalFiatDisplay) : null"
         [chevron]="!totalFiatDisplay" (pressed)="onValue()"></ui-token-row>
       <ui-token-row class="pillar identity" icon="/assets/launcher/apps/app-icons/identity-badge.svg"
         [title]="'launcher.app-identity' | translate"
         [sub]="didShort || ('launcher.app-identity-description' | translate)"
-        [chevron]="true" (pressed)="onIdentity()"></ui-token-row>
+        [value]="identityPublished ? ('launcher.identity-published' | translate) : null" [valueTone]="'up'"
+        [chevron]="!identityPublished" (pressed)="onIdentity()"></ui-token-row>
       <ui-token-row class="pillar apps" icon="/assets/launcher/apps/app-icons/apps-grid.svg"
         [title]="'launcher.home-pillar-apps' | translate" [sub]="'launcher.home-pillar-apps-sub' | translate"
-        [chevron]="true" (pressed)="onApps()"></ui-token-row>
+        [value]="('launcher.apps-connected' | translate:{ count: 0 })" [chevron]="false"
+        (pressed)="onApps()"></ui-token-row>
     </div>
 
     <!-- Tokens preview (top 3 by fiat value); header always shown while a wallet is active -->
