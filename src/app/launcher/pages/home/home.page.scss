@@ -177,15 +177,24 @@ ion-content {
             padding: 0 14px;
         }
 
-        // Figma pillar discs are 34px; the shared 38px default reads chunky and
-        // inflates card height. Scope a 34px disc + 13px row padding → 60px cards.
+        // SCR-058: Figma pillar discs are ~44px (measured 44.3px on the 3.0x
+        // export), not the shared 38px default. SCR-067: pillar title ~20px,
+        // sub ~13px. A 44px disc + 8px row padding yields the measured 60px card.
         .pillar ::ng-deep .icon-circle {
-            width: 34px !important;
-            height: 34px !important;
+            width: 44px !important;
+            height: 44px !important;
         }
 
         .pillar ::ng-deep .row {
-            padding: 13px 0;
+            padding: 8px 0;
+        }
+
+        .pillar ::ng-deep .text .title {
+            font-size: 20px !important;
+        }
+
+        .pillar ::ng-deep .text .sub {
+            font-size: 13px !important;
         }
 
         // Exact 2026 pillar disc gradients (sampled from Figma) with white glyphs.
@@ -202,14 +211,15 @@ ion-content {
         }
 
         // Center the white glyph in the disc (do not stretch it to fill).
+        // Glyph ~26px inside the 44px disc (~59% fill, matching the frame).
         .pillar ::ng-deep .icon-circle .inline-icon {
-            width: 20px;
-            height: 20px;
+            width: 26px;
+            height: 26px;
             color: #FFFFFF;
 
             svg {
-                width: 20px;
-                height: 20px;
+                width: 26px;
+                height: 26px;
                 display: block;
             }
         }
