@@ -3,7 +3,11 @@
     top: 0;
     z-index: 1000000;
     display: flex;
-    height: 64px;
+    // Full-bleed status bar (overlaysWebView=true): reserve the safe-area inset
+    // above the 64px bar so the title and icons clear the status bar on every screen.
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top);
+    height: calc(64px + env(safe-area-inset-top));
     align-items: center;
 
     ion-header {

@@ -105,10 +105,12 @@ export class AppComponent {
       // Force Essentials orientation to portrait only
       void this.screenOrientation.lock('portrait');
 
-      // Must do it in ios, otherwise the titlebar and status bar will overlap.
-      // Background color and icon style are applied by GlobalThemeService together
-      // with the rest of the native theming side effects.
-      this.statusBar.overlaysWebView(false);
+      // 2026 design: the webview draws full-bleed under the status bar so header
+      // textures (e.g. the launcher cover) reach the top edge like the Figma frames.
+      // The shared titlebar reserves the safe-area inset (titlebar.component.scss),
+      // and screens with their own header pad by env(safe-area-inset-top), so the
+      // status bar no longer overlaps content. Icon style is set by GlobalThemeService.
+      this.statusBar.overlaysWebView(true);
 
       // Initialize our connectivity SDK helper (customize the connectivity SDK logger, storage layers)
       ElastosSDKHelper.init();
