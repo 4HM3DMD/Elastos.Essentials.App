@@ -12,9 +12,9 @@
 
     <!-- Network -->
     <div class="section">
+      <!-- Info glyph removed: it looked tappable but had no handler / no info to show. -->
       <p class="section-label">
         {{ 'wallet.coin-receive-network-label' | translate }}
-        <ion-icon class="info-glyph" name="information-circle-outline"></ion-icon>
       </p>
       <div class="network-row">
         <span class="network-disc">
@@ -34,7 +34,10 @@
     <div class="section">
       <p class="section-label">{{ 'wallet.coin-receive-address-label' | translate }}</p>
       <div class="address-row">
-        <span class="address" (click)="copyAddress()">{{ shortAddress }}</span>
+        <!-- Full address, wrapped: a Receive address must be shown in full so it can
+             be read off / verified. The middle-ellipsized shortAddress is only for
+             compact references elsewhere; here the whole point is the complete value. -->
+        <span class="address" (click)="copyAddress()">{{ qrcode }}</span>
         <button type="button" class="copy-disc" aria-label="Copy address" (click)="copyAddress()">
           <ion-icon name="copy-outline"></ion-icon>
         </button>

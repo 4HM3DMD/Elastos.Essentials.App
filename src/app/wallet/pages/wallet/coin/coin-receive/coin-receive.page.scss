@@ -93,13 +93,18 @@
 
     .address {
       flex: 1;
-      font-size: 17px;
+      min-width: 0;
+      font-size: 16px;
       font-weight: 500;
+      line-height: 1.4;
       letter-spacing: 0.3px;
       color: var(--ion-text-color);
       cursor: pointer;
       text-align: left;
-      white-space: nowrap;
+      // Full address wraps across lines rather than truncating - it must be
+      // readable in its entirety on the Receive screen.
+      white-space: normal;
+      word-break: break-all;
       font-variant-numeric: tabular-nums;
     }
 
