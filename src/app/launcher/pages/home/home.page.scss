@@ -165,15 +165,27 @@ ion-content {
     .pillars {
         // Figma: three independent rounded cards separated by page-background gaps —
         // no shared container surface and no hairline separators.
-        margin-top: 20px;
+        // Compact 60px cards with 10px gaps (measured from the 2026 frame).
+        margin-top: 18px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
 
         .pillar {
             background: var(--essentials-box-color);
             border-radius: 16px;
-            padding: 6px 14px;
+            padding: 0 14px;
+        }
+
+        // Figma pillar discs are 34px; the shared 38px default reads chunky and
+        // inflates card height. Scope a 34px disc + 13px row padding → 60px cards.
+        .pillar ::ng-deep .icon-circle {
+            width: 34px !important;
+            height: 34px !important;
+        }
+
+        .pillar ::ng-deep .row {
+            padding: 13px 0;
         }
 
         // Exact 2026 pillar disc gradients (sampled from Figma) with white glyphs.
