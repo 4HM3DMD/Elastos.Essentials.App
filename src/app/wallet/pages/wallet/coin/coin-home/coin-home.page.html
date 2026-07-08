@@ -16,8 +16,11 @@
                 <h3 class="token-hero-caption">{{ 'wallet.coin-est-total-value' | translate }}</h3>
                 <ui-amount-display [size]="3" [value]="coinDisplayValue" [unit]="coinDisplayUnit"></ui-amount-display>
                 <div class="token-hero-sub">
-                    <span *ngIf="coinDisplayFiat" class="hero-fiat">{{ coinDisplayFiat }}</span>
-                    <span *ngIf="coinPercentChangeVm" class="hero-change" [class.up]="coinPercentChangeVm.tone === 'up'"
+                    <!-- SCR-097: while scrubbing the chart, the fiat slot shows the touched point's
+                         price and the %change is hidden. Reverts to the live value on release. -->
+                    <span *ngIf="scrubReadout || coinDisplayFiat" class="hero-fiat">{{ scrubReadout || coinDisplayFiat }}</span>
+                    <span *ngIf="coinPercentChangeVm && !scrubReadout" class="hero-change"
+                        [class.up]="coinPercentChangeVm.tone === 'up'"
                         [class.down]="coinPercentChangeVm.tone === 'down'">{{ coinPercentChangeVm.text }}</span>
                 </div>
                 <div *ngIf="stakedBalance" class="staked-line">
@@ -31,7 +34,8 @@
             <div *ngIf="priceSeriesVm" class="price-chart">
                 <div class="chart-canvas">
                     <!-- SCR-101: burnt-orange accent chart with gradient fill + end dot -->
-                    <ui-sparkline [points]="priceSeriesVm" [height]="200" tone="accent"></ui-sparkline>
+                    <ui-sparkline [points]="priceSeriesVm" [height]="200" tone="accent"
+                        (scrub)="onChartScrub($event)"></ui-sparkline>
                 </div>
                 <!-- SCR-103: ghost range selector (text-only chips, dark active disc) -->
                 <ui-chip-row variant="ghost" [chips]="rangeChips" [active]="chartRange"

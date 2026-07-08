@@ -1,6 +1,9 @@
-<svg *ngIf="visible" class="sparkline" [class.up]="toneClass === 'up'" [class.down]="toneClass === 'down'"
-  [class.accent]="toneClass === 'accent'" [attr.viewBox]="'0 0 ' + width + ' ' + height" [style.height.px]="height"
-  preserveAspectRatio="none" aria-hidden="true">
+<svg #svg *ngIf="visible" class="sparkline" [class.up]="toneClass === 'up'" [class.down]="toneClass === 'down'"
+  [class.accent]="toneClass === 'accent'" [class.scrubbing]="scrubbing" [attr.viewBox]="'0 0 ' + width + ' ' + height"
+  [style.height.px]="height" preserveAspectRatio="none"
+  (touchstart)="onScrubStart($event)" (touchmove)="onScrubMove($event)" (touchend)="onScrubEnd()"
+  (touchcancel)="onScrubEnd()" (mousedown)="onScrubStart($event)" (mousemove)="onScrubMove($event)"
+  (mouseup)="onScrubEnd()" (mouseleave)="onScrubEnd()">
   <!-- SCR-101: orange->transparent gradient used by the accent tone's area fill. -->
   <defs>
     <linearGradient id="sparkline-accent-gradient" x1="0" y1="0" x2="0" y2="1">
@@ -11,5 +14,11 @@
   <path *ngIf="area" class="area" [attr.d]="areaPath"></path>
   <path class="line" [attr.d]="linePath" [attr.stroke-width]="strokeWidth"></path>
   <!-- SCR-101: last-point dot marking the current price on the accent chart. -->
-  <circle *ngIf="toneClass === 'accent'" class="last-dot" [attr.cx]="lastX" [attr.cy]="lastY" r="3"></circle>
+  <circle *ngIf="toneClass === 'accent' && !scrubbing" class="last-dot" [attr.cx]="lastX" [attr.cy]="lastY" r="3">
+  </circle>
+  <!-- SCR-097: press-and-hold scrub cursor — dashed vertical guide + dot on the nearest point.
+       The date/price readout is rendered by the consumer from the emitted (scrub) index. -->
+  <line *ngIf="scrubbing" class="scrub-line" [attr.x1]="scrubX" [attr.y1]="0" [attr.x2]="scrubX" [attr.y2]="height">
+  </line>
+  <circle *ngIf="scrubbing" class="scrub-dot" [attr.cx]="scrubX" [attr.cy]="scrubY" r="4"></circle>
 </svg>

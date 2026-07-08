@@ -1058,4 +1058,17 @@ export class CoinHomePage implements OnInit {
     if (!(first > 0)) return null;
     return ((last - first) / first) * 100;
   }
+
+  /**
+   * SCR-097: readout shown while the user scrubs the chart — the price at the touched point,
+   * fed by the sparkline's (scrub) index. Null when not scrubbing, so the hero shows the live value.
+   */
+  public scrubReadout: string | null = null;
+  public onChartScrub(index: number | null): void {
+    if (index === null || !this.priceSeriesVm || index < 0 || index >= this.priceSeriesVm.length) {
+      this.scrubReadout = null;
+      return;
+    }
+    this.scrubReadout = `${this.priceSeriesVm[index]} ${this.currencyService.selectedCurrency.symbol}`;
+  }
 }

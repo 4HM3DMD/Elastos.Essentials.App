@@ -6,6 +6,23 @@
 .sparkline {
   display: block;
   width: 100%;
+  // While scrubbing, suppress the browser's touch panning/zoom so the drag tracks the finger.
+  touch-action: none;
+
+  // SCR-097: press-and-hold scrub cursor — dashed grey guide line + orange point dot.
+  .scrub-line {
+    stroke: var(--essentials-text-tertiary, rgba(255, 255, 255, 0.4));
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .scrub-dot {
+    fill: var(--essentials-primary, #ed6e2b);
+    stroke: #fff;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
 
   .line {
     fill: none;
