@@ -212,7 +212,9 @@ export class CoinTxInfoPage implements OnInit {
       this.titleBar.setTitle(this.getNavTitle());
 
       // SYS-005 coin disc + SYS-021 hero amount (signed, 2 decimals, toned by direction).
-      this.heroIcon = this.networkWallet.network.logo;
+      // LOGIC:wrong-icon — use the token's own icon (ERC20/TRC20 logo) with the network logo as a
+      // fallback, matching the token-detail page. The bare network logo mislabelled token txs.
+      this.heroIcon = this.subWallet.getMainIcon() || this.networkWallet.network.logo;
       if (this.type === TransactionType.RECEIVED) {
         this.heroSign = '+';
         this.amountTone = 'success';
