@@ -670,7 +670,9 @@ export class CoinHomePage implements OnInit {
       { key: 'all', label: this.translate.instant('wallet.coin-filter-all') },
       { key: 'sent', label: this.translate.instant('wallet.coin-filter-sent') },
       { key: 'received', label: this.translate.instant('wallet.coin-filter-received') },
-      { key: 'swap', label: this.translate.instant('wallet.coin-filter-swap') },
+      // 'swap' chip omitted: there is no DEX-swap detection yet (matchesTxTypeFilter
+      // returns false), so the chip would always yield an empty list. Re-add when a
+      // real swap flag is threaded through TransactionInfo (Phase 11).
       { key: 'staked', label: this.translate.instant('wallet.coin-filter-staked') }
     ];
   }

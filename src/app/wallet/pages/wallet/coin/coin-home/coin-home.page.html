@@ -38,10 +38,11 @@
                     (activeChange)="setChartRange($event)"></ui-chip-row>
             </div>
 
-            <!-- History section header with a view-all chevron (SCR-104) -->
+            <!-- History section header. No view-all chevron until a dedicated
+                 cross-token History page exists (SCR-154, deferred) - a chevron with
+                 no handler implied an action that did nothing. -->
             <div class="history-header">
                 <h1 class="history-title">{{ 'wallet.coin-history' | translate }}</h1>
-                <ion-icon class="history-chevron" name="chevron-forward"></ion-icon>
             </div>
 
             <!-- Source tabs (Transactions / Internal / Recharge) — only when more than one set exists -->
