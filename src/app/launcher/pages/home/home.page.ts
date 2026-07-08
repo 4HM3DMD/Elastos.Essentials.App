@@ -81,17 +81,11 @@ export class HomePage implements OnInit, OnDestroy {
   public hasNewNotifications = false;
   public networkBanner: string = null;
 
-  /**
-   * Value pillar sub "N networks · M staked" (SCR-054). Networks-with-value and the
-   * staked total need multi-network balance data; until that is wired, show 0 on an
-   * empty wallet (matching the design's empty state) rather than the enabled count.
-   */
-  public get valuePillarSub(): string {
-    let fiat = this.networkWallet ? this.networkWallet.getDisplayBalanceInActiveCurrency() : null;
-    let hasValue = !!(fiat && !fiat.isNaN() && fiat.gt(0));
-    let networks = hasValue ? this.walletNetworkService.getDisplayableNetworks().length : 0;
-    return `${networks} networks · 0 staked`;
-  }
+  // TODO(SCR-054): the Value pillar sub is meant to show live "N networks · M staked".
+  // That needs real cross-network balance + staking aggregation (not yet available),
+  // and the previous getter fabricated it (counted ALL enabled networks and hardcoded
+  // "0 staked"). Until the aggregation exists we show the honest static descriptor
+  // ('launcher.home-pillar-value-sub') from the template rather than false numbers.
 
   // Wallet summary
   public balanceVm: HomeBalanceVm = null;

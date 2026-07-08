@@ -291,7 +291,7 @@
             [class.dark-footer]="theme.darkMode">
             <ion-row class="btn-container">
                 <ebutton (clicked)="goTransaction()" [title]="buttonTitle()" [arrow]="true"
-                    [disabled]="actionIsGoing || !amount || !toAddress">
+                    [disabled]="actionIsGoing || !toAddress || (!isTransferTypeSendNFT() && !amount)">
                 </ebutton>
             </ion-row>
         </div>
