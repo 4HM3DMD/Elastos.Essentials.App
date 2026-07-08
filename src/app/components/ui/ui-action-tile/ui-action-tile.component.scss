@@ -11,7 +11,7 @@
   justify-content: space-between;
   gap: 6px;
   width: 100%;
-  min-height: 74px;
+  min-height: 84px;
   padding: 11px 12px 10px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
@@ -58,18 +58,23 @@
     // and let them sit large in the tile, bottom-right, matching the design.
     // The glyph sits absolute in the bottom-right so it can be large (filling most
     // of the tile, as in the design) without inflating the compact tile height.
+    // The 3D glyph rasters sit large in the lower tile, horizontally centered and
+    // bottom-aligned (as in Figma). object-fit contain keeps the whole glyph visible,
+    // and the side/top insets keep it clear of the rounded corners so nothing is clipped.
     &.raster {
+      display: block;
       position: absolute;
-      right: 10px;
-      bottom: 9px;
-      width: 56px;
-      height: 50px;
+      left: 2px;
+      right: 2px;
+      bottom: 4px;
+      height: 58px;
 
       img {
+        display: block;
         width: 100%;
         height: 100%;
         object-fit: contain;
-        object-position: bottom right;
+        object-position: center bottom;
       }
     }
   }
