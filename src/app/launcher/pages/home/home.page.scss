@@ -7,14 +7,17 @@ ion-content {
 .home {
     min-height: 100%;
     padding: calc(env(safe-area-inset-top) + 12px) 20px calc(env(safe-area-inset-bottom) + 20px);
-    // Warm orange header glow. The exact top texture/vector from the 2026 design
-    // still needs to be exported from Figma; the placeholder recreation was removed.
+    // Exact 2026 header wave texture (exported from the Figma file), faded into the
+    // page background. The linear overlay reproduces Figma's fade-to-#111 (Rectangle
+    // 1850); the image fills the top edge-to-edge (border-box origin ignores padding).
     background:
-        radial-gradient(130% 44% at 50% -6%,
-            rgba(237, 110, 43, 0.55) 0%,
-            rgba(237, 110, 43, 0.12) 34%,
-            transparent 54%),
+        linear-gradient(180deg,
+            rgba(17, 17, 17, 0) 0%,
+            rgba(17, 17, 17, 0) 30%,
+            var(--ion-background-color) 78%) top center / 100% 300px no-repeat,
+        url("/assets/components/backgrounds/top-cover.jpg") top center / 100% auto no-repeat,
         var(--ion-background-color);
+    background-origin: border-box;
 
     .header {
         display: flex;
