@@ -22,6 +22,7 @@ import { WalletUtil } from 'src/app/wallet/model/wallet.util';
 import { WalletSortType } from 'src/app/wallet/model/walletaccount';
 import { CurrencyService } from 'src/app/wallet/services/currency.service';
 import { PriceHistoryService } from 'src/app/wallet/services/pricehistory.service';
+import { formatFiatAmount } from 'src/app/helpers/currency-format';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { UiService } from 'src/app/wallet/services/ui.service';
 import { WalletService } from 'src/app/wallet/services/wallet.service';
@@ -31,13 +32,6 @@ import { NotificationManagerService } from '../../services/notificationmanager.s
 const HIDDEN_MASK = '••••••';
 const BALANCE_REFRESH_INTERVAL_MS = 30000;
 const TOKENS_PREVIEW_COUNT = 3;
-
-/** Common currency glyphs so the balance reads "$0.00" (Figma) instead of "0.00 USD". */
-const CURRENCY_GLYPHS: { [code: string]: string } = {
-  USD: '$', AUD: '$', CAD: '$', HKD: '$', SGD: '$', NZD: '$',
-  EUR: '€', GBP: '£', JPY: '¥', CNY: '¥', KRW: '₩', INR: '₹',
-  RUB: '₽', BRL: 'R$', TRY: '₺', BTC: '₿', ETH: 'Ξ'
-};
 
 /** Precomputed strings for the active wallet balance hero. */
 interface HomeBalanceVm {
@@ -49,13 +43,15 @@ interface HomeBalanceVm {
   secondary: string;
 }
 
-/** Precomputed strings for one row of the tokens preview. */
+/** Precomputed strings for one row of the tokens preview (2026 layout). */
 interface HomeTokenRow {
   icon: string;
   badge: string;
   title: string;
-  balance: string;
-  fiat: string;
+  native: string; // left subtitle: the holding, e.g. "0 ELA"
+  fiat: string; // right primary: fiat value, glyph-prefixed
+  changePct: string | null; // right sub: signed 24h % change, null until enough history
+  changeTone: 'up' | 'down' | 'muted';
   subWallet: AnySubWallet;
 }
 
@@ -242,9 +238,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   /** Formats a fiat amount with the currency glyph prefix (e.g. "$4,286.40"), else a code suffix. */
   private formatFiat(amount: number, symbol: string): string {
-    let formatted = amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    let glyph = CURRENCY_GLYPHS[symbol];
-    return glyph ? `${glyph}${formatted}` : `${formatted} ${symbol}`;
+    return formatFiatAmount(amount, symbol);
   }
 
   private rebuildWalletSummary() {
@@ -300,12 +294,19 @@ export class HomePage implements OnInit, OnDestroy {
 
   private buildTokenRow(subWallet: AnySubWallet): HomeTokenRow {
     let fiatAmount = subWallet.getAmountInExternalCurrency(subWallet.getDisplayBalance());
+    let symbol = this.currencyService.selectedCurrency.symbol;
+    let title = this.uiService.getSubwalletTitle(subWallet);
+    let balance = this.uiService.getFixedBalance(subWallet.getDisplayBalance());
+    let pct = PriceHistoryService.instance.getPercentChange24h(
+      subWallet.networkWallet.network.key, String(subWallet.id).toLowerCase());
     return {
       icon: subWallet.getMainIcon(),
       badge: subWallet.getSecondaryIcon(),
-      title: this.uiService.getSubwalletTitle(subWallet),
-      balance: this.uiService.getFixedBalance(subWallet.getDisplayBalance()),
-      fiat: fiatAmount ? `${fiatAmount.toString()} ${this.currencyService.selectedCurrency.symbol}` : null,
+      title,
+      native: `${balance} ${title}`,
+      fiat: fiatAmount ? this.formatFiat(fiatAmount.toNumber(), symbol) : null,
+      changePct: pct === null ? null : `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`,
+      changeTone: pct === null ? 'muted' : (pct >= 0 ? 'up' : 'down'),
       subWallet
     };
   }

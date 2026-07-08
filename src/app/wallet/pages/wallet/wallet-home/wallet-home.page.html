@@ -91,9 +91,9 @@
                 <ui-skeleton *ngIf="!tokenRows" [rows]="4" kind="row"></ui-skeleton>
 
                 <ui-token-row *ngFor="let row of tokenRows; trackBy: trackRow" [icon]="row.icon" [badge]="row.badge"
-                    [title]="row.title" [sub]="row.priceLine" [value]="hideBalances ? '••••' : row.balance"
-                    [subValue]="hideBalances ? null : row.fiat"
-                    [subValue2]="hideBalances ? null : row.changeSubValue" [subValue2Tone]="row.tone"
+                    [title]="row.title" [sub]="hideBalances ? '••••' : row.native"
+                    [value]="hideBalances ? '••••' : row.fiat"
+                    [subValue]="hideBalances ? null : row.changeSubValue" [subValueTone]="row.tone"
                     (pressed)="viewTransactions(row.subWallet)">
                 </ui-token-row>
             </ng-container>

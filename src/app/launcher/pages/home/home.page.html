@@ -71,8 +71,9 @@
       </div>
       <div class="card-group">
         <ui-token-row *ngFor="let row of tokenRows; trackBy: trackToken" [icon]="row.icon" [badge]="row.badge"
-          [title]="row.title" [value]="effectiveHide ? mask : row.balance"
-          [subValue]="row.fiat ? (effectiveHide ? mask : row.fiat) : null" (pressed)="onTokenRow(row)"></ui-token-row>
+          [title]="row.title" [sub]="effectiveHide ? mask : row.native"
+          [value]="row.fiat ? (effectiveHide ? mask : row.fiat) : null"
+          [subValue]="row.changePct" [subValueTone]="row.changeTone" (pressed)="onTokenRow(row)"></ui-token-row>
       </div>
     </div>
   </div>

@@ -65,6 +65,7 @@ import { GlobalPreferencesService } from 'src/app/services/global.preferences.se
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { SubValueTone } from 'src/app/components/ui/ui-token-row/ui-token-row.component';
+import { formatFiatAmount } from 'src/app/helpers/currency-format';
 import { UiChip } from 'src/app/components/ui/ui-chip-row/ui-chip-row.component';
 
 /** Precomputed presentation model for one token row (keeps getters out of the template). */
@@ -72,9 +73,8 @@ interface TokenRowViewModel {
     icon: string;
     badge: string;
     title: string;
-    priceLine: string;
-    balance: string;
-    fiat: string;
+    native: string; // left subtitle: the holding, e.g. "1.5 ELA"
+    fiat: string; // right primary: fiat value, glyph-prefixed
     changeSubValue: string | null; // local 24h %change label, null until enough history
     tone: SubValueTone; // tone for the %change line
     subWallet: AnySubWallet;
@@ -357,22 +357,17 @@ export class WalletHomePage implements OnInit, OnDestroy {
 
     private buildTokenRow(subWallet: AnySubWallet): TokenRowViewModel {
         let fiatAmount = subWallet.getAmountInExternalCurrency(subWallet.getDisplayBalance());
-        let fiat = fiatAmount ? `${fiatAmount.toString()} ${this.currencyService.selectedCurrency.symbol}` : null;
-        let priceLine: string = subWallet.getDisplayCoinPrice();
-        if (subWallet.type === CoinType.ERC20 || subWallet.type === CoinType.TRC20) {
-            // getDisplayableERC20TokenInfo lives on the ERC20/TRC20 subclasses (guarded above).
-            let tokenInfo: string = (subWallet as any).getDisplayableERC20TokenInfo();
-            if (tokenInfo) priceLine = priceLine ? `${priceLine} · ${tokenInfo}` : tokenInfo;
-        }
+        let symbol = this.currencyService.selectedCurrency.symbol;
+        let title = this.uiService.getSubwalletTitle(subWallet);
+        let balance = this.uiService.getFixedBalance(subWallet.getDisplayBalance());
         let pct = PriceHistoryService.instance.getPercentChange24h(
             subWallet.networkWallet.network.key, String(subWallet.id).toLowerCase());
         return {
             icon: subWallet.getMainIcon(),
             badge: subWallet.getSecondaryIcon(),
-            title: this.uiService.getSubwalletTitle(subWallet),
-            priceLine,
-            balance: this.uiService.getFixedBalance(subWallet.getDisplayBalance()),
-            fiat,
+            title,
+            native: `${balance} ${title}`,
+            fiat: fiatAmount ? formatFiatAmount(fiatAmount.toNumber(), symbol) : null,
             changeSubValue: pct === null ? null : `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`,
             tone: pct === null ? 'muted' : (pct >= 0 ? 'up' : 'down'),
             subWallet
