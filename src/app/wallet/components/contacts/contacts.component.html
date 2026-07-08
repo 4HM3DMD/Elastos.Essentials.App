@@ -1,41 +1,50 @@
 <ion-content>
     <ion-grid class="container" [class.dark-container]="theme.darkMode">
-        <ion-row class="main-title-row">
-            <ion-col size="10.5">
-                <p>{{ 'wallet.cryptonames' | translate }}</p>
-            </ion-col>
-            <ion-col class="refresh-icon" size="1.5" (click)="updateContact()">
-                <ion-icon name="refresh-outline"></ion-icon>
+        <!-- SCR-005: grabber so the sheet reads as a draggable bottom sheet -->
+        <div class="sheet-grabber"></div>
+
+        <!-- SCR-006: Recents section (only when recent recipients exist) -->
+        <ng-container *ngIf="recents.length > 0">
+            <ion-row class="section-title-row">
+                <ion-col size="12">
+                    <p>{{ 'wallet.recents' | translate }}</p>
+                </ion-col>
+            </ion-row>
+            <div class="contact-card" *ngFor="let recent of recents" (click)="selectRecent(recent)">
+                <div class="avatar-disc" [style.background]="getAvatarColor(recent.address)">
+                    {{ getInitial(recent.address) }}
+                </div>
+                <div class="contact-info">
+                    <h1><span class="addr-head">{{ addrHead(recent.address) }}</span><span *ngIf="addrTail(recent.address)" class="addr-ellipsis">…</span><span class="addr-tail">{{ addrTail(recent.address) }}</span></h1>
+                    <p>{{ 'wallet.sent' | translate }} {{ recent.amount }} {{ recent.symbol }} · {{ recent.timestamp | date:'short' }}</p>
+                </div>
+            </div>
+        </ng-container>
+
+        <!-- SCR-028: left-aligned 'Saved Addresses' heading; refresh icon removed -->
+        <ion-row class="section-title-row">
+            <ion-col size="12">
+                <p>{{ 'wallet.saved-addresses' | translate }}</p>
             </ion-col>
         </ion-row>
-        <ion-item-sliding *ngFor="let contact of supportedCryptoAddresses" (click)="selectContact(contact)">
-            <ion-item>
-                <ion-row class="subwallet-row ripple ion-activatable">
-                    <ion-col size="2" class="left-col">
-                        <div class="icon-container">
-                            <img [src]="getResolverLogo(contact)">
-                        </div>
-                    </ion-col>
-                    <ion-col size="10" class="middle-col">
-                        <h1>{{ contact.cryptoname }} {{ contact.type }} {{ contact.resolver }} </h1>
-                        <p>{{ contact.address.slice(0,30) }}...</p>
-                    </ion-col>
-                </ion-row>
-                <ion-ripple-effect></ion-ripple-effect>
-            </ion-item>
 
-            <ion-item-options side="end">
-                <ion-item-option class="itemOption" (click)="showDeletePrompt(contact)">
-                    <img src="/assets/contacts/images/delete.svg">
-                </ion-item-option>
-            </ion-item-options>
-        </ion-item-sliding>
+        <!-- SCR-029: bordered dark cards, initial-disc avatar, name title,
+             middle-ellipsis address with accent tail; long-press to delete -->
+        <div class="contact-card ripple ion-activatable"
+             *ngFor="let contact of supportedCryptoAddresses"
+             (click)="selectContact(contact)"
+             (pointerdown)="handlePressStart(contact)"
+             (pointerup)="handlePressEnd()"
+             (pointercancel)="handlePressEnd()"
+             (pointerleave)="handlePressEnd()">
+            <div class="avatar-disc" [style.background]="getAvatarColor(contact.cryptoname)">
+                {{ getInitial(contact.cryptoname) }}
+            </div>
+            <div class="contact-info">
+                <h1>{{ contact.cryptoname }}</h1>
+                <p class="address"><span class="addr-head">{{ addrHead(contact.address) }}</span><span *ngIf="addrTail(contact.address)" class="addr-ellipsis">…</span><span class="addr-tail">{{ addrTail(contact.address) }}</span></p>
+            </div>
+            <ion-ripple-effect></ion-ripple-effect>
+        </div>
     </ion-grid>
 </ion-content>
-
-<ion-footer class="ion-no-border">
-    <ion-row class="btn-container">
-        <ebutton (clicked)="modalCtrl.dismiss()" [title]="'common.cancel' | translate">
-        </ebutton>
-    </ion-row>
-</ion-footer>

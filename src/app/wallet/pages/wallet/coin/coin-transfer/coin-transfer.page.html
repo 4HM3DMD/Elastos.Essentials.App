@@ -66,8 +66,9 @@
                     <p>{{ 'wallet.transfer-custum-address' | translate }}</p>
                 </ion-col>
                 <ion-col size="1" class="arrow-col" (click)="enableCustumReceiverAddress()" *ngIf="toSubWallet">
-                    <img [src]="!theme.darkMode ? 'assets/wallet/icons/down-arrow.svg' : 'assets/wallet/icons/darkmode/down-arrow.svg'"
-                        [class.rotate]="!useCustumReceiverAddress" />
+                    <!-- SCR-044: shared thin chevron tinted via currentColor -->
+                    <ion-icon name="chevron-down-outline" class="section-chevron"
+                        [class.rotate]="!useCustumReceiverAddress"></ion-icon>
                 </ion-col>
             </ion-row>
             <ion-row class="item-row" *ngIf="!useCustumReceiverAddress">
@@ -126,7 +127,8 @@
         <!-- "send" or "send nft" -->
         <ion-grid *ngIf="transferType === 2 || isTransferTypeSendNFT()" class="send-container"
             [class.send-dark-container]="theme.darkMode" [class.blur]="native.popup">
-            <img class="header-img"
+            <!-- SCR-020: network logo only for NFT send; the plain SEND flow goes straight to the amount hero -->
+            <img class="header-img" *ngIf="isTransferTypeSendNFT()"
                 [src]="!theme.darkMode ? this.networkWallet.network.logo : this.networkWallet.network.logo" />
 
             <!-- Sent data - Not for NFT: centered chromeless amount hero (SCR-001) -->
@@ -165,15 +167,15 @@
                 </div>
             </ion-grid>
 
-            <!-- Token balance -->
+            <!-- Token balance (SCR-022: single centered "Available" line + Max as a hairline stadium chip) -->
             <ion-row class="balance-row" *ngIf="!isTransferTypeSendNFT()">
-                <p *ngIf="supportsMaxTransfer()" id="max-btn" (click)="setMaxTransfer()">{{ 'wallet.max' | translate }}
-                </p>
-                <p [class.align-right]="!supportsMaxTransfer()">{{ 'wallet.balance' | translate }}: <strong>{{
-                        displayBalanceString }}</strong>
+                <p class="available-label">{{ 'wallet.available' | translate }}: <strong>{{ displayBalanceString }} {{
+                        tokensymbol }}</strong>
                     <strong *ngIf="displayBalanceLocked != ''"> {{ 'wallet.balance-locked' |
                         translate:{locked: displayBalanceLocked} }}</strong>
                 </p>
+                <button *ngIf="supportsMaxTransfer()" type="button" class="max-chip" (click)="setMaxTransfer()">{{
+                    'wallet.max' | translate }}</button>
             </ion-row>
             <ion-row class="toggle-row" *ngIf="canShowToogleForInscription()">
                 <ion-col class="left-col" size="10">
@@ -186,24 +188,40 @@
                 </ion-col>
             </ion-row>
 
-            <!-- Receiver info -->
-            <h1>{{ 'wallet.send-to' | translate }}</h1>
-            <ion-row class="item-row">
-                <ion-col size="11">
-                    <ion-input type="url" placeholder="{{ 'wallet.transfer-receiver-address' | translate}}"
+            <!-- Receiver info (SCR-023: "Address" label, restyled in .scss) -->
+            <h1>{{ 'wallet.address-label' | translate }}</h1>
+
+            <!-- SCR-007: filled recipient card once a named contact/cryptoname is resolved -->
+            <div class="recipient-card" *ngIf="addressName">
+                <div class="recipient-card__avatar">{{ recipientInitial }}</div>
+                <div class="recipient-card__body">
+                    <span class="recipient-card__name">{{ addressName }}</span>
+                    <span class="recipient-card__addr">{{ middleEllipsis(toAddress) }}</span>
+                </div>
+                <button type="button" class="recipient-card__clear" (click)="clearRecipient()">
+                    <ion-icon name="close"></ion-icon>
+                </button>
+            </div>
+
+            <!-- SCR-024: full-width address field. SCR-025: press-and-hold to paste. -->
+            <ion-row class="item-row" *ngIf="!addressName">
+                <ion-col size="12">
+                    <ion-input type="url" placeholder="{{ 'wallet.press-and-hold-paste' | translate}}"
                         autocomplete="off" autocorrect="off" [(ngModel)]="toAddress" name="toAddress" ngDefaultControl
-                        (input)='onSendToAddressInput($event.target.value)'>
+                        (input)='onSendToAddressInput($event.target.value)'
+                        (touchstart)="onAddressPressStart()" (touchend)="onAddressPressEnd()"
+                        (touchmove)="onAddressPressEnd()">
                     </ion-input>
                 </ion-col>
             </ion-row>
 
-            <!-- Address quick actions (in-page scan removed; the single scan affordance is the header) -->
-            <div class="address-chips">
+            <!-- Address quick actions (SCR-026: Saved Addresses first, then Paste; SCR-004: saved-addresses sheet on all networks) -->
+            <div class="address-chips" *ngIf="!addressName">
+                <button type="button" class="addr-chip" (click)="showCryptonames()">
+                    <ion-icon name="people-outline"></ion-icon>{{ 'wallet.saved-addresses' | translate }}
+                </button>
                 <button type="button" class="addr-chip" (click)="pasteFromClipboard()">
                     <ion-icon name="clipboard-outline"></ion-icon>{{ 'wallet.paste' | translate }}
-                </button>
-                <button type="button" class="addr-chip" *ngIf="showContactsOption" (click)="openContacts()">
-                    <ion-icon name="people-outline"></ion-icon>{{ 'wallet.contacts' | translate }}
                 </button>
             </div>
 
@@ -211,11 +229,6 @@
             <p *ngIf="canSendToPersonalWallet()" (click)="choosePersonalWallet(true)">
                 {{ 'wallet.touch-to-select-a-personal-wallet' | translate }}
             </p>
-
-            <!-- Selected address name (cryptoname, etc) -->
-            <ion-row class="contact-row" [class.invisible]="!addressName">
-                <p>{{ addressName }}</p>
-            </ion-row>
 
             <!-- Dynamically suggested addresses list -->
             <ion-row *ngIf="suggestedAddresses.length > 0" class="cryptoname-row">
@@ -228,9 +241,9 @@
 
             <!-- Memo -->
             <h1 *ngIf="fromSubWallet.supportMemo() && suggestedAddresses.length === 0" (click)="hideMemo = !hideMemo">
-                {{ 'wallet.advanced-options' | translate }}
-                <img [src]="!theme.darkMode ? 'assets/wallet/icons/down-arrow.svg' : 'assets/wallet/icons/darkmode/down-arrow.svg'"
-                    [class.rotate]="!hideMemo">
+                <!-- SCR-031: sentence-case label. SCR-044: shared thin chevron tinted via currentColor -->
+                {{ 'wallet.advanced-options-label' | translate }}
+                <ion-icon name="chevron-down-outline" class="section-chevron" [class.rotate]="!hideMemo"></ion-icon>
             </h1>
             <ion-row *ngIf="!hideMemo && suggestedAddresses.length === 0" class="item-row memo-row">
                 <ion-col size="12" class="left-col">
@@ -249,8 +262,8 @@
                   <span>{{ getCurrenttBtcFeerateTitle() }}</span>
               </ion-col>
               <ion-col size="1" class="right-col">
-                  <img
-                      [src]="!theme.darkMode ? 'assets/wallet/icons/right-arrow.svg' : 'assets/wallet/icons/darkmode/right-arrow.svg'" />
+                  <!-- SCR-044: shared thin forward chevron tinted via currentColor -->
+                  <ion-icon name="chevron-forward-outline" class="section-chevron"></ion-icon>
               </ion-col>
             </ion-row>
         </ion-grid>

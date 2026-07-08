@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
+import { formatFiatAmount } from 'src/app/helpers/currency-format';
 import { Util } from 'src/app/model/util';
 import { SubValueTone } from 'src/app/components/ui/ui-token-row/ui-token-row.component';
 import { AnyNetworkWallet } from 'src/app/wallet/model/networks/base/networkwallets/networkwallet';
@@ -81,7 +82,8 @@ export class CoinSelectSendPage {
 
   private buildRow(subWallet: AnySubWallet): SendTokenRow {
     let fiatAmount = subWallet.getAmountInExternalCurrency(subWallet.getDisplayBalance());
-    let fiat = fiatAmount ? `${fiatAmount.toString()} ${this.currencyService.selectedCurrency.symbol}` : null;
+    // SYS-013: reuse the shared fiat formatter so amounts read "$2,140.20" (glyph + grouping) like the rest of 2026.
+    let fiat = fiatAmount ? formatFiatAmount(fiatAmount.toNumber(), this.currencyService.selectedCurrency.symbol) : null;
     let pct = PriceHistoryService.instance.getPercentChange24h(
       subWallet.networkWallet.network.key, String(subWallet.id).toLowerCase());
     return {

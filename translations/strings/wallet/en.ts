@@ -1,5 +1,24 @@
 export const en = {
   wallet: {
+    'saved-addresses': 'Saved Addresses',
+    'recents': 'Recents',
+    'sent': 'Sent',
+    'nfts-chip': 'NFTs',
+    'address-label': 'Address',
+    'press-and-hold-paste': 'Press and hold to paste',
+    'available': 'Available',
+    'advanced-options-label': 'Advanced options',
+    'confirm-send': 'Confirm send',
+    'network': 'Network',
+    'address': 'Address',
+    'address-name': 'Address Name',
+    'receive-amount': 'Receive Amount',
+    'network-fee': 'Network Fee',
+    'total-deducted': 'Total Deducted',
+    'processing': 'Processing',
+    'sending-symbol': 'Sending {{symbol}}...',
+    'coin-receive-save-image': 'Save Image',
+    'select-network-title': 'Select Network',
     /******************
      * Generic Actions *
      *******************/

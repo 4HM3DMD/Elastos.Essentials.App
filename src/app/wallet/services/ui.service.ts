@@ -58,15 +58,13 @@ export class UiService {
       } else if (balance.isNaN()) {
         return String('...');
       } else if (balance.isLessThan(100)) {
-        return balance.decimalPlaces(6).toFixed();
+        return balance.decimalPlaces(6).toFormat();
       } else if (balance.isGreaterThanOrEqualTo(100) && balance.isLessThan(1000)) {
-        return balance.decimalPlaces(4).toFixed();
-      } else if (balance.isGreaterThanOrEqualTo(1000) && balance.isLessThan(10000)) {
-        return balance.decimalPlaces(2).toFixed();
-      } else if (balance.isGreaterThanOrEqualTo(10000) && balance.isLessThan(1000000)) {
-        return balance.dividedBy(1000).toFixed(2) + 'k';
+        return balance.decimalPlaces(4).toFormat();
       } else {
-        return balance.dividedBy(1000000).toFixed(2) + 'm';
+        // SCR-032: large balances use 2dp with thousands grouping ('1,240.52'),
+        // not k/m abbreviation, so list rows show the full grouped amount.
+        return balance.decimalPlaces(2).toFormat();
       }
     } catch (e) {
       // The old wallet use number for balance, and save the wallet info to localstorage.

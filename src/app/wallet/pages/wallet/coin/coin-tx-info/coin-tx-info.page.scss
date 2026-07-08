@@ -71,10 +71,10 @@ ion-grid {
                 color: var(--essentials-success);
             }
             &.pending {
-                color: #ffd534;
+                color: var(--essentials-warning);
             }
             &.incomplete {
-                color: #f04141;
+                color: var(--essentials-danger);
             }
         }
     }

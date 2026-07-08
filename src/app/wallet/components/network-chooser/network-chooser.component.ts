@@ -29,7 +29,20 @@ export type NetworkChooserComponentOptions = {
    * in the same way.
    */
   showActiveNetwork?: boolean;
+  /**
+   * SCR-087: when the chooser is opened to pick a network for a specific token, set this to true so
+   * known chains render their token standard suffix (e.g. "Ethereum (ERC20)"). Defaults to false for
+   * generic active-network switching, where the bare network name is shown.
+   */
+  showTokenStandard?: boolean;
 }
+
+/** SCR-087: token standard label appended to the network name on known chains when picking for a token. */
+const TOKEN_STANDARD_BY_NETWORK_KEY: { [networkKey: string]: string } = {
+  ethereum: 'ERC20',
+  bsc: 'BEP20',
+  tron: 'TRC20'
+};
 
 @Component({
   selector: 'app-network-chooser',
@@ -97,6 +110,20 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
   /** The Elastos main chain hosts governance and staking tools; its row carries a tools tag. */
   public isMainChain(network: AnyNetwork): boolean {
     return network.key === 'elastos';
+  }
+
+  /**
+   * SCR-087: display name for a network row. When choosing a network for a specific token
+   * (showTokenStandard), known chains gain their token standard suffix, e.g. "Ethereum (ERC20)".
+   * For generic network switching the bare effective name is returned unchanged.
+   */
+  public getNetworkDisplayName(network: AnyNetwork): string {
+    const baseName = network.getEffectiveName();
+    if (!this.options || !this.options.showTokenStandard) {
+      return baseName;
+    }
+    const standard = TOKEN_STANDARD_BY_NETWORK_KEY[network.key];
+    return standard ? `${baseName} (${standard})` : baseName;
   }
 
   selectNetwork(network: AnyNetwork) {

@@ -1,4 +1,4 @@
-<div class="chip-row" role="tablist">
+<div class="chip-row" role="tablist" [class.ghost]="variant === 'ghost'">
   <button type="button" *ngFor="let chip of chips; trackBy: trackByKey" class="chip ion-activatable"
     role="tab" [attr.aria-selected]="chip.key === active" [class.active]="chip.key === active"
     (click)="onSelect(chip)">

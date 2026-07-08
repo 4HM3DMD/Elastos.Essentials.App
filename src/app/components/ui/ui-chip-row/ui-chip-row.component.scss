@@ -50,4 +50,25 @@
       --ripple-color: var(--ion-text-color);
     }
   }
+
+  // SCR-103: ghost variant — centered, text-only inactive chips; active chip is a
+  // dark glossy disc (not orange), used for the token-detail chart range selector.
+  &.ghost {
+    justify-content: center;
+
+    .chip {
+      border: none;
+      background: transparent;
+      color: var(--essentials-text-secondary);
+      padding: 8px 16px;
+
+      &.active {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 60%),
+          var(--essentials-box-color);
+        border-color: transparent;
+        border-radius: 999px;
+        color: var(--ion-text-color);
+      }
+    }
+  }
 }

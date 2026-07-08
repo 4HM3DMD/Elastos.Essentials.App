@@ -1,39 +1,69 @@
 <ion-content>
-  <ion-grid class="ion-text-center" [class.dark-process-container]="theme.darkMode">
-    <ion-row *ngIf="!publicationFailed">
-      <ion-col size="12">
-        <ion-label>
-          <h1 *ngIf="publicationSuccessful">{{ 'wallet.tx-success' | translate }}</h1>
-          <h1 *ngIf="publishing">{{ 'wallet.eth-sending-transaction' | translate }}</h1>
-          <br />
-          <h2 *ngIf="publishing">{{ 'wallet.eth-transaction-wait' | translate }}</h2>
-        </ion-label>
+  <!-- SCR-009 / SCR-010: 2026 publication sheet — grabber + ui-sheet-header, orange progress track. -->
+  <div class="publication-sheet">
+    <ui-sheet-header
+      [title]="publishing
+        ? ('wallet.sending-symbol' | translate:{ symbol: symbol || '' })
+        : (publicationFailed
+            ? ('wallet.eth-transaction-fail' | translate)
+            : ('wallet.tx-success' | translate))">
+    </ui-sheet-header>
 
-        <ion-spinner *ngIf="publishing" class="spinner"></ion-spinner>
+    <!-- SCR-011: navy token-disc amount hero (large white amount + grey unit + ~$fiat). -->
+    <div class="amount-hero" *ngIf="amount">
+      <div class="coin-disc" *ngIf="icon">
+        <img [src]="icon" alt="" />
+      </div>
+      <ui-amount-display [value]="amount" [unit]="symbol" [fiat]="fiat" [size]="4"></ui-amount-display>
+    </div>
 
-        <div class="success-row result" [class.darkContainer]="theme.darkMode" *ngIf="publicationSuccessful">
-          <lottie-player src="../../../../assets/wallet/animations/success-1.json" background="transparent" speed="0.5"
-            style="width: 80px; height: 80px;" autoplay></lottie-player>
-        </div>
-      </ion-col>
-    </ion-row>
+    <!-- SCR-010: slim orange-gradient progress track + clock + Processing caption. -->
+    <div class="progress-block" *ngIf="publishing">
+      <div class="progress-track">
+        <div class="progress-fill"></div>
+      </div>
+      <div class="progress-caption">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{ 'wallet.processing' | translate }}</span>
+      </div>
+    </div>
 
-    <ion-row class="item-row ripple ion-activatable" *ngIf="publicationFailed">
-      <ion-col size="12">
-        <h1>{{ 'wallet.eth-transaction-fail' | translate }}</h1>
-      </ion-col>
-    </ion-row>
+    <!-- SCR-033: completed state on the same screen (filled bar + success caption, no auto-dismiss). -->
+    <div class="progress-block" *ngIf="publicationSuccessful">
+      <div class="progress-track">
+        <div class="progress-fill done"></div>
+      </div>
+      <div class="progress-caption success">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <span>{{ 'wallet.tx-success' | translate }}</span>
+      </div>
+    </div>
 
-    <ion-row class="item-row ripple ion-activatable" *ngIf="publicationFailed">
-        <ion-col size="12">
-          <h2>{{ errorMessage | translate }}</h2>
-        </ion-col>
-      </ion-row>
+    <!-- SCR-048: failure branch on the shared sheet surface. -->
+    <div class="failure-block" *ngIf="publicationFailed">
+      <ion-icon class="fail-icon" name="alert-circle-outline"></ion-icon>
+      <p class="fail-message">{{ errorMessage | translate }}</p>
+    </div>
 
-    <ion-row class="item-row ripple ion-activatable" *ngIf="publicationFailed">
-      <ion-col class="btn cancel ion-activatable ripple" size="12">
-        <ebutton (clicked)="cancel()" [title]="'common.close' | translate"> </ebutton>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+    <!-- SCR-012 / SCR-013: send-context summary rows + copyable TXID. -->
+    <div class="detail-rows"
+      *ngIf="!publicationFailed && (networkName || address || receiveAmount || fee || totalDeducted || txId)">
+      <ui-kv-row *ngIf="networkName" [label]="'wallet.network' | translate" [value]="networkName"></ui-kv-row>
+      <ui-kv-row *ngIf="address" [label]="'wallet.address' | translate" [value]="address" [ellipsisMiddle]="true">
+      </ui-kv-row>
+      <ui-kv-row *ngIf="address" [label]="'wallet.address-name' | translate" [value]="addressName || '- -'"></ui-kv-row>
+      <ui-kv-row *ngIf="receiveAmount" [label]="'wallet.receive-amount' | translate"
+        [value]="receiveAmount + ' ' + symbol"></ui-kv-row>
+      <ui-kv-row *ngIf="fee" [label]="'wallet.network-fee' | translate" [value]="fee"></ui-kv-row>
+      <ui-kv-row *ngIf="totalDeducted" [label]="'wallet.total-deducted' | translate"
+        [value]="totalDeducted + ' ' + symbol"></ui-kv-row>
+      <ui-kv-row *ngIf="txId" label="TXID" [value]="txId" [ellipsisMiddle]="true" [copyValue]="txId"
+        (copy)="copyTxId()"></ui-kv-row>
+    </div>
+
+    <!-- SCR-014: persistent full-width Close pill (dismisses; publication continues in the background). -->
+    <div class="cta-row">
+      <ebutton mode="cancel" (clicked)="cancel()" [title]="'common.close' | translate"></ebutton>
+    </div>
+  </div>
 </ion-content>

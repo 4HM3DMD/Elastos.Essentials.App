@@ -1,24 +1,29 @@
 .select-token {
-  padding: 8px 16px calc(env(safe-area-inset-bottom) + 24px);
+  // SYS-015 / SCR-047: use the shared page inset token (24px) for horizontal padding instead of hardcoded 16px.
+  padding: 8px var(--essentials-page-inset, 24px) calc(env(safe-area-inset-bottom) + 24px);
 
   .search {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 8px 0 16px;
+    // SCR-092 / SCR-047: widen the search->first-row gap (24px top) to match Figma spacing.
+    margin: 24px 0 16px;
     padding: 4px 14px;
-    border-radius: 14px;
+    // SCR-092: 16px pill radius.
+    border-radius: 16px;
     background: var(--essentials-box-color);
 
     ion-icon {
       flex-shrink: 0;
-      font-size: 18px;
+      // SCR-092: 20px search glyph.
+      font-size: 20px;
       color: var(--essentials-text-secondary);
     }
 
     ion-input {
-      --padding-top: 12px;
-      --padding-bottom: 12px;
+      // SCR-092: taller field (~52px) via increased vertical padding.
+      --padding-top: 16px;
+      --padding-bottom: 16px;
       --padding-start: 0;
       font-size: 15px;
     }

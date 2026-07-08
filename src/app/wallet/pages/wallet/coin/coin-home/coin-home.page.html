@@ -30,9 +30,11 @@
                  Full-bleed to the screen edges and taller (SCR-102). -->
             <div *ngIf="priceSeriesVm" class="price-chart">
                 <div class="chart-canvas">
-                    <ui-sparkline [points]="priceSeriesVm" [height]="200" tone="auto"></ui-sparkline>
+                    <!-- SCR-101: burnt-orange accent chart with gradient fill + end dot -->
+                    <ui-sparkline [points]="priceSeriesVm" [height]="200" tone="accent"></ui-sparkline>
                 </div>
-                <ui-chip-row [chips]="rangeChips" [active]="chartRange"
+                <!-- SCR-103: ghost range selector (text-only chips, dark active disc) -->
+                <ui-chip-row variant="ghost" [chips]="rangeChips" [active]="chartRange"
                     (activeChange)="setChartRange($event)"></ui-chip-row>
             </div>
 
@@ -56,7 +58,8 @@
             <ng-container *ngIf="transactionsLoaded">
                 <!-- Offline (offchain) transactions -->
                 <ui-token-row *ngFor="let offlineTx of offlineTransactions"
-                    icon="/assets/wallet/tx/transfer.svg" [title]="getOfflineTransactionTitle(offlineTx)"
+                    icon="/assets/wallet/tx/transfer.svg" [iconTone]="'neutral'" [iconGlyphTone]="'muted'"
+                    [title]="getOfflineTransactionTitle(offlineTx)"
                     [sub]="getOfflineTransactionDate(offlineTx)"
                     (pressed)="onOfflineTransactionItem(offlineTx)"></ui-token-row>
 
@@ -64,8 +67,11 @@
                      Right column is a single signed native amount, no per-row fiat (SYS-007/008/031). -->
                 <ng-container *ngFor="let group of txGroups; trackBy: trackByGroupKey">
                     <h2 class="tx-group-header">{{ group.label }}</h2>
+                    <!-- SYS-027: charcoal disc + directional glyph tint (up=received, down=sent) -->
                     <ui-token-row *ngFor="let item of group.items; trackBy: trackByTxId"
-                        [icon]="getPayStatusIcon(item)" [title]="getTransactionTitle(item)" [sub]="item.datetime"
+                        [icon]="getPayStatusIcon(item)" [iconTone]="'neutral'"
+                        [iconGlyphTone]="item.type === 1 ? 'up' : (item.type === 2 ? 'down' : 'muted')"
+                        [title]="getTransactionTitle(item)" [sub]="item.datetime"
                         [value]="(item.symbol || '') + uiService.getFixedBalance(item.amount)"
                         [valueTone]="item.type === 1 ? 'up' : (item.type === 2 ? 'down' : 'muted')"
                         (pressed)="onItem(item)"></ui-token-row>

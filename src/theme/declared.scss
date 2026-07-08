@@ -418,9 +418,11 @@ a {
 }
 
 .wallet-loader {
-  --spinner-color: var(--ion-text-color);
-  --background: var(--ion-background-color);
+  // SCR-036: dark #1E1E1E surface, orange spinner, Manrope text.
+  --spinner-color: var(--essentials-accent);
+  --background: var(--essentials-box-color);
   color: var(--ion-text-color);
+  font-family: "Manrope", "CircularStd", sans-serif;
 }
 
 .wallet-component-base {

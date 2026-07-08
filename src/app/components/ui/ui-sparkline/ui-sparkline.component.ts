@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
 
-export type SparklineTone = 'up' | 'down' | 'auto';
+export type SparklineTone = 'up' | 'down' | 'auto' | 'accent';
 
 /**
  * A dependency-free SVG price sparkline. Presentational and @Input-driven; the consumer slices the
@@ -26,7 +26,11 @@ export class UiSparklineComponent implements OnChanges {
   public visible = false;
   public linePath = '';
   public areaPath = '';
-  public toneClass: 'up' | 'down' = 'up';
+  // SCR-101: 'accent' renders the burnt-orange line + gradient area + last-point dot.
+  public toneClass: 'up' | 'down' | 'accent' = 'up';
+  // Last data point, exposed so the template can draw the accent end dot.
+  public lastX = 0;
+  public lastY = 0;
 
   ngOnChanges(): void {
     this.rebuild();
@@ -64,13 +68,15 @@ export class UiSparklineComponent implements OnChanges {
     let baseline = (this.height - this.padding).toFixed(2);
     let first = coords[0];
     let last = coords[coords.length - 1];
+    this.lastX = last.x;
+    this.lastY = last.y;
     this.areaPath = `${this.linePath} L${last.x.toFixed(2)},${baseline} L${first.x.toFixed(2)},${baseline} Z`;
 
     this.toneClass = this.resolveTone(points);
   }
 
-  private resolveTone(points: number[]): 'up' | 'down' {
-    if (this.tone === 'up' || this.tone === 'down') return this.tone;
+  private resolveTone(points: number[]): 'up' | 'down' | 'accent' {
+    if (this.tone === 'up' || this.tone === 'down' || this.tone === 'accent') return this.tone;
     return points[points.length - 1] >= points[0] ? 'up' : 'down';
   }
 }

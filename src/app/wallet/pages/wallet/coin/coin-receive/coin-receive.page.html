@@ -3,7 +3,8 @@
 
   <div class="receive">
     <!-- QR card -->
-    <div *ngIf="qrcode" class="qr-card">
+    <!-- SCR-068: #qrCard ref lets saveImage() grab the rendered QR canvas for PNG export. -->
+    <div *ngIf="qrcode" #qrCard class="qr-card">
       <qrcode class="qrcode" [qrdata]="qrcode" [width]="200" colorDark="#FFFFFF" colorLight="#161616" [margin]="2"></qrcode>
     </div>
 
@@ -52,9 +53,10 @@
 
     <!-- Bottom actions -->
     <div class="actions">
-      <button type="button" class="action secondary" (click)="copyAddress()">
-        <ion-icon name="copy-outline"></ion-icon>
-        <span>{{ 'wallet.coin-receive-copy' | translate }}</span>
+      <!-- SCR-068: bottom-left action saves the QR as an image; Copy remains on the address row above. -->
+      <button type="button" class="action secondary" (click)="saveImage()">
+        <ion-icon name="image-outline"></ion-icon>
+        <span>{{ 'wallet.coin-receive-save-image' | translate }}</span>
       </button>
       <button type="button" class="action primary" (click)="shareAddress()">
         <ion-icon name="share-outline"></ion-icon>

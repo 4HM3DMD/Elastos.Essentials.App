@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController, NavParams, PopoverController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { Logger } from 'src/app/logger';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { AnySubWallet } from '../../model/networks/base/subwallets/subwallet';
 import { WalletUtil } from '../../model/wallet.util';
-import { ContactsService } from '../../services/contacts.service';
-import { Native } from '../../services/native.service';
+import { ContactsService, RecentRecipient } from '../../services/contacts.service';
 import { WarningComponent } from '../warning/warning.component';
 
 type CryptoAddressInfo = {
@@ -16,6 +14,16 @@ type CryptoAddressInfo = {
   resolver: string;
 }
 
+// SCR-029: colored initial-disc avatar palette (deterministic per name/address).
+const AVATAR_COLORS = ['#ED6E2B', '#3A86FF', '#6DCD66', '#8E5BFF', '#FF5F8A', '#00B8A9'];
+
+// SCR-029: number of characters kept at each end of a middle-ellipsis address.
+const ADDR_HEAD_CHARS = 8;
+const ADDR_TAIL_CHARS = 6;
+
+// SCR-029: how long a press must be held to trigger the delete prompt (ms).
+const LONG_PRESS_MS = 550;
+
 @Component({
   selector: 'app-contacts',
   templateUrl: './contacts.component.html',
@@ -24,7 +32,11 @@ type CryptoAddressInfo = {
 export class ContactsComponent implements OnInit {
 
   public supportedCryptoAddresses: CryptoAddressInfo[] = [];
+  // SCR-006: recent recipients shown above the saved addresses.
+  public recents: RecentRecipient[] = [];
   private subWallet: AnySubWallet = null;
+  // SCR-029: pending long-press timer used to open the delete prompt.
+  private longPressTimer: ReturnType<typeof setTimeout> = null;
 
   constructor(
     public contactsService: ContactsService,
@@ -39,6 +51,8 @@ export class ContactsComponent implements OnInit {
 
   ngOnInit() {
     void this.getContacts(this.subWallet)
+    // SCR-006: surface recent recipients above the saved list.
+    this.recents = this.contactsService.recents || [];
   }
 
   ionViewWillEnter() {
@@ -78,6 +92,73 @@ export class ContactsComponent implements OnInit {
     void this.modalCtrl.dismiss({
       contact: contact
     });
+  }
+
+  // SCR-006: pick a recent recipient; dismiss with a contact-shaped payload so
+  // the consumer resolves it exactly like a saved address.
+  selectRecent(recent: RecentRecipient) {
+    void this.modalCtrl.dismiss({
+      contact: {
+        cryptoname: recent.address,
+        type: '',
+        address: recent.address,
+        resolver: ''
+      } as CryptoAddressInfo
+    });
+  }
+
+  // SCR-029: first display character for the initial-disc avatar.
+  getInitial(value: string): string {
+    if (!value) {
+      return '#';
+    }
+    let cleaned = value.startsWith('0x') ? value.slice(2) : value;
+    return (cleaned.charAt(0) || '#').toUpperCase();
+  }
+
+  // SCR-029: deterministic avatar color derived from the label.
+  getAvatarColor(value: string): string {
+    let hash = 0;
+    for (let i = 0; i < (value || '').length; i++) {
+      hash = (hash + value.charCodeAt(i)) % AVATAR_COLORS.length;
+    }
+    return AVATAR_COLORS[hash];
+  }
+
+  // SCR-029: leading segment of a middle-ellipsis address.
+  addrHead(address: string): string {
+    if (!address) {
+      return '';
+    }
+    return address.length > ADDR_HEAD_CHARS + ADDR_TAIL_CHARS ? address.slice(0, ADDR_HEAD_CHARS) : address;
+  }
+
+  // SCR-029: trailing segment (accent-tinted in the template).
+  addrTail(address: string): string {
+    if (!address || address.length <= ADDR_HEAD_CHARS + ADDR_TAIL_CHARS) {
+      return '';
+    }
+    return address.slice(-ADDR_TAIL_CHARS);
+  }
+
+  // SCR-029: start the long-press timer that opens the delete prompt.
+  handlePressStart(contact: CryptoAddressInfo) {
+    this.clearLongPress();
+    this.longPressTimer = setTimeout(() => {
+      void this.showDeletePrompt(contact);
+    }, LONG_PRESS_MS);
+  }
+
+  // SCR-029: cancel a long-press that ended before the threshold.
+  handlePressEnd() {
+    this.clearLongPress();
+  }
+
+  private clearLongPress() {
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer);
+      this.longPressTimer = null;
+    }
   }
 
   getResolverLogo(contact: CryptoAddressInfo) {
@@ -152,15 +233,4 @@ export class ContactsComponent implements OnInit {
     // save
     this.contactsService.setContacts()
   }
-
-    async updateContact() {
-        await Native.instance.showLoading();
-        try {
-            await this.contactsService.getContacts();
-            void this.getContacts(this.subWallet)
-        } catch (e) {
-            Logger.warn('wallet', 'updateContact exception:', e)
-        }
-        await Native.instance.hideLoading();
-    }
 }

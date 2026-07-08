@@ -1,54 +1,124 @@
-ion-grid {
-  height: 100%;
-  padding: 10px 20px;
+// SCR-009 / SCR-010: 2026 publication sheet surface.
+ion-content {
+  --background: #1E1E1E;
+}
 
-  ion-icon,
-  ion-spinner {
-    width: 25px;
-    height: 25px;
-  }
+.publication-sheet {
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px 24px;
 
-  ion-row {
-    ion-button {
-      width: 90%;
-    }
-
-    h1,
-    h2 {
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 18px;
-    }
-
-    h2 {
-      font-size: 14px;
-    }
-  }
-
-  .spinner {
-    margin-top: 40px;
-  }
-
-  .result {
-    margin-top: 20px;
-  }
-
-  .success-row {
+  .amount-hero {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    padding: 12px 0 20px;
 
-    p {
-      padding: 0px 20px;
-      font-size: 12px;
-      font-weight: 600;
+    .coin-disc {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: #14213A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 16px;
+
+      img {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+      }
     }
   }
 
-  .btn {
-    margin-top: 10px;
+  // SCR-010: slim orange-gradient progress track + clock caption.
+  .progress-block {
+    padding: 8px 0 16px;
+
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+
+      .progress-fill {
+        height: 100%;
+        width: 40%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #F7931A 0%, #ED6E2B 100%);
+        animation: std-tx-progress 1.4s ease-in-out infinite;
+
+        &.done {
+          width: 100%;
+          animation: none;
+        }
+      }
+    }
+
+    .progress-caption {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+
+      ion-icon {
+        font-size: 16px;
+      }
+
+      &.success {
+        color: var(--essentials-accent, #ED6E2B);
+      }
+    }
+  }
+
+  // SCR-048: failure branch on the sheet surface.
+  .failure-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+
+    .fail-icon {
+      font-size: 44px;
+      color: var(--essentials-danger, #E45B5B);
+      margin-bottom: 12px;
+    }
+
+    .fail-message {
+      margin: 0;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      padding: 0 8px;
+    }
+  }
+
+  .detail-rows {
+    margin-top: 8px;
+  }
+
+  .cta-row {
+    margin-top: 24px;
+    width: 100%;
+  }
+}
+
+@keyframes std-tx-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(60%);
+  }
+
+  100% {
+    transform: translateX(250%);
   }
 }

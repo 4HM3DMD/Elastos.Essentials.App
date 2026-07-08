@@ -1,78 +1,166 @@
 @import "src/app/wallet/root.scss";
 
 .container {
-  background: var(--ion-background-color);
+  // SCR-037: raised sheet surface with a hairline border (no full white/text outline).
+  background: #1E1E1E;
   height: 100%;
-  border: 1px solid var(--ion-text-color);
-  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 30px 30px 0 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 25px 5px;
+  align-items: stretch;
+  padding: 8px 20px 24px;
+  overflow-y: auto;
 
-  .inline-svg {
-    width: 67px;
-    height: 67px;
+  // SCR-040: sheet nav header.
+  .sheet-header {
+    position: relative;
+    padding-top: 8px;
+    padding-bottom: 12px;
+
+    .grabber {
+      width: 40px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.2);
+      margin: 0 auto 14px;
+    }
+
+    .back-chip {
+      position: absolute;
+      left: 0;
+      top: 18px;
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      cursor: pointer;
+
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+
+    .sheet-title {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #FFFFFF;
+      line-height: 34px;
+    }
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
-    margin: 0;
-    padding: 0 15px;
-    width: 100%;
-  }
-
-  h1,
-  h2 {
-    text-align: center;
-  }
-
-  h3,
-  h4 {
-    text-align: left;
-    font-size: 13px;
-  }
-
-  h1 {
-    padding-top: 10px;
-    padding-bottom: 5px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  h2 {
-    padding-top: 15px;
-    padding-bottom: 15px;
-    font-size: 20px;
-    font-weight: 700;
-  }
-
-  h3 {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    font-weight: 700;
-  }
-
-  h4 {
-    padding-top: 0;
-    padding-bottom: 10px;
-    font-weight: 400;
-    opacity: 0.8;
-  }
-
-  .item-row {
-    padding-left: 10px;
-  }
-
-  .btn-row {
-    margin-top: 20px;
-    width: 100%;
+  // SCR-016 / SCR-041: amount hero.
+  .amount-hero {
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
     align-items: center;
+    padding: 8px 0 20px;
+
+    .coin-disc {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: #14213A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+
+      img {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+      }
+
+      .inline-svg {
+        width: 48px;
+        height: 48px;
+      }
+    }
+
+    .hero-amount {
+      margin-top: 16px;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+
+      .value {
+        font-size: 40px;
+        font-weight: 600;
+        color: #FFFFFF;
+        line-height: 1;
+      }
+
+      .unit {
+        font-size: 18px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+
+    .hero-fiat {
+      margin-top: 8px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  // SCR-039: KV detail rows.
+  .detail-rows {
+    display: flex;
+    flex-direction: column;
+
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .k {
+        flex-shrink: 0;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .v {
+        text-align: right;
+        font-size: 14px;
+        color: #FFFFFF;
+        word-break: break-word;
+
+        &.addr {
+          word-break: break-all;
+        }
+
+        .edit-gas {
+          font-size: 16px;
+          vertical-align: middle;
+          margin-left: 6px;
+          color: var(--essentials-accent, #ED6E2B);
+        }
+      }
+    }
+  }
+
+  .gas-edit {
+    margin-top: 4px;
+  }
+
+  .cta-row {
+    margin-top: 24px;
+    width: 100%;
   }
 
   ion-input {

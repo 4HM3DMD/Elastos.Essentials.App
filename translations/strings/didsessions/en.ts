@@ -1,5 +1,6 @@
 export const en = {
   didsessions: {
+    'create': 'Create',
     // Titlebar
     'create-identity': 'Create Identity',
     'import-my-did': 'Import Identity',
@@ -114,6 +115,8 @@ export const en = {
     'getting-ready': 'Getting ready',
     ready: 'Ready!',
     prepare: {
+      'storage-title': 'Setting up your identity',
+      'storage-intro': 'A personal storage space is being created for your identity. You can move your data somewhere else later.',
       'lightweight-message-1':
         "Welcome to the future of Web3 with Essentials. Hold on, we're getting everything ready.",
       'publish-title': 'Publishing your identity to the public ledger',

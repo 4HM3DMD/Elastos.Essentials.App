@@ -1,5 +1,17 @@
 .wallet-home {
-    padding: 8px var(--page-inset, 24px) 24px;
+    min-height: 100%;
+    padding: 8px var(--essentials-page-inset, 24px) 24px;
+    // SYS-014: same 2026 header wave texture as the launcher home, faded into the page
+    // background. Linear overlay reproduces Figma's fade-to-background; the image fills
+    // the top edge-to-edge (border-box origin ignores the horizontal padding).
+    background:
+        linear-gradient(180deg,
+            rgba(17, 17, 17, 0) 0%,
+            rgba(17, 17, 17, 0) 30%,
+            var(--ion-background-color) 78%) top center / 100% 300px no-repeat,
+        url("/assets/components/backgrounds/top-cover.jpg") top center / 100% auto no-repeat,
+        var(--ion-background-color);
+    background-origin: border-box;
 }
 
 .icon-btn {

@@ -1,35 +1,85 @@
 <div id='tx-confirm' class="container" [class.darkContainer]="theme.darkMode">
 
-  <div class="inline-svg" [inlineSVG]="txIcon"></div>
-  <h1>{{ txHeader }}</h1>
-  <h2>{{ 'wallet.confirm-transaction-title' | translate }}</h2>
+  <!-- SCR-040: sheet nav header — grabber, circular back chip, single centered sentence-case title. -->
+  <div class="sheet-header">
+    <div class="grabber" aria-hidden="true"></div>
+    <button type="button" class="back-chip" (click)="cancel()" [attr.aria-label]="'common.cancel' | translate">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+    <div class="sheet-title">{{ 'wallet.confirm-send' | translate }}</div>
+  </div>
 
-  <h3>{{ 'wallet.from' | translate }}:</h3>
-  <h4>{{ txInfo.transferFrom }}</h4>
+  <!-- SCR-016 / SCR-041: navy coin-disc + amount hero + fiat line. -->
+  <div class="amount-hero">
+    <div class="coin-disc">
+      <img *ngIf="txImage" [src]="txImage" alt="" />
+      <div *ngIf="!txImage" class="inline-svg" [inlineSVG]="txIcon"></div>
+    </div>
+    <div class="hero-amount" *ngIf="displayAmount">
+      <span class="value">{{ displayAmount }}</span>
+      <span class="unit">{{ txInfo.tokensymbol }}</span>
+    </div>
+    <div class="hero-fiat" *ngIf="txInfo.amountFiat">~{{ txInfo.amountFiat }}</div>
+  </div>
 
-  <h3>{{ 'wallet.to' | translate }}:</h3>
-  <h4 *ngIf="txInfo.toChainId">{{ txInfo.toChainId }}</h4>
-  <h4 *ngIf="txInfo.transferTo">{{ txInfo.transferTo }}</h4>
+  <!-- SCR-039 / SCR-017: KV detail rows — grey label left, white value right, no colons; From row dropped. -->
+  <div class="detail-rows">
+    <div class="kv-row" *ngIf="txInfo.networkName">
+      <span class="k">{{ 'wallet.network' | translate }}</span>
+      <span class="v">{{ txInfo.networkName }}</span>
+    </div>
 
-  <h4 *ngIf="txInfo.type == 11">{{ 'wallet.burn-bpos-nft-transaction-prompt' | translate }}</h4>
+    <div class="kv-row" *ngIf="txInfo.toChainId">
+      <span class="k">{{ 'wallet.to' | translate }}</span>
+      <span class="v">{{ txInfo.toChainId }}</span>
+    </div>
 
-  <h3 *ngIf="displayAmount">{{ 'wallet.amount' | translate }}:</h3>
-  <h4 *ngIf="displayAmount">{{ displayAmount }} {{ txInfo.tokensymbol }}</h4>
+    <div class="kv-row" *ngIf="txInfo.transferTo">
+      <span class="k">{{ 'wallet.address' | translate }}</span>
+      <span class="v addr">{{ txInfo.transferTo }}</span>
+    </div>
 
-  <h3 *ngIf="unFreezeBalance">{{ 'wallet.resource-to-unfreeze' | translate }}</h3>
-  <h4 *ngIf="unFreezeBalance">{{ unFreezeBalance }} {{ txInfo.tokensymbol }}</h4>
+    <div class="kv-row" *ngIf="txInfo.addressName !== undefined">
+      <span class="k">{{ 'wallet.address-name' | translate }}</span>
+      <span class="v">{{ txInfo.addressName || '- -' }}</span>
+    </div>
 
-  <h3 *ngIf="fee">{{ 'wallet.esctransaction-fees' | translate }}</h3>
+    <div class="kv-row" *ngIf="txInfo.type == 11">
+      <span class="v">{{ 'wallet.burn-bpos-nft-transaction-prompt' | translate }}</span>
+    </div>
 
-  <ion-row class="item-row ripple ion-activatable" *ngIf="fee">
-    <ion-col size="11" class="price">
-      <span> {{ fee }} </span>
-    </ion-col>
-    <ion-col size="1" class="edit-gas-col" *ngIf="gasLimit">
-      <ion-icon name="create-outline" (click)="editGasPrice()"></ion-icon>
-    </ion-col>
-  </ion-row>
-  <ion-row class="item-row ripple ion-activatable" *ngIf="showEditGasPrice">
+    <div class="kv-row" *ngIf="unFreezeBalance">
+      <span class="k">{{ 'wallet.resource-to-unfreeze' | translate }}</span>
+      <span class="v">{{ unFreezeBalance }} {{ txInfo.tokensymbol }}</span>
+    </div>
+
+    <div class="kv-row" *ngIf="txInfo.receiveAmount">
+      <span class="k">{{ 'wallet.receive-amount' | translate }}</span>
+      <span class="v">{{ txInfo.receiveAmount }} {{ txInfo.tokensymbol }}</span>
+    </div>
+
+    <!-- SCR-042: fee rendered as one plain read-only KV row; gas editing stays behind the discreet pencil. -->
+    <div class="kv-row" *ngIf="fee">
+      <span class="k">{{ 'wallet.network-fee' | translate }}</span>
+      <span class="v">
+        {{ fee }}
+        <ion-icon *ngIf="gasLimit" class="edit-gas" name="create-outline" (click)="editGasPrice()"></ion-icon>
+      </span>
+    </div>
+
+    <div class="kv-row" *ngIf="txInfo.totalDeducted">
+      <span class="k">{{ 'wallet.total-deducted' | translate }}</span>
+      <span class="v">{{ txInfo.totalDeducted }} {{ txInfo.tokensymbol }}</span>
+    </div>
+
+    <div class="kv-row" *ngIf="txInfo.memo">
+      <span class="k">{{ 'wallet.tx-info-memo' | translate }}</span>
+      <span class="v">{{ txInfo.memo }}</span>
+    </div>
+  </div>
+
+  <!-- Gas editing surfaced only when the discreet pencil is tapped. -->
+  <ion-row class="item-row gas-edit" *ngIf="showEditGasPrice">
     <ion-col size="6">
       <div>{{ 'wallet.eth-gasprice' | translate }}</div>
       <ion-input type="number" autosize clearInput name="gasPrice" ngDefaultControl [(ngModel)]="gasPriceGwei"
@@ -44,16 +94,9 @@
     </ion-col>
   </ion-row>
 
-  <h3 *ngIf="txInfo.memo">{{ 'wallet.tx-info-memo' | translate }}:</h3>
-  <h4 *ngIf="txInfo.memo">{{ txInfo.memo }}</h4>
-
-  <ion-row class="btn-row">
-    <ion-col size="5.6">
-      <ebutton mode="cancel" (clicked)="cancel()" [title]="'common.cancel' | translate"></ebutton>
-    </ion-col>
-    <ion-col size="5.6">
-      <ebutton (clicked)="confirm()" [title]="'common.confirm' | translate"></ebutton>
-    </ion-col>
-  </ion-row>
+  <!-- SCR-018: single full-width gradient Continue CTA with the arrow disc; back handled by the header chip. -->
+  <div class="cta-row">
+    <ebutton [arrow]="true" (clicked)="confirm()" [title]="'common.continue' | translate"></ebutton>
+  </div>
 
 </div>

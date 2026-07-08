@@ -28,6 +28,7 @@ import { BigNumber } from 'bignumber.js';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
+import { TitleBarIcon, TitleBarIconSlot, TitleBarMenuItem } from 'src/app/components/titlebar/titlebar.types';
 import { runDelayed } from 'src/app/helpers/sleep.helper';
 import { Logger } from 'src/app/logger';
 import { Util } from 'src/app/model/util';
@@ -140,6 +141,10 @@ export class CoinHomePage implements OnInit {
   private extendedInfoChangeSubscription: Subscription = null;
   private sendTransactionSubscription: Subscription = null;
 
+  // SCR-095: per-token favourite state + titlebar click listener.
+  public isFavorite = false;
+  private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void = null;
+
   private updateInterval = null;
   private updateTmeout = null;
   private updateTransactionsTimesamp = 0;
@@ -199,6 +204,11 @@ export class CoinHomePage implements OnInit {
       this.sendTransactionSubscription.unsubscribe();
       this.sendTransactionSubscription = null;
     }
+    // SCR-095: detach the titlebar favourite click listener.
+    if (this.titleBarIconClickedListener) {
+      this.titleBar.removeOnItemClickedListener(this.titleBarIconClickedListener);
+      this.titleBarIconClickedListener = null;
+    }
   }
 
   ngAfterViewInit() {
@@ -226,6 +236,59 @@ export class CoinHomePage implements OnInit {
     this.buildTxTypeChips();
     this.refreshPriceVm();
     void this.loadShowAllActions();
+    // SCR-095: show the favourite toggle in the titlebar and reflect persisted state.
+    if (!this.titleBarIconClickedListener) {
+      this.titleBar.addOnItemClickedListener(
+        (this.titleBarIconClickedListener = (menuIcon: TitleBarIcon) => {
+          if (menuIcon.key === 'favorite') void this.toggleFavorite();
+        })
+      );
+    }
+    void this.loadFavorite();
+  }
+
+  ionViewWillLeave() {
+    // SCR-095: hide the titlebar favourite icon when leaving the page.
+    this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, null);
+  }
+
+  /**
+   * SCR-095: renders the favourite icon in the titlebar, tracking on/off state.
+   * TODO(figma-asset): swap in a filled 'favorite-active' asset for the ON state
+   * once exported; only the outline favorite.svg exists today.
+   */
+  private updateFavoriteIcon(): void {
+    this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, {
+      key: 'favorite',
+      iconPath: 'assets/components/titlebar/favorite.svg'
+    });
+  }
+
+  private favoriteSettingKey(): string {
+    return 'favorite-' + this.subWalletId;
+  }
+
+  public async loadFavorite(): Promise<void> {
+    this.isFavorite = await this.globalStorage.getSetting(
+      DIDSessionsStore.signedInDIDString,
+      NetworkTemplateStore.networkTemplate,
+      'wallet',
+      this.favoriteSettingKey(),
+      false
+    );
+    this.updateFavoriteIcon();
+  }
+
+  public async toggleFavorite(): Promise<void> {
+    this.isFavorite = !this.isFavorite;
+    await this.globalStorage.setSetting(
+      DIDSessionsStore.signedInDIDString,
+      NetworkTemplateStore.networkTemplate,
+      'wallet',
+      this.favoriteSettingKey(),
+      this.isFavorite
+    );
+    this.updateFavoriteIcon();
   }
 
   // Cannot be async
@@ -862,7 +925,13 @@ export class CoinHomePage implements OnInit {
         if (extTxInfo && extTxInfo.evm && extTxInfo.evm.txInfo && extTxInfo.evm.txInfo.operation && extTxInfo.evm.txInfo.operation.description)
             return this.translate.instant(extTxInfo.evm.txInfo.operation.description, extTxInfo.evm.txInfo.operation.descriptionTranslationParams);
  */
-    if (transfer && transfer.name) return this.translate.instant(transfer.name);
+    // SCR-155: compose the row title as "<SYMBOL> | <Action>" (e.g. "ELA | Sent")
+    // so the token is always visible alongside the transaction action.
+    if (transfer && transfer.name) {
+      const action = this.translate.instant(transfer.name);
+      const sym = this.subWallet ? this.subWallet.getDisplayTokenName() : '';
+      return sym ? `${sym} | ${action}` : action;
+    }
   }
 
   public getContractEvents(transfer: TransactionInfo): EthContractEvent[] {

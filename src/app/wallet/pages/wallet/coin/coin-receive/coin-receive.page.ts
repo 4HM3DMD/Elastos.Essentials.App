@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -34,6 +34,8 @@ const TOKEN_STANDARD_BY_NETWORK_KEY: { [networkKey: string]: string } = {
 })
 export class CoinReceivePage implements OnInit, OnDestroy {
   @ViewChild(TitleBarComponent, { static: true }) titleBar: TitleBarComponent;
+  // SCR-068: reference to the QR card so saveImage() can export the rendered QR canvas.
+  @ViewChild('qrCard', { static: false }) qrCard: ElementRef<HTMLElement>;
 
   public networkWallet: AnyNetworkWallet = null;
   private masterWalletId = '1';
@@ -156,6 +158,23 @@ export class CoinReceivePage implements OnInit, OnDestroy {
     void this.globalIntentService.sendIntent('share', {
       title: this.translate.instant('wallet.coin-receive-title', { coinName: this.tokenName }),
       url: this.qrcode
+    });
+  }
+
+  /**
+   * SCR-068: exports the rendered QR code as a PNG and hands it to the system
+   * share/save sheet. angularx-qrcode renders into a <canvas> inside the QR card,
+   * so we read that canvas directly rather than rasterizing arbitrary DOM.
+   */
+  public saveImage() {
+    const canvas = this.qrCard?.nativeElement?.querySelector('canvas');
+    if (!canvas) {
+      return;
+    }
+    const dataUrl = (canvas as HTMLCanvasElement).toDataURL('image/png');
+    void this.globalIntentService.sendIntent('share', {
+      title: this.translate.instant('wallet.coin-receive-title', { coinName: this.tokenName }),
+      url: dataUrl
     });
   }
 

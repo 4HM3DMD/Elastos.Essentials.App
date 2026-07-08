@@ -1,5 +1,37 @@
 @import "src/app/didsessions/root.scss";
 
+// SCR-118: single onboarding screen replacing the 3-slide welcome carousel.
+.welcome-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 90px 45px 45px;
+
+  &.hidden {
+    display: none;
+  }
+
+  .welcome-logo {
+    width: 200px;
+  }
+
+  .welcome-title {
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 28px;
+    margin-top: 60px;
+  }
+
+  .welcome-intro {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 22px;
+    margin-top: 16px;
+    color: var(--essentials-text-secondary);
+  }
+}
+
 ion-slides {
   height: calc(100% - (150px + 40px)); // Substract height of slides on approximate height of footer
 }

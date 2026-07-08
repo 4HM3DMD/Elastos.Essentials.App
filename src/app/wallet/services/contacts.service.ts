@@ -17,13 +17,27 @@ export type CryptoAddress = {
   address: string;
 }
 
+// SCR-006: a recent recipient recorded after a successful send, surfaced in a
+// "Recents" section of the saved-addresses sheet.
+export type RecentRecipient = {
+  address: string;
+  amount: string;
+  symbol: string;
+  timestamp: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 
 export class ContactsService {
 
+  // SCR-006: persistence key and cap for the recents store.
+  private static readonly RECENTS_KEY = 'recent-recipients';
+  private static readonly MAX_RECENTS = 5;
+
   public contacts: Contact[] = [];
+  public recents: RecentRecipient[] = [];
 
   constructor(
     private storage: LocalStorage,
@@ -32,6 +46,25 @@ export class ContactsService {
 
   async init() {
     await this.getContacts();
+    await this.getRecents();
+  }
+
+  // SCR-006: load the persisted recent recipients (newest first).
+  async getRecents(): Promise<RecentRecipient[]> {
+    let raw = await this.storage.get(ContactsService.RECENTS_KEY);
+    this.recents = Array.isArray(raw) ? raw : [];
+    return this.recents;
+  }
+
+  // SCR-006: record a recipient after a successful send. De-dupes by address,
+  // keeps the newest first and caps the stored list.
+  async addRecent(recent: RecentRecipient): Promise<void> {
+    this.recents = this.recents.filter((r) => r.address !== recent.address);
+    this.recents.unshift(recent);
+    if (this.recents.length > ContactsService.MAX_RECENTS) {
+      this.recents = this.recents.slice(0, ContactsService.MAX_RECENTS);
+    }
+    await this.storage.set(ContactsService.RECENTS_KEY, JSON.stringify(this.recents));
   }
 
   setContacts(): Promise<void> {

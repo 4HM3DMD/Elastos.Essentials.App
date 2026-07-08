@@ -1,52 +1,58 @@
 <ion-content>
-  <ion-grid class="ion-text-center" [class.dark-process-container]="theme.darkMode">
-    <ion-row *ngIf="!publicationFailed">
-      <ion-col size="12">
-        <ion-label>
-          <h1 *ngIf="publicationSuccessful">{{ 'wallet.tx-success' | translate }}</h1>
-          <h1 *ngIf="publishing">{{ 'wallet.eth-sending-transaction' | translate }}</h1>
-          <br />
-          <h2 *ngIf="publishing">{{ 'wallet.eth-transaction-wait' | translate }}</h2>
-        </ion-label>
+  <!-- SCR-009 / SCR-010: 2026 publication sheet — grabber + ui-sheet-header, orange progress track.
+       Dead [class.dark-process-container] removed. -->
+  <div class="publication-sheet">
+    <ui-sheet-header
+      [title]="publishing
+        ? ('wallet.eth-sending-transaction' | translate)
+        : (publicationSuccessful
+            ? ('wallet.tx-success' | translate)
+            : (publicationStatus == 'unpacked'
+                ? ('wallet.eth-transaction-pending' | translate)
+                : ('wallet.eth-transaction-fail' | translate)))">
+    </ui-sheet-header>
 
-        <ion-spinner *ngIf="publishing" class="spinner"></ion-spinner>
+    <!-- SCR-010: slim orange-gradient progress track + clock + wait caption. -->
+    <div class="progress-block" *ngIf="publishing">
+      <div class="progress-track">
+        <div class="progress-fill"></div>
+      </div>
+      <div class="progress-caption">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{ 'wallet.eth-transaction-wait' | translate }}</span>
+      </div>
+    </div>
 
-        <div class="success-row result" [class.darkContainer]="theme.darkMode" *ngIf="publicationSuccessful">
-          <lottie-player src="../../../../assets/wallet/animations/success-1.json" background="transparent" speed="0.5"
-            style="width: 80px; height: 80px;" autoplay></lottie-player>
+    <!-- Completed state on the same screen (filled bar + success caption). -->
+    <div class="progress-block" *ngIf="publicationSuccessful">
+      <div class="progress-track">
+        <div class="progress-fill done"></div>
+      </div>
+      <div class="progress-caption success">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <span>{{ 'wallet.tx-success' | translate }}</span>
+      </div>
+    </div>
+
+    <!-- Pending / error branch: speed-up affordance on the shared sheet surface. -->
+    <div class="speedup-block" *ngIf="publicationFailed">
+      <p class="speedup-prompt">{{ 'wallet.eth-transaction-speedup-prompt' | translate }}</p>
+
+      <div class="gas-fields">
+        <div class="gas-field">
+          <div class="gas-label">{{ 'wallet.eth-gasprice' | translate }}</div>
+          <ion-input autosize clearInput name="gasPrice" ngDefaultControl [(ngModel)]="gasPrice" mode="ios"></ion-input>
         </div>
-      </ion-col>
-    </ion-row>
+        <div class="gas-field">
+          <div class="gas-label">{{ 'wallet.eth-gaslimit' | translate }}</div>
+          <ion-input autosize clearInput name="gasLimit" ngDefaultControl [(ngModel)]="gasLimit" mode="ios"></ion-input>
+        </div>
+      </div>
 
-    <ion-row class="item-row ripple ion-activatable" *ngIf="publicationFailed">
-      <ion-col size="12">
-        <h1 *ngIf="publicationStatus == 'unpacked'">{{ 'wallet.eth-transaction-pending' | translate }}</h1>
-        <h1 *ngIf="publicationStatus == 'error'">{{ 'wallet.eth-transaction-fail' | translate }}</h1>
-        <h2>{{ 'wallet.eth-transaction-speedup-prompt' | translate }}</h2>
-      </ion-col>
-    </ion-row>
-    <ion-row class="item-row ripple ion-activatable" *ngIf="publicationFailed">
-      <ion-col size="6">
-        <div>{{ 'wallet.eth-gasprice' | translate }}</div>
-        <ion-input autosize clearInput name="gasPrice" ngDefaultControl [(ngModel)]="gasPrice" mode="ios">
-        </ion-input>
-      </ion-col>
-      <ion-col size="6">
-        <div>{{ 'wallet.eth-gaslimit' | translate }}</div>
-        <ion-input autosize clearInput name="gasLimit" ngDefaultControl [(ngModel)]="gasLimit" mode="ios">
-        </ion-input>
-      </ion-col>
-    </ion-row>
-
-    <ion-row *ngIf="publicationFailed">
-      <ion-col class="btn cancel ion-activatable ripple" size="6">
-        <ebutton (clicked)="cancel()" [title]="'common.close' | translate">
-        </ebutton>
-      </ion-col>
-      <ion-col class="btn confirm ion-activatable ripple" size="6">
-        <ebutton (clicked)="speedup()" [title]="'wallet.eth-transaction-speedup' | translate">
-        </ebutton>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+      <div class="btn-row">
+        <ebutton mode="cancel" (clicked)="cancel()" [title]="'common.close' | translate"></ebutton>
+        <ebutton (clicked)="speedup()" [title]="'wallet.eth-transaction-speedup' | translate"></ebutton>
+      </div>
+    </div>
+  </div>
 </ion-content>

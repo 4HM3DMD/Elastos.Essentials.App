@@ -1,7 +1,8 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, Input, NgZone, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
+import { Native } from '../../services/native.service';
 import { OutgoingTransactionState, TransactionService } from '../../services/transaction.service';
 import { WalletService } from '../../services/wallet.service';
 
@@ -15,6 +16,23 @@ import { WalletService } from '../../services/wallet.service';
   styleUrls: ['./std-transaction.component.scss'],
 })
 export class StdTransactionComponent implements OnInit {
+  // SCR-011 / SCR-034: amount hero + interpolated title context, fed via componentProps.
+  @Input() public symbol = '';
+  @Input() public amount: string = null;
+  @Input() public fiat: string = null;
+  @Input() public icon: string = null;
+
+  // SCR-012: send-context summary rows, fed via componentProps.
+  @Input() public networkName: string = null;
+  @Input() public address: string = null;
+  @Input() public addressName: string = null;
+  @Input() public receiveAmount: string = null;
+  @Input() public fee: string = null;
+  @Input() public totalDeducted: string = null;
+
+  // SCR-013: published transaction hash, surfaced as a copyable row once available.
+  @Input() public txId: string = null;
+
   public publishing = false;
   public publicationSuccessful = false;
   public publicationFailed = false;
@@ -26,6 +44,7 @@ export class StdTransactionComponent implements OnInit {
     public theme: GlobalThemeService,
     private zone: NgZone,
     private modalCtrl: ModalController,
+    private native: Native,
     private transactionService: TransactionService
   ) { }
 
@@ -38,18 +57,20 @@ export class StdTransactionComponent implements OnInit {
     this.publicationFailed = false;
     this.outgoingTxStateSub = this.transactionService.onGoingPublicationState.subscribe(txState => {
       if (txState.state === OutgoingTransactionState.ERRORED) {
-        this.publicationFailed = true;
-        this.publishing = false;
-        this.errorMessage = txState.message;
+        this.zone.run(() => {
+          this.publicationFailed = true;
+          this.publishing = false;
+          this.errorMessage = txState.message;
+        });
       }
       else if (txState.state === OutgoingTransactionState.PUBLISHED) {
-        // Show the success animation and exit the component
-        this.publishing = false;
-        this.publicationSuccessful = true;
-        setTimeout(() => {
-          this.exitComponent();
-          WalletService.instance.events.publish('wallet:transactionpublished');
-        }, 3000);
+        // SCR-033: settle into a completed state on the same progress screen (no auto-dismiss).
+        // Notify the wallet so its lists refresh; the sheet stays open until the user closes it.
+        this.zone.run(() => {
+          this.publishing = false;
+          this.publicationSuccessful = true;
+        });
+        WalletService.instance.events.publish('wallet:transactionpublished');
       }
     });
   }
@@ -59,6 +80,13 @@ export class StdTransactionComponent implements OnInit {
       this.outgoingTxStateSub.unsubscribe();
       this.outgoingTxStateSub = null;
     }
+  }
+
+  // SCR-013: copy the published transaction hash.
+  public copyTxId() {
+    if (!this.txId) return;
+    void this.native.copyClipboard(this.txId);
+    this.native.toast_trans('wallet.copied', 2000);
   }
 
   exitComponent() {

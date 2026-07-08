@@ -28,6 +28,8 @@ export class TxConfirmComponent implements OnInit {
 
   public txHeader: string;
   public txIcon: string;
+  // SCR-041: 3D action imagery (png) used as the confirm hero, with txIcon as SVG fallback.
+  public txImage: string = null;
   public displayAmount: string = null;
 
   public fee : string = null;
@@ -75,28 +77,38 @@ export class TxConfirmComponent implements OnInit {
         case TransferType.RECHARGE:
             this.txHeader = this.translate.instant('wallet.transfer-transaction-type');
             this.txIcon = '/assets/wallet/tx/transfer.svg';
+            // TODO(figma-asset): no dedicated 3D transfer image shipped; reuse the send disc.
+            this.txImage = '/assets/wallet/action/send.png';
         break;
         case TransferType.FREEZE: // Tron
             this.txHeader = this.translate.instant('wallet.resource-freeze');
             this.txIcon = '/assets/wallet/tx/send.svg';
+            this.txImage = '/assets/wallet/action/send.png';
         break;
         case TransferType.UNFREEZE: // Tron
             this.txHeader = this.translate.instant('wallet.resource-unfreeze');
             this.txIcon = '/assets/wallet/tx/receive.svg';
+            this.txImage = '/assets/wallet/action/receive.png';
 
             this.unFreezeBalance = this.txInfo.unfreezeBalance;
         break;
         case TransferType.CLAIM_NFT:
             this.txHeader = this.translate.instant('wallet.claim-bpos-nft-transaction-type');
             this.txIcon = '/assets/wallet/tx/transfer.svg';
+            // TODO(figma-asset): no dedicated 3D nft image shipped; reuse the send disc.
+            this.txImage = '/assets/wallet/action/send.png';
         break;
         case TransferType.DESTROY_NFT:
             this.txHeader = this.translate.instant('wallet.burn-bpos-nft-transaction-type');
             this.txIcon = '/assets/wallet/tx/transfer.svg';
+            // TODO(figma-asset): no dedicated 3D nft image shipped; reuse the send disc.
+            this.txImage = '/assets/wallet/action/send.png';
         break;
         default:
             this.txHeader = this.translate.instant('wallet.send-transaction-type');
             this.txIcon = '/assets/wallet/tx/send.svg';
+            // SCR-041: shipped 3D Send asset as the confirm imagery.
+            this.txImage = '/assets/wallet/action/send.png';
         break;
     }
 

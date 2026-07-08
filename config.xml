@@ -23,7 +23,7 @@
     <allow-navigation href="ionic://*" />
     <preference name="LottieFullScreen" value="true" />
     <preference name="LottieAnimationLocation" value="www/assets/essentials_anim.json" />
-    <preference name="LottieBackgroundColor" value="000000" />
+    <preference name="LottieBackgroundColor" value="111111" />
     <preference name="LottieCacheDisabled" value="true" />
     <preference name="BackgroundColor" value="0xff111111" />
     <preference name="StatusBarOverlaysWebView" value="false" />

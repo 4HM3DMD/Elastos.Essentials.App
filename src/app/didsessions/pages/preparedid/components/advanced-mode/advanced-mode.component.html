@@ -46,9 +46,13 @@
 
     <ion-slide class="ion-text-center">
       <div class="slide-card">
-        <img class="img-3" src="assets/didsessions/onboard/slide3.svg">
-        <h1>{{ 'didsessions.prepare.hive-title' | translate }}</h1>
-        <p>{{ 'didsessions.prepare.hive-intro' | translate }}</p>
+        <!-- SCR-123: de-branded the Hive storage step. Neutral illustration + generic
+             storage strings replace the hive art (slide3.svg) and hive-* bindings.
+             TODO(figma-asset): swap in the exported neutral "storage" illustration;
+             using the neutral elastos-icon as a safe existing-asset fallback. -->
+        <img src="assets/components/tab-bar/elastos-icon.svg">
+        <h1>{{ 'didsessions.prepare.storage-title' | translate }}</h1>
+        <p>{{ 'didsessions.prepare.storage-intro' | translate }}</p>
         <div class="error-box" *ngIf="hiveError">
           <ebutton (clicked)="onCancelPreparation()" [title]="'common.back' | translate"></ebutton>
           <span class="error">{{ hiveError }}</span>

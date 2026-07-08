@@ -141,37 +141,6 @@
             }
         }
 
-        .cryptoname-row {
-            margin-top: 10px;
-
-            h1 {
-                width: 100%;
-                margin-bottom: 10px;
-                font-weight: 500;
-                font-size: 11px;
-            }
-
-            ion-col {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px 5px;
-
-                span,
-                ion-icon {
-                    color: #3880ff;
-                }
-
-                span {
-                    font-size: 14px;
-                    font-weight: 600;
-                }
-
-                ion-icon {
-                    font-size: 20px;
-                }
-            }
-        }
     }
 
     /********************** Send Container **********************/
@@ -182,7 +151,8 @@
         align-items: center;
         min-height: 100%;
         margin: 0;
-        padding: 20px 30px;
+        /* SCR-043: normalized page gutter to the 24px shared inset */
+        padding: 20px 24px;
 
         .header-img {
             width: 75px;
@@ -191,13 +161,23 @@
         }
 
         h1 {
-            margin: 30px 0 10px;
-            font-size: 13px;
-            font-weight: 400;
-            letter-spacing: 0.7px;
+            /* SCR-023 / SCR-043: section label on the shared tier (18px / 500 / white, no tracking) */
+            margin: 24px 0 10px;
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: normal;
+            color: #FFFFFF;
 
-            img {
+            img,
+            ion-icon.section-chevron {
                 margin-left: 4px;
+                vertical-align: middle;
+            }
+
+            /* SCR-044: thin chevron tinted via the label's own colour */
+            ion-icon.section-chevron {
+                font-size: 16px;
+                color: currentColor;
             }
 
             .rotate {
@@ -301,9 +281,13 @@
         }
 
         .item-row {
-            border-radius: 16px;
-            padding: 10px 15px;
+            /* SCR-024: taller full-width field with a softer radius and a hairline border */
+            width: 100%;
+            border-radius: 18px;
+            padding: 10px 16px;
+            min-height: 54px;
             background-color: var(--essentials-box-color);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -314,9 +298,10 @@
                 align-items: center;
 
                 ion-input {
-                    font-size: 14px;
+                    font-size: 16px;
                     font-weight: 400;
                     text-align: left;
+                    color: #FFFFFF;
                 }
 
                 ion-icon {
@@ -391,24 +376,49 @@
                 }
 
                 .negativeBalance {
-                    color: red;
+                    /* SCR-030: danger token instead of bare "red" */
+                    color: var(--essentials-danger);
                 }
             }
         }
 
+        /* SCR-022: single centered "Available" line with a hairline stadium Max chip */
         .balance-row {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            gap: 8px;
+            margin-top: 4px;
 
-            #max-btn {
-                font-size: 11px;
-                font-weight: 700;
+            .available-label {
+                margin: 0;
+                font-size: 13px;
+                font-weight: 500;
+                letter-spacing: normal;
+                text-align: center;
+                color: var(--essentials-text-secondary);
+
+                strong {
+                    font-weight: 600;
+                    color: #FFFFFF;
+                }
             }
 
-            .align-right {
-                width: 100%;
-                text-align: right;
+            .max-chip {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 6px 16px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 999px;
+                background: transparent;
+                color: var(--essentials-text-secondary);
+                font-family: inherit;
+                font-size: 12px;
+                font-weight: 600;
+                line-height: 1;
+                cursor: pointer;
             }
         }
 
@@ -450,38 +460,6 @@
             p {
                 width: 100%;
                 text-align: right;
-            }
-        }
-
-        .cryptoname-row {
-            margin-top: 10px;
-
-            h1 {
-                width: 100%;
-                margin-bottom: 10px;
-                font-weight: 500;
-                font-size: 11px;
-            }
-
-            ion-col {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px 5px;
-
-                span,
-                ion-icon {
-                    color: #3880ff;
-                }
-
-                span {
-                    font-size: 14px;
-                    font-weight: 600;
-                }
-
-                ion-icon {
-                    font-size: 20px;
-                }
             }
         }
 
@@ -542,6 +520,113 @@
 
         .middle-col {
             justify-content: flex-end;
+        }
+    }
+
+    /* SCR-044: shared thin chevron (arrow-col, btc-fee row) tinted via currentColor */
+    .section-chevron {
+        font-size: 16px;
+        color: currentColor;
+    }
+
+    /* SCR-030: single shared cryptoname suggestion list (deduped from recharge + send) */
+    .cryptoname-row {
+        margin-top: 10px;
+
+        h1 {
+            width: 100%;
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-size: 11px;
+        }
+
+        ion-col {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5px;
+
+            span,
+            ion-icon {
+                color: var(--essentials-accent);
+            }
+
+            span {
+                font-size: 14px;
+                font-weight: 600;
+            }
+
+            ion-icon {
+                font-size: 20px;
+            }
+        }
+    }
+
+    /* SCR-007: filled recipient card shown once a named contact/cryptoname is resolved */
+    .recipient-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        margin-top: 4px;
+        padding: 12px 16px;
+        border-radius: 18px;
+        background-color: var(--essentials-box-color);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        .recipient-card__avatar {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--essentials-accent);
+            color: var(--essentials-accent-ink, #FFFFFF);
+            font-size: 18px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .recipient-card__body {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 0;
+            flex: 1 1 auto;
+
+            .recipient-card__name {
+                font-size: 15px;
+                font-weight: 600;
+                color: #FFFFFF;
+                line-height: 1.3;
+            }
+
+            .recipient-card__addr {
+                font-size: 13px;
+                font-weight: 400;
+                color: var(--essentials-text-secondary);
+                line-height: 1.3;
+            }
+        }
+
+        .recipient-card__clear {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--essentials-text-secondary);
+            cursor: pointer;
+
+            ion-icon {
+                font-size: 16px;
+            }
         }
     }
 
@@ -815,8 +900,9 @@
         align-items: center;
         gap: 6px;
         padding: 7px 12px;
-        border: none;
-        border-radius: 10px;
+        /* SCR-026: hairline stadium pill */
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
         background: var(--essentials-box-color);
         color: var(--essentials-text-secondary);
         font-family: inherit;

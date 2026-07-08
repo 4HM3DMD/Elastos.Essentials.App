@@ -195,6 +195,8 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   // Addresses resolved from typed user friendly names (ex: user types "rong" -> resolved to rong's ela address)
   public suggestedAddresses: CryptoAddressResolvers.Address[] = [];
   private resolverNameTimeout = null;
+  // SCR-025: pending long-press-to-paste timer on the address field.
+  private addressPressTimer: ReturnType<typeof setTimeout> = null;
 
   private addressUpdateSubscription: Subscription = null;
 
@@ -398,7 +400,8 @@ export class CoinTransferPage implements OnInit, OnDestroy {
         break;
       // For Send Transfer
       case TransferType.SEND:
-        this.titleBar.setTitle(this.translate.instant('wallet.coin-transfer-send-title'));
+        // SCR-019: header reads "Send <TOKEN>" (reuse wallet.send-coin, already used by buttonTitle())
+        this.titleBar.setTitle(this.translate.instant('wallet.send-coin', { coin: this.fromSubWallet.getDisplayTokenName() }));
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.transaction = this.createSendTransaction;
 
@@ -613,6 +616,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
         throw new Error('Unknown subwallet type used for payment!');
       }
 
+      // SCR-035: dismiss the please-wait ion-loading before the publication sheet is presented,
+      // so two progress overlays are not stacked on top of each other.
+      await this.native.hideLoading();
       // SIGN AND PUBLISH
       await this.signAndSendRawTransaction(rawTx);
     } catch (err) {
@@ -743,6 +749,51 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       this.native.toast_trans('wallet.not-a-valid-address');
       return;
     }
+  }
+
+  /** SCR-025: press-and-hold the address field to paste from the clipboard. */
+  public onAddressPressStart() {
+    if (this.addressPressTimer) {
+      clearTimeout(this.addressPressTimer);
+    }
+    this.addressPressTimer = setTimeout(() => {
+      this.addressPressTimer = null;
+      void this.pasteFromClipboard();
+    }, 600);
+  }
+
+  /** SCR-025: a short tap (or a move) cancels the pending long-press paste. */
+  public onAddressPressEnd() {
+    if (this.addressPressTimer) {
+      clearTimeout(this.addressPressTimer);
+      this.addressPressTimer = null;
+    }
+  }
+
+  /** SCR-007: first glyph shown in the resolved-recipient avatar disc. */
+  public get recipientInitial(): string {
+    const source = (this.addressName || this.toAddress || '').trim();
+    return source ? source.charAt(0).toUpperCase() : '?';
+  }
+
+  /** SCR-007: middle-truncate a long address for the recipient card. */
+  public middleEllipsis(value: string): string {
+    if (!value) {
+      return '';
+    }
+    if (value.length <= 16) {
+      return value;
+    }
+    return `${value.slice(0, 8)}...${value.slice(-6)}`;
+  }
+
+  /** SCR-007: clear the selected recipient and restore the address input. */
+  public clearRecipient() {
+    this.zone.run(() => {
+      this.toAddress = '';
+      this.addressName = null;
+      this.suggestedAddresses = [];
+    });
   }
 
   /** Recomputes the PAY footer 'insufficient balance' flag off the async validator. */

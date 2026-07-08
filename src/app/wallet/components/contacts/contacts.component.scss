@@ -1,94 +1,101 @@
 @import 'src/app/wallet/root.scss';
 
+// SCR-005: raised sheet surface behind the list so it reads lighter than the
+// dimmed screen, with a large top radius.
+ion-content {
+    --background: #1E1E1E;
+    --padding-start: 0;
+    --padding-end: 0;
+}
+
 .container {
     min-height: 100%;
-    padding: 20px;
+    padding: 20px 24px 32px;
+    background: #1E1E1E;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
 
-    .main-title-row {
-        margin-bottom: 10px;
-        margin-left: 5px;
+    // SCR-005: grabber handle at the top of the sheet.
+    .sheet-grabber {
+        width: 40px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        margin: 0 auto 18px;
+    }
+
+    // SCR-027/028: section headings use the secondary-text token (no hardcoded hex).
+    .section-title-row {
+        margin-bottom: 12px;
+        margin-top: 4px;
 
         p {
             margin: 0;
             font-size: 13px;
             font-weight: 500;
             line-height: 1;
-            letter-spacing: -0.33px;
+            letter-spacing: normal;
             text-align: left;
-            color: #000000;
-            opacity: 0.7;
-        }
-
-        .refresh-icon {
-            ion-icon {
-                width: 18px;
-                height: 18px;
-            }
+            color: var(--essentials-text-secondary, #F5F5F78C);
         }
     }
 
-    .subwallet-row {
-        .left-col {
-            align-items: center;
+    // SCR-029: bordered dark cards with initial-disc avatars.
+    .contact-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+        background: #1E1E1E;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+
+        .avatar-disc {
+            flex: 0 0 auto;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
-            align-self: start;
-            flex-direction: column-reverse;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
 
-            .icon-container {
-                align-items: center;
-                justify-content: center;
-                display: flex;
-                background: #fff;
-                width: 40px;
-                height: 40px;
-                border-radius: 30%;
+        .contact-info {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            h1 {
+                margin: 0;
+                font-size: 15px;
+                font-weight: 600;
+                line-height: 1.2;
+                color: #FFFFFF;
+                white-space: nowrap;
                 overflow: hidden;
-                border: solid 2px white;
+                text-overflow: ellipsis;
+            }
 
-                img {
-                    max-width: 100%;
-                    max-height: 100%;
-                    border: 0;
-                    padding: 0;
+            p {
+                margin: 4px 0 0;
+                font-size: 12px;
+                line-height: 1.2;
+                color: var(--essentials-text-secondary, #F5F5F78C);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                // SCR-029: accent tail on the middle-ellipsis address.
+                &.address .addr-tail {
+                    color: var(--essentials-accent, #ED6E2B);
                 }
             }
         }
-    }
-
-    .itemOption {
-        background: transparent;
-
-        img {
-          height: 20px;
-          width: 20px;
-        }
-    }
-}
-
-.dark-container {
-    .main-title-row {
-        p {
-            color: #9D9D9D;
-            opacity: 1;
-        }
-    }
-}
-
-ion-item-sliding {
-    // padding-top: 30px;
-    margin: 0;
-    --ion-item-background: transparent;
-
-    ion-item {
-      --padding-start: 0px;
-      --inner-padding-end: 0px;
-    }
-}
-
-ion-footer {
-    background: transparent;
-
-    .btn-container {
-        width: 100%;
     }
 }

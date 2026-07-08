@@ -386,19 +386,14 @@ export class CoinTxInfoPage implements OnInit {
       }
 
       if (this.payFee !== null) {
+        // SCR-107: the Network Fee row shows the native amount only ('0.0001 ELA'),
+        // without the parenthetical fiat conversion.
         let nativeFee = this.payFee + ' ' + this.mainTokenSymbol;
-        let currencyFee = '';
-        let currencyFeeValue = this.subWallet.getAmountInExternalCurrency(new BigNumber(this.payFee));
-        if (currencyFeeValue)
-          currencyFee =
-            this.subWallet.getAmountInExternalCurrency(new BigNumber(this.payFee)).toString() +
-            ' ' +
-            CurrencyService.instance.selectedCurrency.symbol;
 
         this.txDetails.unshift({
           type: TransactionInfoType.FEES,
           title: 'wallet.tx-info-network-fee',
-          value: currencyFee ? `${nativeFee} (~ ${currencyFee})` : nativeFee,
+          value: nativeFee,
           show: true
         });
       }

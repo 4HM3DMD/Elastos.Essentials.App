@@ -1,6 +1,15 @@
 <svg *ngIf="visible" class="sparkline" [class.up]="toneClass === 'up'" [class.down]="toneClass === 'down'"
-  [attr.viewBox]="'0 0 ' + width + ' ' + height" [style.height.px]="height" preserveAspectRatio="none"
-  aria-hidden="true">
+  [class.accent]="toneClass === 'accent'" [attr.viewBox]="'0 0 ' + width + ' ' + height" [style.height.px]="height"
+  preserveAspectRatio="none" aria-hidden="true">
+  <!-- SCR-101: orange->transparent gradient used by the accent tone's area fill. -->
+  <defs>
+    <linearGradient id="sparkline-accent-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ED6E2B" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#ED6E2B" stop-opacity="0" />
+    </linearGradient>
+  </defs>
   <path *ngIf="area" class="area" [attr.d]="areaPath"></path>
   <path class="line" [attr.d]="linePath" [attr.stroke-width]="strokeWidth"></path>
+  <!-- SCR-101: last-point dot marking the current price on the accent chart. -->
+  <circle *ngIf="toneClass === 'accent'" class="last-dot" [attr.cx]="lastX" [attr.cy]="lastY" r="3"></circle>
 </svg>

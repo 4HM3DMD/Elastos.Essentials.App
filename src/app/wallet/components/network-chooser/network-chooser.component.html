@@ -1,16 +1,17 @@
 <ion-content>
   <div class="network-sheet">
+    <!-- SCR-083: grab-handle pill signals the sheet is swipe-dismissable. -->
+    <div class="grab-handle"></div>
+
+    <!-- SCR-083: single left-aligned title; subtitle and settings gear removed. -->
     <div class="sheet-header">
       <div class="titles">
-        <h1>{{ 'wallet.networks' | translate }}</h1>
-        <p>{{ 'wallet.choose-active-network' | translate }}</p>
+        <h1>{{ 'wallet.select-network-title' | translate }}</h1>
       </div>
-      <button type="button" class="settings" aria-label="Manage networks" (click)="manageNetworks()">
-        <ion-icon name="settings-outline"></ion-icon>
-      </button>
     </div>
 
-    <div class="search-row">
+    <!-- SCR-084: search only appears once the list is long enough to warrant filtering. -->
+    <div class="search-row" *ngIf="networksToShowInList.length > 6">
       <ion-icon name="search-outline"></ion-icon>
       <input type="text" [(ngModel)]="searchInput" (ngModelChange)="applyNetworkFilter()"
         [placeholder]="'wallet.search-network' | translate" autocapitalize="off" autocomplete="off" spellcheck="false" />
@@ -20,7 +21,8 @@
       <button type="button" *ngFor="let network of displayedNetworks; trackBy: trackByKey" class="network-row ion-activatable"
         [class.selected]="currentNetwork && network.key === currentNetwork.key" (click)="selectNetwork(network)">
         <img class="logo" [src]="network.logo" alt="" />
-        <span class="name">{{ network.getEffectiveName() }}</span>
+        <!-- SCR-087: appends the token standard (ERC20/BEP20/TRC20) when picking a network for a token. -->
+        <span class="name">{{ getNetworkDisplayName(network) }}</span>
         <span *ngIf="isMainChain(network)" class="tools-chip">{{ 'wallet.network-tools-chip' | translate }}</span>
         <ion-icon class="check" name="checkmark"></ion-icon>
         <ion-ripple-effect></ion-ripple-effect>
@@ -33,6 +35,4 @@
   </div>
 </ion-content>
 
-<ion-footer class="ion-no-border">
-  <ebutton (clicked)="cancelOperation()" [title]="'common.cancel' | translate"> </ebutton>
-</ion-footer>
+<!-- SCR-084: Cancel footer removed; the sheet dismisses via backdrop tap / swipe-down. -->

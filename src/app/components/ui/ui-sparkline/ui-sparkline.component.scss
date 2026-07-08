@@ -40,4 +40,21 @@
       fill: var(--essentials-danger);
     }
   }
+
+  // SCR-101: burnt-orange accent tone with a gradient area fill and a last-point dot.
+  &.accent {
+    .line {
+      stroke: var(--essentials-primary, #ed6e2b);
+    }
+
+    .area {
+      fill: url(#sparkline-accent-gradient);
+      opacity: 1;
+    }
+
+    .last-dot {
+      fill: var(--essentials-primary, #ed6e2b);
+      stroke: none;
+    }
+  }
 }

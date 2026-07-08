@@ -127,6 +127,11 @@ export class WalletHomePage implements OnInit, OnDestroy {
     public balanceVm: BalanceViewModel = null;
     public hideBalances = false;
 
+    // SCR-136: the Value hero is fiat-first on first load. We flip the shared currency
+    // display default to fiat once per app session; subsequent user taps on the hero
+    // (toggleCurrency) are honoured normally.
+    private static fiatDefaultApplied = false;
+
     // Figma Value screen groups holdings under Tokens / NFTs / Staked chips.
     public activeTab: 'tokens' | 'nfts' | 'staked' = 'tokens';
     public walletTabs: UiChip[] = [];
@@ -292,10 +297,16 @@ export class WalletHomePage implements OnInit, OnDestroy {
     }
 
     ionViewWillEnter() {
+        // SCR-136: default the balance hero to fiat on the first entry of the session.
+        if (!WalletHomePage.fiatDefaultApplied) {
+            this.currencyService.useCurrency = true;
+            WalletHomePage.fiatDefaultApplied = true;
+        }
         if (!this.walletTabs.length) {
             this.walletTabs = [
                 { key: 'tokens', label: this.translate.instant('wallet.tokens') },
-                { key: 'nfts', label: this.translate.instant('wallet.nfts') },
+                // SCR-137: dedicated short chip label ("NFTs"), not wallet.nfts ("Collectibles" list header).
+                { key: 'nfts', label: this.translate.instant('wallet.nfts-chip') },
                 { key: 'staked', label: this.translate.instant('staking.staked') }
             ];
             this.cdr.markForCheck();

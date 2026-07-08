@@ -15,6 +15,12 @@ export interface UiChip {
 export class UiChipRowComponent {
   @Input() public chips: UiChip[] = [];
   @Input() public active: string = null;
+  /**
+   * SCR-103: 'default' renders bordered pills with a glossy-orange active chip;
+   * 'ghost' renders centered text-only chips with a dark disc active state
+   * (used for the range selector on the token-detail chart).
+   */
+  @Input() public variant: 'default' | 'ghost' = 'default';
 
   @Output() public activeChange = new EventEmitter<string>();
 
