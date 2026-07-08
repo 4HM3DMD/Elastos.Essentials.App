@@ -58,8 +58,7 @@
       <ui-token-row class="pillar identity" icon="/assets/launcher/apps/app-icons/identity-badge.svg"
         [title]="'launcher.app-identity' | translate"
         [sub]="didShort || ('launcher.app-identity-description' | translate)"
-        [value]="identityPublished ? ('launcher.identity-published' | translate) : null" [valueTone]="'up'"
-        [chevron]="!identityPublished" (pressed)="onIdentity()"></ui-token-row>
+        [chevron]="true" (pressed)="onIdentity()"></ui-token-row>
       <ui-token-row class="pillar apps" icon="/assets/launcher/apps/app-icons/apps-grid.svg"
         [title]="'launcher.home-pillar-apps' | translate" [sub]="'launcher.home-pillar-apps-sub' | translate"
         [value]="('launcher.apps-connected' | translate:{ count: 0 })" [chevron]="false"
