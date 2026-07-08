@@ -774,6 +774,10 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       this.sendMax = true;
       // -1 means send all.
       this.amount = -1;
+      // Max shows the token balance, so keep the hero in token units; otherwise a
+      // prior fiat toggle would mislabel the shown balance (SCR-002).
+      this.amountDenomination = 'token';
+      this.rawAmountInput = '';
     });
   }
 

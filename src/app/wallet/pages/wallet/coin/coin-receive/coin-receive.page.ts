@@ -11,6 +11,7 @@ import { GlobalThemeService } from 'src/app/services/theming/global.theme.servic
 import { AnyNetworkWallet, WalletAddressInfo } from 'src/app/wallet/model/networks/base/networkwallets/networkwallet';
 import { AnySubWallet } from 'src/app/wallet/model/networks/base/subwallets/subwallet';
 import { ERC20SubWallet } from 'src/app/wallet/model/networks/evms/subwallets/erc20.subwallet';
+import { TRC20SubWallet } from 'src/app/wallet/model/networks/tron/subwallets/trc20.subwallet';
 import { ElastosMainChainStandardNetworkWallet } from 'src/app/wallet/model/networks/elastos/mainchain/networkwallets/standard/mainchain.networkwallet';
 import { TransactionInfoType } from 'src/app/wallet/model/tx-providers/transaction.types';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
@@ -131,7 +132,7 @@ export class CoinReceivePage implements OnInit, OnDestroy {
 
   /** Token standard (ERC20/BEP20/TRC20) shown for token subwallets on known chains; empty for native coins. */
   private get tokenStandardSuffix(): string {
-    if (!(this.subWallet instanceof ERC20SubWallet)) {
+    if (!(this.subWallet instanceof ERC20SubWallet) && !(this.subWallet instanceof TRC20SubWallet)) {
       return '';
     }
     return TOKEN_STANDARD_BY_NETWORK_KEY[this.networkWallet.network.key] || '';

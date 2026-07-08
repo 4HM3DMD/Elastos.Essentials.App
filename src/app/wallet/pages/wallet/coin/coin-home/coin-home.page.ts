@@ -620,7 +620,10 @@ export class CoinHomePage implements OnInit {
       case 'received':
         return item.type === TransactionType.RECEIVED;
       case 'swap':
-        return item.type === TransactionType.TRANSFER || item.isCrossChain === true;
+        // TODO(Phase 11): thread a real DEX-swap flag through TransactionInfo. The old
+        // TRANSFER/isCrossChain heuristic mislabels self-sends and bridge transfers as
+        // swaps, so keep this filter empty until proper detection lands.
+        return false;
       case 'staked':
         return this.isStakingTransaction(item);
       default:
@@ -631,7 +634,9 @@ export class CoinHomePage implements OnInit {
   /** Heuristic staking match until a dedicated staking flag is threaded through — SYS-008. */
   private isStakingTransaction(item: TransactionInfo): boolean {
     let name = (item.name || '').toLowerCase();
-    return name.includes('stake') || name.includes('vote') || name.includes('bpos');
+    // Name-based heuristic; localized names can still slip through (refine in Phase 11).
+    return name.includes('stake') || name.includes('vote') || name.includes('bpos')
+      || name.includes('freeze') || name.includes('unfreeze');
   }
 
   /** Fired when a filter chip is tapped — rebuilds the grouped list — SYS-008. */

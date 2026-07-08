@@ -38,13 +38,15 @@ export class UiKvRowComponent {
 
   /** Leading part of a middle-truncated value (everything but the last 6 chars). */
   public get valueHead(): string {
-    if (!this.ellipsisMiddle || this.value.length <= 13) return this.value;
-    return this.value.slice(0, this.value.length - 6);
+    const v = this.value == null ? '' : String(this.value);
+    if (!this.ellipsisMiddle || v.length <= 13) return v;
+    return v.slice(0, v.length - 6);
   }
 
   /** Trailing part kept intact so the value's end (e.g. a hash suffix) stays visible. */
   public get valueTail(): string {
-    if (!this.ellipsisMiddle || this.value.length <= 13) return '';
-    return this.value.slice(-6);
+    const v = this.value == null ? '' : String(this.value);
+    if (!this.ellipsisMiddle || v.length <= 13) return '';
+    return v.slice(-6);
   }
 }

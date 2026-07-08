@@ -512,7 +512,7 @@ export class CoinTxInfoPage implements OnInit {
     } else {
       // Total deducted = amount + fee, only when the fee is paid in the same (native) token.
       if (this.payFee !== null && this.symbol === this.mainTokenSymbol) {
-        const total = new BigNumber(this.displayAmount).plus(new BigNumber(this.payFee));
+        const total = new BigNumber(String(this.displayAmount).replace(/,/g, '')).plus(new BigNumber(this.payFee));
         this.txDetails.unshift({
           type: TransactionInfoType.AMOUNT,
           title: 'wallet.tx-info-total',

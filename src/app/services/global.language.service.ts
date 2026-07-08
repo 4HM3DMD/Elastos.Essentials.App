@@ -116,7 +116,9 @@ export class GlobalLanguageService extends GlobalService {
     }
 
     // Set language for the ionic translate module that does the actual screen items translations
-    this.translationService.setDefaultLang(language);
+    // Keep English as the permanent fallback so any not-yet-localized key resolves
+    // to English instead of rendering the raw key on fr/it/zh.
+    this.translationService.setDefaultLang('en');
     this.translationService.use(language);
 
     void passwordManager.setLanguage(language);
