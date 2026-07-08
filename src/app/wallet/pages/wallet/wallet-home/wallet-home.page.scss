@@ -1,5 +1,5 @@
 .wallet-home {
-    padding: 8px 16px 24px;
+    padding: 8px var(--page-inset, 24px) 24px;
 }
 
 .icon-btn {
@@ -20,38 +20,61 @@
 .wallet-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 12px;
 
-    .wallet-name {
-        font-size: 20px;
-        font-weight: 600;
-        color: var(--ion-text-color);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .wallet-actions {
+    .account-avatar {
         flex-shrink: 0;
         display: flex;
         align-items: center;
-        gap: 14px;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--essentials-accent, #ED6E2B);
+        color: #FFFFFF;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1;
+        text-transform: uppercase;
+    }
+
+    .account-id {
+        flex: 1;
+        min-width: 0;
+
+        .wallet-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--ion-text-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .wallet-did {
+            margin-top: 2px;
+            font-size: 13px;
+            color: var(--essentials-text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 }
 
 .network-pill {
     position: relative;
     overflow: hidden;
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin-top: 12px;
     padding: 8px 14px;
     border-radius: 999px;
     background: var(--essentials-box-color);
+    border: 1px solid var(--essentials-border-color, rgba(255, 255, 255, 0.08));
     color: var(--ion-text-color);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
 
     img {
@@ -69,10 +92,14 @@
 .balance-block {
     margin-top: 20px;
 
-    .label {
-        font-size: 13px;
-        color: var(--essentials-text-secondary);
-        margin-bottom: 6px;
+    .balance-hero {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .balance-eye {
+        flex-shrink: 0;
     }
 
     .pnl-line {
@@ -80,12 +107,20 @@
         font-size: 13px;
         font-weight: 600;
         font-variant-numeric: tabular-nums;
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
 
-        &.up {
+        .pnl-label {
+            color: var(--essentials-text-secondary);
+            font-weight: 500;
+        }
+
+        .pnl-value.up {
             color: var(--essentials-success);
         }
 
-        &.down {
+        .pnl-value.down {
             color: var(--essentials-danger);
         }
     }
@@ -100,22 +135,6 @@
 
     .dim {
         color: var(--essentials-text-secondary);
-    }
-}
-
-.address-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 14px;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: var(--essentials-box-color);
-    color: var(--essentials-text-secondary);
-    font-size: 13px;
-
-    ion-icon {
-        font-size: 15px;
     }
 }
 
@@ -173,11 +192,11 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin: 18px 0 6px;
+        margin: 18px 0 10px;
 
         span {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 21px;
+            font-weight: 600;
             color: var(--ion-text-color);
         }
     }

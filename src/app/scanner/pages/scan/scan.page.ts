@@ -33,6 +33,7 @@ export class ScanPage {
 
     torchLightOn: boolean;
     isCameraShown = false;
+    cameraDenied = false;
     contentWasScanned = false;
     scannedText = "";
     scanSub: Subscription = null;
@@ -75,7 +76,7 @@ export class ScanPage {
             this.fromIntentRequest = false;
         }
 
-        this.titleBar.setTitle(this.translate.instant('launcher.app-scanner'));
+        this.titleBar.setTitle(this.translate.instant('scanner.title'));
         this.showGalleryTitlebarKey(true);
         this.titleBar.addOnItemClickedListener(this.titleBarIconClickedListener = (clickedItem) => {
             if (clickedItem.key == "gallery") {
@@ -142,6 +143,7 @@ export class ScanPage {
             if (status.authorized) {
                 // Camera permission was granted. Start scanning
                 Logger.log("Scanner", "Scanner authorized")
+                this.cameraDenied = false;
 
                 // Show camera preview
                 Logger.log("Scanner", "Showing camera preview")
@@ -172,9 +174,11 @@ export class ScanPage {
             } else if (status.denied) {
                 // Camera permission was permanently denied
                 Logger.log("Scanner", "Access to QRScanner plugin was permanently denied")
+                this.zone.run(() => { this.cameraDenied = true; });
             } else {
                 // Permission was denied, but not permanently. You can ask for permission again at a later time.
                 Logger.log("Scanner", "Access to QRScanner plugin is currently denied")
+                this.zone.run(() => { this.cameraDenied = true; });
             }
         }).catch((e: any) => Logger.error("Scanner", 'Unexpected error: ', e, e));
     }
@@ -186,15 +190,10 @@ export class ScanPage {
         }
     }
 
-    showGalleryTitlebarKey(show: boolean) {
-        if (show) {
-            this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, {
-                key: "gallery",
-                iconPath: !this.theme.darkMode ? "assets/scanner/imgs/gallery.svg" : "assets/scanner/imgs/darkmode/gallery.svg"
-            });
-        } else {
-            this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, null);
-        }
+    showGalleryTitlebarKey(_show: boolean) {
+        // Gallery access moved to the on-screen Album pill (SCR-144); keep the
+        // titlebar clean and drop the dark-mode asset branching (SCR-151/152).
+        this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, null);
     }
 
     /**

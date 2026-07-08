@@ -129,28 +129,24 @@
             <img class="header-img"
                 [src]="!theme.darkMode ? this.networkWallet.network.logo : this.networkWallet.network.logo" />
 
-            <!-- Sent data - Not for NFT -->
-            <h1 *ngIf="transferType === 2">{{ 'wallet.enter-amount' | translate }}</h1>
-            <ion-row class="item-row" *ngIf="transferType === 2">
-                <ion-col size="4" class="left-col">
-                    <h2>{{ tokensymbol }}</h2>
-                    <p *ngIf="isStandardSubwallet(fromSubWallet)">{{ currencyService.selectedCurrency.symbol }}</p>
-                </ion-col>
-                <ion-col size="8" class="right-col">
-                    <ion-input *ngIf="!sendMax" class="amount-input" type="number" name="amount" ngDefaultControl
-                        placeholder="{{ 'wallet.amount' | translate }}" [(ngModel)]="amount"></ion-input>
-                    <ion-input *ngIf="sendMax" class="amount-input" [value]="displayBalanceString"
+            <!-- Sent data - Not for NFT: centered chromeless amount hero (SCR-001) -->
+            <div class="amount-hero" *ngIf="transferType === 2">
+                <p class="amount-hero__caption">{{ 'wallet.enter-amount' | translate }}</p>
+                <div class="amount-hero__entry">
+                    <ion-input *ngIf="!sendMax" class="amount-hero__input" type="number" inputmode="decimal"
+                        name="amount" ngDefaultControl placeholder="0" [ngModel]="rawAmountInput"
+                        (ngModelChange)="onHeroAmountInput($event)"></ion-input>
+                    <ion-input *ngIf="sendMax" class="amount-hero__input" [value]="displayBalanceString"
                         (ionChange)="resetAmountInput()"></ion-input>
-                    <p *ngIf="amount && !sendMax">
-                        {{ fromSubWallet.getAmountInExternalCurrency(convertAmountToBigNumber(amount)) }}
-                    </p>
-                    <p *ngIf="sendMax">
-                        {{
-                        fromSubWallet.getAmountInExternalCurrency(convertAmountToBigNumber(this.networkWallet.subWallets[subWalletId].getDisplayBalance().toFixed(6)))
-                        }}
-                    </p>
-                </ion-col>
-            </ion-row>
+                    <span class="amount-hero__unit">{{ heroUnitSymbol }}</span>
+                </div>
+                <!-- Fiat/native conversion pill with swap toggle (SCR-002) -->
+                <button type="button" class="conversion-pill" *ngIf="conversionPillText"
+                    (click)="toggleAmountDenomination()">
+                    <span class="conversion-pill__value">{{ conversionPillText }}</span>
+                    <ion-icon name="swap-vertical-outline" class="conversion-pill__swap"></ion-icon>
+                </button>
+            </div>
 
             <!-- Sent data - For NFT only -->
             <ion-grid class="nft-info" *ngIf="isTransferTypeSendNFT() && nft && nftAsset">

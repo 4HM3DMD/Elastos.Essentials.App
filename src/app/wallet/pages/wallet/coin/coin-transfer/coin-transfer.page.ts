@@ -31,6 +31,7 @@ import { MenuSheetMenu } from 'src/app/components/menu-sheet/menu-sheet.componen
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { TitleBarIcon, TitleBarMenuItem } from 'src/app/components/titlebar/titlebar.types';
 import { sleep } from 'src/app/helpers/sleep.helper';
+import { formatFiatAmount } from 'src/app/helpers/currency-format';
 import { WalletExceptionHelper } from 'src/app/helpers/wallet.helper';
 import { Logger } from 'src/app/logger';
 import { WalletPendingTransactionException } from 'src/app/model/exceptions/walletpendingtransaction.exception';
@@ -113,6 +114,12 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   public amount: number; // Here we can use JS "number" type, for now we consider we will never transfer a number that is larger than JS's MAX INT.
   public memo = '';
   public sendMax = false;
+
+  // Amount hero denomination toggle (SCR-002). `amount` always stays in token units
+  // (the transaction source of truth); `rawAmountInput` mirrors what the user typed in
+  // the currently selected denomination so switching token<->fiat is jitter-free.
+  public amountDenomination: 'token' | 'fiat' = 'token';
+  public rawAmountInput = '';
 
   public displayBalanceString = '';
   public displayBalanceLocked = '';
@@ -773,7 +780,71 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   resetAmountInput() {
     this.sendMax = false;
     this.amount = null;
+    this.rawAmountInput = '';
+    this.amountDenomination = 'token';
     this.useInscriptionUTXO = false;
+  }
+
+  /** Price of one token in the selected fiat, or null when pricing is unavailable. */
+  private getCoinFiatPrice(): BigNumber | null {
+    if (!this.fromSubWallet) return null;
+    let price = this.fromSubWallet.getAmountInExternalCurrency(new BigNumber(1));
+    return price ? price : null;
+  }
+
+  /** Unit suffix shown beside the hero amount (token ticker or fiat symbol). */
+  public get heroUnitSymbol(): string {
+    return this.amountDenomination === 'fiat'
+      ? this.currencyService.selectedCurrency.symbol
+      : this.tokensymbol;
+  }
+
+  /**
+   * Converted value shown in the conversion pill: the fiat equivalent while entering in
+   * token, or the token equivalent while entering in fiat. Null when no price is known yet.
+   */
+  public get conversionPillText(): string | null {
+    let price = this.getCoinFiatPrice();
+    if (!price || !this.amount || this.amount < 0) return null;
+    let tokenAmount = new BigNumber(this.amount);
+    if (this.amountDenomination === 'token') {
+      let fiat = tokenAmount.multipliedBy(price);
+      return formatFiatAmount(fiat.toNumber(), this.currencyService.selectedCurrency.symbol);
+    }
+    return `${tokenAmount.toString()} ${this.tokensymbol}`;
+  }
+
+  /** Hero input handler: keeps `amount` in token units regardless of the entry denomination. */
+  public onHeroAmountInput(value: string) {
+    this.rawAmountInput = value;
+    if (!value) {
+      this.amount = null;
+      return;
+    }
+    let typed = new BigNumber(value);
+    if (typed.isNaN()) {
+      this.amount = null;
+      return;
+    }
+    if (this.amountDenomination === 'fiat') {
+      let price = this.getCoinFiatPrice();
+      this.amount = price && price.gt(0) ? typed.dividedBy(price).toNumber() : typed.toNumber();
+    } else {
+      this.amount = typed.toNumber();
+    }
+  }
+
+  /** Flips the hero between token and fiat entry, re-expressing the current amount. (SCR-002) */
+  public toggleAmountDenomination() {
+    let price = this.getCoinFiatPrice();
+    if (!price || price.lte(0)) return;
+    this.amountDenomination = this.amountDenomination === 'token' ? 'fiat' : 'token';
+    if (this.amount && this.amount >= 0) {
+      let tokenAmount = new BigNumber(this.amount);
+      this.rawAmountInput = this.amountDenomination === 'fiat'
+        ? tokenAmount.multipliedBy(price).toFixed(2)
+        : tokenAmount.toString();
+    }
   }
 
   // if user has no inscription, or if not max clicked, don't show the toggle

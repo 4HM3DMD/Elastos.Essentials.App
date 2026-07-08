@@ -59,7 +59,8 @@ import {
   AnyOfflineTransaction,
   GenericTransaction,
   OfflineTransactionType,
-  TransactionInfo
+  TransactionInfo,
+  TransactionType
 } from '../../../../model/tx-providers/transaction.types';
 import { CoinTransferService, TransferType } from '../../../../services/cointransfer.service';
 import { CurrencyService } from '../../../../services/currency.service';
@@ -94,6 +95,16 @@ export class CoinHomePage implements OnInit {
   public hasRechargeTransactions = false;
   // Segmented control for the transaction lists, rebuilt when the available sets change.
   public txTabs: { key: string; label: string }[] = [];
+
+  // Transaction-type filter (All / Sent / Received / Swap / Staked) — SYS-008.
+  public txTypeFilter = 'all';
+  public txTypeChips: { key: string; label: string }[] = [];
+
+  // Onchain transactions bucketed into day groups (Today / Earlier) — SYS-007.
+  public txGroups: { key: string; label: string; items: TransactionInfo[] }[] = [];
+
+  // Whether the footer overflow menu (Stake / Transfer) is open — SCR-096.
+  public moreActionsOpen = false;
 
   public stakedBalance = null; // Staked on ELA main chain or Tron
 
@@ -208,9 +219,11 @@ export class CoinHomePage implements OnInit {
 
   ionViewWillEnter() {
     this.coinTransferService.subWalletId = this.subWalletId;
-    this.titleBar.setTitle(this.translate.instant('wallet.coin-transactions'));
+    // Figma parity (SCR-100): the nav title is the token symbol (e.g. "ELA" / "USDT").
+    this.titleBar.setTitle(this.subWallet ? this.subWallet.getDisplayTokenName() : this.translate.instant('wallet.coin-transactions'));
 
     this.rebuildTxTabs();
+    this.buildTxTypeChips();
     this.refreshPriceVm();
     void this.loadShowAllActions();
   }
@@ -414,6 +427,7 @@ export class CoinHomePage implements OnInit {
 
     this.transferList = transferListTemp;
     this.transactionsLoaded = true;
+    this.rebuildTxGroups();
 
     //At least all transactions of today must be loaded.
     if (this.todaysTransactions == transactions.length && this.prevTransactionCount != transactions.length) {
@@ -585,6 +599,82 @@ export class CoinHomePage implements OnInit {
       : key === 'recharge' ? TransactionListType.RECHARGE
       : TransactionListType.NORMAL;
     this.setTransactionListType(type);
+  }
+
+  /** Builds the transaction-type filter chips (labels are locale-aware) — SYS-008. */
+  public buildTxTypeChips() {
+    this.txTypeChips = [
+      { key: 'all', label: this.translate.instant('wallet.coin-filter-all') },
+      { key: 'sent', label: this.translate.instant('wallet.coin-filter-sent') },
+      { key: 'received', label: this.translate.instant('wallet.coin-filter-received') },
+      { key: 'swap', label: this.translate.instant('wallet.coin-filter-swap') },
+      { key: 'staked', label: this.translate.instant('wallet.coin-filter-staked') }
+    ];
+  }
+
+  /** Applies the active type filter to a single transaction — SYS-008. */
+  private matchesTxTypeFilter(item: TransactionInfo): boolean {
+    switch (this.txTypeFilter) {
+      case 'sent':
+        return item.type === TransactionType.SENT;
+      case 'received':
+        return item.type === TransactionType.RECEIVED;
+      case 'swap':
+        return item.type === TransactionType.TRANSFER || item.isCrossChain === true;
+      case 'staked':
+        return this.isStakingTransaction(item);
+      default:
+        return true;
+    }
+  }
+
+  /** Heuristic staking match until a dedicated staking flag is threaded through — SYS-008. */
+  private isStakingTransaction(item: TransactionInfo): boolean {
+    let name = (item.name || '').toLowerCase();
+    return name.includes('stake') || name.includes('vote') || name.includes('bpos');
+  }
+
+  /** Fired when a filter chip is tapped — rebuilds the grouped list — SYS-008. */
+  public onTxTypeFilterChange(key: string) {
+    this.txTypeFilter = key;
+    this.rebuildTxGroups();
+  }
+
+  /**
+   * Buckets the filtered onchain transactions into Today / Earlier day groups (SYS-007).
+   * Empty groups are omitted so no bare header shows.
+   */
+  public rebuildTxGroups() {
+    let startOfToday = moment(new Date()).startOf('day').valueOf();
+    let today: TransactionInfo[] = [];
+    let earlier: TransactionInfo[] = [];
+    for (let item of this.transferList) {
+      if (!this.matchesTxTypeFilter(item)) {
+        continue;
+      }
+      let ts = item.timestamp > 2147483647 ? item.timestamp : item.timestamp * 1000;
+      if (ts >= startOfToday) {
+        today.push(item);
+      } else {
+        earlier.push(item);
+      }
+    }
+    let groups: { key: string; label: string; items: TransactionInfo[] }[] = [];
+    if (today.length > 0) {
+      groups.push({ key: 'today', label: this.translate.instant('wallet.coin-tx-group-today'), items: today });
+    }
+    if (earlier.length > 0) {
+      groups.push({ key: 'earlier', label: this.translate.instant('wallet.coin-tx-group-earlier'), items: earlier });
+    }
+    this.txGroups = groups;
+  }
+
+  public trackByTxId(_index: number, item: TransactionInfo): string {
+    return item.txid;
+  }
+
+  public trackByGroupKey(_index: number, group: { key: string }): string {
+    return group.key;
   }
 
   getSubwalletTitle() {
@@ -822,6 +912,16 @@ export class CoinHomePage implements OnInit {
     } else {
       this.goStakeApp();
     }
+  }
+
+  /** Whether the footer overflow (...) button has any actions to reveal — SCR-096. */
+  public hasMoreActions(): boolean {
+    return this.canStakeELA() || this.canStakeTRX() || this.coinCanBeTransferred();
+  }
+
+  /** Toggles the footer overflow menu (Stake / Transfer) — SCR-096. */
+  public toggleMoreActions() {
+    this.moreActionsOpen = !this.moreActionsOpen;
   }
 
   public setChartRange(range: string) {

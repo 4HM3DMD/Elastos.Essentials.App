@@ -294,26 +294,20 @@ export class WalletHomePage implements OnInit, OnDestroy {
     ionViewWillEnter() {
         if (!this.walletTabs.length) {
             this.walletTabs = [
-                { key: 'tokens', label: this.translate.instant('wallet.coin-list') },
-                { key: 'nfts', label: this.translate.instant('wallet.collectibles') },
+                { key: 'tokens', label: this.translate.instant('wallet.tokens') },
+                { key: 'nfts', label: this.translate.instant('wallet.nfts') },
                 { key: 'staked', label: this.translate.instant('staking.staked') }
             ];
             this.cdr.markForCheck();
         }
-        this.titleBar.setTitle(this.translate.instant("wallet.wallet-home-title"));
+        this.titleBar.setTitle(this.translate.instant("wallet.value-title"));
         this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, {
             key: "settings",
             iconPath: BuiltInIcon.SETTINGS
         });
-        this.titleBar.setIcon(TitleBarIconSlot.INNER_RIGHT, {
-            key: "asset",
-            iconPath: !this.theme.darkMode ? '/assets/wallet/settings/wallet.svg' : '/assets/wallet/settings/darkmode/wallet.svg',
-        });
         this.titleBar.addOnItemClickedListener(this.titleBarIconClickedListener = (icon) => {
             if (icon.key === 'settings') {
                 this.native.go('/wallet/settings');
-            } else if (icon.key === 'asset') {
-                this.native.go('/wallet/wallet-asset');
             }
         });
     }
@@ -407,7 +401,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
 
         let pnlData = PriceHistoryService.instance.getPortfolioPnl24h(this.networkWallet);
         let pnl = pnlData ? {
-            text: `${pnlData.absCurrency >= 0 ? '+' : '-'}${WalletUtil.getFriendlyBalance(new BigNumber(Math.abs(pnlData.absCurrency)))} ${symbol} (${pnlData.pct >= 0 ? '+' : ''}${pnlData.pct.toFixed(2)}%)`,
+            text: `${pnlData.absCurrency >= 0 ? '+' : '-'}${formatFiatAmount(Math.abs(pnlData.absCurrency), symbol)} (${pnlData.pct.toFixed(1)}%)`,
             tone: (pnlData.absCurrency >= 0 ? 'up' : 'down') as 'up' | 'down'
         } : null;
 
@@ -433,6 +427,17 @@ export class WalletHomePage implements OnInit, OnDestroy {
         void this.prefs.setPreference(
             DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, 'ui.hidebalances', this.hideBalances);
         this.cdr.markForCheck();
+    }
+
+    /** Toggle balance visibility from the balance hero without also triggering the currency toggle. */
+    public onToggleHideBalances(event: Event) {
+        event.stopPropagation();
+        this.toggleHideBalances();
+    }
+
+    /** First character of the wallet name, for the header avatar disc (Figma initial avatar). */
+    public get walletInitial(): string {
+        return this.masterWallet && this.masterWallet.name ? this.masterWallet.name.trim().charAt(0).toUpperCase() : '?';
     }
 
     public async toggleCurrency() {

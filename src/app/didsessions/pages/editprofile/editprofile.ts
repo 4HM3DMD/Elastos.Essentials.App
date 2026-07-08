@@ -48,9 +48,11 @@ export class EditProfilePage {
   }
 
   ionViewWillEnter() {
-    this.titleBar.setTitle(this.translate.instant('didsessions.identity-name'));
+    // Chromeless header (2026 onboarding): drop the duplicate title and the gear
+    // icon so the gradient hero leads the screen; keep only the back control (SCR-119/120).
+    this.titleBar.setTitle('');
     this.titleBar.setIcon(TitleBarIconSlot.OUTER_LEFT, { key: 'back', iconPath: BuiltInIcon.BACK });
-    this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, { key: "settings", iconPath: BuiltInIcon.SETTINGS });
+    this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, null);
     this.titleBar.setNavigationMode(null);
     this.titleBar.addOnItemClickedListener(this.titleBarIconClickedListener = (icon) => {
       if (icon.key === 'back') {
@@ -92,5 +94,11 @@ export class EditProfilePage {
       return false;
     }
     return true;
+  }
+
+  // Import an existing identity from the name screen (SCR-114). Routes into the
+  // import-DID flow via the identity service.
+  importIdentity() {
+    void this.identityService.startImportingMnemonic(null);
   }
 }

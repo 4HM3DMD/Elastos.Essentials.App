@@ -6,53 +6,40 @@
             <ion-refresher-content pullingIcon="arrow-down" refreshingSpinner="crescent"></ion-refresher-content>
         </ion-refresher>
 
-        <!-- Identity / wallet row -->
+        <!-- Identity / account header: avatar initial + name/DID stack, network pill inline right -->
         <div class="wallet-row">
-            <div class="wallet-name">{{ masterWallet.name }}</div>
-            <div class="wallet-actions">
-                <button type="button" class="icon-btn" aria-label="Hide or show balances" (click)="toggleHideBalances()">
-                    <ion-icon [name]="hideBalances ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-                </button>
-                <button *ngIf="canSwitchWallet()" type="button" class="icon-btn" aria-label="Switch wallet"
-                    (click)="pickOtherWallet()">
-                    <ion-icon name="swap-horizontal-outline"></ion-icon>
-                </button>
-                <button type="button" class="icon-btn" aria-label="Wallet settings"
-                    (click)="goToWalletSettings(masterWallet)">
-                    <ion-icon name="ellipsis-horizontal"></ion-icon>
-                </button>
+            <div class="account-avatar" aria-hidden="true">{{ walletInitial }}</div>
+            <div class="account-id">
+                <div class="wallet-name">{{ masterWallet.name }}</div>
+                <div *ngIf="networkWallet && walletAddresses && walletAddresses.length >= 1" class="wallet-did">
+                    {{ getReducedWalletAddress(walletAddresses[0].address) }}</div>
+            </div>
+            <div *ngIf="currentNetwork" class="network-pill ion-activatable" (click)="pickNetwork()">
+                <img [src]="currentNetwork.logo" alt="" />
+                <span>{{ currentNetwork.getEffectiveName() }}</span>
+                <ion-icon name="chevron-down"></ion-icon>
+                <ion-ripple-effect></ion-ripple-effect>
             </div>
         </div>
 
-        <!-- Network pill -->
-        <div *ngIf="currentNetwork" class="network-pill ion-activatable" (click)="pickNetwork()">
-            <img [src]="currentNetwork.logo" alt="" />
-            <span>{{ currentNetwork.getEffectiveName() }}</span>
-            <ion-icon name="chevron-down"></ion-icon>
-            <ion-ripple-effect></ion-ripple-effect>
+        <!-- Total balance (fiat-first hero, no caption / no secondary conversion line) -->
+        <div *ngIf="networkWallet && balanceVm" class="balance-block">
+            <div class="balance-hero" (click)="toggleCurrency()">
+                <ui-amount-display [value]="balanceVm.primary" [unit]="balanceVm.unit"
+                    [size]="3" [hidden]="hideBalances"></ui-amount-display>
+                <button type="button" class="icon-btn balance-eye" aria-label="Hide or show balances"
+                    (click)="onToggleHideBalances($event)">
+                    <ion-icon [name]="hideBalances ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+                </button>
+            </div>
+            <div *ngIf="balanceVm.pnl" class="pnl-line">
+                <span class="pnl-label">{{ 'wallet.todays-pnl' | translate }}</span>
+                <span class="pnl-value" [class.up]="balanceVm.pnl.tone === 'up'"
+                    [class.down]="balanceVm.pnl.tone === 'down'">{{ hideBalances ? '••••' : balanceVm.pnl.text }}</span>
+            </div>
         </div>
 
-        <!-- Total balance -->
-        <div *ngIf="networkWallet && balanceVm" class="balance-block" (click)="toggleCurrency()">
-            <div class="label">{{ 'wallet.total-amount' | translate }}</div>
-            <ui-amount-display [value]="balanceVm.primary" [unit]="balanceVm.unit" [fiat]="balanceVm.secondary"
-                [size]="3" [hidden]="hideBalances"></ui-amount-display>
-            <div *ngIf="balanceVm.pnl" class="pnl-line" [class.up]="balanceVm.pnl.tone === 'up'"
-                [class.down]="balanceVm.pnl.tone === 'down'">{{ hideBalances ? '••••' : balanceVm.pnl.text }}</div>
-        </div>
-
-        <!-- Address row -->
-        <div *ngIf="networkWallet && walletAddresses && walletAddresses.length === 1" class="address-chip"
-            (click)="copySingleAddressToClipboard($event, walletAddresses[0].address)">
-            <span>{{ walletAddresses[0].title }} {{ 'launcher.address' | translate }}
-                {{ getReducedWalletAddress(walletAddresses[0].address) }}</span>
-            <ion-icon name="copy-outline"></ion-icon>
-        </div>
-        <div *ngIf="networkWallet && walletAddresses && walletAddresses.length > 1" class="address-chip"
-            (click)="pickWalletAddress($event)">
-            <span>{{ 'launcher.addresses' | translate }}</span>
-            <ion-icon name="chevron-down"></ion-icon>
-        </div>
+        <!-- Address/copy chip removed per Figma (copying lives on the Receive screen) -->
 
         <!-- Actions -->
         <ui-action-grid *ngIf="networkWallet && !noAddressForLedgerWallet" [columns]="4" class="actions">
@@ -82,10 +69,7 @@
             <!-- Tokens -->
             <ng-container *ngIf="activeTab === 'tokens'">
                 <div class="list-header">
-                    <span>{{ 'wallet.coin-list' | translate }}</span>
-                    <button type="button" class="icon-btn" aria-label="Sort tokens" (click)="setSortMode()">
-                        <ion-icon name="swap-vertical-outline"></ion-icon>
-                    </button>
+                    <span>{{ 'wallet.tokens' | translate }}</span>
                 </div>
 
                 <ui-skeleton *ngIf="!tokenRows" [rows]="4" kind="row"></ui-skeleton>

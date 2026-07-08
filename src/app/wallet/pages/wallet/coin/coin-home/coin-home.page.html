@@ -9,39 +9,46 @@
 
         <!-- Can't use ngIf here, otherwise fetchmoretrigger will be invalid -->
         <ion-grid class="container">
-            <ion-row *ngIf="networkWallet" class="main-title-row">
-                <ion-col size="12">
-                    <h1>{{ getSubwalletTitle() }}</h1>
-                    <p>{{ 'wallet.coin-new-transactions-today' |
-                        translate:{todaysTransactions: todaysTransactions} }}</p>
-                </ion-col>
-            </ion-row>
-            <div *ngIf="networkWallet" class="balance-card">
-                <img class="blurred-network-logo" [src]="networkWallet.network.logo" />
-                <h3 class="balance-label">{{ 'wallet.coin-balance' | translate }}</h3>
-                <ui-amount-display [size]="3" [value]="coinDisplayValue" [unit]="coinDisplayUnit"
-                    [fiat]="coinDisplayFiat"></ui-amount-display>
-                <div *ngIf="coinPercentChangeVm" class="coin-change" [class.up]="coinPercentChangeVm.tone === 'up'"
-                    [class.down]="coinPercentChangeVm.tone === 'down'">{{ coinPercentChangeVm.text }}</div>
+            <!-- Centered token hero (SCR-094/099/105): coin disc, "Est. total value" caption,
+                 large native amount + grey unit, then fiat + %change on one line. No card. -->
+            <div *ngIf="networkWallet" class="token-hero">
+                <img class="token-hero-disc" [src]="subWallet.getMainIcon() || networkWallet.network.logo" />
+                <h3 class="token-hero-caption">{{ 'wallet.coin-est-total-value' | translate }}</h3>
+                <ui-amount-display [size]="3" [value]="coinDisplayValue" [unit]="coinDisplayUnit"></ui-amount-display>
+                <div class="token-hero-sub">
+                    <span *ngIf="coinDisplayFiat" class="hero-fiat">{{ coinDisplayFiat }}</span>
+                    <span *ngIf="coinPercentChangeVm" class="hero-change" [class.up]="coinPercentChangeVm.tone === 'up'"
+                        [class.down]="coinPercentChangeVm.tone === 'down'">{{ coinPercentChangeVm.text }}</span>
+                </div>
                 <div *ngIf="stakedBalance" class="staked-line">
                     <span class="staked-label">{{ getStakeTitle() | translate }}</span>
                     <span class="staked-value">{{ getStakedBalanceInNative() }} {{ networkWallet.getDisplayTokenName() }}</span>
                 </div>
             </div>
 
-            <!-- Price chart from local history — hidden until enough points exist -->
+            <!-- Price chart from local history — hidden until enough points exist.
+                 Full-bleed to the screen edges and taller (SCR-102). -->
             <div *ngIf="priceSeriesVm" class="price-chart">
-                <ui-sparkline [points]="priceSeriesVm" [height]="120" tone="auto"></ui-sparkline>
+                <div class="chart-canvas">
+                    <ui-sparkline [points]="priceSeriesVm" [height]="200" tone="auto"></ui-sparkline>
+                </div>
                 <ui-chip-row [chips]="rangeChips" [active]="chartRange"
                     (activeChange)="setChartRange($event)"></ui-chip-row>
             </div>
 
-            <!-- Transactions list header: a single tab collapses to a plain header -->
-            <div class="tx-tabs">
-                <ui-chip-row *ngIf="txTabs.length > 1" [chips]="txTabs" [active]="activeTxTab"
-                    (activeChange)="onTxTabChange($event)"></ui-chip-row>
-                <h1 *ngIf="txTabs.length <= 1" class="tx-header">{{ 'wallet.coin-transactions' | translate }}</h1>
+            <!-- History section header with a view-all chevron (SCR-104) -->
+            <div class="history-header">
+                <h1 class="history-title">{{ 'wallet.coin-history' | translate }}</h1>
+                <ion-icon class="history-chevron" name="chevron-forward"></ion-icon>
             </div>
+
+            <!-- Source tabs (Transactions / Internal / Recharge) — only when more than one set exists -->
+            <ui-chip-row *ngIf="txTabs.length > 1" class="tx-source-tabs" [chips]="txTabs" [active]="activeTxTab"
+                (activeChange)="onTxTabChange($event)"></ui-chip-row>
+
+            <!-- Transaction-type filter chips (All / Sent / Received / Swap / Staked) — SYS-008 -->
+            <ui-chip-row class="tx-type-filter" [chips]="txTypeChips" [active]="txTypeFilter"
+                (activeChange)="onTxTypeFilterChange($event)"></ui-chip-row>
 
             <!-- Loading skeleton -->
             <ui-skeleton *ngIf="!transactionsLoaded" kind="row" [rows]="5"></ui-skeleton>
@@ -53,18 +60,19 @@
                     [sub]="getOfflineTransactionDate(offlineTx)"
                     (pressed)="onOfflineTransactionItem(offlineTx)"></ui-token-row>
 
-                <!-- Onchain transactions (received amounts green, sent red) -->
-                <ui-token-row *ngFor="let item of transferList" [icon]="getPayStatusIcon(item)"
-                    [title]="getTransactionTitle(item)" [sub]="item.datetime"
-                    [value]="(item.symbol || '') + uiService.getFixedBalance(item.amount)"
-                    [valueTone]="item.type === 1 ? 'up' : (item.type === 2 ? 'down' : 'muted')"
-                    [subValue]="subWallet.getAmountInExternalCurrency(item.amount)
-                        ? ((item.symbol || '') + subWallet.getAmountInExternalCurrency(item.amount) + ' ' + currencyService.selectedCurrency.symbol)
-                        : null"
-                    (pressed)="onItem(item)"></ui-token-row>
+                <!-- Onchain transactions grouped by day (Today / Earlier), filtered by type.
+                     Right column is a single signed native amount, no per-row fiat (SYS-007/008/031). -->
+                <ng-container *ngFor="let group of txGroups; trackBy: trackByGroupKey">
+                    <h2 class="tx-group-header">{{ group.label }}</h2>
+                    <ui-token-row *ngFor="let item of group.items; trackBy: trackByTxId"
+                        [icon]="getPayStatusIcon(item)" [title]="getTransactionTitle(item)" [sub]="item.datetime"
+                        [value]="(item.symbol || '') + uiService.getFixedBalance(item.amount)"
+                        [valueTone]="item.type === 1 ? 'up' : (item.type === 2 ? 'down' : 'muted')"
+                        (pressed)="onItem(item)"></ui-token-row>
+                </ng-container>
 
                 <!-- Empty transactions list -->
-                <ui-empty-state *ngIf="transferList.length === 0 && offlineTransactions.length === 0"
+                <ui-empty-state *ngIf="txGroups.length === 0 && offlineTransactions.length === 0"
                     icon="receipt-outline" [message]="'wallet.coin-no-transactions' | translate"></ui-empty-state>
             </ng-container>
 
@@ -79,12 +87,21 @@
     </ion-content>
 
     <div class="footer" ngxHideOnScroll *ngIf="subWallet">
-        <ui-action-grid [columns]="4" class="footer-actions">
-            <ui-action-tile *ngIf="coinCanBeSent()" label="Send" icon="assets/wallet/action/send.png" (pressed)="sendFunds()"></ui-action-tile>
-            <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png" (pressed)="receiveFunds()"></ui-action-tile>
-            <ui-action-tile *ngIf="canStakeELA() || canStakeTRX()" label="Stake" icon="assets/wallet/action/stake.png" (pressed)="onStakeAction()"></ui-action-tile>
+        <!-- Overflow actions (Stake / Transfer) revealed above the pill trio (SCR-096) -->
+        <div *ngIf="moreActionsOpen" class="more-actions-menu">
+            <button *ngIf="canStakeELA() || canStakeTRX()" type="button" class="menu-item"
+                (click)="onStakeAction(); toggleMoreActions()">Stake</button>
             <!-- Transfer = cross-chain move, only on the Elastos mainchain and its sidechains -->
-            <ui-action-tile *ngIf="coinCanBeTransferred()" label="Transfer" icon="assets/wallet/action/swap.png" (pressed)="transferFunds()"></ui-action-tile>
-        </ui-action-grid>
+            <button *ngIf="coinCanBeTransferred()" type="button" class="menu-item"
+                (click)="transferFunds(); toggleMoreActions()">Transfer</button>
+        </div>
+        <div class="action-pills">
+            <button *ngIf="coinCanBeSent()" type="button" class="pill pill-dark" (click)="sendFunds()">Send</button>
+            <button type="button" class="pill pill-accent" (click)="receiveFunds()">Receive</button>
+            <button *ngIf="hasMoreActions()" type="button" class="pill-more" (click)="toggleMoreActions()"
+                aria-label="More actions">
+                <ion-icon name="ellipsis-horizontal"></ion-icon>
+            </button>
+        </div>
     </div>
 </ion-content>

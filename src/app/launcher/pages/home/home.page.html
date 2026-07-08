@@ -26,10 +26,11 @@
 
     <!-- Active wallet balance (fiat-first; native as the secondary line) -->
     <div *ngIf="balanceVm" class="balance-block">
-      <ui-amount-display [size]="3" [value]="balanceVm.primary" [unit]="balanceVm.symbol" [fiat]="balanceVm.secondary"
+      <ui-amount-display [size]="3" [value]="balanceVm.primary" [unit]="balanceVm.symbol"
         [hidden]="effectiveHide" [showToggle]="true" (toggleHidden)="toggleHideBalances()"></ui-amount-display>
-      <div *ngIf="pnlVm" class="pnl-line" [class.up]="pnlVm.tone === 'up'" [class.down]="pnlVm.tone === 'down'">
-        {{ effectiveHide ? mask : pnlVm.text }}
+      <div *ngIf="pnlVm" class="pnl-line">
+        <span class="pnl-label">{{ 'launcher.home-todays-pnl' | translate }}</span>
+        <span class="pnl-value" [class.up]="pnlVm.tone === 'up'" [class.down]="pnlVm.tone === 'down'">{{ effectiveHide ? mask : pnlVm.text }}</span>
       </div>
     </div>
 
@@ -63,17 +64,20 @@
         [chevron]="true" (pressed)="onApps()"></ui-token-row>
     </div>
 
-    <!-- Tokens preview (top 3 by fiat value) -->
-    <div *ngIf="tokenRows && tokenRows.length > 0" class="tokens">
+    <!-- Tokens preview (top 3 by fiat value); header always shown while a wallet is active -->
+    <div *ngIf="hasWallet()" class="tokens">
       <div class="section-head">
         <h2>{{ 'launcher.home-tokens' | translate }}</h2>
-        <button type="button" class="see-all" (click)="onValue()">{{ 'launcher.home-see-all' | translate }}</button>
+        <button *ngIf="tokenRows && tokenRows.length > 0" type="button" class="see-all" (click)="onValue()">{{ 'launcher.home-see-all' | translate }}</button>
       </div>
-      <div class="card-group">
+      <div *ngIf="tokenRows && tokenRows.length > 0" class="token-list">
         <ui-token-row *ngFor="let row of tokenRows; trackBy: trackToken" [icon]="row.icon" [badge]="row.badge"
           [title]="row.title" [sub]="effectiveHide ? mask : row.native"
           [value]="row.fiat ? (effectiveHide ? mask : row.fiat) : null"
           [subValue]="row.changePct" [subValueTone]="row.changeTone" (pressed)="onTokenRow(row)"></ui-token-row>
+      </div>
+      <div *ngIf="!tokenRows || tokenRows.length === 0" class="tokens-empty">
+        {{ 'launcher.home-no-tokens' | translate }}
       </div>
     </div>
   </div>

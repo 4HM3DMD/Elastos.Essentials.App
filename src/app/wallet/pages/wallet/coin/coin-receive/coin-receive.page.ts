@@ -10,6 +10,7 @@ import { GlobalIntentService } from 'src/app/services/global.intent.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { AnyNetworkWallet, WalletAddressInfo } from 'src/app/wallet/model/networks/base/networkwallets/networkwallet';
 import { AnySubWallet } from 'src/app/wallet/model/networks/base/subwallets/subwallet';
+import { ERC20SubWallet } from 'src/app/wallet/model/networks/evms/subwallets/erc20.subwallet';
 import { ElastosMainChainStandardNetworkWallet } from 'src/app/wallet/model/networks/elastos/mainchain/networkwallets/standard/mainchain.networkwallet';
 import { TransactionInfoType } from 'src/app/wallet/model/tx-providers/transaction.types';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
@@ -17,6 +18,13 @@ import { StandardCoinName } from '../../../../model/coin';
 import { CoinTransferService } from '../../../../services/cointransfer.service';
 import { Native } from '../../../../services/native.service';
 import { WalletService } from '../../../../services/wallet.service';
+
+/** Token standard label appended to the network name for token subwallets on known chains. */
+const TOKEN_STANDARD_BY_NETWORK_KEY: { [networkKey: string]: string } = {
+  ethereum: 'ERC20',
+  bsc: 'BEP20',
+  tron: 'TRC20'
+};
 
 @Component({
   selector: 'app-coin-receive',
@@ -113,11 +121,33 @@ export class CoinReceivePage implements OnInit, OnDestroy {
   }
 
   public get networkName(): string {
-    return this.networkWallet ? this.networkWallet.network.getEffectiveName() : '';
+    if (!this.networkWallet) {
+      return '';
+    }
+    const baseName = this.networkWallet.network.getEffectiveName();
+    const standard = this.tokenStandardSuffix;
+    return standard ? `${baseName} (${standard})` : baseName;
+  }
+
+  /** Token standard (ERC20/BEP20/TRC20) shown for token subwallets on known chains; empty for native coins. */
+  private get tokenStandardSuffix(): string {
+    if (!(this.subWallet instanceof ERC20SubWallet)) {
+      return '';
+    }
+    return TOKEN_STANDARD_BY_NETWORK_KEY[this.networkWallet.network.key] || '';
   }
 
   public get networkLogo(): string {
     return this.networkWallet ? this.networkWallet.network.logo : null;
+  }
+
+  /** Middle-ellipsized form of the current address for single-line display; the full value stays in qrcode for copy/QR. */
+  public get shortAddress(): string {
+    const address = this.qrcode;
+    if (!address || address.length <= 16) {
+      return address;
+    }
+    return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`;
   }
 
   /** Shares the current receiving address through the system share sheet. */

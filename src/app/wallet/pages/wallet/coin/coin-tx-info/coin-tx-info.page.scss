@@ -4,113 +4,79 @@ ion-grid {
     padding: 20px;
     min-height: 100%;
 
-    ion-card {
-        margin: 0;
-        margin-bottom: 37.5px;
+    .tx-hero {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background-color: var(--essentials-box-color);
-        border-radius: 17px;
-        padding: 15px 30px;
-        box-shadow: none;
+        margin: 24px 0 40px;
 
-        .icon-container {
-            width: 62.2px;
-            height: 62.2px;
+        .coin-disc {
+            width: 84px;
+            height: 84px;
             border-radius: 100%;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(305deg, rgba(255, 255, 255, 0.5) 0%, rgba(0, 0, 0, 0.1) 100%);
-            padding: 12px;
-        }
-
-        ion-card-title {
-            font-size: 20px;
-            font-weight: 600;
-            line-height: 1.29;
-            padding: 5px 5px 10px;
-        }
-
-        ion-card-subtitle {
-            font-size: 26px;
-            font-weight: 600;
-            text-align: center;
-            text-transform: none;
-            --ion-card-color: var(--ion-text-color);
-            --color: var(--ion-text-color);
-        }
-
-        .smallFont {
-            font-size: 18px;
-        }
-
-        p {
-            margin: 0;
-            padding: 5px;
-            font-weight: 800;
-            font-size: 12px;
-            letter-spacing: 0.9px;
-        }
-
-        .complete {
-            color: #2dd36f;
-        }
-        .pending {
-            color: #ffd534;
-        }
-        .incomplete {
-            color: #f04141;
-        }
-    }
-
-    .received {
-        .icon-container {
-            //background-color: #119947;
+            background-color: #16233F;
 
             img {
-                width: 42px;
-                height: 29.5px;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
             }
         }
-    }
 
-    .sent {
-        .icon-container {
-            //background-color: #620ad4;
+        .tx-amount {
+            margin-top: 20px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            color: var(--ion-text-color);
 
-            img {
-                width: 42px;
-                height: 29.5px;
+            .amount-num {
+                font-size: 40px;
+                font-weight: 500;
+                line-height: 1;
+            }
+
+            .amount-ticker {
+                font-size: 18px;
+                font-weight: 500;
+                color: var(--essentials-text-secondary);
+            }
+
+            &.up {
+                color: var(--essentials-success);
+            }
+            &.down {
+                color: var(--essentials-danger);
             }
         }
-    }
 
-    .transferred {
-        .icon-container {
-            //background-color: #20e3d2;
+        .tx-status {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 400;
 
-            img {
-                width: 28px;
-                height: 12.4px;
+            ion-icon {
+                font-size: 16px;
+            }
+
+            &.complete {
+                color: var(--essentials-success);
+            }
+            &.pending {
+                color: #ffd534;
+            }
+            &.incomplete {
+                color: #f04141;
             }
         }
-    }
-
-    .redpacket {
-        .icon-container {
-            img {
-                width: 60px;
-                height: 60px;
-                border-radius: 100%;
-            }
-        }
-    }
-
-    .icon {
-        padding-right: 8px;
     }
 }
 

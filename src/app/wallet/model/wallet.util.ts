@@ -118,8 +118,8 @@ export class WalletUtil {
     if (timestamp > 2147483647)
       timestamp = timestamp / 1000; // Convert MS to seconds
 
-    const today = moment(new Date()).startOf('day').valueOf();
-    return timestamp < today ? moment.unix(timestamp).format("YYYY-MM-DD HH:mm") : moment.unix(timestamp).startOf('minutes').fromNow();
+    // Figma parity (SYS-028): every transaction row uses "D MMM, hh:mm A", e.g. "9 Apr, 01:45 PM".
+    return moment.unix(timestamp).format("D MMM, hh:mm A");
   }
 
   public static async isELAAddress(address: string): Promise<boolean> {

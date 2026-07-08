@@ -269,7 +269,7 @@ export class HomePage implements OnInit, OnDestroy {
       this.totalFiatDisplay = fiatStr;
       let pnl = PriceHistoryService.instance.getPortfolioPnl24h(this.networkWallet);
       this.pnlVm = pnl ? {
-        text: `${pnl.absCurrency >= 0 ? '+' : '-'}${this.formatFiat(Math.abs(pnl.absCurrency), symbol)} (${pnl.pct >= 0 ? '+' : ''}${pnl.pct.toFixed(2)}%)`,
+        text: `${pnl.absCurrency >= 0 ? '+' : '-'}${this.formatFiat(Math.abs(pnl.absCurrency), symbol)} (${pnl.pct.toFixed(1)}%)`,
         tone: pnl.absCurrency >= 0 ? 'up' : 'down'
       } : null;
     } else {

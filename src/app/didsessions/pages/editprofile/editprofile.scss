@@ -16,25 +16,99 @@ ion-content {
   padding: 24px 20px calc(env(safe-area-inset-bottom) + 24px);
 
   .heading {
-    margin: 12px 0 22px;
-    font-size: 36px;
+    margin: 12px 0 12px;
+    font-size: 40px;
     font-weight: 500;
-    line-height: 1.1;
+    line-height: 1.15;
     color: var(--ion-text-color);
+  }
+
+  // Value-prop line under the heading (SCR-110).
+  .subtitle {
+    margin: 0 0 28px;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--essentials-text-secondary);
+  }
+
+  // Field label above the input (SCR-111).
+  .field-label {
+    display: block;
+    margin: 0 0 10px 2px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ion-text-color);
+  }
+
+  // Wraps the input so the "change anytime" hint can sit inside on the right (SCR-115).
+  .input-wrap {
+    position: relative;
+    flex: 0 0 auto;
+    width: 100%;
   }
 
   .name-input {
     // Fixed height + no grow so the field never stretches to fill the flex column.
     flex: 0 0 auto;
-    height: 52px;
+    height: 56px;
     width: 100%;
-    --padding-start: 16px;
+    --padding-start: 18px;
+    --padding-end: 110px;
     --padding-top: 0;
     --padding-bottom: 0;
     background: var(--essentials-box-color);
-    border-radius: 14px;
-    font-size: 15px;
+    border-radius: 16px;
+    font-size: 17px;
     text-align: left;
+  }
+
+  // Trailing "change anytime" hint shown only when the field has a value (SCR-115).
+  .change-hint {
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    transform: translateY(-50%);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--essentials-text-secondary);
+    pointer-events: none;
+  }
+
+  // DID explainer helper caption under the field (SCR-112).
+  .did-helper {
+    margin: 10px 2px 0;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--essentials-text-secondary);
+  }
+
+  // Reassurance microcopy adjacent to the CTA (SCR-113).
+  .reassurance {
+    margin: 0 0 14px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--essentials-text-secondary);
+  }
+
+  // Secondary import entry below the primary CTA (SCR-114).
+  .import-link {
+    display: block;
+    width: 100%;
+    margin: 16px auto 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: underline;
+    color: var(--ion-text-color);
+    cursor: pointer;
   }
 
   // Continue button sits at the bottom of the screen.

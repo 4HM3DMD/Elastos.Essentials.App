@@ -40,7 +40,7 @@
         font-size: 12px;
         font-weight: 500;
         letter-spacing: 2.4px;
-        color: #656565;
+        color: var(--essentials-text-secondary);
       }
     }
   }
@@ -74,20 +74,21 @@
 
         h1 {
           font-size: 20px;
-          font-weight: 600;
+          font-weight: 500;
           line-height: 28px;
-          letter-spacing: 0.22px;
+          letter-spacing: 0.4px;
           padding: 0 10px;
           margin: 0 0 20px;
         }
 
         p {
           font-size: 16px;
-          font-weight: 300;
-          opacity: 0.8;
+          font-weight: 500;
           line-height: 22px;
+          letter-spacing: 0.32px;
           padding: 0 20px 20px;
           margin: 0;
+          color: var(--essentials-text-secondary);
         }
 
         ebutton {
@@ -97,12 +98,14 @@
 
         .error-box {
           width: 100%;
+          max-height: 160px;
+          overflow-y: auto;
 
           span {
             margin-top: 10px;
             font-size: 12px;
             font-weight: 500;
-            color: #f04141;
+            color: var(--essentials-danger);
             display: block;
           }
         }

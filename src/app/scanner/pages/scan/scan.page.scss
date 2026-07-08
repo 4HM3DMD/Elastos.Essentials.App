@@ -1,65 +1,196 @@
 @import "src/app/scanner/root.scss";
 
-.qrscanner-area {
+// Phase 9 - Scan design tokens
+$scan-page-bg: #111111;
+$scan-surface: #1E1E1E;
+$scan-accent: #ED6E2B;
+$scan-hairline: rgba(255, 255, 255, 0.08);
+$scan-text: #FFFFFF;
+$scan-text-secondary: rgba(255, 255, 255, 0.65);
+
+// Full-screen overlay held below the titlebar (ion-header z-index: 10).
+.scan-camera {
     position: fixed;
-    height: 100%;
-    width: 100%;
-    background: url("../../../../assets/scanner/imgs/scanner.svg") no-repeat center center;
-    background-size: contain;
+    inset: 0;
+    z-index: 0;
+    text-align: center;
 }
 
-.through-line {
-    left: 25%;
-    width: 50%;
-    height: 2px;
-    background: red;
+// Rounded transparent window onto the native feed. The 9999px box-shadow
+// paints the rest of the page opaque #111111, forming the card surround;
+// the 1px border is the hairline bezel. (SCR-143 / SCR-149)
+.camera-window {
     position: absolute;
-    animation: lineAnimation 2s linear infinite alternate;
+    top: calc(64px + env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(-50%);
+    width: 343px;
+    max-width: calc(100% - 32px);
+    height: 300px;
+    border-radius: 32px;
+    border: 1px solid $scan-surface;
+    box-shadow: 0 0 0 9999px $scan-page-bg;
+    overflow: hidden;
+    z-index: 1;
 }
 
-@keyframes lineAnimation {
+// Single soft accent scan line, constrained to the card bounds. (SCR-148)
+.scan-line {
+    position: absolute;
+    left: 8%;
+    width: 84%;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, rgba(237, 110, 43, 0) 0%, $scan-accent 50%, rgba(237, 110, 43, 0) 100%);
+    box-shadow: 0 0 8px rgba(237, 110, 43, 0.6);
+    animation: scanLineMove 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes scanLineMove {
     0% {
-        background: #f04141;
-        top: 40%;
-    }
-    20% {
-        background: #ffc409;
-        top: 45%;
-    }
-    40% {
-        background: #3dc2ff;
-        top: 50%;
-    }
-    60% {
-        background: #2dd36f;
-        top: 55%;
-    }
-    80% {
-        background: #4854e0;
-        top: 60%;
+        top: 12%;
     }
     100% {
-        background: #eb445a;
-        top: 65%;
+        top: 88%;
     }
+}
+
+// Centered helper caption below the card. (SCR-145)
+.scan-caption {
+    position: absolute;
+    top: calc(64px + env(safe-area-inset-top) + 324px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 64px);
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: $scan-text;
+    z-index: 1;
+}
+
+// Album pill: full-width dark stadium above the home indicator. (SCR-144)
+.album-pill {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 56px;
+    padding: 0 16px;
+    border-radius: 28px;
+    background: $scan-surface;
+    border: 1px solid $scan-hairline;
+    color: $scan-text;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 1;
+
+    ion-icon {
+        font-size: 20px;
+    }
+}
+
+// Camera unavailable / permission-denied designed state. (SCR-146)
+.camera-denied {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 32px;
+    text-align: center;
+}
+
+.camera-denied-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: $scan-surface;
+    border: 1px solid $scan-hairline;
+    margin-bottom: 20px;
+
+    ion-icon {
+        font-size: 32px;
+        color: $scan-text-secondary;
+    }
+}
+
+.camera-denied-title {
+    margin: 0 0 8px;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 500;
+    color: $scan-text;
+}
+
+.camera-denied-desc {
+    margin: 0 0 24px;
+    font-size: 14px;
+    line-height: 20px;
+    color: $scan-text-secondary;
+}
+
+.enable-camera-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    padding: 0 24px;
+    border-radius: 24px;
+    background: $scan-accent;
+    border: none;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
 }
 
 .transparentBody {
     --background: none transparent;
 }
 
-ion-fab-button {
-    --background: #ffffff;
+// Torch toggle: small #1E1E1E hairline circle, accent when active. (SCR-150)
+.torch-toggle {
+    position: absolute;
+    top: calc(76px + env(safe-area-inset-top));
+    right: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    background: $scan-surface;
+    border: 1px solid $scan-hairline;
+    cursor: pointer;
+    z-index: 1;
 
     ion-icon {
-        color: #121212;
+        font-size: 22px;
+        color: $scan-text;
     }
 }
 
-.dark-fab {
-    --background: #121212;
+.torch-toggle.torch-on {
+    border-color: $scan-accent;
 
     ion-icon {
-        color: #ffffff;
+        color: $scan-accent;
     }
+}
+
+// Titlebar sits transparently over the opaque page so no strip appears. (SCR-153)
+:host ::ng-deep app-titlebar ion-row {
+    background: transparent !important;
 }

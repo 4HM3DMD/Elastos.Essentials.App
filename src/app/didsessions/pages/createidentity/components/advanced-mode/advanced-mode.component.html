@@ -22,7 +22,7 @@
   <ebutton *ngIf="slideIndex === 0" (clicked)="onNextSlide()" [title]="'common.begin' | translate"></ebutton>
   <ebutton *ngIf="slideIndex === 1" (clicked)="onNextSlide()" [title]="'common.continue' | translate"></ebutton>
   <div *ngIf="slideIndex >= 2">
-    <ebutton (clicked)="onCreateNewIdentity()" [title]="'didsessions.new' | translate"> </ebutton>
-    <ebutton (clicked)="onImportIdentity()" [title]="'didsessions.import' | translate"></ebutton>
+    <ebutton [arrow]="true" (clicked)="onCreateNewIdentity()" [title]="'didsessions.new' | translate"> </ebutton>
+    <ebutton mode="cancel" (clicked)="onImportIdentity()" [title]="'didsessions.import' | translate"></ebutton>
   </div>
 </div>

@@ -3,19 +3,21 @@
     <ion-grid [class.dark-container]="theme.darkMode">
 
         <!-- TRANSACTION HEADER -->
-        <ion-card [class.received]="(type === 1) && !isRedPacket" [class.redpacket]="(type === 1) && isRedPacket"
-            [class.sent]="type === 2" [class.transferred]="type === 3" *ngIf="transactionInfo">
-            <div class="icon-container">
-                <div class="inline-svg" [inlineSVG]="payStatusIcon"></div>
+        <!-- TRANSACTION HERO (floats directly on the page background - no card) -->
+        <div class="tx-hero" *ngIf="transactionInfo">
+            <div class="coin-disc">
+                <img *ngIf="heroIcon" [src]="heroIcon" alt="" />
             </div>
-            <ion-card-title>{{ getTransactionTitle() }}</ion-card-title>
-            <ion-card-subtitle *ngIf="displayAmount.length < 20">{{ symbol }}{{ displayAmount }}</ion-card-subtitle>
-            <ion-card-subtitle class="smallFont" *ngIf="displayAmount.length >= 20">{{ symbol }}{{ displayAmount }}
-            </ion-card-subtitle>
-            <p [class.complete]="status === 'confirmed'" [class.pending]="status === 'pending'"
-                [class.incomplete]="status === 'incomplete'"> {{ statusName }}
-            </p>
-        </ion-card>
+            <div class="tx-amount" [class.up]="amountTone === 'success'" [class.down]="amountTone === 'danger'">
+                <span class="amount-num">{{ heroSign }}{{ heroAmount }}</span>
+                <span class="amount-ticker">{{ symbol }}</span>
+            </div>
+            <div class="tx-status" [class.complete]="status === 'confirmed'" [class.pending]="status === 'pending'"
+                [class.incomplete]="status === 'incomplete'">
+                <ion-icon *ngIf="status === 'confirmed'" name="checkmark-circle"></ion-icon>
+                <span>{{ status === 'confirmed' ? ('wallet.coin-transaction-status-completed' | translate) : statusName }}</span>
+            </div>
+        </div>
 
         <!-- Multi signature specific -->
         <tx-details-multisig *ngIf="offlineTransaction" [offlineTransaction]="offlineTransaction"

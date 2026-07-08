@@ -1,14 +1,23 @@
 <ion-content>
   <app-titlebar></app-titlebar>
   <div class="name-identity" [class.dark-container]="theme.darkMode">
-    <h1 class="heading">{{ 'didsessions.your-name' | translate }}</h1>
+    <h1 class="heading">{{ 'didsessions.name-your-identity' | translate }}</h1>
+    <p class="subtitle">{{ 'didsessions.name-subtitle' | translate }}</p>
 
-    <ion-input class="name-input" [placeholder]="'didsessions.enter-name-here' | translate" #input
-      [(ngModel)]="name" name="name" ngDefaultControl></ion-input>
+    <label class="field-label">{{ 'didsessions.your-name-label' | translate }}</label>
+    <div class="input-wrap">
+      <ion-input class="name-input" [placeholder]="'didsessions.enter-name-here' | translate" #input
+        [(ngModel)]="name" name="name" ngDefaultControl></ion-input>
+      <span class="change-hint" *ngIf="name?.trim()">{{ 'didsessions.change-anytime' | translate }}</span>
+    </div>
+    <p class="did-helper">{{ 'didsessions.did-explainer' | translate }}</p>
+
+    <p class="reassurance">{{ 'didsessions.name-reassurance' | translate }}</p>
 
     <div class="footer">
       <ebutton [arrow]="true" [disabled]="creatingDid || !name?.trim()" (clicked)="next()"
         [title]="'common.continue' | translate"></ebutton>
+      <button type="button" class="import-link" (click)="importIdentity()">{{ 'didsessions.already-have-identity' | translate }}</button>
     </div>
   </div>
 </ion-content>

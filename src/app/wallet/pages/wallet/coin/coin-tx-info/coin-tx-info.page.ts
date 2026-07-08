@@ -41,6 +41,7 @@ import {
   TransactionInfoType,
   TransactionType
 } from '../../../../model/tx-providers/transaction.types';
+import { ContactsService } from 'src/app/wallet/services/contacts.service';
 import { Native } from '../../../../services/native.service';
 import { WalletService } from '../../../../services/wallet.service';
 
@@ -92,6 +93,11 @@ export class CoinTxInfoPage implements OnInit {
   public displayAmount = '';
   public status = '';
   public statusName = '';
+  // Figma hero display values (SYS-005 coin disc, SYS-021 toned amount + ticker)
+  public heroIcon = '';
+  public heroSign = '';
+  public heroAmount = '';
+  public amountTone: 'success' | 'danger' | 'neutral' = 'neutral';
   public memo = '';
   public height = 0;
   // Show the transfer transacton amount, eg. amount for unstake and DPoS voting.
@@ -130,7 +136,8 @@ export class CoinTxInfoPage implements OnInit {
     private offlineTransactionsService: OfflineTransactionsService,
     private nav: GlobalNavService,
     public dappbrowserService: DappBrowserService,
-    private zone: NgZone
+    private zone: NgZone,
+    private contactsService: ContactsService
   ) {}
 
   ngOnInit() {
@@ -138,7 +145,7 @@ export class CoinTxInfoPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.titleBar.setTitle(this.translate.instant('wallet.tx-info-title'));
+    this.titleBar.setTitle(this.getNavTitle());
 
     if (this.offlineTransaction) {
       // If there is an offline transaction, we can show a delete menu
@@ -196,6 +203,23 @@ export class CoinTxInfoPage implements OnInit {
       this.height = this.transactionInfo.height;
       this.targetAddress = this.transactionInfo.to;
       this.fromAddress = this.transactionInfo.from;
+
+      // SYS-023: set the nav title now that direction/symbol are known.
+      this.titleBar.setTitle(this.getNavTitle());
+
+      // SYS-005 coin disc + SYS-021 hero amount (signed, 2 decimals, toned by direction).
+      this.heroIcon = this.networkWallet.network.logo;
+      if (this.type === TransactionType.RECEIVED) {
+        this.heroSign = '+';
+        this.amountTone = 'success';
+      } else if (this.type === TransactionType.SENT) {
+        this.heroSign = '-';
+        this.amountTone = 'danger';
+      } else {
+        this.heroSign = '';
+        this.amountTone = 'neutral';
+      }
+      this.heroAmount = this.amount ? new BigNumber(this.amount).abs().toFixed(2) : '0.00';
       this.payFee =
         this.transactionInfo.fee !== null
           ? WalletUtil.getAmountWithoutScientificNotation(new BigNumber(this.transactionInfo.fee), 8)
@@ -288,41 +312,33 @@ export class CoinTxInfoPage implements OnInit {
 
     // Tx details valid only for published transactions
     if (!this.offlineTransaction) {
-      this.txDetails.push(
-        {
-          type: TransactionInfoType.TIME,
-          title: 'wallet.tx-info-transaction-time',
-          value:
-            this.transactionInfo.timestamp === 0
-              ? this.translate.instant('wallet.coin-transaction-status-pending')
-              : Util.dateFormat(new Date(this.transactionInfo.timestamp), 'YYYY-MM-DD HH:mm:ss'),
-          show: true
-        },
-        {
+      this.txDetails.push({
+        type: TransactionInfoType.TIME,
+        title: 'wallet.tx-info-time',
+        value:
+          this.transactionInfo.timestamp === 0
+            ? this.translate.instant('wallet.coin-transaction-status-pending')
+            : moment(this.transactionInfo.timestamp).format('D MMM YYYY, hh:mm A'),
+        show: true
+      });
+
+      // SYS-024: Memo only when present.
+      if (this.memo) {
+        this.txDetails.push({
           type: TransactionInfoType.MEMO,
           title: 'wallet.tx-info-memo',
           value: this.memo,
           show: true
-        },
-        {
-          type: TransactionInfoType.CONFIRMATIONS,
-          title: 'wallet.tx-info-confirmations',
-          value: this.transactionInfo.confirmStatus === -1 ? '' : this.transactionInfo.confirmStatus,
-          show: false
-        },
-        {
-          type: TransactionInfoType.BLOCKID,
-          title: 'wallet.tx-info-block-id',
-          value: this.height <= 0 ? '0' : this.height.toString(),
-          show: false
-        },
-        {
-          type: TransactionInfoType.TXID,
-          title: 'wallet.tx-info-transaction-id',
-          value: this.transactionInfo.txid,
-          show: false
-        }
-      );
+        });
+      }
+
+      // SYS-024: Confirmations and Block ID rows removed (not in Figma).
+      this.txDetails.push({
+        type: TransactionInfoType.TXID,
+        title: 'wallet.tx-info-txid',
+        value: this.transactionInfo.txid,
+        show: false
+      });
     }
 
     // Only show receiving address, total cost and fees if tx was not received
@@ -381,7 +397,7 @@ export class CoinTxInfoPage implements OnInit {
 
         this.txDetails.unshift({
           type: TransactionInfoType.FEES,
-          title: 'wallet.tx-info-transaction-fees',
+          title: 'wallet.tx-info-network-fee',
           value: currencyFee ? `${nativeFee} (~ ${currencyFee})` : nativeFee,
           show: true
         });
@@ -390,7 +406,7 @@ export class CoinTxInfoPage implements OnInit {
       if (this.targetAddress !== null) {
         this.txDetails.unshift({
           type: TransactionInfoType.ADDRESS,
-          title: 'wallet.tx-info-receiver-address',
+          title: 'wallet.tx-info-address',
           value: this.transactionInfo.isCrossChain
             ? this.targetAddress
             : await this.networkWallet.convertAddressForUsage(this.targetAddress, AddressUsage.DISPLAY_TRANSACTIONS),
@@ -405,7 +421,7 @@ export class CoinTxInfoPage implements OnInit {
         // TODO: We should show all the inputs and outputs for ELA main chain.
         this.txDetails.unshift({
           type: TransactionInfoType.ADDRESS,
-          title: 'wallet.tx-info-sender-address',
+          title: 'wallet.tx-info-address',
           value: this.transactionInfo.isCrossChain
             ? this.fromAddress
             : await this.networkWallet.convertAddressForUsage(this.fromAddress, AddressUsage.DISPLAY_TRANSACTIONS),
@@ -422,7 +438,7 @@ export class CoinTxInfoPage implements OnInit {
         ) {
           this.txDetails.unshift({
             type: TransactionInfoType.ADDRESS,
-            title: 'wallet.tx-info-receiver-address',
+            title: 'wallet.tx-info-address',
             value: this.targetAddress,
             show: true
           });
@@ -483,6 +499,50 @@ export class CoinTxInfoPage implements OnInit {
         show: false
       });
     }
+
+    // SYS-006: itemised amount rows.
+    const amountWithSymbol = `${this.displayAmount} ${this.symbol}`;
+    if (this.direction === TransactionDirection.RECEIVED) {
+      this.txDetails.unshift({
+        type: TransactionInfoType.AMOUNT,
+        title: 'wallet.tx-info-receive-amount',
+        value: amountWithSymbol,
+        show: true
+      });
+    } else {
+      // Total deducted = amount + fee, only when the fee is paid in the same (native) token.
+      if (this.payFee !== null && this.symbol === this.mainTokenSymbol) {
+        const total = new BigNumber(this.displayAmount).plus(new BigNumber(this.payFee));
+        this.txDetails.unshift({
+          type: TransactionInfoType.AMOUNT,
+          title: 'wallet.tx-info-total',
+          value: `${WalletUtil.getAmountWithoutScientificNotation(total, this.subWallet.tokenDecimals)} ${this.symbol}`,
+          show: true
+        });
+      }
+      this.txDetails.unshift({
+        type: TransactionInfoType.AMOUNT,
+        title: 'wallet.tx-info-amount',
+        value: amountWithSymbol,
+        show: true
+      });
+    }
+
+    // SYS-006: Address Name (saved contact) with '- -' fallback.
+    this.txDetails.unshift({
+      type: TransactionInfoType.AMOUNT,
+      title: 'wallet.tx-info-address-name',
+      value: this.resolveAddressName() || '- -',
+      show: true
+    });
+
+    // SYS-006: Network row, unshifted last so it renders first (Figma order).
+    this.txDetails.unshift({
+      type: TransactionInfoType.AMOUNT,
+      title: 'wallet.tx-info-network',
+      value: WalletNetworkService.instance.activeNetwork.value.getEffectiveName(),
+      show: true
+    });
   }
 
   /**
@@ -499,6 +559,47 @@ export class CoinTxInfoPage implements OnInit {
       this.crossChainNetworkKey = 'elastos';
     }
     return targetAddress;
+  }
+
+  /**
+   * Builds the nav-bar title from the transaction direction verb + token ticker,
+   * e.g. 'Received ELA'. Falls back to the generic title before data is loaded.
+   */
+  public getNavTitle(): string {
+    if (!this.transactionInfo) {
+      return this.translate.instant('wallet.tx-info-title');
+    }
+    let verb: string;
+    switch (this.type) {
+      case TransactionType.RECEIVED:
+        verb = this.translate.instant('wallet.tx-info-type-received');
+        break;
+      case TransactionType.SENT:
+        verb = this.translate.instant('wallet.tx-info-type-sent');
+        break;
+      case TransactionType.TRANSFER:
+        verb = this.translate.instant('wallet.tx-info-type-transferred');
+        break;
+      default:
+        verb = this.getTransactionTitle();
+    }
+    return this.symbol ? `${verb} ${this.symbol}` : verb;
+  }
+
+  /**
+   * Resolves the transaction counterparty address to a saved contact name.
+   * Returns null when no contact matches (caller applies the '- -' fallback).
+   */
+  private resolveAddressName(): string {
+    const counterparty = this.direction === TransactionDirection.RECEIVED ? this.fromAddress : this.targetAddress;
+    if (!counterparty) {
+      return null;
+    }
+    const target = String(counterparty).toLowerCase();
+    const match = this.contactsService.contacts.find(contact =>
+      (contact.addresses || []).some(entry => entry.address && entry.address.toLowerCase() === target)
+    );
+    return match ? match.cryptoname : null;
   }
 
   public getTransactionTitle(): string {

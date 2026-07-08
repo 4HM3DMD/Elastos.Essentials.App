@@ -4,14 +4,19 @@
   <div class="receive">
     <!-- QR card -->
     <div *ngIf="qrcode" class="qr-card">
-      <qrcode class="qrcode" [qrdata]="qrcode" [width]="200"></qrcode>
+      <qrcode class="qrcode" [qrdata]="qrcode" [width]="200" colorDark="#FFFFFF" colorLight="#161616" [margin]="2"></qrcode>
     </div>
 
     <!-- Network -->
     <div class="section">
-      <p class="section-label">{{ 'wallet.coin-receive-network-label' | translate }}</p>
+      <p class="section-label">
+        {{ 'wallet.coin-receive-network-label' | translate }}
+        <ion-icon class="info-glyph" name="information-circle-outline"></ion-icon>
+      </p>
       <div class="network-row">
-        <img *ngIf="networkLogo" class="network-logo" [src]="networkLogo" alt="" />
+        <span class="network-disc">
+          <img *ngIf="networkLogo" class="network-logo" [src]="networkLogo" alt="" />
+        </span>
         <span class="network-name">{{ networkName }}</span>
       </div>
     </div>
@@ -24,17 +29,17 @@
 
     <!-- Address -->
     <div class="section">
-      <p class="section-label">{{ 'launcher.address' | translate }}</p>
+      <p class="section-label">{{ 'wallet.coin-receive-address-label' | translate }}</p>
       <div class="address-row">
-        <span class="address" (click)="copyAddress()">{{ qrcode }}</span>
-        <button type="button" class="icon-btn" aria-label="Copy address" (click)="copyAddress()">
+        <span class="address" (click)="copyAddress()">{{ shortAddress }}</span>
+        <button type="button" class="copy-disc" aria-label="Copy address" (click)="copyAddress()">
           <ion-icon name="copy-outline"></ion-icon>
-        </button>
-        <button type="button" class="icon-btn" aria-label="View in explorer" (click)="openForBrowseMode()">
-          <ion-icon name="open-outline"></ion-icon>
         </button>
       </div>
     </div>
+
+    <!-- Push the caption + actions to the bottom of the viewport -->
+    <div class="flex-spacer"></div>
 
     <!-- Cross-network safety warning -->
     <p class="warning">
@@ -52,7 +57,7 @@
         <span>{{ 'wallet.coin-receive-copy' | translate }}</span>
       </button>
       <button type="button" class="action primary" (click)="shareAddress()">
-        <ion-icon name="share-social-outline"></ion-icon>
+        <ion-icon name="share-outline"></ion-icon>
         <span>{{ 'wallet.coin-receive-share' | translate }}</span>
       </button>
     </div>

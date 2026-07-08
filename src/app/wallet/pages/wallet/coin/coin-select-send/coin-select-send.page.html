@@ -5,7 +5,7 @@
     <div class="search">
       <ion-icon name="search-outline"></ion-icon>
       <ion-input [(ngModel)]="searchKey" (ngModelChange)="onSearch()" clearInput
-        [placeholder]="'wallet.search-coin' | translate" ngDefaultControl></ion-input>
+        [placeholder]="'wallet.search-token-or-nft' | translate" ngDefaultControl></ion-input>
     </div>
 
     <ui-skeleton *ngIf="!shownRows" [rows]="6" kind="row"></ui-skeleton>

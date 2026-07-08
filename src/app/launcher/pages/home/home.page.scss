@@ -6,7 +6,7 @@ ion-content {
 
 .home {
     min-height: 100%;
-    padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 20px);
+    padding: calc(env(safe-area-inset-top) + 12px) 20px calc(env(safe-area-inset-bottom) + 20px);
     // Warm orange header glow. The exact top texture/vector from the 2026 design
     // still needs to be exported from Figma; the placeholder recreation was removed.
     background:
@@ -26,9 +26,12 @@ ion-content {
             align-items: center;
             gap: 10px;
             padding: 6px 12px 6px 6px;
-            border: none;
+            // Translucent glass pill over the header wave with a light hairline border.
+            border: 1px solid rgba(255, 255, 255, 0.14);
             border-radius: 22px;
-            background: var(--essentials-box-color);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             color: var(--ion-text-color);
             font-family: inherit;
             cursor: pointer;
@@ -40,6 +43,8 @@ ion-content {
                 border-radius: 50%;
                 object-fit: cover;
                 flex-shrink: 0;
+                // Subtle ring on the avatar disc (Figma).
+                box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
             }
 
             // The default avatar (no custom picture) is an orange disc with the
@@ -115,26 +120,39 @@ ion-content {
     }
 
     .balance-block {
-        margin-top: 22px;
+        // Figma: ~56px of air between the account header and the balance hero.
+        margin-top: 56px;
 
         .pnl-line {
             margin-top: 6px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
             font-size: 13px;
             font-weight: 600;
             font-variant-numeric: tabular-nums;
 
-            &.up {
-                color: var(--essentials-success);
+            // Grey label; only the value carries the up/down tone.
+            .pnl-label {
+                font-weight: 500;
+                color: var(--essentials-text-secondary);
             }
 
-            &.down {
-                color: var(--essentials-danger);
+            .pnl-value {
+                &.up {
+                    color: var(--essentials-success);
+                }
+
+                &.down {
+                    color: var(--essentials-danger);
+                }
             }
         }
     }
 
     .tiles {
-        margin-top: 20px;
+        // Figma: ~48px between the hero/PnL block and the quick-action tiles.
+        margin-top: 48px;
     }
 
     .wallet-unavailable {
@@ -142,13 +160,17 @@ ion-content {
     }
 
     .pillars {
+        // Figma: three independent rounded cards separated by page-background gaps —
+        // no shared container surface and no hairline separators.
         margin-top: 20px;
-        background: var(--essentials-box-color);
-        border-radius: 14px;
-        padding: 4px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
 
-        .pillar:not(:last-child) {
-            border-bottom: 1px solid var(--essentials-border-separator-color);
+        .pillar {
+            background: var(--essentials-box-color);
+            border-radius: 16px;
+            padding: 6px 14px;
         }
 
         // Each pillar gets its identity color on the icon circle.
@@ -175,7 +197,8 @@ ion-content {
             margin: 0 0 10px;
 
             h2 {
-                font-size: 18px;
+                // Figma: ~24px Manrope Medium.
+                font-size: 24px;
                 font-weight: 500;
                 color: var(--ion-text-color);
                 margin: 0;
@@ -193,14 +216,18 @@ ion-content {
             }
         }
 
-        .card-group {
-            background: var(--essentials-box-color);
-            border-radius: 14px;
-            padding: 4px 14px;
+        // Rows sit bare on the page background (no card surface or hairline separators).
+        .token-list {
+            display: flex;
+            flex-direction: column;
+        }
 
-            ui-token-row:not(:last-child) {
-                border-bottom: 1px solid var(--essentials-border-separator-color);
-            }
+        // Shown when the active wallet holds no displayable tokens.
+        .tokens-empty {
+            padding: 24px 0;
+            text-align: center;
+            font-size: 14px;
+            color: var(--essentials-text-secondary);
         }
     }
 

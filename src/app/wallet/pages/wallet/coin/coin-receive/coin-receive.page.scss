@@ -1,22 +1,27 @@
 .receive {
-  padding: 8px 20px 30px;
+  min-height: 100%;
+  padding: 8px 20px calc(30px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 
+  .flex-spacer {
+    flex: 1 1 auto;
+    min-height: 24px;
+  }
+
   .qr-card {
     margin-top: 12px;
-    padding: 18px;
-    border-radius: 20px;
-    background: var(--essentials-box-color);
+    padding: 24px;
+    border-radius: 28px;
+    background: #161616;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
     display: inline-flex;
 
     .qrcode {
-      // The QR itself renders on white for scan reliability.
-      background: #ffffff;
-      padding: 10px;
-      border-radius: 12px;
+      // White QR modules render directly on the dark card (inverted colours set on the qrcode element).
+      background: transparent;
       line-height: 0;
     }
   }
@@ -28,30 +33,46 @@
     text-align: left;
 
     .section-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       margin: 0 0 8px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--essentials-text-secondary);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ion-text-color);
+
+      .info-glyph {
+        font-size: 15px;
+        color: var(--essentials-text-secondary);
+      }
     }
   }
 
   .network-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    border-radius: 14px;
-    background: var(--essentials-box-color);
+    gap: 12px;
+    padding: 0;
 
-    .network-logo {
-      width: 24px;
-      height: 24px;
+    .network-disc {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
+      background: #16233F;
+
+      .network-logo {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+      }
     }
 
     .network-name {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 500;
       color: var(--ion-text-color);
     }
   }
@@ -66,38 +87,38 @@
   .address-row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 10px 8px 10px 16px;
-    border-radius: 14px;
-    background: var(--essentials-box-color);
+    gap: 12px;
+    padding: 0;
     width: 100%;
 
     .address {
-      font-size: 13px;
-      font-weight: 600;
+      flex: 1;
+      font-size: 17px;
+      font-weight: 500;
       letter-spacing: 0.3px;
       color: var(--ion-text-color);
       cursor: pointer;
       text-align: left;
-      word-break: break-all;
+      white-space: nowrap;
       font-variant-numeric: tabular-nums;
     }
 
-    .icon-btn {
+    .copy-disc {
+      flex: 0 0 auto;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 34px;
-      height: 34px;
+      width: 44px;
+      height: 44px;
       padding: 0;
-      border: none;
+      border: 1px solid var(--essentials-border-color, rgba(255, 255, 255, 0.12));
       border-radius: 50%;
-      background: transparent;
-      color: var(--essentials-text-secondary);
+      background: var(--essentials-surface-color, #1E1E1E);
+      color: var(--ion-text-color);
       cursor: pointer;
 
       ion-icon {
-        font-size: 18px;
+        font-size: 20px;
       }
     }
   }

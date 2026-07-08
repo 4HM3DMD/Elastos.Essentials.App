@@ -32,6 +32,7 @@ export class AdvancedModeComponent implements OnChanges, AfterViewInit {
   @Input() publishError: string = null;
   @Input() signInError: string = null;
   @Input() hiveError: string = null;
+  @Input() walletError: string = null;
   @Input() finalizingPreparation = false;
 
   @Output() slideIndexChange = new EventEmitter<number>();

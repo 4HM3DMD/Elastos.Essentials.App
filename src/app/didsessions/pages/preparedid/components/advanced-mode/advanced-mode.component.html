@@ -61,16 +61,16 @@
         <img src="assets/didsessions/onboard/slide4.svg">
         <h1>{{ 'didsessions.prepare.wallet-title' | translate }}</h1>
         <p>{{ 'didsessions.prepare.wallet-intro' | translate }}</p>
-        <div class="error-box" *ngIf="signInError">
+        <div class="error-box" *ngIf="walletError">
           <ebutton (clicked)="onCancelPreparation()" [title]="'common.back' | translate"></ebutton>
-          <span class="error">{{ signInError }}</span>
+          <span class="error">{{ walletError }}</span>
         </div>
       </div>
     </ion-slide>
 
     <ion-slide class="ion-text-center">
       <div class="slide-card">
-        <img src="assets/shared/essentials-black-circle.svg">
+        <img src="assets/components/tab-bar/elastos-icon.svg">
         <h1>{{ 'didsessions.prepare.done-title' | translate }}</h1>
         <p>{{ 'didsessions.prepare.done-intro' | translate }}</p>
         <ebutton (clicked)="onFinalizePreparation()" *ngIf="!finalizingPreparation"
@@ -80,11 +80,11 @@
 
   </ion-slides>
 
-  <ion-row *ngIf="(slideIndex < 4 || finalizingPreparation) && !(signInError || hiveError || publishError)"
+  <ion-row *ngIf="(slideIndex < 4 || finalizingPreparation) && !(signInError || hiveError || publishError || walletError)"
     class="slide-circle-row">
     <ion-col size="12">
       <lottie-player src="../../../assets/identity/animations/block-loader.json" background="transparent" speed="1"
-        style="width: 160x; height: 160px;" autoplay loop></lottie-player>
+        style="width: 160px; height: 160px;" autoplay loop></lottie-player>
       <span>{{ 'common.please-wait' | translate }}</span>
     </ion-col>
   </ion-row>

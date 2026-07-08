@@ -39,6 +39,7 @@ export class PrepareDIDPage {
   public publishError: string = null;
   public signInError: string = null;
   public hiveError: string = null;
+  public walletError: string = null;
 
   private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void;
 
@@ -95,6 +96,9 @@ export class PrepareDIDPage {
           case 'hive':
             this.hiveError = error;
             break;
+          case 'wallet':
+            this.walletError = error;
+            break;
           default:
             Logger.warn('didsessions', 'Unknown error step:', step);
         }
@@ -137,6 +141,7 @@ export class PrepareDIDPage {
     this.publishError = null;
     this.signInError = null;
     this.hiveError = null;
+    this.walletError = null;
     this.finalizingPreparation = false;
   }
 
