@@ -4,7 +4,7 @@ import { Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import moment from 'moment';
 import { Subscription } from 'rxjs';
-import { BuiltInIcon, TitleBarIcon, TitleBarMenuItem } from 'src/app/components/titlebar/titlebar.types';
+import { BuiltInIcon, TitleBarIcon, TitleBarMenuItem, TitleBarNavigationMode } from 'src/app/components/titlebar/titlebar.types';
 import { transparentPixelIconDataUrl } from 'src/app/helpers/picture.helpers';
 import { App } from 'src/app/model/app.enum';
 import { GlobalIntentService } from 'src/app/services/global.intent.service';
@@ -87,6 +87,8 @@ export class HomePage {
     this.setTheme(this.theme.darkMode);
     this.titleBar.setBrowserMode(false);
     this.titleBar.setCloseMode(false);
+    // Browser home is a tab root: no back control (users leave via the tab bar).
+    this.titleBar.setNavigationMode(TitleBarNavigationMode.NONE);
 
     await this.checkNoInAppNoticeStatus();
 

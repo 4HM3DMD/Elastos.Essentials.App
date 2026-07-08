@@ -61,10 +61,10 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
   }
 
   public async onElastos(): Promise<void> {
-    // Unlike the other tabs the hub keeps the caller in history, so both the
-    // titlebar arrow and the Android hardware back return to the origin screen.
-    this.globalNav.clearIntermediateRoutes(['/launcher/elastos']);
-    await this.globalNav.navigateTo(App.LAUNCHER, '/launcher/elastos');
+    // The Hub is a tab root like the others: switch to it (no back stack), so it
+    // does not show a back control. Users return via the tab bar, not a chevron.
+    this.globalNav.clearNavigationHistory();
+    await this.globalNav.navigateRoot(App.LAUNCHER, '/launcher/elastos');
   }
 
   public async onBrowser(): Promise<void> {

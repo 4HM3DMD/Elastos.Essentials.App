@@ -26,7 +26,7 @@ import { TranslateService } from '@ngx-translate/core';
 import BigNumber from 'bignumber.js';
 import { Subscription } from 'rxjs';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
-import { BuiltInIcon, TitleBarIcon, TitleBarIconSlot, TitleBarMenuItem } from 'src/app/components/titlebar/titlebar.types';
+import { BuiltInIcon, TitleBarIcon, TitleBarIconSlot, TitleBarMenuItem, TitleBarNavigationMode } from 'src/app/components/titlebar/titlebar.types';
 import { reducedWalletAddress } from 'src/app/helpers/wallet.helper';
 import { WalletAddressChooserComponent } from 'src/app/launcher/components/wallet-address-chooser/wallet-address-chooser.component';
 import { GlobalEvents } from 'src/app/services/global.events.service';
@@ -306,6 +306,9 @@ export class WalletHomePage implements OnInit, OnDestroy {
             this.cdr.markForCheck();
         }
         this.titleBar.setTitle(this.translate.instant("wallet.value-title"));
+        // Value is a tab root (reached via navigateRoot), so it must not show a
+        // back control — there is nothing to go "back" to.
+        this.titleBar.setNavigationMode(TitleBarNavigationMode.NONE);
         this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, {
             key: "settings",
             iconPath: BuiltInIcon.SETTINGS
@@ -774,6 +777,19 @@ export class WalletHomePage implements OnInit, OnDestroy {
 
     public getReducedWalletAddress(address: string) {
       return reducedWalletAddress(address);
+    }
+
+    /**
+     * Identity (DID) short-form for the header, e.g. "did:elastos:iXk...9fQ".
+     * A master wallet spans many networks/addresses, so we identify it by its
+     * owning identity here — never by one arbitrary truncated network address.
+     */
+    public get didShort(): string {
+      const did = DIDSessionsStore.signedInDIDString;
+      if (!did) return null;
+      const body = did.replace('did:elastos:', '');
+      if (body.length <= 8) return did;
+      return `did:elastos:${body.slice(0, 3)}...${body.slice(-3)}`;
     }
 
     /**

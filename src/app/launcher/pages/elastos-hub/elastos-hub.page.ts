@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
+import { TitleBarNavigationMode } from 'src/app/components/titlebar/titlebar.types';
 import { App } from 'src/app/model/app.enum';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
@@ -36,6 +37,8 @@ export class ElastosHubPage {
 
   ionViewWillEnter() {
     this.titleBar.setTitle('Elastos');
+    // Tab root: no back control.
+    this.titleBar.setNavigationMode(TitleBarNavigationMode.NONE);
   }
 
   private async launch(action: () => Promise<unknown>): Promise<void> {

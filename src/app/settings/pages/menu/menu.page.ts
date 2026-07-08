@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
+import { TitleBarNavigationMode } from 'src/app/components/titlebar/titlebar.types';
 import { DIDManagerService } from 'src/app/launcher/services/didmanager.service';
 import { App } from 'src/app/model/app.enum';
 import { GlobalAppBackgroundService } from 'src/app/services/global.appbackground.service';
@@ -61,6 +62,8 @@ export class MenuPage implements OnInit {
 
   ionViewWillEnter() {
     this.titleBar.setTitle(this.translate.instant('launcher.app-settings'));
+    // Tab root: no back control.
+    this.titleBar.setNavigationMode(TitleBarNavigationMode.NONE);
   }
 
   ionViewDidEnter() {}
