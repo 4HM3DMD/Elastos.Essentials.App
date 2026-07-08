@@ -22,13 +22,13 @@
 
   <button type="button" class="tab" role="tab" [class.active]="active === 'browser'" aria-label="dApps"
     (click)="onBrowser()">
-    <ion-icon name="apps"></ion-icon>
+    <ion-icon name="apps-outline"></ion-icon>
     <span class="label">{{ 'launcher.tabbar-dapps' | translate }}</span>
   </button>
 
   <button type="button" class="tab" role="tab" [class.active]="active === 'menu'" aria-label="Settings"
     (click)="onMenu()">
-    <ion-icon name="settings"></ion-icon>
+    <ion-icon name="settings-outline"></ion-icon>
     <span class="label">{{ 'launcher.tabbar-settings' | translate }}</span>
   </button>
 </nav>

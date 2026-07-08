@@ -16,9 +16,9 @@ export const TEXT_ON_DARK = '#FFFFFF';
 export const TEXT_ON_LIGHT = '#111114';
 
 // Semantic status colors, tuned per theme darkness for contrast.
-export const SUCCESS_ON_DARK = '#2BC76A';
+export const SUCCESS_ON_DARK = '#6DCD66';
 export const SUCCESS_ON_LIGHT = '#178A4C';
-export const DANGER_ON_DARK = '#FF6B6B';
+export const DANGER_ON_DARK = '#FF5F4B';
 export const DANGER_ON_LIGHT = '#DF3F44';
 
 // Pillar identity colors for the launcher home rows (doc 144 WO-9 / mock M0).

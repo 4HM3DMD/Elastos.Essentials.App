@@ -28,7 +28,7 @@
             <ng-container *ngFor="let item of txDetails">
                 <!-- Simple single-value rows render as shared key/value rows -->
                 <ui-kv-row *ngIf="item.value && getValueType(item) == 1" [label]="item.title | translate"
-                    [value]="item.value" [copyValue]="worthCopying(item) ? item.value : null"
+                    [value]="item.value" [divider]="false" [copyValue]="worthCopying(item) ? item.value : null"
                     [explorerUrl]="worthOpenForBrowser(item) ? item.value : null" (copy)="copy(item.value)"
                     (openExplorer)="openForBrowseMode(item)"></ui-kv-row>
 

@@ -82,11 +82,8 @@ ion-grid {
 
 @import "./item-rows.scss";
 
-/* Spacing for the kv-row detail list (WO-14). */
+/* Spacing for the kv-row detail list (WO-14). Rows separate by whitespace only;
+   the per-row divider is disabled via [divider]="false" (SYS-020). */
 .details-list {
     margin-top: 8px;
-
-    ui-kv-row:not(:last-child) {
-        border-bottom: 1px solid var(--essentials-border-separator-color);
-    }
 }
