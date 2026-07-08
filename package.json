@@ -303,6 +303,5 @@
     "platforms": [
       "android"
     ]
-  },
-  "packageManager": "yarn@1.22.22"
+  }
 }
