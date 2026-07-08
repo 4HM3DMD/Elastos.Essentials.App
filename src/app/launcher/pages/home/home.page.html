@@ -50,16 +50,16 @@
 
     <!-- Pillars -->
     <div class="pillars">
-      <ui-token-row class="pillar value" icon="/assets/launcher/apps/app-icons/wallet.svg"
+      <ui-token-row class="pillar value" icon="/assets/launcher/apps/app-icons/value-coin.svg"
         [title]="'launcher.home-pillar-value' | translate"
         [sub]="'launcher.home-pillar-value-sub' | translate"
         [value]="totalFiatDisplay ? (effectiveHide ? mask : totalFiatDisplay) : null"
         [chevron]="!totalFiatDisplay" (pressed)="onValue()"></ui-token-row>
-      <ui-token-row class="pillar identity" icon="/assets/launcher/apps/app-icons/identity.svg"
+      <ui-token-row class="pillar identity" icon="/assets/launcher/apps/app-icons/identity-badge.svg"
         [title]="'launcher.app-identity' | translate"
         [sub]="didShort || ('launcher.app-identity-description' | translate)"
         [chevron]="true" (pressed)="onIdentity()"></ui-token-row>
-      <ui-token-row class="pillar apps" icon="/assets/launcher/apps/app-icons/browser.svg"
+      <ui-token-row class="pillar apps" icon="/assets/launcher/apps/app-icons/apps-grid.svg"
         [title]="'launcher.home-pillar-apps' | translate" [sub]="'launcher.home-pillar-apps-sub' | translate"
         [chevron]="true" (pressed)="onApps()"></ui-token-row>
     </div>

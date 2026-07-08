@@ -176,17 +176,30 @@ ion-content {
             padding: 6px 14px;
         }
 
-        // Each pillar gets its identity color on the icon circle.
+        // Exact 2026 pillar disc gradients (sampled from Figma) with white glyphs.
         .pillar.value ::ng-deep .icon-circle {
-            background: var(--essentials-accent) !important;
+            background: linear-gradient(158deg, #FFA971 0%, #F07A38 50%, #E24A00 100%) !important;
         }
 
         .pillar.identity ::ng-deep .icon-circle {
-            background: var(--essentials-pillar-identity) !important;
+            background: linear-gradient(158deg, #A4D4FF 0%, #0058C4 100%) !important;
         }
 
         .pillar.apps ::ng-deep .icon-circle {
-            background: var(--essentials-pillar-apps) !important;
+            background: linear-gradient(158deg, #CCCCCC 0%, #434343 100%) !important;
+        }
+
+        // Center the white glyph in the disc (do not stretch it to fill).
+        .pillar ::ng-deep .icon-circle .inline-icon {
+            width: 20px;
+            height: 20px;
+            color: #FFFFFF;
+
+            svg {
+                width: 20px;
+                height: 20px;
+                display: block;
+            }
         }
     }
 
