@@ -11,9 +11,11 @@
   align-items: flex-start;
   justify-content: space-around;
   height: 64px;
-  padding-bottom: env(safe-area-inset-bottom);
+  margin: 0 16px calc(env(safe-area-inset-bottom) + 12px);
+  border-radius: 32px;
   background: var(--essentials-box-color);
-  border-top: 1px solid var(--essentials-border-separator-color);
+  border: 1px solid var(--essentials-border-separator-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 
   .tab {
     flex: 1;
@@ -32,17 +34,18 @@
     transition: color 0.2s ease;
 
     ion-icon {
-      font-size: 22px;
+      font-size: 24px;
     }
 
     .label {
-      font-size: 10px;
+      font-size: 13px;
       font-weight: 500;
       line-height: 1;
     }
 
     &.active {
-      color: var(--essentials-accent);
+      // Figma: active tab is white (outline glyph), not accent-tinted.
+      color: #ffffff;
     }
 
     &.center {

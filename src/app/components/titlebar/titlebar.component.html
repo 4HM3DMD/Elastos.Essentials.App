@@ -4,7 +4,7 @@
       <img *ngIf="icons[0].visible" [src]="getIconPath(0)" (click)="outerLeftIconClicked()">
     </ion-col>
     <ion-col size="1.25">
-      <img *ngIf="icons[1].visible && !needToShowRedDot()" [src]="getIconPath(1)"
+      <img *ngIf="icons[1].visible && !needToShowRedDot()" class="nav-back" [src]="getIconPath(1)"
         (click)="innerLeftIconClicked()">
       <div *ngIf="icons[1].visible && needToShowRedDot()" class="badge">
         <img [src]="getIconPath(1)" (click)="innerLeftIconClicked()">

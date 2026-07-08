@@ -1,14 +1,14 @@
 <nav class="tab-bar" role="tablist">
   <button type="button" class="tab" role="tab" [class.active]="active === 'home'" aria-label="Home"
     (click)="onHome()">
-    <ion-icon [name]="active === 'home' ? 'home' : 'home-outline'"></ion-icon>
-    <span class="label">Home</span>
+    <ion-icon name="home-outline"></ion-icon>
+    <span class="label">{{ 'launcher.tabbar-home' | translate }}</span>
   </button>
 
   <button type="button" class="tab" role="tab" [class.active]="active === 'wallet'" aria-label="Wallet"
     (click)="onWallet()">
-    <ion-icon [name]="active === 'wallet' ? 'wallet' : 'wallet-outline'"></ion-icon>
-    <span class="label">Wallet</span>
+    <ion-icon name="wallet-outline"></ion-icon>
+    <span class="label">{{ 'launcher.tabbar-wallet' | translate }}</span>
   </button>
 
   <button type="button" class="tab center" role="tab" [class.active]="active === 'elastos'" aria-label="Elastos"
@@ -21,13 +21,13 @@
 
   <button type="button" class="tab" role="tab" [class.active]="active === 'browser'" aria-label="dApps"
     (click)="onBrowser()">
-    <ion-icon [name]="active === 'browser' ? 'apps' : 'apps-outline'"></ion-icon>
-    <span class="label">dApps</span>
+    <ion-icon name="apps-outline"></ion-icon>
+    <span class="label">{{ 'launcher.tabbar-dapps' | translate }}</span>
   </button>
 
   <button type="button" class="tab" role="tab" [class.active]="active === 'menu'" aria-label="Settings"
     (click)="onMenu()">
-    <ion-icon [name]="active === 'menu' ? 'settings' : 'settings-outline'"></ion-icon>
-    <span class="label">Settings</span>
+    <ion-icon name="settings-outline"></ion-icon>
+    <span class="label">{{ 'launcher.tabbar-settings' | translate }}</span>
   </button>
 </nav>

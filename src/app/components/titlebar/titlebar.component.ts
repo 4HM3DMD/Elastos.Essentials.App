@@ -61,8 +61,9 @@ export class TitleBarComponent {
             this.resetColors(false);
         });
 
-        // Set home navigation for all apps
-        this.setIcon(TitleBarIconSlot.OUTER_LEFT, { key: null, iconPath: BuiltInIcon.ELASTOS });
+        // 2026 redesign: the bottom tab bar owns home navigation, so the shared titlebar
+        // no longer shows a stray outer-left home/Elastos icon on sub-pages (SYS-011).
+        this.setIcon(TitleBarIconSlot.OUTER_LEFT, null);
 
         // Set the default navigation mode (used by most apps)
         this.setNavigationMode(TitleBarNavigationMode.BACK);
