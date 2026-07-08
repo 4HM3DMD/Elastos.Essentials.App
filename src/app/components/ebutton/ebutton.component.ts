@@ -25,6 +25,9 @@ export class EButtonComponent implements OnInit {
   @Input()
   public small = false; // Less padding, smaller text
 
+  @Input()
+  public arrow = false; // Trailing circular arrow disc, for primary Continue/Create/Share CTAs (2026 design)
+
   @Input("roundedicon")
   public roundedIcon = false; // Icon rendered as a circle if true
 

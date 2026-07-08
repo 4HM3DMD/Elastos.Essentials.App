@@ -7,7 +7,8 @@
       [(ngModel)]="name" name="name" ngDefaultControl></ion-input>
 
     <div class="footer">
-      <ebutton [disabled]="creatingDid" (clicked)="next()" [title]="'common.continue' | translate"></ebutton>
+      <ebutton [arrow]="true" [disabled]="creatingDid || !name?.trim()" (clicked)="next()"
+        [title]="'common.continue' | translate"></ebutton>
     </div>
   </div>
 </ion-content>

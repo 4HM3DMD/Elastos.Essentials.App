@@ -12,9 +12,13 @@
     }
 
     .root {
-        background: var(--essentials-button-background-color);
+        position: relative;
+        // Glossy orange stadium pill: a soft top sheen over the accent base (2026 primary CTA).
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 55%),
+            var(--essentials-button-background-color);
         color: var(--essentials-button-text-color);
-        border-radius: 14px;
+        border-radius: 999px;
         display: flex;
         align-items: center;
         place-content: center;
@@ -28,12 +32,38 @@
         }
 
         &.danger {
-            background: var(--essentials-danger);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 55%),
+                var(--essentials-danger);
             color: white;
         }
 
+        // Disabled is a flat dark-gray surface with a faint label, never a dimmed orange (doc-145).
         &.disabled {
-            opacity: 50%;
+            background: #2A2A2C;
+            color: rgba(255, 255, 255, 0.32);
+            opacity: 1;
+        }
+
+        // Trailing circular arrow disc pinned to the right edge; label stays centered.
+        .arrow-disc {
+            position: absolute;
+            top: 50%;
+            right: 7px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--essentials-button-background-color);
+
+            svg {
+                width: 21px;
+                height: 21px;
+            }
         }
 
         .inner-content {
