@@ -1,5 +1,9 @@
 @import "src/app/identity/root.scss";
 
+// MISC parity: restyled to match the wallet warning reference
+// (src/app/wallet/components/warning) — Manrope font, dark
+// var(--essentials-box-color) surface. Delete uses the danger border,
+// publish keeps the (non-destructive) warning border via theme vars.
 .container {
   background: #ffffff;
   border-radius: 12px;
@@ -16,6 +20,7 @@
       font-size: 24px;
       font-weight: 700;
       color: #161740;
+      font-family: "Manrope", -apple-system, sans-serif;
     }
   }
 
@@ -32,6 +37,7 @@
       font-weight: 500;
       text-align: center;
       color: #161740;
+      font-family: "Manrope", -apple-system, sans-serif;
     }
   }
 
@@ -54,13 +60,14 @@
         font-size: 16px;
         font-weight: 500;
         color: #161740;
+        font-family: "Manrope", -apple-system, sans-serif;
       }
     }
   }
 }
 
 .darkContainer {
-  background: #47495a;
+  background: var(--essentials-box-color);
 
   .header {
     h1 {
@@ -69,7 +76,7 @@
   }
 
   .message {
-    background: #393A48;
+    background: rgba(255, 255, 255, 0.04);
 
     p {
       color: #fdfeff;
@@ -78,7 +85,7 @@
 
   .btn-row {
     .btn {
-      background: #393A48;
+      background: #212021;
 
       ion-label {
         color: #fdfeff;
@@ -88,10 +95,10 @@
 }
 
 .deleteContainer {
-  border: 1.2px solid #f55555;
+  border: 1px solid var(--essentials-danger);
 }
 
 .publishContainer {
-  border: 1.2px solid #fdd034;
+  border: 1px solid var(--essentials-warning);
 }
 

@@ -559,7 +559,8 @@ export class TRC20SubWallet extends SubWallet<TronTRC20Transaction, any> {
   }
 
   public async publishTransaction(transaction: string): Promise<string> {
-    await TransactionService.instance.displayGenericPublicationLoader();
+    // SCR-011/012/034: thread the send-context into the generic publication sheet.
+    await TransactionService.instance.displayGenericPublicationLoader(this.buildGenericPublicationProps());
     return await this.sendRawTransaction(transaction);
   }
 
@@ -584,7 +585,8 @@ export class TRC20SubWallet extends SubWallet<TronTRC20Transaction, any> {
           extInfo.tvm.txInfo.receipt.result
         );
       } else {
-        TransactionService.instance.setOnGoingPublishedTransactionState(OutgoingTransactionState.PUBLISHED);
+        // SCR-013: forward the published hash so the sheet can render a copyable TXID row.
+        TransactionService.instance.setOnGoingPublishedTransactionState(OutgoingTransactionState.PUBLISHED, null, txid);
       }
     } else TransactionService.instance.setOnGoingPublishedTransactionState(OutgoingTransactionState.ERRORED, message);
   }

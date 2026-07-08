@@ -69,6 +69,8 @@ export class StdTransactionComponent implements OnInit {
         this.zone.run(() => {
           this.publishing = false;
           this.publicationSuccessful = true;
+          // SCR-013: surface the published transaction hash for the copyable TXID row.
+          if (txState.txId) this.txId = txState.txId;
         });
         WalletService.instance.events.publish('wallet:transactionpublished');
       }

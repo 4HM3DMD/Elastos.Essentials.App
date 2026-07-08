@@ -368,8 +368,4 @@ export class TitleBarComponent {
         return await this.menu.present();
     }
 
-    needToShowRedDot() {
-        return (this.icons[1].iconPath === BuiltInIcon.NOTIFICATIONS)
-            && (this.notifications.length > 0);
-    }
 }

@@ -256,9 +256,9 @@ export class ERC20SubWallet extends SubWallet<EthTransaction, any> {
   }
 
   public getSecondaryIcon(): string {
-    // When the token has a dedicated icon, show the network logo as a small
-    // badge so the user still knows which chain the token belongs to.
-    return this.coin.iconPath ? this.networkWallet.network.logo : null;
+    // SCR-082: always show the network logo as the small chain badge on ERC20 tokens (dropped the
+    // coin.iconPath guard) so the user always knows which chain the token belongs to.
+    return this.networkWallet.network.logo;
   }
 
   /**

@@ -523,7 +523,8 @@ export class BTCSubWallet extends MainCoinSubWallet<BTCTransaction, any> {
   }
 
   public async publishTransaction(transaction: string): Promise<string> {
-    await TransactionService.instance.displayGenericPublicationLoader();
+    // SCR-011/012/034: thread the send-context into the generic publication sheet.
+    await TransactionService.instance.displayGenericPublicationLoader(this.buildGenericPublicationProps());
     return await this.sendRawTransaction(transaction);
   }
 

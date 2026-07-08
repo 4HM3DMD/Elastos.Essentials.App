@@ -341,7 +341,8 @@
         </div>
 
         <div class="footer-container ion-no-border" [class.dark-footer]="theme.darkMode">
-            <p *ngIf="amount && !payValuesReady">{{ 'wallet.insufficient-balance' | translate }}</p>
+            <!-- LOGIC:wrong-label — show the actual validation reason, not always 'Insufficient balance'. -->
+            <p *ngIf="amount && !payValuesReady">{{ payValidationMessageKey | translate }}</p>
             <ion-row class="btn-row">
                 <ion-col size="6">
                     <ebutton class="btn cancel" mode="cancel" (clicked)="cancelPayment()"

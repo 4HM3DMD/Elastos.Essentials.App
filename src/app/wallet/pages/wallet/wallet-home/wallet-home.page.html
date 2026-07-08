@@ -47,9 +47,9 @@
         <!-- Actions -->
         <ui-action-grid *ngIf="networkWallet && !noAddressForLedgerWallet" [columns]="4" class="actions">
             <ui-action-tile label="Send" icon="assets/wallet/action/send.png" (pressed)="onSend()"></ui-action-tile>
-            <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png" (pressed)="onMainAction()"></ui-action-tile>
-            <ui-action-tile label="Swap" icon="assets/wallet/action/swap.png" (pressed)="onMainAction()"></ui-action-tile>
-            <ui-action-tile label="Stake" icon="assets/wallet/action/stake.png" (pressed)="onMainAction()"></ui-action-tile>
+            <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png" (pressed)="onReceive()"></ui-action-tile>
+            <ui-action-tile *ngIf="canSwap()" label="Swap" icon="assets/wallet/action/swap.png" (pressed)="onSwap()"></ui-action-tile>
+            <ui-action-tile *ngIf="canStake()" label="Stake" icon="assets/wallet/action/stake.png" (pressed)="onStake()"></ui-action-tile>
         </ui-action-grid>
 
         <!-- Ledger prompt -->

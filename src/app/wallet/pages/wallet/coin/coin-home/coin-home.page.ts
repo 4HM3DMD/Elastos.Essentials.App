@@ -72,6 +72,19 @@ import { UiService } from '../../../../services/ui.service';
 import { WalletService } from '../../../../services/wallet.service';
 import { CoinTxInfoParams } from '../coin-tx-info/coin-tx-info.page';
 
+// LOGIC:data-semantics — exact transaction-name translation keys that denote a staking/resource
+// operation across ELA mainchain (stake/unstake/vote/claim-reward) and Tron (freeze/unfreeze/
+// withdraw-expire-unfreeze). Keys are locale-invariant, so matching them is language-agnostic.
+const STAKING_TX_NAME_KEYS = new Set<string>([
+  'wallet.coin-op-stake',
+  'wallet.coin-op-unstake',
+  'wallet.coin-op-vote',
+  'wallet.coin-op-dpos2-claim-reward',
+  'wallet.coin-op-freeze',
+  'wallet.coin-op-unfreeze',
+  'wallet.coin-op-withdraw'
+]);
+
 @Component({
   selector: 'app-coin-home',
   templateUrl: './coin-home.page.html',
@@ -696,12 +709,17 @@ export class CoinHomePage implements OnInit {
     }
   }
 
-  /** Heuristic staking match until a dedicated staking flag is threaded through — SYS-008. */
+  /**
+   * Staking match — LOGIC:data-semantics.
+   * item.name is a translation KEY (e.g. 'wallet.coin-op-stake'), not a localized string
+   * (see getTransactionTitle, which feeds name through translate.instant). Matching the exact
+   * set of staking-related keys is therefore language-agnostic — it does not break on localized
+   * builds the way a substring match on the displayed text would.
+   * TODO(Phase 11): thread a dedicated staking flag/raw-type through TransactionInfo so this no
+   * longer depends on the display-name key at all.
+   */
   private isStakingTransaction(item: TransactionInfo): boolean {
-    let name = (item.name || '').toLowerCase();
-    // Name-based heuristic; localized names can still slip through (refine in Phase 11).
-    return name.includes('stake') || name.includes('vote') || name.includes('bpos')
-      || name.includes('freeze') || name.includes('unfreeze');
+    return STAKING_TX_NAME_KEYS.has(item.name);
   }
 
   /** Fired when a filter chip is tapped — rebuilds the grouped list — SYS-008. */
@@ -1019,9 +1037,25 @@ export class CoinHomePage implements OnInit {
     let networkKey = this.networkWallet.network.key;
     let tokenId = String(this.subWallet.id).toLowerCase();
     this.priceSeriesVm = this.priceHistoryService.getSeries(networkKey, tokenId, this.chartRange);
-    let pct = this.priceHistoryService.getPercentChange24h(networkKey, tokenId);
+    // LOGIC:data-semantics — the %change must track the selected chart range, not always be 24h.
+    // The series is oldest -> newest for the active range, so the range change is (last - first)/first.
+    let pct = this.getPercentChangeForRange();
     this.coinPercentChangeVm = pct === null
       ? null
       : { text: `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`, tone: pct >= 0 ? 'up' : 'down' };
+  }
+
+  /**
+   * Percent change over the currently selected chart range, derived from the same series that
+   * drives the chart so the two never disagree — LOGIC:data-semantics. Returns null when there is
+   * not enough history (matching the chart, which also hides in that case).
+   */
+  private getPercentChangeForRange(): number | null {
+    let series = this.priceSeriesVm;
+    if (!series || series.length < 2) return null;
+    let first = series[0];
+    let last = series[series.length - 1];
+    if (!(first > 0)) return null;
+    return ((last - first) / first) * 100;
   }
 }

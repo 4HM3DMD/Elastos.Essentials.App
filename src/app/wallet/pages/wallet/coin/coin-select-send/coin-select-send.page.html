@@ -4,8 +4,10 @@
   <div class="select-token">
     <div class="search">
       <ion-icon name="search-outline"></ion-icon>
+      <!-- LOGIC:wrong-label: the list is built from fungible subwallets only (no NFTs), so the
+           placeholder must not advertise NFTs. -->
       <ion-input [(ngModel)]="searchKey" (ngModelChange)="onSearch()" clearInput
-        [placeholder]="'wallet.search-token-or-nft' | translate" ngDefaultControl></ion-input>
+        [placeholder]="'wallet.search-token' | translate" ngDefaultControl></ion-input>
     </div>
 
     <ui-skeleton *ngIf="!shownRows" [rows]="6" kind="row"></ui-skeleton>

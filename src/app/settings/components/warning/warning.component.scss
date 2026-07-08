@@ -1,3 +1,7 @@
+// MISC parity: restyled to match the wallet warning reference
+// (src/app/wallet/components/warning) — Manrope font, dark
+// var(--essentials-box-color) surface. This is a non-destructive restart
+// prompt, so it keeps the warning border via theme vars.
 .container {
   height: 302px;
   background: #fafaff;
@@ -15,6 +19,7 @@
       font-size: 24px;
       font-weight: 700;
       color: #161740;
+      font-family: "Manrope", -apple-system, sans-serif;
     }
   }
 
@@ -30,6 +35,7 @@
       font-size: 14px;
       text-align: center;
       color: #161740;
+      font-family: "Manrope", -apple-system, sans-serif;
     }
   }
 
@@ -52,7 +58,7 @@
 }
 
 .darkContainer {
-  background: #2b2c49;
+  background: var(--essentials-box-color);
 
   .header {
     h1 {
@@ -61,7 +67,7 @@
   }
 
   .message {
-    background: #2b2c49;
+    background: rgba(255, 255, 255, 0.04);
 
     p {
       color: #fdfeff;
@@ -78,5 +84,5 @@
 }
 
 .deleteContainer {
-  border: 1.2px solid #fdd034;
+  border: 1px solid var(--essentials-warning);
 }

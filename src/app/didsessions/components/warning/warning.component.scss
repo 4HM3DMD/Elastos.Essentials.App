@@ -1,9 +1,12 @@
 @import "src/app/didsessions/root.scss";
 
+// MISC parity: restyled to match the wallet warning reference
+// (src/app/wallet/components/warning) — Manrope font, dark
+// var(--essentials-box-color) surface, var(--essentials-danger) border.
 .container {
   height: 302px;
   border-radius: 12px;
-  border: 1.2px solid #f55555;
+  border: 1px solid var(--essentials-danger);
   background: #ffffff;
 
   .header {
@@ -18,6 +21,7 @@
       font-size: 24px;
       font-weight: 700;
       color: #161740;
+      font-family: "Manrope", -apple-system, sans-serif;
     }
   }
 
@@ -34,6 +38,7 @@
       font-weight: 500;
       text-align: center;
       color: #161740;
+      font-family: "Manrope", -apple-system, sans-serif;
     }
   }
 
@@ -55,13 +60,14 @@
         font-size: 15px;
         font-weight: 500;
         color: #161740;
+        font-family: "Manrope", -apple-system, sans-serif;
       }
     }
   }
 }
 
 .darkContainer {
-  background: #363636;
+  background: var(--essentials-box-color);
 
   .header {
     h1 {
@@ -70,7 +76,7 @@
   }
 
   .message {
-    background: #212021;
+    background: rgba(255, 255, 255, 0.04);
 
     p {
       color: #fdfeff;

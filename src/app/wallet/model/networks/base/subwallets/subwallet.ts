@@ -45,6 +45,10 @@ export abstract class SubWallet<
 
   public backGroundUpdateStoped = false;
 
+  // SCR-011/012/034: the transfer being published, captured so publishTransaction() can build the
+  // send-context (amount/address) shown in the generic publication sheet. Display-only.
+  protected pendingPublicationTransfer: Transfer = null;
+
   constructor(public networkWallet: NetworkWallet<any, WalletNetworkOptionsType>, id: CoinID, public type: CoinType) {
     this.masterWallet = networkWallet.masterWallet;
     this.id = id;
@@ -475,8 +479,35 @@ export abstract class SubWallet<
    * dialog.
    */
   protected markGenericOutgoingTransactionEnd(txid: string, message = '') {
-    if (txid) TransactionService.instance.setOnGoingPublishedTransactionState(OutgoingTransactionState.PUBLISHED);
+    // SCR-013: forward the published hash so the sheet can render a copyable TXID row.
+    if (txid) TransactionService.instance.setOnGoingPublishedTransactionState(OutgoingTransactionState.PUBLISHED, null, txid);
     else TransactionService.instance.setOnGoingPublishedTransactionState(OutgoingTransactionState.ERRORED, message);
+  }
+
+  /**
+   * SCR-011/012/034: builds the display context passed to displayGenericPublicationLoader() as
+   * componentProps (symbol/icon/networkName + the transfer's amount/address). This is purely for
+   * the publication sheet UI and never influences signing or the amounts actually sent.
+   */
+  protected buildGenericPublicationProps(): Record<string, any> {
+    const props: Record<string, any> = {
+      symbol: this.getDisplayTokenName(),
+      icon: this.getMainIcon(),
+      networkName: this.networkWallet?.network?.getEffectiveName() ?? null
+    };
+    const transfer = this.pendingPublicationTransfer;
+    // Only render the send-amount hero for a genuine coin send (coin-transfer sets
+    // standardSendDisplay). Votes/staking/proposals also publish via this loader but are
+    // NOT sends, so their raw amount/toAddress must not be shown as "sent X to Y".
+    if (transfer && (transfer as { standardSendDisplay?: boolean }).standardSendDisplay) {
+      if (transfer.amount !== undefined && transfer.amount !== null) {
+        props.amount = new BigNumber(transfer.amount).toString();
+      }
+      if (transfer.toAddress) {
+        props.address = transfer.toAddress;
+      }
+    }
+    return props;
   }
 
   /**
@@ -544,6 +575,10 @@ export abstract class SubWallet<
       Logger.log('wallet', 'Publishing transaction.', signedTransaction);
 
       await this.markGenericOutgoingTransactionStart();
+
+      // SCR-011/012/034: expose the transfer to publishTransaction() so the generic sheet can show
+      // the amount/address. Only meaningful for subwallets using the generic loader; inert otherwise.
+      this.pendingPublicationTransfer = transfer;
 
       let transactionToPublish = await this.networkWallet.safe.convertSignedTransactionToPublishableTransaction(
         this,

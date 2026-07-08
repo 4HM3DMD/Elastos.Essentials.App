@@ -174,6 +174,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   public amountCanBeEditedInPayIntent = true;
   // Precomputed 'ready to pay' flag for the PAY footer (the template must not call the async validator directly).
   public payValuesReady = true;
+  // LOGIC:wrong-label — the specific reason the last validation failed, so the PAY footer can show
+  // the real cause (invalid amount / address / withdraw minimum) instead of always 'Insufficient balance'.
+  public payValidationMessageKey = 'wallet.insufficient-balance';
   private payReadyTimer: ReturnType<typeof setTimeout> = null;
 
   // Submit transaction
@@ -725,7 +728,16 @@ export class CoinTransferPage implements OnInit, OnDestroy {
         subWalletId: this.subWalletId,
         //rawTransaction: rawTx,
         action: this.action,
-        intentId: this.intentId
+        intentId: this.intentId,
+        // SCR-011/012: display-only context for the generic publication sheet (amount hero +
+        // address row). Not read by signing; the transaction itself is already built in rawTx.
+        // standardSendDisplay gates the send-hero so votes/staking/proposals (which also
+        // publish via the generic loader) are NOT rendered as a "send amount to address".
+        // Normalize the Send-Max sentinel (-1) to the real balance so the hero never shows "-1".
+        standardSendDisplay: true,
+        amount: this.amount == -1 ? this.networkWallet.subWallets[this.subWalletId].getDisplayBalance() : this.amount,
+        toAddress: this.toAddress,
+        memo: this.memo
       });
 
       GlobalFirebaseService.instance.logEvent('wallet_coin_transfer_send');
@@ -924,6 +936,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   }
 
   private conditionalShowToast(message: string, showToast: boolean, duration = 4000) {
+    // LOGIC:wrong-label — record the real failure reason so the PAY footer (which suppresses the
+    // toast) can render the accurate message instead of a generic 'Insufficient balance'.
+    this.payValidationMessageKey = message;
     if (showToast) this.native.toast_trans(message, duration);
   }
 
@@ -931,6 +946,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
    * Make sure all parameters are right before sending a transaction or enabling the send button.
    */
   async checkValuesReady(showToast = true): Promise<boolean> {
+    // LOGIC:wrong-label — default to a neutral reason; specific failures overwrite it via
+    // conditionalShowToast(). Paths that return false without a toast fall back to this.
+    this.payValidationMessageKey = 'wallet.cannot-complete-payment';
     // Make sure we have a destination address
     if (!this.toAddress) {
       this.conditionalShowToast('wallet.not-a-valid-address', showToast);
@@ -959,9 +977,28 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       fee = new BigNumber(this.feeOfTRX);
     } else if (this.isAccountAbstractionWallet()) {
       fee = new BigNumber(0);
+    } else if (this.gasLimit) {
+      // LOGIC:fee-correctness — derive the native fee from the estimated gasLimit and the current
+      // gas price (the same inputs createPaymentTransaction uses) instead of a hardcoded 0.0001,
+      // which was only ever correct for Elastos ESC. Skip the check when no real estimate exists.
+      const mainTokenSubWallet = this.networkWallet.getMainTokenSubWallet() as any as MainCoinEVMSubWallet<any>;
+      let gasPriceWei = this.gasPrice;
+      try {
+        if (!gasPriceWei && mainTokenSubWallet) {
+          gasPriceWei = await mainTokenSubWallet.getGasPrice();
+        }
+      } catch (e) {
+        Logger.warn('wallet', 'checkValuesReady: unable to fetch gas price for fee pre-check:', e);
+      }
+      if (gasPriceWei && mainTokenSubWallet) {
+        fee = new BigNumber(this.gasLimit).multipliedBy(gasPriceWei).dividedBy(mainTokenSubWallet.tokenAmountMulipleTimes);
+      } else {
+        fee = null;
+      }
     } else {
-      // TODO: 0.0001 works only for Elastos ESC! Rework this.
-      fee = new BigNumber(0.0001);
+      // No fee estimate available — skip the balance-covers-fee check rather than asserting a
+      // bogus constant (which would either falsely pass or falsely block the transaction).
+      fee = null;
     }
 
     // Check amount only when used (eg: no for NFT transfers)
@@ -1168,6 +1205,18 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       feeString = `${nativeFee} (~ ${currencyFee})`;
     }
 
+    // SCR-016: fiat equivalent shown under the confirm amount hero.
+    let amountFiat = null;
+    let confirmedAmount =
+      this.amount == -1 ? this.networkWallet.subWallets[this.subWalletId].getDisplayBalance() : new BigNumber(this.amount);
+    let coinFiatPrice = this.getCoinFiatPrice();
+    if (coinFiatPrice && coinFiatPrice.gt(0) && confirmedAmount && confirmedAmount.gte(0)) {
+      amountFiat = formatFiatAmount(
+        confirmedAmount.multipliedBy(coinFiatPrice).toNumber(),
+        CurrencyService.instance.selectedCurrency.symbol
+      );
+    }
+
     const txInfo = {
       type: this.transferType,
       transferFrom: this.getFromTitle(),
@@ -1180,7 +1229,12 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       tokensymbol: this.tokensymbol,
       fee: feeString,
       gasLimit: this.gasLimit,
-      coinType: this.fromSubWallet.type
+      coinType: this.fromSubWallet.type,
+      // SCR-017: network + resolved contact name rows ('- -' fallback handled in the sheet).
+      networkName: WalletNetworkService.instance.activeNetwork.value.getEffectiveName(),
+      addressName: this.addressName,
+      // SCR-016: fiat value beneath the amount hero.
+      amountFiat: amountFiat
     };
 
     this.native.popup = await this.native.popoverCtrl.create({
@@ -1309,7 +1363,12 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       component: ContactsComponent,
       componentProps: {
         subWallet: targetSubwallet
-      }
+      },
+      // SCR-005: present the contacts picker as a bottom sheet on the shared sheet skin.
+      breakpoints: [0, 0.55],
+      initialBreakpoint: 0.55,
+      handle: true,
+      cssClass: 'contacts-sheet-modal'
     });
     this.modal.onWillDismiss().then(params => {
       Logger.log('wallet', 'Contact selected', params);

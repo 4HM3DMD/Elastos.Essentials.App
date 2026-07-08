@@ -19,8 +19,8 @@ export class ElastosEscERC20SubWallet extends ERC20SubWallet {
   }
 
   public getSecondaryIcon(): string {
-    return null;
-    //return "assets/wallet/coins/eth-purple.svg";
+    // SCR-082: show the network logo as the chain badge on ERC20 tokens.
+    return this.networkWallet.network.logo;
   }
 
   public getDisplayableERC20TokenInfo(): string {

@@ -1,5 +1,7 @@
 export const en = {
   wallet: {
+    'cannot-complete-payment': 'Cannot complete payment',
+    'search-token': 'Search token',
     'saved-addresses': 'Saved Addresses',
     'recents': 'Recents',
     'sent': 'Sent',

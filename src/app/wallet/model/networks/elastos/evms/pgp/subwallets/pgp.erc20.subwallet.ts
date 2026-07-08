@@ -39,7 +39,8 @@ export class PGPERC20SubWallet extends ERC20SubWallet {
   }
 
   public getSecondaryIcon(): string {
-    return null;
+    // SCR-082: show the network logo as the chain badge on ERC20 tokens.
+    return this.networkWallet.network.logo;
   }
 
   public getDisplayableERC20TokenInfo(): string {

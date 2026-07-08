@@ -43,6 +43,11 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
   ];
 
   private syncActive(url: string): void {
+    // LOGIC:wrong-active-tab — the /wallet/settings/* screens (currency select,
+    // manage networks, ...) are shared settings pages reachable from BOTH the
+    // Settings tab and the Wallet tab. Do not flip the highlight to Wallet: keep
+    // whichever tab the user was operating in when the sub-page was opened.
+    if (url.startsWith('/wallet/settings')) return;
     if (url.startsWith('/wallet')) this.active = 'wallet';
     else if (url.startsWith('/settings')) this.active = 'menu';
     else if (UiTabBarComponent.ELASTOS_CONTEXT_PREFIXES.some(p => url.startsWith(p))) this.active = 'elastos';
@@ -51,8 +56,12 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
   }
 
   public async onHome(): Promise<void> {
+    // LOGIC:inconsistent-navigation-primitive — route Home through the same
+    // navigateRoot primitive as every other tab (Wallet/Elastos/Browser/Menu)
+    // so all five tabs reset their context and animate identically, instead of
+    // Home alone using navigateHome()'s back-animated navCtrl.navigateRoot.
     this.globalNav.clearNavigationHistory();
-    await this.globalNav.navigateHome();
+    await this.globalNav.navigateRoot(App.LAUNCHER, '/launcher/home');
   }
 
   public async onWallet(): Promise<void> {

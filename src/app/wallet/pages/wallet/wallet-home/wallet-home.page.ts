@@ -36,7 +36,7 @@ import { GlobalStartupService } from 'src/app/services/global.startup.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { CoinType } from 'src/app/wallet/model/coin';
 import { LedgerMasterWallet } from 'src/app/wallet/model/masterwallets/ledger.masterwallet';
-import { WalletType } from 'src/app/wallet/model/masterwallets/wallet.types';
+import { WalletCreator, WalletType } from 'src/app/wallet/model/masterwallets/wallet.types';
 import { AnyNetworkWallet, WalletAddressInfo } from 'src/app/wallet/model/networks/base/networkwallets/networkwallet';
 import { MainChainSubWallet } from 'src/app/wallet/model/networks/elastos/mainchain/subwallets/mainchain.subwallet';
 import { NFT } from 'src/app/wallet/model/networks/evms/nfts/nft';
@@ -62,6 +62,15 @@ import { WalletEditionService } from '../../../services/walletedition.service';
 import { LedgerConnectType } from '../ledger/ledger-connect/ledger-connect.page';
 import { Logger } from 'src/app/logger';
 import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
+// LOGIC:wallet-concept + action-tile wiring: mirror coin-home's stake/swap gating
+// and the WALLET_APP receive backup prompt from this Value screen.
+import { DposStatus, VoteService } from 'src/app/voting/services/vote.service';
+import { StakingInitService } from 'src/app/voting/staking/services/init.service';
+import { SwapService } from 'src/app/wallet/services/evm/swap.service';
+import { WarningComponent } from 'src/app/wallet/components/warning/warning.component';
+import { GlobalDIDSessionsService } from 'src/app/services/global.didsessions.service';
+import { GlobalNavService } from 'src/app/services/global.nav.service';
+import { CoinTransferService } from '../../../services/cointransfer.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { SubValueTone } from 'src/app/components/ui/ui-token-row/ui-token-row.component';
@@ -184,6 +193,9 @@ export class WalletHomePage implements OnInit, OnDestroy {
         private events: GlobalEvents,
         private zone: NgZone,
         private prefs: GlobalPreferencesService,
+        private coinTransferService: CoinTransferService,
+        private voteService: VoteService,
+        private stakingInitService: StakingInitService,
         private cdr: ChangeDetectorRef
     ) {
         GlobalFirebaseService.instance.logEvent("wallet_home_enter");
@@ -242,6 +254,10 @@ export class WalletHomePage implements OnInit, OnDestroy {
                 // Nothing to do, unsupported wallet for the active network
             }
             this.rebuildBalanceVm();
+            // LOGIC:wallet-concept: tabs are derived from the active network's
+            // capabilities (NFTs on EVM, Staked when the chain can stake / has DeFi),
+            // rebuilt on every network change rather than once in ionViewWillEnter.
+            this.rebuildWalletTabs();
             this.cdr.markForCheck();
         });
 
@@ -296,15 +312,9 @@ export class WalletHomePage implements OnInit, OnDestroy {
         // here — it is a persisted, app-wide setting and overriding it clobbered
         // the user's chosen crypto/fiat display. A fiat-first hero default must be
         // implemented locally without mutating global state. TODO(SCR-136): local default.
-        if (!this.walletTabs.length) {
-            this.walletTabs = [
-                { key: 'tokens', label: this.translate.instant('wallet.tokens') },
-                // SCR-137: dedicated short chip label ("NFTs"), not wallet.nfts ("Collectibles" list header).
-                { key: 'nfts', label: this.translate.instant('wallet.nfts-chip') },
-                { key: 'staked', label: this.translate.instant('staking.staked') }
-            ];
-            this.cdr.markForCheck();
-        }
+        // LOGIC:wallet-concept: walletTabs are now derived from the active network's
+        // capabilities in rebuildWalletTabs() (driven by the activeNetworkWallet
+        // subscription), not built once here regardless of network.
         this.titleBar.setTitle(this.translate.instant("wallet.value-title"));
         // Value is a tab root (reached via navigateRoot), so it must not show a
         // back control — there is nothing to go "back" to.
@@ -458,7 +468,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
         this.cdr.markForCheck();
     }
 
-    /** The main token subwallet (Send/Receive/Swap/Stake land on its coin-home in v1). */
+    /** The main token subwallet — the target of the Receive/Swap/Stake actions. */
     public getMainSubWallet(): AnySubWallet {
         return this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
     }
@@ -474,6 +484,128 @@ export class WalletHomePage implements OnInit, OnDestroy {
         if (main) this.native.go('/wallet/coin-select-send', { masterWalletId: main.networkWallet.id });
     }
 
+    /**
+     * Receive: point CoinTransferService at the main subwallet (coin-receive reads
+     * masterWalletId/subWalletId from it) and navigate. Mirrors coin-home.receiveFunds():
+     * for WALLET_APP-created wallets that were never backed up, prompt first.
+     */
+    public onReceive() {
+        let main = this.getMainSubWallet();
+        if (!main) return;
+        this.coinTransferService.masterWalletId = main.networkWallet.id;
+        this.coinTransferService.subWalletId = main.id;
+
+        if (this.masterWallet && this.masterWallet.creator === WalletCreator.WALLET_APP) {
+            void this.checkBackupThenReceive();
+        } else {
+            this.native.go('/wallet/coin-receive');
+        }
+    }
+
+    private async checkBackupThenReceive() {
+        const needsBackup = !(await GlobalDIDSessionsService.instance.activeIdentityWasBackedUp());
+        if (needsBackup) {
+            await this.showReceiveBackupPrompt();
+        } else {
+            this.native.go('/wallet/coin-receive');
+        }
+    }
+
+    /** Backup warning popover shown before Receive on un-backed-up app wallets (mirrors coin-home.showBackupPrompt). */
+    private async showReceiveBackupPrompt() {
+        this.popover = await this.popoverCtrl.create({
+            mode: 'ios',
+            cssClass: 'wallet-warning-component',
+            component: WarningComponent,
+            componentProps: {
+                title: this.translate.instant('launcher.backup-title'),
+                message: this.translate.instant('launcher.backup-message')
+            },
+            translucent: false
+        });
+        void this.popover.onWillDismiss().then(params => {
+            this.popover = null;
+            if (params && params.data && params.data.confirm) {
+                void GlobalNavService.instance.navigateTo('identitybackup', '/identity/backupdid');
+            } else {
+                this.native.go('/wallet/coin-receive');
+            }
+        });
+        return await this.popover.present();
+    }
+
+    /** Swap: navigate to the swap providers screen for the main subwallet. */
+    public onSwap() {
+        let main = this.getMainSubWallet();
+        if (!main) return;
+        this.coinTransferService.masterWalletId = main.networkWallet.id;
+        this.coinTransferService.subWalletId = main.id;
+        this.native.go('/wallet/coin-swap', { masterWalletId: main.networkWallet.id, subWalletId: main.id });
+    }
+
+    /** Stake: navigate to the earn/stake screen for the main subwallet. */
+    public onStake() {
+        let main = this.getMainSubWallet();
+        if (!main) return;
+        this.coinTransferService.masterWalletId = main.networkWallet.id;
+        this.coinTransferService.subWalletId = main.id;
+        // Mirror coin-home.onStakeAction(): the Stake tile only shows for ELA-mainchain
+        // (DPoS staking app) or TRON (resource freezing). /wallet/coin-earn is the EVM
+        // Earn-provider list, a DIFFERENT feature, and would never reach staking.
+        if (this.canStakeTRX()) {
+            this.native.go('wallet-tron-resource');
+        } else if (this.canStakeELA()) {
+            void this.stakingInitService.start();
+        }
+    }
+
+    /** Whether the Swap tile should show: the active network exposes swap providers for the main token. */
+    public canSwap(): boolean {
+        let main = this.getMainSubWallet();
+        if (!main) return false;
+        return SwapService.instance.getAvailableSwapProviders(main).length > 0;
+    }
+
+    /** Whether ELA staking is available (mirrors coin-home.canStakeELA). */
+    public canStakeELA(): boolean {
+        if (!this.networkWallet || this.networkWallet.network.key !== 'elastos') return false;
+        let status = this.voteService.dPoSStatus.value;
+        return status === DposStatus.DPoSV2 || status === DposStatus.DPoSV1V2;
+    }
+
+    /** Whether TRON resource freezing (staking) is available (mirrors coin-home.canStakeTRX). */
+    public canStakeTRX(): boolean {
+        return this.getMainSubWallet() instanceof TronSubWallet;
+    }
+
+    /** Whether the Stake tile should show at all. */
+    public canStake(): boolean {
+        return this.canStakeELA() || this.canStakeTRX();
+    }
+
+    /**
+     * LOGIC:wallet-concept: derive the Tokens / NFTs / Staked chips from the active
+     * network's capabilities. NFTs are an EVM concept; the Staked chip only appears
+     * when the chain can stake (ELA/TRX) or already exposes DeFi positions.
+     */
+    private rebuildWalletTabs() {
+        const tabs: UiChip[] = [
+            { key: 'tokens', label: this.translate.instant('wallet.tokens') }
+        ];
+        if (this.networkWallet && this.isEVMNetworkWallet) {
+            // SCR-137: dedicated short chip label ("NFTs"), not wallet.nfts ("Collectibles" list header).
+            tabs.push({ key: 'nfts', label: this.translate.instant('wallet.nfts-chip') });
+        }
+        if (this.networkWallet && (this.canStake() || this.hasStakingAssets())) {
+            tabs.push({ key: 'staked', label: this.translate.instant('staking.staked') });
+        }
+        this.walletTabs = tabs;
+        // If the previously-active tab no longer exists for this network, fall back to Tokens.
+        if (!tabs.some(t => t.key === this.activeTab)) {
+            this.activeTab = 'tokens';
+        }
+    }
+
     public trackRow(_index: number, row: TokenRowViewModel): string {
         return row.subWallet.id;
     }
@@ -486,6 +618,9 @@ export class WalletHomePage implements OnInit, OnDestroy {
         this.zone.run(() => {
             this.stakingAssets = this.networkWallet.getStakingAssets();
             this.rebuildStakingRows();
+            // LOGIC:wallet-concept: DeFi assets can arrive after the initial render;
+            // re-derive tabs so the Staked chip appears once positions are known.
+            this.rebuildWalletTabs();
         })
     }
 

@@ -14,6 +14,9 @@ export enum OutgoingTransactionState {
 export type OutgoingTransactionStatus = {
   state: OutgoingTransactionState;
   message?: string;
+  // SCR-013: published transaction hash, surfaced once the state becomes PUBLISHED so the
+  // generic publication sheet can render a copyable TXID row.
+  txId?: string;
 }
 
 const idleStatus = (): OutgoingTransactionStatus => {
@@ -54,13 +57,20 @@ export class TransactionService {
    *
    * Implementations of publishTransaction() in subwallets decide if they want to use this
    * generic implementation or if they want to use their own sheet, like EVM wallets.
+   *
+   * SCR-011/012/034: the send-context (amount/symbol/icon/fiat/networkName/address/...) built by
+   * the subwallet caller is threaded through as componentProps so the redesigned sheet can render
+   * its amount hero, interpolated title and summary rows.
    */
-  public async displayGenericPublicationLoader() {
+  public async displayGenericPublicationLoader(componentProps: Record<string, any> = {}) {
     const modal = await this.modalCtrl.create({
       // eslint-disable-next-line import/no-cycle
       component: (await import('../components/std-transaction/std-transaction.component')).StdTransactionComponent,
-      componentProps: {},
-      backdropDismiss: false, // Not closeable
+      componentProps,
+      // Not backdrop-dismissible: dismissing mid-publish let a later transaction's sheet
+      // read THIS one's PUBLISHED state/txId from the shared subject (false success, wrong
+      // hash) and hid ERRORED states. The in-sheet Close pill (SCR-014) is the explicit dismiss.
+      backdropDismiss: false,
       cssClass: "wallet-component-base"
     });
 
@@ -71,11 +81,12 @@ export class TransactionService {
     void modal.present();
   }
 
-  public setOnGoingPublishedTransactionState(state: OutgoingTransactionState, message: string = null) {
+  public setOnGoingPublishedTransactionState(state: OutgoingTransactionState, message: string = null, txId: string = null) {
     Logger.log("wallet", "New outgoing transaction state:", state);
     this.onGoingPublicationState.next({
       state: state,
-      message: message
+      message: message,
+      txId: txId
     });
   }
 }
