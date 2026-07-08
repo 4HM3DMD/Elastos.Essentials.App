@@ -12,7 +12,7 @@ export const en = {
     'your-private-key': 'Your Private Key',
 
     // Placeholder
-    'enter-name-here': 'Enter Name Here',
+    'enter-name-here': 'Your Name',
 
     // Popups
     'mnemonic-invalid': 'Mnemonic invalid',
@@ -53,8 +53,15 @@ export const en = {
     'create-wallet-message': 'Create a new wallet or import an existing one to get started with crypto',
     'import-wallet': 'Import Wallet',
 
-    // Edit
+    // Edit / Name Your Identity screen (2026 onboarding)
     'your-name': "What's your name?",
+    'name-your-identity': 'Name Your Identity',
+    'name-subtitle': 'One identity for money, apps and credentials, owned by you, on chain.',
+    'your-name-label': 'Your Name',
+    'did-explainer': 'Creates your DID (did:elastos:...), published to the Identity Chain (EID). This is your self-owned Web3 identity.',
+    'name-reassurance': 'Takes about 10 seconds. No seed phrase now, backup comes later.',
+    'already-have-identity': 'I already have one',
+    'change-anytime': 'change anytime',
 
     // Backup
 
@@ -113,9 +120,9 @@ export const en = {
       'publish-intro': 'This is mandatory but takes a few seconds',
       'sign-in-title': 'Signing in...',
       'sign-in-intro': 'Entering Essentials',
-      'hive-title': 'Making storage for your apps',
+      'hive-title': 'Setting up your identity',
       'hive-intro':
-        'A storage space is being created on a random Elastos Hive storage provider. You can move your data somewhere else later.',
+        'A personal storage space is being created for your identity. You can move your data somewhere else later.',
       'wallet-title': 'Creating a default wallet',
       'wallet-intro':
         'A default wallet is created with the same paper key as your DID. You can choose to use it or to delete it.',

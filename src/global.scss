@@ -81,6 +81,24 @@
     --essentials-danger: #FF6B6B;
     --essentials-text-secondary: #F5F5F78C;
     --essentials-text-tertiary: #F5F5F761;
+
+    /* Spacing (Phase 1). --essentials-page-inset is the ~24px horizontal screen
+       gutter consumed by home, wallet and the token picker (SYS-015). The 8-pt
+       rhythm below is the shared spacing scale (SCR-047, SCR-088). */
+    --essentials-page-inset: 24px;
+    --essentials-space-1: 8px;
+    --essentials-space-2: 16px;
+    --essentials-space-3: 24px;
+    --essentials-space-4: 32px;
+
+    /* Type scale (Phase 1, Manrope Medium). Shared font-size steps so screen and
+       row phases reference tokens instead of literals (SYS-030 row label/value ~16px,
+       SYS-012 titlebar, SCR-043/060/067/124 headings). Colors live in the
+       --essentials-text-* tokens above; these are sizes only. */
+    --essentials-font-size-heading: 20px;
+    --essentials-font-size-body: 16px;
+    --essentials-font-size-label: 16px;
+    --essentials-font-size-caption: 13px;
 }
 
 /** Global font family. The 2026 design is set entirely in Manrope Medium with a

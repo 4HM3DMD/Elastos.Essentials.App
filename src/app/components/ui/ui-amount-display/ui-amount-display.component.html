@@ -1,11 +1,11 @@
-<div class="amount" [class.size-1]="size === 1" [class.size-2]="size === 2" [class.size-3]="size === 3">
+<div class="amount" [class.size-1]="size === 1" [class.size-2]="size === 2" [class.size-3]="size === 3" [class.size-4]="size === 4">
   <div class="value-line">
     <!-- Value text is written imperatively (font auto-shrink + middle-ellipsis). -->
     <span #valueEl class="value tabular"></span>
     <span *ngIf="unit && !hidden" class="unit">{{ unit }}</span>
     <button *ngIf="showToggle" type="button" class="toggle" [attr.aria-label]="toggleLabel"
       (click)="onToggleHidden()">
-      <ion-icon [name]="hidden ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+      <ion-icon [name]="hidden ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
     </button>
   </div>
   <div *ngIf="fiat" class="fiat tabular">{{ hidden ? mask : fiat }}</div>

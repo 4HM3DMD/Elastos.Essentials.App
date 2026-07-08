@@ -27,6 +27,13 @@ export class UiTokenRowComponent {
   @Input() public valueTone: SubValueTone = 'muted';
   @Input() public subValueTone: SubValueTone = 'muted';
   @Input() public subValue2Tone: SubValueTone = 'muted';
+  /**
+   * Icon disc background: 'coin' is the navy coin disc (default, for token / network rows);
+   * 'neutral' is a charcoal disc used for transaction-history rows.
+   */
+  @Input() public iconTone: 'coin' | 'neutral' = 'coin';
+  /** Tints an inlined monochrome glyph (up = received green, down = sent red, muted = white). */
+  @Input() public iconGlyphTone: SubValueTone = 'muted';
   @Input() public skeleton = false;
   /** Renders a right chevron (for navigation rows with no value column). */
   @Input() public chevron = false;

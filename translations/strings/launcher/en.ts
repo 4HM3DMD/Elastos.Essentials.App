@@ -11,6 +11,12 @@ export const en = {
         'installed': "installed",
         'signing-out': 'Signing out...',
 
+        /********** Bottom Tab Bar **********/
+        'tabbar-home': 'Home',
+        'tabbar-wallet': 'Wallet',
+        'tabbar-dapps': 'dApps',
+        'tabbar-settings': 'Settings',
+
         /********** Notifications Page **********/
         'notifications': 'Notifications',
         'no-empty': 'All Empty',
@@ -86,6 +92,8 @@ export const en = {
         'home-pillar-apps-sub': 'Browse dApps that work with Essentials',
         'home-tokens': 'Tokens',
         'home-see-all': 'See all',
+        'home-todays-pnl': "Today's PnL",
+        'home-no-tokens': 'No tokens yet',
         'home-wallet-unavailable': 'Your active wallet is not available on this network.',
         'cyber-republic': 'Elastos DAO',
         'elastos-staking': 'Elastos Staking',

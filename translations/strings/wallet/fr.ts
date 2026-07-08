@@ -465,6 +465,7 @@ export const fr = {
     'new-coins': 'Nouveaux jetons',
     'all-coins': 'Tous les jetons',
     'search-coin': 'Rechercher des jetons',
+    'search-token-or-nft': 'Rechercher un jeton ou NFT',
         'search-network': 'Rechercher des réseaux',
         'network-tools-chip': 'Outils',
         'network-no-results': 'Aucun réseau ne correspond à votre recherche.',

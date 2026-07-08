@@ -20,6 +20,10 @@ export class UiKvRowComponent {
   @Input() public tone: KvTone = 'default';
   @Input() public copyLabel = 'Copy';
   @Input() public explorerLabel = 'Open in explorer';
+  /** Middle-truncate the value (for long hashes/addresses) so it stays on one line. */
+  @Input() public ellipsisMiddle = false;
+  /** When false, the row draws no bottom hairline (rows separated by whitespace only). */
+  @Input() public divider = true;
 
   @Output() public copy = new EventEmitter<string>();
   @Output() public openExplorer = new EventEmitter<string>();
@@ -30,5 +34,17 @@ export class UiKvRowComponent {
 
   public onOpenExplorer(): void {
     if (this.explorerUrl) this.openExplorer.emit(this.explorerUrl);
+  }
+
+  /** Leading part of a middle-truncated value (everything but the last 6 chars). */
+  public get valueHead(): string {
+    if (!this.ellipsisMiddle || this.value.length <= 13) return this.value;
+    return this.value.slice(0, this.value.length - 6);
+  }
+
+  /** Trailing part kept intact so the value's end (e.g. a hash suffix) stays visible. */
+  public get valueTail(): string {
+    if (!this.ellipsisMiddle || this.value.length <= 13) return '';
+    return this.value.slice(-6);
   }
 }

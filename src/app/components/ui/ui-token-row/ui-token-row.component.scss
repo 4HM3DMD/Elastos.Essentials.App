@@ -31,6 +31,12 @@
     align-items: center;
     justify-content: center;
 
+    // Charcoal disc for transaction-history rows (single hairline ring, no navy).
+    &.tone-neutral {
+      background: #1E1E1E;
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
     img,
     .inline-icon {
       width: 38px;
@@ -40,6 +46,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    // Monochrome tx glyphs (currentColor SVGs) tint by direction: received green, sent red.
+    .inline-icon.up {
+      color: var(--essentials-success);
+    }
+
+    .inline-icon.down {
+      color: var(--essentials-danger);
     }
 
     .badge {

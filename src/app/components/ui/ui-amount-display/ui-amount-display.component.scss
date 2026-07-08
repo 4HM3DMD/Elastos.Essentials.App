@@ -38,7 +38,8 @@
       align-items: center;
       justify-content: center;
       padding: 0;
-      margin-left: auto;
+      // SCR-056: hug the amount (~10px inline gap) instead of pushing to the screen edge.
+      margin-left: 4px;
       border: none;
       background: transparent;
       color: var(--essentials-text-secondary);

@@ -15,7 +15,7 @@ const MIN_FONT_SIZE_PX = 14;
 const SHRINK_STEP_PX = 2;
 const HIDDEN_MASK = '••••••';
 const ELLIPSIS = '…';
-const BASE_FONT_SIZE_BY_SIZE: { [size: number]: number } = { 1: 18, 2: 28, 3: 36 };
+const BASE_FONT_SIZE_BY_SIZE: { [size: number]: number } = { 1: 18, 2: 28, 3: 36, 4: 46 };
 
 /**
  * A large amount value with an optional unit and fiat sub-line. Steps its font
@@ -33,7 +33,7 @@ export class UiAmountDisplayComponent implements AfterViewInit, OnChanges, OnDes
   @Input() public value = '';
   @Input() public unit: string = null;
   @Input() public fiat: string = null;
-  @Input() public size: 1 | 2 | 3 = 3;
+  @Input() public size: 1 | 2 | 3 | 4 = 3;
   @Input() public hidden = false;
   /** When true, renders an eye button that emits (toggleHidden). */
   @Input() public showToggle = false;

@@ -17,9 +17,10 @@
 <div *ngIf="!skeleton" class="row" [class.ion-activatable]="interactive"
   [class.interactive]="interactive" [attr.role]="interactive ? 'button' : null"
   [attr.aria-label]="interactive && title ? title : null" (click)="interactive && onPressed()">
-  <div class="icon-circle">
+  <div class="icon-circle" [class.tone-neutral]="iconTone === 'neutral'">
     <img *ngIf="icon && !isInlineSvg(icon)" [src]="icon" alt="" />
-    <div *ngIf="icon && isInlineSvg(icon)" class="inline-icon" [inlineSVG]="icon"></div>
+    <div *ngIf="icon && isInlineSvg(icon)" class="inline-icon" [class.up]="iconGlyphTone === 'up'"
+      [class.down]="iconGlyphTone === 'down'" [inlineSVG]="icon"></div>
     <div *ngIf="badge" class="badge">
       <img *ngIf="!isInlineSvg(badge)" [src]="badge" alt="" />
       <div *ngIf="isInlineSvg(badge)" class="inline-icon" [inlineSVG]="badge"></div>

@@ -1,7 +1,8 @@
-<div class="kv-row">
+<div class="kv-row" [class.no-divider]="!divider">
   <div class="label">{{ label }}</div>
   <div class="value-wrap">
-    <span class="value tabular" [class.danger]="tone === 'danger'" [class.success]="tone === 'success'">{{ value }}</span>
+    <span *ngIf="!ellipsisMiddle" class="value tabular" [class.danger]="tone === 'danger'" [class.success]="tone === 'success'">{{ value }}</span>
+    <span *ngIf="ellipsisMiddle" class="value hash tabular" [class.danger]="tone === 'danger'" [class.success]="tone === 'success'"><span class="hash-head">{{ valueHead }}</span><span class="hash-tail">{{ valueTail }}</span></span>
     <button *ngIf="copyValue" type="button" class="action" [attr.aria-label]="copyLabel" (click)="onCopy()">
       <ion-icon name="copy-outline"></ion-icon>
     </button>
