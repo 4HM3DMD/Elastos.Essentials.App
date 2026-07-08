@@ -38,9 +38,11 @@
     }
 
     .label {
-      font-size: 13px;
+      // Figma: labels sit quietly under the glyph (~11px), so the icon leads.
+      font-size: 11px;
       font-weight: 500;
       line-height: 1;
+      letter-spacing: 0.1px;
     }
 
     &.active {
@@ -53,25 +55,25 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 46px;
-        height: 46px;
-        margin-top: -16px;
+        // Figma: a large disc that floats above the bar (bottom third overlaps).
+        width: 56px;
+        height: 56px;
+        margin-top: -24px;
         border-radius: 50%;
         // Orange gradient Hub disc (same accent gradient as the Value pillar).
-        background: linear-gradient(158deg, #FFA971 0%, #F07A38 50%, #E24A00 100%);
-        // A ring in the bar's surface color separates the raised disc from the bar.
-        border: 3px solid var(--essentials-box-color);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        background: linear-gradient(158deg, #FFB27E 0%, #F07A38 52%, #E05A16 100%);
+        // Soft orange glow + drop shadow so it reads as raised (no surface ring).
+        box-shadow: 0 6px 18px rgba(224, 90, 22, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35);
 
         img {
           display: block;
-          width: 26px;
-          height: 26px;
+          width: 30px;
+          height: 30px;
         }
       }
 
       &.active .center-circle {
-        box-shadow: 0 4px 14px rgba(237, 110, 43, 0.5);
+        box-shadow: 0 8px 22px rgba(237, 110, 43, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
       }
     }
   }
