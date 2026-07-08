@@ -16,12 +16,19 @@ const CURRENCY_GLYPHS: { [code: string]: string } = {
 const ZERO_DECIMAL_CURRENCIES: { [code: string]: boolean } = { JPY: true, KRW: true };
 
 /**
+ * Crypto display currencies need more precision than fiat's 2dp, otherwise a
+ * BTC-denominated balance (e.g. 0.00042) clips to zero. Codes without an entry
+ * use the fiat default of 2 decimals.
+ */
+const CRYPTO_DECIMALS: { [code: string]: number } = { BTC: 8, ETH: 6 };
+
+/**
  * Formats a fiat amount with its currency glyph prefix and grouped thousands,
  * e.g. formatFiatAmount(2140.2, "USD") -> "$2,140.20". Falls back to a trailing
  * currency code for currencies without a known glyph.
  */
 export function formatFiatAmount(amount: number, currencyCode: string): string {
-  const decimals = ZERO_DECIMAL_CURRENCIES[currencyCode] ? 0 : 2;
+  const decimals = ZERO_DECIMAL_CURRENCIES[currencyCode] ? 0 : (CRYPTO_DECIMALS[currencyCode] ?? 2);
   const formatted = amount.toLocaleString('en-US', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals

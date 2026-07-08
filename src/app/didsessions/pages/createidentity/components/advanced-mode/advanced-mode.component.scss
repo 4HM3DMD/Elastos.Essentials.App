@@ -32,6 +32,11 @@
   }
 }
 
+// Hide the Create/Import footer while the welcome content is hidden.
+.footer.hidden {
+  display: none;
+}
+
 ion-slides {
   height: calc(100% - (150px + 40px)); // Substract height of slides on approximate height of footer
 }

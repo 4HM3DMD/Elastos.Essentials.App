@@ -38,6 +38,14 @@
             color: white;
         }
 
+        // Dark secondary CTA: a flat #1E1E1E surface with a hairline and white label
+        // (the 2026 "Import" companion to the primary "Create").
+        &.secondary {
+            background: var(--essentials-box-color);
+            color: var(--ion-text-color);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
         // Disabled is a flat dark-gray surface with a faint label, never a dimmed orange (doc-145).
         &.disabled {
             background: #2A2A2C;

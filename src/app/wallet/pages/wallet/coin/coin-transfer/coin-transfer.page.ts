@@ -264,6 +264,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.payReadyTimer) clearTimeout(this.payReadyTimer);
+    // Clear the SCR-025 long-press paste timer so it cannot fire on a destroyed
+    // component (e.g. a gesture back cancels the touch before touchend).
+    if (this.addressPressTimer) clearTimeout(this.addressPressTimer);
     if (this.addressUpdateSubscription) this.addressUpdateSubscription.unsubscribe();
     if (this.publicationStatusSub) this.publicationStatusSub.unsubscribe();
     if (this.ethTransactionSpeedupSub) this.ethTransactionSpeedupSub.unsubscribe();

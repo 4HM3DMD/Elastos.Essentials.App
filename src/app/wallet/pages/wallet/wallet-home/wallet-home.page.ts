@@ -127,11 +127,6 @@ export class WalletHomePage implements OnInit, OnDestroy {
     public balanceVm: BalanceViewModel = null;
     public hideBalances = false;
 
-    // SCR-136: the Value hero is fiat-first on first load. We flip the shared currency
-    // display default to fiat once per app session; subsequent user taps on the hero
-    // (toggleCurrency) are honoured normally.
-    private static fiatDefaultApplied = false;
-
     // Figma Value screen groups holdings under Tokens / NFTs / Staked chips.
     public activeTab: 'tokens' | 'nfts' | 'staked' = 'tokens';
     public walletTabs: UiChip[] = [];
@@ -297,11 +292,10 @@ export class WalletHomePage implements OnInit, OnDestroy {
     }
 
     ionViewWillEnter() {
-        // SCR-136: default the balance hero to fiat on the first entry of the session.
-        if (!WalletHomePage.fiatDefaultApplied) {
-            this.currencyService.useCurrency = true;
-            WalletHomePage.fiatDefaultApplied = true;
-        }
+        // SCR-136 (reverted): do not force the shared CurrencyService.useCurrency
+        // here — it is a persisted, app-wide setting and overriding it clobbered
+        // the user's chosen crypto/fiat display. A fiat-first hero default must be
+        // implemented locally without mutating global state. TODO(SCR-136): local default.
         if (!this.walletTabs.length) {
             this.walletTabs = [
                 { key: 'tokens', label: this.translate.instant('wallet.tokens') },

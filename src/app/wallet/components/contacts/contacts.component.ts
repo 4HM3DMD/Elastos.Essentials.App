@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ModalController, NavParams, PopoverController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
@@ -29,7 +29,7 @@ const LONG_PRESS_MS = 550;
   templateUrl: './contacts.component.html',
   styleUrls: ['./contacts.component.scss'],
 })
-export class ContactsComponent implements OnInit {
+export class ContactsComponent implements OnInit, OnDestroy {
 
   public supportedCryptoAddresses: CryptoAddressInfo[] = [];
   // SCR-006: recent recipients shown above the saved addresses.
@@ -37,6 +37,9 @@ export class ContactsComponent implements OnInit {
   private subWallet: AnySubWallet = null;
   // SCR-029: pending long-press timer used to open the delete prompt.
   private longPressTimer: ReturnType<typeof setTimeout> = null;
+  // True once a long-press has opened the delete prompt, so the trailing
+  // synthetic click does not also select (and dismiss with) the contact.
+  private longPressFired = false;
 
   constructor(
     public contactsService: ContactsService,
@@ -89,6 +92,12 @@ export class ContactsComponent implements OnInit {
 }
 
   selectContact(contact: CryptoAddressInfo) {
+    // Suppress the click that a browser emits right after a long-press, so
+    // holding to delete never also selects the contact.
+    if (this.longPressFired) {
+      this.longPressFired = false;
+      return;
+    }
     void this.modalCtrl.dismiss({
       contact: contact
     });
@@ -144,7 +153,9 @@ export class ContactsComponent implements OnInit {
   // SCR-029: start the long-press timer that opens the delete prompt.
   handlePressStart(contact: CryptoAddressInfo) {
     this.clearLongPress();
+    this.longPressFired = false;
     this.longPressTimer = setTimeout(() => {
+      this.longPressFired = true;
       void this.showDeletePrompt(contact);
     }, LONG_PRESS_MS);
   }
@@ -159,6 +170,10 @@ export class ContactsComponent implements OnInit {
       clearTimeout(this.longPressTimer);
       this.longPressTimer = null;
     }
+  }
+
+  ngOnDestroy() {
+    this.clearLongPress();
   }
 
   getResolverLogo(contact: CryptoAddressInfo) {
