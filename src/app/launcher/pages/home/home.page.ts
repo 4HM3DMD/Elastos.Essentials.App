@@ -81,9 +81,15 @@ export class HomePage implements OnInit, OnDestroy {
   public hasNewNotifications = false;
   public networkBanner: string = null;
 
-  /** Value pillar sub, matching Figma's "N networks · M staked" (SCR-054; staked is data-gated). */
+  /**
+   * Value pillar sub "N networks · M staked" (SCR-054). Networks-with-value and the
+   * staked total need multi-network balance data; until that is wired, show 0 on an
+   * empty wallet (matching the design's empty state) rather than the enabled count.
+   */
   public get valuePillarSub(): string {
-    let networks = this.walletNetworkService.getDisplayableNetworks().length;
+    let fiat = this.networkWallet ? this.networkWallet.getDisplayBalanceInActiveCurrency() : null;
+    let hasValue = !!(fiat && !fiat.isNaN() && fiat.gt(0));
+    let networks = hasValue ? this.walletNetworkService.getDisplayableNetworks().length : 0;
     return `${networks} networks · 0 staked`;
   }
 
