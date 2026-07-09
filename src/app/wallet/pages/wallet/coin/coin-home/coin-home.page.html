@@ -33,8 +33,9 @@
                  Full-bleed to the screen edges and taller (SCR-102). -->
             <div *ngIf="priceSeriesVm" class="price-chart">
                 <div class="chart-canvas">
-                    <!-- SCR-101: burnt-orange accent chart with gradient fill + end dot -->
-                    <ui-sparkline [points]="priceSeriesVm" [height]="200" tone="accent"
+                    <!-- Direction-aware chart: green when the range closes up, red when down,
+                         with the matching gradient fill + pulsing end dot. -->
+                    <ui-sparkline [points]="priceSeriesVm" [height]="200" tone="auto"
                         (scrub)="onChartScrub($event)"></ui-sparkline>
                 </div>
                 <!-- SCR-103: ghost range selector (text-only chips, dark active disc) -->

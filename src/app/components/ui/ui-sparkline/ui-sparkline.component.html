@@ -4,18 +4,26 @@
   (touchstart)="onScrubStart($event)" (touchmove)="onScrubMove($event)" (touchend)="onScrubEnd()"
   (touchcancel)="onScrubEnd()" (mousedown)="onScrubStart($event)" (mousemove)="onScrubMove($event)"
   (mouseup)="onScrubEnd()" (mouseleave)="onScrubEnd()">
-  <!-- SCR-101: orange->transparent gradient used by the accent tone's area fill. -->
+  <!-- Tone->transparent gradients for the area fill (green up / red down / orange accent). -->
   <defs>
     <linearGradient id="sparkline-accent-gradient" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#ED6E2B" stop-opacity="0.35" />
       <stop offset="100%" stop-color="#ED6E2B" stop-opacity="0" />
     </linearGradient>
+    <linearGradient id="sparkline-up-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00D255" stop-opacity="0.32" />
+      <stop offset="100%" stop-color="#00D255" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="sparkline-down-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF383C" stop-opacity="0.30" />
+      <stop offset="100%" stop-color="#FF383C" stop-opacity="0" />
+    </linearGradient>
   </defs>
   <path *ngIf="area" class="area" [attr.d]="areaPath"></path>
   <path class="line" [attr.d]="linePath" [attr.stroke-width]="strokeWidth"></path>
-  <!-- SCR-101: last-point dot marking the current price on the accent chart. -->
-  <circle *ngIf="toneClass === 'accent' && !scrubbing" class="last-dot" [attr.cx]="lastX" [attr.cy]="lastY" r="3">
-  </circle>
+  <!-- Last-point marker: a soft pulsing halo behind a solid dot, showing the current price. -->
+  <circle *ngIf="!scrubbing" class="last-halo" [attr.cx]="lastX" [attr.cy]="lastY" r="3"></circle>
+  <circle *ngIf="!scrubbing" class="last-dot" [attr.cx]="lastX" [attr.cy]="lastY" r="3"></circle>
   <!-- SCR-097: press-and-hold scrub cursor — dashed vertical guide + dot on the nearest point.
        The date/price readout is rendered by the consumer from the emitted (scrub) index. -->
   <line *ngIf="scrubbing" class="scrub-line" [attr.x1]="scrubX" [attr.y1]="0" [attr.x2]="scrubX" [attr.y2]="height">

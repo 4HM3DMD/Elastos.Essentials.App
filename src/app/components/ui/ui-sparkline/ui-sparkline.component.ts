@@ -81,9 +81,7 @@ export class UiSparklineComponent implements OnChanges {
     });
     this.coords = coords;
 
-    this.linePath = coords
-      .map((coord, index) => `${index === 0 ? 'M' : 'L'}${coord.x.toFixed(2)},${coord.y.toFixed(2)}`)
-      .join(' ');
+    this.linePath = this.buildSmoothPath(coords);
 
     let baseline = (this.height - this.padding).toFixed(2);
     let first = coords[0];
@@ -98,6 +96,39 @@ export class UiSparklineComponent implements OnChanges {
   private resolveTone(points: number[]): 'up' | 'down' | 'accent' {
     if (this.tone === 'up' || this.tone === 'down' || this.tone === 'accent') return this.tone;
     return points[points.length - 1] >= points[0] ? 'up' : 'down';
+  }
+
+  /**
+   * Builds a smooth cubic-Bézier path through the points (Catmull-Rom control points) so the
+   * line reads as an organic curve rather than a robotic polyline. Control-point Y is clamped
+   * to the plot box so the spline can never overshoot past the top/bottom edge. Two points draw
+   * a single straight segment.
+   */
+  private buildSmoothPath(coords: { x: number; y: number }[]): string {
+    if (coords.length < 2) return '';
+    if (coords.length === 2) {
+      return `M${coords[0].x.toFixed(2)},${coords[0].y.toFixed(2)} L${coords[1].x.toFixed(2)},${coords[1].y.toFixed(2)}`;
+    }
+
+    // 0 = straight lines, 1 = full Catmull-Rom. 0.85 is a soft, natural curve with little overshoot.
+    let smoothing = 0.85;
+    let minY = this.padding;
+    let maxY = this.height - this.padding;
+    let clampY = (y: number) => Math.min(maxY, Math.max(minY, y));
+
+    let d = `M${coords[0].x.toFixed(2)},${coords[0].y.toFixed(2)}`;
+    for (let i = 0; i < coords.length - 1; i++) {
+      let p0 = coords[i - 1] || coords[i];
+      let p1 = coords[i];
+      let p2 = coords[i + 1];
+      let p3 = coords[i + 2] || p2;
+      let cp1x = p1.x + ((p2.x - p0.x) / 6) * smoothing;
+      let cp1y = clampY(p1.y + ((p2.y - p0.y) / 6) * smoothing);
+      let cp2x = p2.x - ((p3.x - p1.x) / 6) * smoothing;
+      let cp2y = clampY(p2.y - ((p3.y - p1.y) / 6) * smoothing);
+      d += ` C${cp1x.toFixed(2)},${cp1y.toFixed(2)} ${cp2x.toFixed(2)},${cp2y.toFixed(2)} ${p2.x.toFixed(2)},${p2.y.toFixed(2)}`;
+    }
+    return d;
   }
 
   // --- SCR-097 scrubbing ---
