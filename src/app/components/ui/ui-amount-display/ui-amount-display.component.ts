@@ -16,7 +16,8 @@ const MIN_FONT_SIZE_PX = 14;
 const SHRINK_STEP_PX = 2;
 const HIDDEN_MASK = '••••••';
 const ELLIPSIS = '…';
-const BASE_FONT_SIZE_BY_SIZE: { [size: number]: number } = { 1: 18, 2: 28, 3: 36, 4: 46, 5: 50, 6: 60 };
+// size 3 = launcher home hero (Figma 235:23040 measures 32px Manrope Medium).
+const BASE_FONT_SIZE_BY_SIZE: { [size: number]: number } = { 1: 18, 2: 28, 3: 32, 4: 46, 5: 50, 6: 60 };
 
 /**
  * A large amount value with an optional unit and fiat sub-line. Steps its font

@@ -41,8 +41,10 @@
 
     img,
     .inline-icon {
-      width: 42px;
-      height: 42px;
+      // Fill the disc (34px) exactly. Previously hardcoded 42px, a leftover from when the
+      // disc was 42px, which made every logo overflow its disc by 8px.
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
       object-fit: cover;
       display: flex;
