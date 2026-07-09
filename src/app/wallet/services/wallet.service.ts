@@ -227,8 +227,15 @@ export class WalletService {
 
         let serializedMasterWallet = await this.localStorage.loadMasterWallet(masterId);
         if (serializedMasterWallet) {
-          // Create a model instance from the persistent object.
-          this.masterWallets[masterId] = MasterWalletBuilder.newFromSerializedWallet(serializedMasterWallet);
+          try {
+            // Create a model instance from the persistent object.
+            this.masterWallets[masterId] = MasterWalletBuilder.newFromSerializedWallet(serializedMasterWallet);
+          } catch (e) {
+            // Skip a wallet whose stored type is no longer supported (e.g. a legacy
+            // account-abstraction wallet after its removal) so that one unknown wallet
+            // cannot block loading of the user's other wallets.
+            Logger.warn('wallet', `Skipping master wallet ${masterId} with unsupported type '${serializedMasterWallet.type}':`, e);
+          }
         }
       }
 
