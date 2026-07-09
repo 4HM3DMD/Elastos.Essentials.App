@@ -9,7 +9,10 @@
     "node_modules",
     "plugins",
     "platforms",
-    "origin_platforms"
+    "origin_platforms",
+    // Unit specs import node:test/node:assert and are compiled by src/tsconfig.spec.json,
+    // never by the app AOT build.
+    "src/**/*.spec.ts"
   ],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,

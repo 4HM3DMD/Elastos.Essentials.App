@@ -20,6 +20,7 @@
     "ionic:build:before": "npm run welcome && npm run build-env && npm run translations",
     "build": "ng build",
     "test": "ng test",
+    "test:unit": "TS_NODE_TRANSPILE_ONLY=1 TS_NODE_PROJECT=src/tsconfig.spec.json node --test --require ts-node/register src/app/*/*.spec.ts",
     "bundle-size-verifier-webpack-json": "ng build --stats-json && webpack-bundle-analyzer www/stats.json",
     "bundle-size-verifier-source-map": "ng build && source-map-explorer www/*",
     "lint": "npm run eslint && npm run prettier -- --check",
