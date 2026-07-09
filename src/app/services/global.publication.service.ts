@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import type { DIDTransactionAdapter } from '@elastosfoundation/did-js-sdk';
 import { ModalController } from '@ionic/angular';
 import { Subject } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { DIDPublishingComponent } from '../components/did-publishing/did-publishing.component';
 import { lazyElastosDIDSDKImport } from '../helpers/import.helper';
 import { Logger } from '../logger';
@@ -29,7 +30,7 @@ const assistAPIEndpoints = {
   TestNet: 'https://assist-testnet.elastos.io/v2' // "https://assist-restapi-testnet.tuum.tech/v2"
 }; // Assist DID 2.0
 
-const assistAPIKey = 'IdSFtQosmCwCB9NOLltkZrFy5VqtQn8QbxBKQoHPw7zp3w0hDOyOYjgL53DO3MDH';
+const assistAPIKey = environment.ApiKeys.assist;
 
 export type PersistentInfo = {
   did: {
@@ -151,8 +152,6 @@ namespace AssistPublishing {
       this.manager.persistentInfo.did.didString = didString;
       this.manager.persistentInfo.did.publicationStatus = DIDPublicationStatus.NO_ON_GOING_PUBLICATION;
       await this.manager.savePersistentInfoAndEmitStatus(this.manager.persistentInfo);
-
-      const assistAPIKey = 'IdSFtQosmCwCB9NOLltkZrFy5VqtQn8QbxBKQoHPw7zp3w0hDOyOYjgL53DO3MDH';
 
       const requestBody = {
         did: didString,

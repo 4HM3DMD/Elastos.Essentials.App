@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import moment from 'moment';
 import PQueue from 'p-queue';
+import { environment } from 'src/environments/environment';
 import { sleep } from '../helpers/sleep.helper';
 import { lazyTronWebImport } from '../helpers/import.helper';
 import { Logger } from '../logger';
@@ -22,7 +23,7 @@ export class GlobalTronGridService {
     // Currently using Trongrid to request, the Shasta/Nile testnet does not need to set an API Key.
     private apikey_testnet = '';
     private httpQueue = new PQueue({ concurrency: 1 });
-    private apikeyList_mainnet = ['e01b9d55-e787-4c0f-8074-8fbe40fddb91', '470282b1-82e6-4417-885b-27b7e340b513'];
+    private apikeyList_mainnet = environment.ApiKeys.tronGrid;
     private apikey = '';
 
     private tronWeb = null;

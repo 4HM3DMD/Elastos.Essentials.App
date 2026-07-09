@@ -12,6 +12,27 @@ if (existsSync(localEnvPath)) {
   localEnv = parse(readFileSync(localEnvPath));
 }
 
+// Third-party API keys, sourced from the local .env (dev) or CI secrets (release) so that no
+// secret is committed to tracked source. Empty values degrade to rate-limited/anonymous access
+// rather than crashing. See docs/key-rotation-runbook.md. The WalletConnect projectId is a
+// public client identifier and stays in source to avoid breaking WalletConnect on un-injected
+// builds.
+const apiKeys = {
+  tronGrid: (localEnv.TRONGRID_API_KEYS || '')
+    .split(',')
+    .map((s: string) => s.trim())
+    .filter(Boolean),
+  etherscan: {
+    shared: localEnv.ETHERSCAN_SHARED_API_KEY || '',
+    ethereum: localEnv.ETHERSCAN_ETH_API_KEY || '',
+    bsc: localEnv.ETHERSCAN_BSC_API_KEY || '',
+    fantom: localEnv.ETHERSCAN_FTM_API_KEY || '',
+    cronos: localEnv.ETHERSCAN_CRO_API_KEY || ''
+  },
+  covalent: localEnv.COVALENT_API_KEY || '',
+  assist: localEnv.ASSIST_API_KEY || ''
+};
+
 const prodEnv = {
   production: true,
   useTestPolls: false,
@@ -27,7 +48,8 @@ const prodEnv = {
   },
   NownodesAPI: {
     apikey: localEnv.NOWNODES_API_KEY || ''
-  }
+  },
+  ApiKeys: apiKeys
 };
 
 // Parse boolean environment variable
@@ -51,7 +73,8 @@ const devEnv = {
   },
   NownodesAPI: {
     apikey: localEnv.NOWNODES_API_KEY || ''
-  }
+  },
+  ApiKeys: apiKeys
 };
 
 const devEnvironmentFile = `

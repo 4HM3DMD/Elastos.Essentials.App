@@ -4,7 +4,9 @@ import { EtherscanEVMSubWalletProvider } from "../../evms/tx-providers/etherscan
 import { EtherscanEVMSubWalletTokenProvider, FetchMode } from "../../evms/tx-providers/etherscan.token.subwallet.provider";
 import { EVMTransactionProvider } from "../../evms/tx-providers/evm.transaction.provider";
 
-const FTM_SCAN_API_KEY = "RVH8TE6KBUKC8G4WCM2G4FQJ18WQHKKTC5";
+import { environment } from 'src/environments/environment';
+
+const FTM_SCAN_API_KEY = environment.ApiKeys.etherscan.fantom;
 export class FantomTransactionProvider extends EVMTransactionProvider {
   protected createEVMSubWalletProvider(mainCoinSubWallet: AnyMainCoinEVMSubWallet) {
     this.mainProvider = new EtherscanEVMSubWalletProvider(this, mainCoinSubWallet, FTM_SCAN_API_KEY);

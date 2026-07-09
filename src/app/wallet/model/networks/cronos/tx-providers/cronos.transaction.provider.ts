@@ -4,7 +4,9 @@ import { EtherscanEVMSubWalletProvider } from "../../evms/tx-providers/etherscan
 import { EtherscanEVMSubWalletTokenProvider, FetchMode } from "../../evms/tx-providers/etherscan.token.subwallet.provider";
 import { EVMTransactionProvider } from "../../evms/tx-providers/evm.transaction.provider";
 
-const CRO_SCAN_API_KEY = "VWDZX97IRBB19S2KQSYDXMWN8YJVGTWDXY";
+import { environment } from 'src/environments/environment';
+
+const CRO_SCAN_API_KEY = environment.ApiKeys.etherscan.cronos;
 export class CronosTransactionProvider extends EVMTransactionProvider {
   protected createEVMSubWalletProvider(mainCoinSubWallet: AnyMainCoinEVMSubWallet) {
     this.mainProvider = new EtherscanEVMSubWalletProvider(this, mainCoinSubWallet, CRO_SCAN_API_KEY);

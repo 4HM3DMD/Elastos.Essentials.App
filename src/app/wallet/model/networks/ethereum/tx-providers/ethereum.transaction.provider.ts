@@ -5,7 +5,9 @@ import { EtherscanEVMSubWalletProvider } from "../../evms/tx-providers/etherscan
 import { EtherscanEVMSubWalletTokenProvider, FetchMode } from "../../evms/tx-providers/etherscan.token.subwallet.provider";
 import { EVMTransactionProvider } from "../../evms/tx-providers/evm.transaction.provider";
 
-const ETH_SCAN_API_KEY = "PCTZJP9TTQ16C37877FSX14Y4YAHAFWY9G";
+import { environment } from 'src/environments/environment';
+
+const ETH_SCAN_API_KEY = environment.ApiKeys.etherscan.ethereum;
 export class EtherumTransactionProvider extends EVMTransactionProvider {
   protected createEVMSubWalletProvider(mainCoinSubWallet: AnyMainCoinEVMSubWallet) {
     this.mainProvider = new EtherscanEVMSubWalletProvider(this, mainCoinSubWallet, ETH_SCAN_API_KEY, EtherscanAPIVersion.V2);

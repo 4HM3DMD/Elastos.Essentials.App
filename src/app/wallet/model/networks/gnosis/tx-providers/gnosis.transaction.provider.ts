@@ -5,7 +5,9 @@ import { EtherscanEVMSubWalletProvider } from "../../evms/tx-providers/etherscan
 import { EtherscanEVMSubWalletTokenProvider, FetchMode } from "../../evms/tx-providers/etherscan.token.subwallet.provider";
 import { EVMTransactionProvider } from "../../evms/tx-providers/evm.transaction.provider";
 
-const Gnosis_SCAN_API_KEY = "6HWHU4FX4FBPE7TM1BMF7WCDIUPZPS5XSI";
+import { environment } from 'src/environments/environment';
+
+const Gnosis_SCAN_API_KEY = environment.ApiKeys.etherscan.shared;
 export class GnosisTransactionProvider extends EVMTransactionProvider {
   protected createEVMSubWalletProvider(mainCoinSubWallet: AnyMainCoinEVMSubWallet) {
     this.mainProvider = new EtherscanEVMSubWalletProvider(this, mainCoinSubWallet, Gnosis_SCAN_API_KEY, EtherscanAPIVersion.V2);

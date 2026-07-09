@@ -1,11 +1,12 @@
 import { Logger } from "src/app/logger";
 import { GlobalJsonRPCService } from "src/app/services/global.jsonrpc.service";
+import { environment } from "src/environments/environment";
 import { TransactionDirection } from "../../../tx-providers/transaction.types";
 import { AnySubWallet } from "../../base/subwallets/subwallet";
 import { EthTransaction } from "../evm.types";
 
 const covalentApiUrl = 'https://api.covalenthq.com/v1/';
-const API_KEY = 'ckey_d3c2c09cdd9e4c44980aac3b934'; // https://www.covalenthq.com/
+const API_KEY = environment.ApiKeys.covalent; // https://www.covalenthq.com/
 
 export type CovalentTransaction = {
   block_signed_at: string,
