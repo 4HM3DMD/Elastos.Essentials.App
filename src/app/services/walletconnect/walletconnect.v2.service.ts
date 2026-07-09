@@ -421,6 +421,20 @@ export class WalletConnectV2Service implements GlobalService {
     let showReturnMessage = true;
     let resultOrError = null;
 
+    // The requesting dApp origin: prefer the relay's verified origin, falling back to the peer
+    // metadata URL. Stamped onto the intents so the signing sheets can show who is asking.
+    // session.get() THROWS (not returns undefined) when the topic is absent/recently-deleted,
+    // so guard it - this runs on every request and must never hang the flow.
+    let peerUrl: string = null;
+    try {
+      if (this.signClient.session.keys.includes(event.topic)) {
+        peerUrl = this.signClient.session.get(event.topic)?.peer?.metadata?.url || null;
+      }
+    } catch {
+      peerUrl = null;
+    }
+    const dappOrigin = event.verifyContext?.verified?.origin || peerUrl || null;
+
     switch (event.params.request.method) {
       // case "essentials_url_intent":
       //   // Custom essentials request (not ethereum) over wallet connect protocol
@@ -435,29 +449,29 @@ export class WalletConnectV2Service implements GlobalService {
         void this.approveOrReject(event, resultOrError);
         break;
       case 'wallet_addEthereumChain':
-        resultOrError = await EIP155RequestHandler.handleAddNetworkRequest(event.params.request.params);
+        resultOrError = await EIP155RequestHandler.handleAddNetworkRequest(event.params.request.params, dappOrigin);
         void this.approveOrReject(event, resultOrError);
         break;
       case 'eth_sendTransaction':
         let chainId = this.wcChainToEIP155Chain(event.params.chainId);
-        resultOrError = await EIP155RequestHandler.handleSendTransactionRequest(event.params.request.params, chainId);
+        resultOrError = await EIP155RequestHandler.handleSendTransactionRequest(event.params.request.params, chainId, dappOrigin);
         void this.approveOrReject(event, resultOrError);
         break;
       // Bitcoin
       case 'unisat_signData':
-        resultOrError = await EIP155RequestHandler.handleBitcoinSignDataTransactionRequest(event.params.request.params);
+        resultOrError = await EIP155RequestHandler.handleBitcoinSignDataTransactionRequest(event.params.request.params, dappOrigin);
         void this.approveOrReject(event, resultOrError);
         break;
       case 'unisat_signPsbt':
-        resultOrError = await EIP155RequestHandler.handleBitcoinSignPsbtRequest(event.params.request.params);
+        resultOrError = await EIP155RequestHandler.handleBitcoinSignPsbtRequest(event.params.request.params, dappOrigin);
         void this.approveOrReject(event, resultOrError);
         break;
       case 'unisat_sendBitcoin':
-        resultOrError = await EIP155RequestHandler.handleBitcoinSendRequest(event.params.request.params);
+        resultOrError = await EIP155RequestHandler.handleBitcoinSendRequest(event.params.request.params, dappOrigin);
         void this.approveOrReject(event, resultOrError);
         break;
       case 'unisat_signMessage':
-        resultOrError = await EIP155RequestHandler.handleBitcoinSignMessageRequest(event.params.request.params);
+        resultOrError = await EIP155RequestHandler.handleBitcoinSignMessageRequest(event.params.request.params, dappOrigin);
         void this.approveOrReject(event, resultOrError);
         break;
       case 'unisat_getPublicKey':
@@ -472,21 +486,22 @@ export class WalletConnectV2Service implements GlobalService {
         void this.approveOrReject(event, resultOrError);
         break;
       case 'unisat_pushTx':
-        resultOrError = await EIP155RequestHandler.handleBitcoinPushTxRequest(event.params.request.params);
+        resultOrError = await EIP155RequestHandler.handleBitcoinPushTxRequest(event.params.request.params, dappOrigin);
         void this.approveOrReject(event, resultOrError);
         break;
       default:
         if (event.params.request.method.startsWith('eth_signTypedData')) {
           resultOrError = await EIP155RequestHandler.handleSignTypedDataRequest(
             event.params.request.method,
-            event.params.request.params
+            event.params.request.params,
+            dappOrigin
           );
           void this.approveOrReject(event, resultOrError);
         } else if (event.params.request.method.startsWith('personal_sign')) {
-          resultOrError = await EIP155RequestHandler.handlePersonalSignRequest(event.params.request.params);
+          resultOrError = await EIP155RequestHandler.handlePersonalSignRequest(event.params.request.params, dappOrigin);
           void this.approveOrReject(event, resultOrError);
         } else if (event.params.request.method.startsWith('eth_sign')) {
-          resultOrError = await EIP155RequestHandler.handleEthSignRequest(event.params.request.params);
+          resultOrError = await EIP155RequestHandler.handleEthSignRequest(event.params.request.params, dappOrigin);
           void this.approveOrReject(event, resultOrError);
         }
         break;

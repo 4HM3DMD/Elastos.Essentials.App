@@ -81,7 +81,7 @@ export class EIP155RequestHandler {
    *
    * For the rpcUrls and blockExplorerUrls arrays, at least one element is required, and only the first element will be used.
    */
-  public static async handleAddNetworkRequest(params: any): Promise<EIP155ResultOrError<void>> {
+  public static async handleAddNetworkRequest(params: any, origin?: string): Promise<EIP155ResultOrError<void>> {
     // Check if this network already exists or not.
     let addParams: AddEthereumChainParameter = params[0];
     let chainId = parseInt(addParams.chainId);
@@ -93,7 +93,7 @@ export class EIP155RequestHandler {
       // Network doesn't exist yet. Send an intent to the wallet and wait for the response.
       let response: EditCustomNetworkIntentResult = await GlobalIntentService.instance.sendIntent(
         'https://wallet.web3essentials.io/addethereumchain',
-        addParams
+        { ...addParams, dappOrigin: origin }
       );
 
       if (response && response.networkAdded) {
@@ -143,7 +143,7 @@ export class EIP155RequestHandler {
     else return { error: { code: -1, message: 'Errored or cancelled' } };
   }
 
-  public static async handleSignTypedDataRequest(method: string, params: any): Promise<EIP155ResultOrError<string>> {
+  public static async handleSignTypedDataRequest(method: string, params: any, origin?: string): Promise<EIP155ResultOrError<string>> {
     let useV4: boolean;
     switch (method) {
       case 'eth_signTypedData_v3':
@@ -162,7 +162,7 @@ export class EIP155RequestHandler {
     };
     let response: { result: SignTypedDataIntentResult } = await GlobalIntentService.instance.sendIntent(
       'https://wallet.web3essentials.io/signtypeddata',
-      rawData
+      { ...rawData, dappOrigin: origin }
     );
 
     if (response && response.result && response.result.signedData) return { result: response.result.signedData };
@@ -176,12 +176,13 @@ export class EIP155RequestHandler {
     }
   }
 
-  public static async handlePersonalSignRequest(params: any): Promise<EIP155ResultOrError<string>> {
+  public static async handlePersonalSignRequest(params: any, origin?: string): Promise<EIP155ResultOrError<string>> {
     let data = params[0];
     let account = params[1]; // TODO: for now we use the active account... not the requested one (could possibly be another account)
 
     let rawData = {
-      data
+      data,
+      dappOrigin: origin
     };
     let response: { result: PersonalSignIntentResult } = await GlobalIntentService.instance.sendIntent(
       'https://wallet.web3essentials.io/personalsign',
@@ -203,7 +204,7 @@ export class EIP155RequestHandler {
   /**
    * Legacy eth_sign. Can receive either a raw hex buffer (unsafe), or a prefixed utf8 string (safe)
    */
-  public static async handleEthSignRequest(params: any): Promise<EIP155ResultOrError<string>> {
+  public static async handleEthSignRequest(params: any, origin?: string): Promise<EIP155ResultOrError<string>> {
     // params[0], 20 Bytes - address.
     // params[1], N Bytes - message to sign.
     const buffer = this.messageToBuffer(params[1]);
@@ -219,10 +220,11 @@ export class EIP155RequestHandler {
      * - if that's a buffer (insecure hex that could sign any transaction) -> insecure eth_sign screen
      */
     if (isUtf8(buffer)) {
-      return EIP155RequestHandler.handlePersonalSignRequest(params);
+      return EIP155RequestHandler.handlePersonalSignRequest(params, origin);
     } else {
       let rawData = {
-        data: hex
+        data: hex,
+        dappOrigin: origin
       };
       let response: { result: EthSignIntentResult } = await GlobalIntentService.instance.sendIntent(
         'https://wallet.web3essentials.io/insecureethsign',
@@ -248,7 +250,8 @@ export class EIP155RequestHandler {
    */
   public static async handleSendTransactionRequest(
     params: any,
-    chainId?: number
+    chainId?: number,
+    origin?: string
   ): Promise<EIP155ResultOrError<string>> {
     try {
       Logger.log('walletconnecteip155', 'Sending esctransaction intent', params[0]);
@@ -260,6 +263,7 @@ export class EIP155RequestHandler {
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/esctransaction', {
         chainid: chainId,
+        dappOrigin: origin,
         payload: { params }
       });
       Logger.log('walletconnecteip155', 'Got esctransaction intent response', response);
@@ -306,7 +310,7 @@ export class EIP155RequestHandler {
   /**
    * Signs a PSBT (UniSat-compatible params: psbtHex, optional options).
    */
-  public static async handleBitcoinSignPsbtRequest(params: any): Promise<EIP155ResultOrError<string>> {
+  public static async handleBitcoinSignPsbtRequest(params: any, origin?: string): Promise<EIP155ResultOrError<string>> {
     try {
       Logger.log('walletconnecteip155', 'Bitcoin signPsbt intent', params[0]);
 
@@ -316,6 +320,7 @@ export class EIP155RequestHandler {
           signedPsbt: string;
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/signbitcoinpsbt', {
+        dappOrigin: origin,
         payload: {
           params: [params[0]]
         }
@@ -343,7 +348,7 @@ export class EIP155RequestHandler {
     }
   }
 
-  public static async handleBitcoinSignDataTransactionRequest(params: any): Promise<EIP155ResultOrError<string>> {
+  public static async handleBitcoinSignDataTransactionRequest(params: any, origin?: string): Promise<EIP155ResultOrError<string>> {
     try {
       Logger.log('walletconnecteip155', 'Bitcoin Sign data intent', params[0]);
 
@@ -357,6 +362,7 @@ export class EIP155RequestHandler {
           signature: string;
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/signbitcoindata', {
+        dappOrigin: origin,
         payload: {
           params: [params[0]]
         }
@@ -387,7 +393,7 @@ export class EIP155RequestHandler {
     }
   }
 
-  public static async handleBitcoinSendRequest(params: any): Promise<EIP155ResultOrError<string>> {
+  public static async handleBitcoinSendRequest(params: any, origin?: string): Promise<EIP155ResultOrError<string>> {
     try {
       Logger.log('walletconnecteip155', 'Bitcoin send intent', params[0]);
 
@@ -398,6 +404,7 @@ export class EIP155RequestHandler {
           status: 'published' | 'cancelled';
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/sendbitcoin', {
+        dappOrigin: origin,
         payload: {
           params: [params[0]]
         }
@@ -427,7 +434,7 @@ export class EIP155RequestHandler {
     }
   }
 
-  public static async handleBitcoinSignMessageRequest(params: any): Promise<EIP155ResultOrError<string>> {
+  public static async handleBitcoinSignMessageRequest(params: any, origin?: string): Promise<EIP155ResultOrError<string>> {
     try {
       Logger.log('walletconnecteip155', 'Bitcoin sign message intent', params[0]);
 
@@ -437,6 +444,7 @@ export class EIP155RequestHandler {
           signature: string;
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/signbitcoinmessage', {
+        dappOrigin: origin,
         payload: {
           params: [params[0]]
         }
@@ -466,7 +474,7 @@ export class EIP155RequestHandler {
     }
   }
 
-  public static async handleBitcoinPushTxRequest(params: any): Promise<EIP155ResultOrError<string>> {
+  public static async handleBitcoinPushTxRequest(params: any, origin?: string): Promise<EIP155ResultOrError<string>> {
     try {
       Logger.log('walletconnecteip155', 'Bitcoin push tx intent', params[0]);
 
@@ -477,6 +485,7 @@ export class EIP155RequestHandler {
           status: 'published' | 'cancelled';
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/pushbitcointx', {
+        dappOrigin: origin,
         payload: {
           params: [params[0]]
         }
