@@ -2,6 +2,7 @@ import { Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
 import { VoteContentType, VotesContentInfo, VotingInfo } from '@elastosfoundation/wallet-js-sdk';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { Logger } from 'src/app/logger';
 import { App } from 'src/app/model/app.enum';
@@ -52,6 +53,8 @@ export class VotePage implements OnInit, OnDestroy {
     public totalEla = 0;
     public votedEla = 0;
     private toast: any;
+    private keyboardShowSub: Subscription = null;
+    private keyboardHideSub: Subscription = null;
 
     public testValue = 0;
     public overflow = false;
@@ -100,13 +103,13 @@ export class VotePage implements OnInit, OnDestroy {
         this.dataFetched = true;
 
         if (this.dataFetched) {
-            this.keyboard.onKeyboardWillShow().subscribe(() => {
+            this.keyboardShowSub = this.keyboard.onKeyboardWillShow().subscribe(() => {
                 this.zone.run(() => {
                     this.isKeyboardHide = false;
                 });
             });
 
-            this.keyboard.onKeyboardWillHide().subscribe(() => {
+            this.keyboardHideSub = this.keyboard.onKeyboardWillHide().subscribe(() => {
                 this.zone.run(() => {
                     this.isKeyboardHide = true;
                 });
@@ -119,6 +122,11 @@ export class VotePage implements OnInit, OnDestroy {
 
     ionViewWillLeave() {
         this.votesCasted = false;
+
+        this.keyboardShowSub?.unsubscribe();
+        this.keyboardShowSub = null;
+        this.keyboardHideSub?.unsubscribe();
+        this.keyboardHideSub = null;
 
         if (this.toast) {
             this.toast.dismiss();

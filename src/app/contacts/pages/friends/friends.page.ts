@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonSlides } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -25,12 +25,13 @@ import { UxService } from '../../services/ux.service';
   templateUrl: './friends.page.html',
   styleUrls: ['./friends.page.scss'],
 })
-export class FriendsPage implements OnInit {
+export class FriendsPage implements OnInit, OnDestroy {
   @ViewChild(TitleBarComponent, { static: false }) titleBar: TitleBarComponent;
   @ViewChild('slider', { static: false }) slider: IonSlides;
 
   public favActive = false;
   private subscription: Subscription = null;
+  private contactsSub: Subscription = null;
   private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void;
 
   public letters: string[] = [];
@@ -60,7 +61,7 @@ export class FriendsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.friendsService.contacts.subscribe(contacts => {
+    this.contactsSub = this.friendsService.contacts.subscribe(contacts => {
       if (contacts) {
         this.contacts = contacts;
         this.letters = this.friendsService.extractContactFirstLetters(contacts);
@@ -71,6 +72,11 @@ export class FriendsPage implements OnInit {
         void this.friendsService.remoteUpdateContactsOnlyOnce();
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.contactsSub?.unsubscribe();
+    this.contactsSub = null;
   }
 
   ionViewWillEnter() {

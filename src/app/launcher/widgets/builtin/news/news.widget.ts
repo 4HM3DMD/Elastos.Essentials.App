@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
 import moment from 'moment';
+import { Subscription } from 'rxjs';
 import { DappBrowserService } from 'src/app/dappbrowser/services/dappbrowser.service';
 import { NotificationManagerService } from 'src/app/launcher/services/notificationmanager.service';
 import { Logger } from 'src/app/logger';
@@ -33,6 +34,9 @@ export class NewsWidget extends WidgetBase implements OnInit, OnDestroy {
 
   private modal: HTMLIonModalElement = null;
 
+  private editionModeSub: Subscription = null;
+  private newsSourcesSub: Subscription = null;
+
   // Raw inputs
   private newsSources: NewsSource[] = [];
   private feedsChannels: FeedsChannel[] = [];
@@ -64,7 +68,7 @@ export class NewsWidget extends WidgetBase implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Watch edition mode change to show this widget in edition even if not showing in live mode.
-    WidgetsServiceEvents.editionMode.subscribe(editing => {
+    this.editionModeSub = WidgetsServiceEvents.editionMode.subscribe(editing => {
       this.editing = editing;
     });
 
@@ -78,13 +82,19 @@ export class NewsWidget extends WidgetBase implements OnInit, OnDestroy {
     }
 
     clearTimeout(this.rotationTimeout);
+
+    this.editionModeSub?.unsubscribe();
+    this.editionModeSub = null;
+    this.newsSourcesSub?.unsubscribe();
+    this.newsSourcesSub = null;
   }
 
   attachWidgetState(widgetState: WidgetState) {
     super.attachWidgetState(widgetState);
 
+    this.newsSourcesSub?.unsubscribe();
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    this.widgetsNewsService.sources.subscribe(async newsSources => {
+    this.newsSourcesSub = this.widgetsNewsService.sources.subscribe(async newsSources => {
       this.newsSources = newsSources;
       this.news = await NewsHelper.prepareNews(this.newsSources, this.feedsChannels);
     });

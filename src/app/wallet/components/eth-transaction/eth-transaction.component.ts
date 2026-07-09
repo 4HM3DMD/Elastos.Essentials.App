@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import BigNumber from 'bignumber.js';
 import { Subscription } from 'rxjs';
@@ -15,7 +15,7 @@ import { Native } from '../../services/native.service';
   templateUrl: './eth-transaction.component.html',
   styleUrls: ['./eth-transaction.component.scss'],
 })
-export class ETHTransactionComponent implements OnInit {
+export class ETHTransactionComponent implements OnInit, OnDestroy {
   public publishing = false;
   public publicationSuccessful = false;
   public publicationFailed = false;
@@ -37,7 +37,15 @@ export class ETHTransactionComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  ngOnDestroy(): void {
+    this.publicationStatusSub?.unsubscribe();
+  }
+
   ionViewWillEnter() {
+    // Guard against stacking a second listener if this view is re-entered
+    // without a prior teardown (unsubscribe any previous subscription first).
+    this.publicationStatusSub?.unsubscribe();
+
     this.publishing = true;
     this.publicationSuccessful = false;
     this.publicationFailed = false;

@@ -2,6 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { PopoverController } from '@ionic/angular';
 import moment from 'moment';
+import { Subscription } from 'rxjs';
 import { OptionsComponent } from 'src/app/launcher/components/options/options.component';
 import { DIDManagerService } from 'src/app/launcher/services/didmanager.service';
 import { Logger } from 'src/app/logger';
@@ -17,6 +18,7 @@ import { WidgetBase } from '../../base/widgetbase';
 })
 export class IdentityWidget extends WidgetBase implements OnDestroy {
   private popover: HTMLIonPopoverElement = null;
+  private routerEventsSub: Subscription = null;
 
   constructor(
     public theme: GlobalThemeService,
@@ -30,7 +32,7 @@ export class IdentityWidget extends WidgetBase implements OnDestroy {
 
     // Hide popup if needed, when the route changes. This can happen when receiving events
     // from wallet connect (execute transaction).
-    this.router.events.subscribe((event) => {
+    this.routerEventsSub = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         if (this.popover) {
           void this.popover.dismiss();
@@ -41,6 +43,8 @@ export class IdentityWidget extends WidgetBase implements OnDestroy {
   }
 
   ngOnDestroy() {
+    this.routerEventsSub?.unsubscribe();
+    this.routerEventsSub = null;
   }
 
   public getSignedInIdentity(): IdentityEntry {

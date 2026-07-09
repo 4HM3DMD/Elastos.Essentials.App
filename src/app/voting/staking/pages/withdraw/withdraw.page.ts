@@ -2,6 +2,7 @@ import { Component, NgZone, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { Logger } from 'src/app/logger';
 import { App } from 'src/app/model/app.enum';
@@ -32,6 +33,9 @@ export class WithdrawPage {
     public address = "";
     public isNodeReward = false;
     public isMuiltWallet = false;
+
+    private keyboardShowSub: Subscription = null;
+    private keyboardHideSub: Subscription = null;
 
     constructor(
         public uxService: UXService,
@@ -68,17 +72,24 @@ export class WithdrawPage {
 
         this.isMuiltWallet = this.voteService.isMuiltWallet();
 
-        this.keyboard.onKeyboardWillShow().subscribe(() => {
+        this.keyboardShowSub = this.keyboard.onKeyboardWillShow().subscribe(() => {
             this.zone.run(() => {
                 this.isKeyboardHide = false;
             });
         });
 
-        this.keyboard.onKeyboardWillHide().subscribe(() => {
+        this.keyboardHideSub = this.keyboard.onKeyboardWillHide().subscribe(() => {
             this.zone.run(() => {
                 this.isKeyboardHide = true;
             });
         });
+    }
+
+    ionViewWillLeave() {
+        this.keyboardShowSub?.unsubscribe();
+        this.keyboardShowSub = null;
+        this.keyboardHideSub?.unsubscribe();
+        this.keyboardHideSub = null;
     }
 
     async withdraw() {

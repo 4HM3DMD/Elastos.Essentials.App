@@ -1,5 +1,6 @@
-import { Component, NgZone, ViewChild } from '@angular/core';
+import { Component, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
+import { Subscription } from 'rxjs';
 import { VoteContentType, VotesContentInfo, VotingInfo } from '@elastosfoundation/wallet-js-sdk';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
@@ -28,8 +29,11 @@ type VoteForProposalCommand = CRCommand & {
     templateUrl: 'voteforproposal.html',
     styleUrls: ['./voteforproposal.scss']
 })
-export class VoteForProposalPage {
+export class VoteForProposalPage implements OnDestroy {
     @ViewChild(TitleBarComponent, { static: false }) titleBar: TitleBarComponent;
+
+    private keyboardShowSub: Subscription = null;
+    private keyboardHideSub: Subscription = null;
 
     public onGoingCommand: VoteForProposalCommand;
     public proposalDetail: ProposalDetails;
@@ -67,13 +71,13 @@ export class VoteForProposalPage {
         this.proposalDetail = await this.crOperations.getCurrentProposal();
 
         if (this.proposalDetail) {
-            this.keyboard.onKeyboardWillShow().subscribe(() => {
+            this.keyboardShowSub = this.keyboard.onKeyboardWillShow().subscribe(() => {
                 this.zone.run(() => {
                     this.isKeyboardHide = false;
                 });
             });
 
-            this.keyboard.onKeyboardWillHide().subscribe(() => {
+            this.keyboardHideSub = this.keyboard.onKeyboardWillHide().subscribe(() => {
                 this.zone.run(() => {
                     this.isKeyboardHide = true;
                 });
@@ -101,6 +105,13 @@ export class VoteForProposalPage {
 
     ionViewWillLeave() {
         void this.crOperations.sendIntentResponse();
+    }
+
+    ngOnDestroy() {
+        this.keyboardShowSub?.unsubscribe();
+        this.keyboardShowSub = null;
+        this.keyboardHideSub?.unsubscribe();
+        this.keyboardHideSub = null;
     }
 
     cancel() {
