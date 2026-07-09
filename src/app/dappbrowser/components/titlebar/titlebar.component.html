@@ -1,15 +1,16 @@
 <ion-header class="ion-no-border" [class.darkContainer]="themeService.darkMode"
     [class.lightContainer]="!themeService.darkMode">
     <ion-row [ngStyle]="{ 'background': theme.backgroundColor }">
-        <!-- Left icons -->
-        <ion-col size="1.25">
+        <!-- Left icons. The column itself is conditional: an invisible icon must not
+             reserve grid width, otherwise the URL input gets pushed off-center. -->
+        <ion-col size="1.25" *ngIf="icons[0].visible">
             <div class="img-btn">
-                <img *ngIf="icons[0].visible" [src]="getIconPath(0)" (click)="onIconClicked(0)">
+                <img [src]="getIconPath(0)" (click)="onIconClicked(0)">
             </div>
         </ion-col>
-        <ion-col size="1.25">
+        <ion-col size="1.25" *ngIf="icons[1].visible">
             <div class="img-btn img-btn-mark">
-                <img *ngIf="icons[1].visible" [src]="getIconPath(1)" (click)="onIconClicked(1)">
+                <img [src]="getIconPath(1)" (click)="onIconClicked(1)">
             </div>
         </ion-col>
 

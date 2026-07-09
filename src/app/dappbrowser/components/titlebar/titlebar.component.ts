@@ -108,13 +108,12 @@ export class BrowserTitleBarComponent extends TitleBarComponent {
   }
 
   public getMiddleColumnSize(): number {
-    if (this._title) return 7;
-
-    if (this.browserMode) {
-      return 7;
-    } else {
-      return 9.25; // No right icons, more space for the input box
-    }
+    // The middle column fills whatever the visible icon columns do not use, keeping the
+    // URL input centered. Left columns only render when their icon is visible; the two
+    // right columns render only in browser mode.
+    let leftCols = (this.icons[0].visible ? 1.25 : 0) + (this.icons[1].visible ? 1.25 : 0);
+    let rightCols = this.browserMode ? 2.5 : 0;
+    return 12 - leftCols - rightCols;
   }
 
   /**
