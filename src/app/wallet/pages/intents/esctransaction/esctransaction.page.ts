@@ -26,6 +26,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { BigNumber } from 'bignumber.js';
 import { Subscription } from 'rxjs';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
+import { parseRequestOrigin, RequestOrigin } from 'src/app/components/ui/ui-origin-header/ui-origin-header.component';
 import {
   BuiltInIcon,
   TitleBarIcon,
@@ -68,6 +69,8 @@ export class EscTransactionPage implements OnInit {
   public targetNetwork: AnyNetwork = null;
   public networkWallet: AnyNetworkWallet = null;
   public evmSubWallet: AnyMainCoinEVMSubWallet = null;
+  // The requesting dApp origin shown on the confirmation sheet (null for wallet-internal txs).
+  public requestOrigin: RequestOrigin = null;
   private intentTransfer: IntentTransfer;
   public balance: BigNumber; // ELA
   public transactionInfo: ETHTransactionInfo;
@@ -159,6 +162,8 @@ export class EscTransactionPage implements OnInit {
       this.coinTransferService.masterWalletId,
       this.coinTransferService.evmChainId
     );
+
+    this.requestOrigin = parseRequestOrigin(this.coinTransferService.dappOrigin);
 
     // If there is a provided chain ID, use that chain id network (eg: wallet connect v2).
     // Otherwise, use the active network

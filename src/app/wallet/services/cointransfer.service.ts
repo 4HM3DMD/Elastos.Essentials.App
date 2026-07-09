@@ -126,6 +126,9 @@ export class CoinTransferService {
   // intent: EVMs
   public evmChainId: number; // For EVM intents
   public payloadParam: ContractPayloadParam;
+  // The requesting dApp origin (URL) for a browser-originated transaction, shown on the
+  // confirmation sheet. Null for wallet-internal transactions.
+  public dappOrigin: string;
   // NFT transfer info
   public nftTransfer: NFTTransfer;
 
@@ -150,5 +153,6 @@ export class CoinTransferService {
     this.payTransfer = new PayTransfer();
     this.publickeys = null;
     this.didrequest = null;
+    this.dappOrigin = null;
   }
 }

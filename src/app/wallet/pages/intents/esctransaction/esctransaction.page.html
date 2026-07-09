@@ -5,6 +5,7 @@
   </div>
   <ion-spinner *ngIf="!transactionInfo && evmSubWallet"></ion-spinner>
   <ion-grid class="container" [class.dark-container]="theme.darkMode" *ngIf="transactionInfo && networkWallet">
+    <ui-origin-header [origin]="requestOrigin"></ui-origin-header>
     <!-- CARD HEADER -->
     <div [ngSwitch]="transactionInfo.type">
       <ion-card *ngSwitchCase="'erc20_token_approve'">

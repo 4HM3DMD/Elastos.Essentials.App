@@ -50,6 +50,8 @@ export class WalletAccessService {
 
     // Intent params
     public intentTransfer: IntentTransfer;
+    // The requesting caller (dApp origin URL or external app id) shown on the access sheet.
+    public requestDapp: string;
 
     constructor() {
         this.reset();
@@ -64,5 +66,6 @@ export class WalletAccessService {
         this.toSubWalletId = null;
         this.intentTransfer = null;
         this.requestFields = null;
+        this.requestDapp = null;
     }
 }

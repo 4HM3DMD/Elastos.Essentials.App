@@ -90,6 +90,7 @@ export class AccessPage implements OnInit {
 
     async init() {
         this.intentTransfer = this.walletAccessService.intentTransfer;
+        this.requestDapp = this.walletAccessService.requestDapp || '';
         this.networkWallet = this.walletManager.getNetworkWalletFromMasterWalletId(this.walletAccessService.masterWalletId);
         if (this.intentTransfer.action === 'walletaccess') {
             await this.organizeRequestedFields();

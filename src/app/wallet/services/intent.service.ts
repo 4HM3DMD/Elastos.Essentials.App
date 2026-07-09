@@ -180,6 +180,7 @@ export class IntentService {
         this.coinTransferService.masterWalletId = intent.params.masterWalletId;
         this.coinTransferService.evmChainId = intent.params.chainId;
         this.coinTransferService.payloadParam = intent.params.payload.params[0];
+        this.coinTransferService.dappOrigin = intent.params.dappOrigin;
         break;
 
       case 'signtypeddata':
@@ -290,6 +291,10 @@ export class IntentService {
       intentId: intent.intentId
     };
     this.walletAccessService.requestFields = intent.params.reqfields || intent.params;
+    // Capture the requesting dApp origin when present (dApp-browser-originated access). Other
+    // callers stay null so no misleading banner is shown; `intent.from` is only a source type
+    // (Internal/External), not a caller identity, so it is not used here.
+    this.walletAccessService.requestDapp = intent.params?.dappOrigin || null;
     // if (this.walletList.length === 1) {
     this.walletAccessService.masterWalletId = this.activeWallet.id;
     this.native.setRootRouter('/wallet/intents/access', { rootPage: true });

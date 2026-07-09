@@ -382,6 +382,7 @@ export class EthereumProtocolService {
     } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/esctransaction', {
       masterWalletId: this.activeEVMWallet.masterWallet.id,
       chainId: this.activeEVMNetwork.getMainChainID(),
+      dappOrigin: this.currentUrl,
       payload: {
         params: [message.data.object]
       }
@@ -606,7 +607,7 @@ export class EthereumProtocolService {
       // Network doesn't exist yet. Send an intent to the wallet and wait for the response.
       const response: EditCustomNetworkIntentResult = await GlobalIntentService.instance.sendIntent(
         'https://wallet.web3essentials.io/addethereumchain',
-        addParams
+        { ...addParams, dappOrigin: this.currentUrl }
       );
 
       if (response && response.networkAdded) {
