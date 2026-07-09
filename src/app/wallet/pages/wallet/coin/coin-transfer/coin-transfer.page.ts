@@ -119,6 +119,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   // the currently selected denomination so switching token<->fiat is jitter-free.
   public amountDenomination: 'token' | 'fiat' = 'token';
   public rawAmountInput = '';
+  // The active quick-percent chip (0.25 / 0.5 / 0.75), or null when entering manually
+  // or when Max is armed. Drives the highlighted state of the quick-amount chips.
+  public activePercent: number | null = null;
 
   public displayBalanceString = '';
   public displayBalanceLocked = '';
@@ -827,6 +830,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       // prior fiat toggle would mislabel the shown balance (SCR-002).
       this.amountDenomination = 'token';
       this.rawAmountInput = '';
+      this.activePercent = null;
     });
   }
 
@@ -835,6 +839,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     this.amount = null;
     this.rawAmountInput = '';
     this.amountDenomination = 'token';
+    this.activePercent = null;
     this.useInscriptionUTXO = false;
   }
 
@@ -898,6 +903,84 @@ export class CoinTransferPage implements OnInit, OnDestroy {
         ? tokenAmount.multipliedBy(price).toFixed(2)
         : tokenAmount.toString();
     }
+  }
+
+  /**
+   * Value shown in the hero display: the full balance when Max is armed, the raw typed
+   * string while entering, or a "0" placeholder when empty. The custom keypad renders
+   * this rather than a native input, so the system keyboard never appears (SCR-002).
+   */
+  public get heroDisplayValue(): string {
+    if (this.sendMax) return this.displayBalanceString;
+    return this.rawAmountInput || '0';
+  }
+
+  /** True once a real amount exists, so the hero renders solid white (not the muted "0" placeholder). */
+  public get heroHasValue(): boolean {
+    return this.sendMax || this.rawAmountInput.length > 0;
+  }
+
+  /**
+   * Custom on-screen numpad key press. Builds `rawAmountInput` locally (digits, a single
+   * decimal point bounded by the token's decimals, and backspace) then re-parses it through
+   * the existing hero handler so the token/fiat conversion stays the single source of truth.
+   */
+  public onAmountKey(key: string): void {
+    this.zone.run(() => {
+      // Typing always cancels an armed Max / quick-percent selection.
+      this.sendMax = false;
+      this.activePercent = null;
+
+      let next = this.rawAmountInput || '';
+      if (key === 'del') {
+        next = next.slice(0, -1);
+      } else if (key === '.') {
+        if (next.includes('.')) return;
+        next = next === '' ? '0.' : next + '.';
+      } else {
+        // Reject extra decimals beyond what the token (or fiat) supports.
+        let maxDecimals = this.amountDenomination === 'fiat' ? 2 : (this.fromSubWallet?.tokenDecimals ?? 8);
+        let dot = next.indexOf('.');
+        if (dot >= 0 && next.length - dot - 1 >= maxDecimals) return;
+        // Collapse a lone leading zero ("0" + "5" -> "5") but keep "0." building.
+        next = next === '0' ? key : next + key;
+      }
+      this.onHeroAmountInput(next);
+    });
+  }
+
+  /**
+   * The token balance the quick-amount chips divide: the SAME spendable figure shown in
+   * the "Available" line (getBalanceSpendable). Uses the spendable amount when locked
+   * funds exist (margin > 1000 SELA), otherwise the full display balance — so a chip can
+   * never exceed the number the user was just shown.
+   */
+  private getSpendableDisplayBalance(): BigNumber {
+    let full = this.networkWallet.subWallets[this.subWalletId].getDisplayBalance();
+    let spendableRaw = this.fromSubWallet.getRawBalanceSpendable();
+    let fullRaw = this.fromSubWallet.getRawBalance();
+    if (spendableRaw && fullRaw && fullRaw.minus(spendableRaw).gt(1000)) {
+      return this.fromSubWallet.getDisplayAmount(spendableRaw);
+    }
+    return full;
+  }
+
+  /**
+   * Quick-amount chip: sets the entry to a fraction (0.25 / 0.5 / 0.75) of the spendable
+   * balance. Always expressed in token units so the fraction is exact regardless of the
+   * current fiat/token toggle, and rounded DOWN so it can never exceed the balance.
+   */
+  public setPercentAmount(fraction: number): void {
+    this.zone.run(() => {
+      this.sendMax = false;
+      this.amountDenomination = 'token';
+      this.activePercent = fraction;
+      let decimals = Math.min(this.fromSubWallet?.tokenDecimals ?? 8, 8);
+      let value = this.getSpendableDisplayBalance().multipliedBy(fraction).decimalPlaces(decimals, BigNumber.ROUND_DOWN);
+      // toFixed() (no arg) never uses exponential notation, unlike toString(), so tiny
+      // amounts stay a clean decimal string the keypad can keep appending to.
+      this.onHeroAmountInput(value.toFixed());
+    });
   }
 
   // if user has no inscription, or if not max clicked, don't show the toggle

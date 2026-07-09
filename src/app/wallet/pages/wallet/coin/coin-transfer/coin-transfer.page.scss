@@ -222,7 +222,9 @@
                 width: 100%;
                 gap: 8px;
 
-                .amount-hero__input {
+                // Custom tap-display (replaces the native input so the system keyboard
+                // never opens). A brief pop animates each value change for liveliness.
+                .amount-hero__value {
                     flex: 0 1 auto;
                     min-width: 0;
                     max-width: 100%;
@@ -232,13 +234,14 @@
                     line-height: 1.05;
                     letter-spacing: normal;
                     text-align: right;
+                    white-space: nowrap;
                     color: #FFFFFF;
-                    --padding-top: 0;
-                    --padding-bottom: 0;
-                    --padding-start: 0;
-                    --padding-end: 0;
-                    --placeholder-color: var(--essentials-text-secondary);
-                    --placeholder-opacity: 1;
+                    font-variant-numeric: tabular-nums;
+                    transition: color 0.2s ease;
+
+                    &.is-empty {
+                        color: var(--essentials-text-secondary);
+                    }
                 }
 
                 .amount-hero__unit {
@@ -382,7 +385,7 @@
             }
         }
 
-        /* SCR-022: single centered "Available" line with a hairline stadium Max chip */
+        /* SCR-022: single centered "Available" line */
         .balance-row {
             display: flex;
             flex-direction: column;
@@ -404,21 +407,97 @@
                     color: #FFFFFF;
                 }
             }
+        }
 
-            .max-chip {
+        /* SCR-002: quick-amount chips (25 / 50 / 75 / Max) — frosted glass, orange when active */
+        .quick-amounts {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 18px;
+
+            .quick-chip {
+                flex: 1 1 0;
+                max-width: 92px;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                padding: 10px 16px;
-                border: 1px solid rgba(255, 255, 255, 0.12);
+                height: 40px;
+                padding: 0 12px;
                 border-radius: 999px;
-                background: transparent;
-                color: var(--ion-text-color);
                 font-family: inherit;
-                font-size: 18px;
+                font-size: 15px;
                 font-weight: 700;
                 line-height: 1;
+                letter-spacing: 0.2px;
                 cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+                color: var(--ion-text-color);
+                // Frosted "Glass Effect" chip (Figma glass system).
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 100%),
+                    rgba(255, 255, 255, 0.05);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 0.5px solid rgba(255, 255, 255, 0.14);
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+                transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease,
+                    color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+                &:active {
+                    transform: scale(0.94);
+                }
+
+                // Selected fraction (or armed Max): warm glossy accent, gently raised.
+                &.active {
+                    color: #111111;
+                    background: linear-gradient(180deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 255, 255, 0.04) 55%,
+                        rgba(0, 0, 0, 0.06) 100%), var(--essentials-primary, #ED6E2B);
+                    border-color: transparent;
+                    box-shadow: 0 4px 16px rgba(237, 110, 43, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+                    transform: scale(1.04);
+                }
+            }
+        }
+
+        /* SCR-002: custom on-screen numpad (Figma "Custom Numpad" 342x304: 3x4 stadium
+           keys, chromeless — big white 34px/700 digits, soft circular press wash). */
+        .amount-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            row-gap: 4px;
+            column-gap: 6px;
+            width: 100%;
+            max-width: 342px;
+            margin: 20px auto 4px;
+
+            .key {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                height: 64px;
+                border: none;
+                border-radius: 9999px;
+                background: transparent;
+                font-family: inherit;
+                font-size: 34px;
+                font-weight: 700;
+                line-height: 1;
+                color: #FFFFFF;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+                transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.18s ease;
+
+                &:active {
+                    transform: scale(0.90);
+                    // Soft circular press wash within the stadium hit area.
+                    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.18) 0%,
+                        rgba(255, 255, 255, 0.06) 55%, transparent 72%);
+                }
+
+                ion-icon {
+                    font-size: 30px;
+                }
             }
         }
 

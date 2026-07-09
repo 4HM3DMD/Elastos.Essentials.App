@@ -134,12 +134,10 @@
             <!-- Sent data - Not for NFT: centered chromeless amount hero (SCR-001) -->
             <div class="amount-hero" *ngIf="transferType === 2">
                 <p class="amount-hero__caption">{{ 'wallet.enter-amount' | translate }}</p>
+                <!-- Custom entry: the value is driven by the on-screen numpad below, so the
+                     native keyboard never opens on the amount field (SCR-002). -->
                 <div class="amount-hero__entry">
-                    <ion-input *ngIf="!sendMax" class="amount-hero__input" type="number" inputmode="decimal"
-                        name="amount" ngDefaultControl placeholder="0" [ngModel]="rawAmountInput"
-                        (ngModelChange)="onHeroAmountInput($event)"></ion-input>
-                    <ion-input *ngIf="sendMax" class="amount-hero__input" [value]="displayBalanceString"
-                        (ionChange)="resetAmountInput()"></ion-input>
+                    <span class="amount-hero__value" [class.is-empty]="!heroHasValue">{{ heroDisplayValue }}</span>
                     <span class="amount-hero__unit">{{ heroUnitSymbol }}</span>
                 </div>
                 <!-- Fiat/native conversion pill with swap toggle (SCR-002) -->
@@ -167,16 +165,45 @@
                 </div>
             </ion-grid>
 
-            <!-- Token balance (SCR-022: single centered "Available" line + Max as a hairline stadium chip) -->
+            <!-- Token balance (SCR-022: single centered "Available" line). -->
             <ion-row class="balance-row" *ngIf="!isTransferTypeSendNFT()">
                 <p class="available-label">{{ 'wallet.available' | translate }}: <strong>{{ displayBalanceString }} {{
                         tokensymbol }}</strong>
                     <strong *ngIf="displayBalanceLocked != ''"> {{ 'wallet.balance-locked' |
                         translate:{locked: displayBalanceLocked} }}</strong>
                 </p>
-                <button *ngIf="supportsMaxTransfer()" type="button" class="max-chip" (click)="setMaxTransfer()">{{
-                    'wallet.max' | translate }}</button>
             </ion-row>
+
+            <!-- SCR-002: quick-amount chips (fractions of the spendable balance) + Max. -->
+            <div class="quick-amounts" *ngIf="!isTransferTypeSendNFT()">
+                <button type="button" class="quick-chip" [class.active]="activePercent === 0.25"
+                    (click)="setPercentAmount(0.25)">25%</button>
+                <button type="button" class="quick-chip" [class.active]="activePercent === 0.5"
+                    (click)="setPercentAmount(0.5)">50%</button>
+                <button type="button" class="quick-chip" [class.active]="activePercent === 0.75"
+                    (click)="setPercentAmount(0.75)">75%</button>
+                <button *ngIf="supportsMaxTransfer()" type="button" class="quick-chip quick-chip--max"
+                    [class.active]="sendMax" (click)="setMaxTransfer()">{{ 'wallet.max' | translate }}</button>
+            </div>
+
+            <!-- SCR-002: custom on-screen numpad. Drives the amount hero directly so the
+                 system keyboard never covers the send screen. -->
+            <div class="amount-keypad" *ngIf="!isTransferTypeSendNFT()">
+                <button type="button" class="key" (click)="onAmountKey('1')">1</button>
+                <button type="button" class="key" (click)="onAmountKey('2')">2</button>
+                <button type="button" class="key" (click)="onAmountKey('3')">3</button>
+                <button type="button" class="key" (click)="onAmountKey('4')">4</button>
+                <button type="button" class="key" (click)="onAmountKey('5')">5</button>
+                <button type="button" class="key" (click)="onAmountKey('6')">6</button>
+                <button type="button" class="key" (click)="onAmountKey('7')">7</button>
+                <button type="button" class="key" (click)="onAmountKey('8')">8</button>
+                <button type="button" class="key" (click)="onAmountKey('9')">9</button>
+                <button type="button" class="key key--dot" (click)="onAmountKey('.')">.</button>
+                <button type="button" class="key" (click)="onAmountKey('0')">0</button>
+                <button type="button" class="key key--del" (click)="onAmountKey('del')" aria-label="delete">
+                    <ion-icon name="backspace-outline"></ion-icon>
+                </button>
+            </div>
             <ion-row class="toggle-row" *ngIf="canShowToogleForInscription()">
                 <ion-col class="left-col" size="10">
                     <h1 *ngIf="useInscriptionUTXO">{{ 'wallet.btc-send-inscription-utxos' | translate:{utxos: inscriptionUtxoBalanceOnBTCString}  }}</h1>
