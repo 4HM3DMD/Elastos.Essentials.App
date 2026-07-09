@@ -100,9 +100,14 @@ export class EthereumProtocolService {
         this.showBrowser();
         break;
       case 'signInsecureMessage':
-        dappBrowser.hide();
-        await this.handleInsecureEthSign(message);
-        void dappBrowser.show();
+        // DB-3.7: legacy eth_sign signs an arbitrary 32-byte hash with the user's key -
+        // the classic wallet-drainer primitive. It is disabled by default (MetaMask
+        // parity) and rejected with the EIP-1193 "Unsupported Method" code.
+        Logger.warn('ethereum', 'Rejecting legacy eth_sign (disabled by default)');
+        this.sendInjectedError('ethereum', message.data.id, {
+          code: 4200,
+          message: 'eth_sign is disabled for security reasons. Use personal_sign or eth_signTypedData instead.'
+        });
         break;
       case 'wallet_switchEthereumChain':
         Logger.log('ethereum', 'Received switch ethereum chain request');
@@ -125,7 +130,14 @@ export class EthereumProtocolService {
         this.showBrowser();
         break;
       default:
+        // DB-2.2: never leave a dapp request pending. Any method we do not handle is
+        // rejected immediately with the EIP-1193 "Unsupported Method" code (4200)
+        // instead of only logging, which used to hang the dapp's promise forever.
         Logger.warn('ethereum', 'Unhandled ethereum message command', message.data.name);
+        this.sendInjectedError('ethereum', message.data.id, {
+          code: 4200,
+          message: 'Unsupported method: ' + message.data.name
+        });
     }
   }
 
@@ -506,7 +518,11 @@ export class EthereumProtocolService {
   }
 
   /**
-   * Sign data with wallet private key according. Legacy insecure eth_sign command support.
+   * Sign data with wallet private key. Legacy insecure eth_sign command support.
+   *
+   * DB-3.7: eth_sign is disabled by default (rejected in handleMessage), so this method is
+   * currently unreachable. It is kept as the implementation for a future advanced
+   * "enable eth_sign" setting, which must gate it behind an explicit high-risk warning.
    */
   private async handleInsecureEthSign(message: DABMessage): Promise<void> {
     const rawData: { data: unknown } = message.data.object;
@@ -564,9 +580,11 @@ export class EthereumProtocolService {
         this.sendInjectedResponse('ethereum', message.data.id, {}); // Successfully switched
       } else {
         Logger.log('ethereum', 'Network switch cancelled');
+        // DB-2.2: user rejection must use the EIP-1193 4001 code, not a bespoke -1,
+        // so dapps can detect the cancellation correctly.
         this.sendInjectedError('ethereum', message.data.id, {
-          code: -1,
-          message: 'Cancelled operation'
+          code: 4001,
+          message: 'User rejected the request'
         });
       }
     }
