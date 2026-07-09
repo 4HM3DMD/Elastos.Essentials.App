@@ -7,22 +7,40 @@
 .onboard-container {
   min-height: 100%;
   width: 100%;
-  background-image: url("/assets/background/background-light-small.jpg");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
   margin: 0 auto;
-  padding-top: 67px;
+  // Figma (ONBOARDING / Starting): the logo lockup is centered on the screen, so center
+  // the logo + welcome content as a single vertical group instead of pinning it to the top.
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  // Figma: flat #111 base with a soft colourful glow across the upper-middle, faded back
+  // into the page background top and bottom. The artistic wallpaper is a Figma image export
+  // (pending from the owner); this is a CSS approximation to be tuned on device.
+  background:
+    linear-gradient(180deg,
+      var(--ion-background-color, #111111) 0%,
+      rgba(17, 17, 17, 0.4) 22%,
+      rgba(17, 17, 17, 0) 42%,
+      rgba(17, 17, 17, 0) 56%,
+      var(--ion-background-color, #111111) 80%),
+    radial-gradient(70% 40% at 24% 34%, rgba(237, 110, 43, 0.55) 0%, rgba(237, 110, 43, 0) 60%),
+    radial-gradient(70% 42% at 80% 30%, rgba(109, 116, 239, 0.50) 0%, rgba(109, 116, 239, 0) 60%),
+    radial-gradient(80% 46% at 52% 46%, rgba(0, 210, 133, 0.28) 0%, rgba(0, 210, 133, 0) 60%),
+    var(--ion-background-color, #111111);
 
   .logo-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 0 14.4px 0;
+    margin: 0 0 28px 0;
     padding: 0 16px;
-    
+
     img {
-      width: 135px;
-      height: 133px;
+      // Figma logo lockup is ~259px wide; the circular glyph reads well at ~170px until the
+      // wide wordmark SVG is exported by the owner.
+      width: 170px;
+      height: 170px;
     }
   }
 
@@ -79,19 +97,14 @@
   }
 }
 
-/** Dark Mode **/
-.dark-container {
-  background-image: url("/assets/background/background-dark-small.jpg");
-}
+/** Onboarding always renders the dark #111 glow; no separate dark background image. **/
 
 @media screen and (max-height: 640px) {
-  .onboard-container {  
-    padding-top: 53.6px;
-    
+  .onboard-container {
     .logo-container {
       img {
-        width: 90px;
-        height: 89px;
+        width: 130px;
+        height: 130px;
       }
     }
   
