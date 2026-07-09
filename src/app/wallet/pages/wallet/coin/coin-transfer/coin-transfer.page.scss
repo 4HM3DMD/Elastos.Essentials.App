@@ -208,11 +208,11 @@
             .amount-hero__caption {
                 margin: 0 0 12px;
                 padding: 0;
-                font-size: 13px;
-                font-weight: 500;
+                font-size: 18px;
+                font-weight: 700;
                 letter-spacing: normal;
                 text-align: center;
-                color: var(--essentials-text-secondary);
+                color: var(--ion-text-color);
             }
 
             .amount-hero__entry {
@@ -227,8 +227,8 @@
                     min-width: 0;
                     max-width: 100%;
                     margin: 0;
-                    font-size: 54px;
-                    font-weight: 600;
+                    font-size: 80px;
+                    font-weight: 700;
                     line-height: 1.05;
                     letter-spacing: normal;
                     text-align: right;
@@ -243,10 +243,10 @@
 
                 .amount-hero__unit {
                     flex: 0 0 auto;
-                    font-size: 22px;
-                    font-weight: 500;
+                    font-size: 32px;
+                    font-weight: 700;
                     letter-spacing: normal;
-                    color: var(--essentials-text-secondary);
+                    color: var(--ion-text-color);
                 }
             }
         }
@@ -258,14 +258,14 @@
             justify-content: center;
             gap: 6px;
             margin: 14px auto 0;
-            padding: 7px 14px;
+            padding: 10px 16px;
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 999px;
             background: transparent;
-            color: var(--essentials-text-secondary);
+            color: var(--ion-text-color);
             font-family: inherit;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 18px;
+            font-weight: 700;
             line-height: 1;
             letter-spacing: normal;
             cursor: pointer;
@@ -275,8 +275,8 @@
             }
 
             .conversion-pill__swap {
-                font-size: 15px;
-                color: var(--essentials-accent);
+                font-size: 18px;
+                color: var(--ion-text-color);
             }
         }
 
@@ -393,14 +393,14 @@
 
             .available-label {
                 margin: 0;
-                font-size: 13px;
-                font-weight: 500;
+                font-size: 18px;
+                font-weight: 700;
                 letter-spacing: normal;
                 text-align: center;
-                color: var(--essentials-text-secondary);
+                color: var(--ion-text-color);
 
                 strong {
-                    font-weight: 600;
+                    font-weight: 700;
                     color: #FFFFFF;
                 }
             }
@@ -409,14 +409,14 @@
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                padding: 6px 16px;
+                padding: 10px 16px;
                 border: 1px solid rgba(255, 255, 255, 0.12);
                 border-radius: 999px;
                 background: transparent;
-                color: var(--essentials-text-secondary);
+                color: var(--ion-text-color);
                 font-family: inherit;
-                font-size: 12px;
-                font-weight: 600;
+                font-size: 18px;
+                font-weight: 700;
                 line-height: 1;
                 cursor: pointer;
             }
