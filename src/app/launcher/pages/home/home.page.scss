@@ -173,7 +173,7 @@ ion-content {
 
         .pillar {
             background: var(--essentials-box-color);
-            border-radius: 16px;
+            border-radius: 14px;
             padding: 0 14px;
         }
 
@@ -181,8 +181,15 @@ ion-content {
         // export), not the shared 38px default. SCR-067: pillar title ~20px,
         // sub ~13px. A 44px disc + 8px row padding yields the measured 60px card.
         .pillar ::ng-deep .icon-circle {
-            width: 44px !important;
-            height: 44px !important;
+            width: 46px !important;
+            height: 46px !important;
+            // Figma (235:23040): frosted "Glass Effect" disc, not a solid brand gradient.
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 100%),
+                rgba(255, 255, 255, 0.06) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 0.5px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.16);
         }
 
         .pillar ::ng-deep .row {
@@ -190,36 +197,23 @@ ion-content {
         }
 
         .pillar ::ng-deep .text .title {
-            font-size: 20px !important;
+            font-size: 16px !important;
         }
 
         .pillar ::ng-deep .text .sub {
-            font-size: 13px !important;
+            font-size: 10px !important;
         }
 
-        // Exact 2026 pillar disc gradients (sampled from Figma) with white glyphs.
-        .pillar.value ::ng-deep .icon-circle {
-            background: linear-gradient(158deg, #FFA971 0%, #F07A38 50%, #E24A00 100%) !important;
-        }
-
-        .pillar.identity ::ng-deep .icon-circle {
-            background: linear-gradient(158deg, #A4D4FF 0%, #0058C4 100%) !important;
-        }
-
-        .pillar.apps ::ng-deep .icon-circle {
-            background: linear-gradient(158deg, #CCCCCC 0%, #434343 100%) !important;
-        }
-
-        // Center the white glyph in the disc (do not stretch it to fill).
-        // Glyph ~26px inside the 44px disc (~59% fill, matching the frame).
+        // Figma: a small muted monochrome glyph centered in the glass disc
+        // (not an oversized white glyph on a vivid gradient).
         .pillar ::ng-deep .icon-circle .inline-icon {
-            width: 26px;
-            height: 26px;
-            color: #FFFFFF;
+            width: 20px;
+            height: 20px;
+            color: rgba(255, 255, 255, 0.82);
 
             svg {
-                width: 26px;
-                height: 26px;
+                width: 20px;
+                height: 20px;
                 display: block;
             }
         }
@@ -235,8 +229,8 @@ ion-content {
             margin: 0 0 10px;
 
             h2 {
-                // Figma: ~24px Manrope Medium.
-                font-size: 24px;
+                // Figma latest (235:23040): ~18px Manrope Medium.
+                font-size: 18px;
                 font-weight: 500;
                 color: var(--ion-text-color);
                 margin: 0;
@@ -267,6 +261,19 @@ ion-content {
             font-size: 14px;
             color: var(--essentials-text-secondary);
         }
+    }
+
+    // Home is the compact screen (Figma 235:23040): smaller action-tile labels and
+    // token-list rows than the larger wallet screens that share these components.
+    .tiles ::ng-deep .label {
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .tokens .token-list ::ng-deep .title,
+    .tokens .token-list ::ng-deep .value {
+        font-size: 16px;
+        font-weight: 500;
     }
 
 }

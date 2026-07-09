@@ -20,9 +20,9 @@
   .icon-circle {
     position: relative;
     flex-shrink: 0;
-    // SCR-091: token-row disc is 42px in the Figma frames.
-    width: 42px;
-    height: 42px;
+    // Figma frames (Home 235:23040 and Value 78:827 both measure 34px).
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     overflow: visible;
     // Navy coin disc (shows behind transparent marks like the Elastos icon; hidden
