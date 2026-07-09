@@ -7,7 +7,6 @@ import { BuiltInIcon, TitleBarIcon, TitleBarIconSlot, TitleBarMenuItem } from 's
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { GlobalWalletConnectService, WalletConnectSessionRequestSource } from 'src/app/services/walletconnect/global.walletconnect.service';
-import { WalletConnectV1Service } from 'src/app/services/walletconnect/walletconnect.v1.service';
 import { WalletConnectV2Service } from 'src/app/services/walletconnect/walletconnect.v2.service';
 import { WalletService } from 'src/app/wallet/services/wallet.service';
 import { DeveloperService } from '../../../services/developer.service';
@@ -24,7 +23,6 @@ export class WalletConnectPrepareToConnectPage implements OnInit {
   public suggestToResetSession = false;
   private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void;
   private watchdogTimer: any; // Timeout by setTimeout()
-  private wcVersion: number = null;
 
   constructor(
     private zone: NgZone,
@@ -35,7 +33,6 @@ export class WalletConnectPrepareToConnectPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private walletConnect: GlobalWalletConnectService,
-    private walletConnectV1: WalletConnectV1Service,
     private walletConnectV2: WalletConnectV2Service,
     private globalNav: GlobalNavService,
     private walletManager: WalletService,
@@ -44,9 +41,6 @@ export class WalletConnectPrepareToConnectPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    if (this.router.getCurrentNavigation().extras) {
-      this.wcVersion = <number>this.router.getCurrentNavigation().extras.state.version;
-    }
   }
 
   ionViewWillEnter() {
@@ -104,10 +98,7 @@ export class WalletConnectPrepareToConnectPage implements OnInit {
   }
 
   private async rejectSession(reason: string) {
-    if (this.wcVersion === 1)
-      await this.walletConnectV1.rejectSession(null, reason);
-    else
-      await this.walletConnectV2.rejectSession(null, reason);
+    await this.walletConnectV2.rejectSession(null, reason);
   }
 
   viewSessions() {

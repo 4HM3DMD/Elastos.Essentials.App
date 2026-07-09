@@ -41,7 +41,6 @@ import type {
   RuntimeContext
 } from '@feedsnetwork/feeds-js-sdk';
 import type { CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
-import type WalletConnect from '@walletconnect/client';
 import type Client from '@walletconnect/sign-client';
 import type { ec } from 'elliptic';
 import type PhishingDetector from 'eth-phishing-detect';
@@ -138,13 +137,6 @@ export const lazyJsonLdImport = async (): Promise<any> => {
   if (!importsCache['jsonld']) importsCache['jsonld'] = await import('jsonld');
 
   return importsCache['jsonld'].default;
-};
-
-export const lazyWalletConnectImport = async (): Promise<typeof WalletConnect> => {
-  if (!importsCache['@walletconnect/client'])
-    importsCache['@walletconnect/client'] = await import('@walletconnect/client');
-
-  return importsCache['@walletconnect/client'].default;
 };
 
 export const lazyWalletConnectSignClientImport = async (): Promise<typeof Client> => {

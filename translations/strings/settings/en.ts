@@ -100,6 +100,8 @@ export const en = {
     'wallet-connect-prepare-to-connect': 'Initiating Wallet Connect',
     'wallet-connect-popup': 'Operation completed, please return to the original app.',
     'wallet-connect-session-disconnected': 'Wallet connect session disconnected',
+    'wallet-connect-v1-unsupported':
+      'This link uses the retired WalletConnect v1 protocol, which is no longer supported. Please reconnect using a current WalletConnect version.',
     'wallet-connect-error':
       'An external application just tried to send a request that cannot be understood by Essentials.',
     'raw-request': 'Raw request: ',

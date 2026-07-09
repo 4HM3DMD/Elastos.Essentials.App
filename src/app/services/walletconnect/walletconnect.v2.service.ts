@@ -1,5 +1,4 @@
 import { Injectable, NgZone } from '@angular/core';
-import type WalletConnect from '@walletconnect/client';
 import type { SignClient } from '@walletconnect/sign-client/dist/types/client';
 import type { PairingTypes, ProposalTypes, SessionTypes } from '@walletconnect/types';
 import moment from 'moment';
@@ -104,11 +103,6 @@ export enum WalletConnectSessionRequestSource {
   SCANNER, // User manually used the essentials scanner to scan a WC QR code
   EXTERNAL_INTENT // Probably a request from the connectivity SDK (mobile app, web app) that opens Essentials directly
 }
-
-export type ConnectorWithExtension = {
-  wc: WalletConnect;
-  sessionExtension: WalletConnectSessionExtension;
-};
 
 @Injectable({
   providedIn: 'root'

@@ -1,5 +1,4 @@
 import { Injectable, NgZone } from '@angular/core';
-import type WalletConnect from '@walletconnect/client';
 import { parseUri } from '@walletconnect/utils';
 import { Logger } from '../../logger';
 import { IdentityEntry } from '../../model/didsessions/identityentry';
@@ -9,7 +8,6 @@ import { GlobalNavService } from '../global.nav.service';
 import { GlobalService, GlobalServiceManager } from '../global.service.manager';
 import { WalletConnectInstance } from './instances';
 import { walletConnectStore } from './store';
-import { WalletConnectV1Service } from './walletconnect.v1.service';
 import { WalletConnectV2Service } from './walletconnect.v2.service';
 
 /**
@@ -24,7 +22,6 @@ export enum WalletConnectSessionRequestSource {
   providedIn: 'root'
 })
 export class GlobalWalletConnectService extends GlobalService {
-  private initiatingConnector: WalletConnect = null;
   private onGoingRequestSource: WalletConnectSessionRequestSource = null;
 
   constructor(
@@ -32,7 +29,6 @@ export class GlobalWalletConnectService extends GlobalService {
     private nav: GlobalNavService,
     private globalNativeService: GlobalNativeService,
     private globalIntentService: GlobalIntentService,
-    private v1: WalletConnectV1Service,
     private v2: WalletConnectV2Service
   ) {
     super();
@@ -103,9 +99,6 @@ export class GlobalWalletConnectService extends GlobalService {
       }
     });
 
-    // Initialize v1 service
-    await this.v1.init();
-
     // Initialize v2 service
     await this.v2.init();
   }
@@ -150,10 +143,16 @@ export class GlobalWalletConnectService extends GlobalService {
 
     this.onGoingRequestSource = source;
 
-    // We support both WC v1 and 2. Detect which one is received here.
+    // Only WalletConnect v2 is supported. The v1 bridge network was shut down in 2023 and the
+    // protocol is retired, so v1 URIs are rejected with a clear message rather than handled.
     const { version } = parseUri(uri);
 
-    if (version !== 1 && version !== 2) {
+    if (version === 1) {
+      this.globalNativeService.genericToast('settings.wallet-connect-v1-unsupported', 6000);
+      return;
+    }
+
+    if (version !== 2) {
       if (Number.isNaN(version)) {
         this.globalNativeService.genericToast(`Invalid wallet connect URL: ${uri}!`, 5000);
       } else {
@@ -173,11 +172,7 @@ export class GlobalWalletConnectService extends GlobalService {
     });
 
     try {
-      if (version === 1) {
-        await this.v1.handleWCURIRequest(uri, source, receivedIntent);
-      } else if (version === 2) {
-        await this.v2.handleWCURIRequest(uri, source, receivedIntent);
-      }
+      await this.v2.handleWCURIRequest(uri, source, receivedIntent);
     } catch (e) {
       Logger.error('WalletConnect initialization error: ', e);
       let message = typeof e === 'string' ? e : e.message;
@@ -192,7 +187,6 @@ export class GlobalWalletConnectService extends GlobalService {
   }
 
   public async killAllSessions(): Promise<void> {
-    await this.v1.killAllSessions();
     await this.v2.killAllSessions();
 
     Logger.log('walletconnect', 'Killed all sessions');
