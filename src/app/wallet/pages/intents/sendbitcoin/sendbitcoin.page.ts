@@ -26,6 +26,7 @@ import { AlertController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import BigNumber from 'bignumber.js';
 import { MenuSheetMenu } from 'src/app/components/menu-sheet/menu-sheet.component';
+import { parseRequestOrigin, RequestOrigin } from 'src/app/components/ui/ui-origin-header/ui-origin-header.component';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import {
   BuiltInIcon,
@@ -74,6 +75,8 @@ export class SendBitcoinPage implements OnInit {
   public networkWallet: AnyNetworkWallet = null;
   public btcSubWallet: BTCSubWallet = null;
   private receivedIntent: EssentialsIntentPlugin.ReceivedIntent;
+  // DB-3.1: the requesting dApp origin shown at the top of the sheet (anti-phishing).
+  public requestOrigin: RequestOrigin = null;
   public intentParams: SendBitcoinParam = null;
   public balanceBTC: BigNumber;
   public sendAmountOfBTC: BigNumber;
@@ -119,6 +122,7 @@ export class SendBitcoinPage implements OnInit {
     const navigation = this.router.getCurrentNavigation();
     if (navigation && navigation.extras && navigation.extras.state) {
       this.receivedIntent = navigation.extras.state as EssentialsIntentPlugin.ReceivedIntent;
+      this.requestOrigin = parseRequestOrigin(this.receivedIntent?.params?.dappOrigin);
       this.intentParams = this.receivedIntent.params.payload.params[0];
       this.sendAmountOfBTC = new BigNumber(this.intentParams.satAmount).dividedBy(Config.SATOSHI);
     }

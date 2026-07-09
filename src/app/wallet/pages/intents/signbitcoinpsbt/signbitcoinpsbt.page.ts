@@ -24,6 +24,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as BTC from 'bitcoinjs-lib';
 import { bitcoin, testnet } from 'bitcoinjs-lib/src/networks';
+import { parseRequestOrigin, RequestOrigin } from 'src/app/components/ui/ui-origin-header/ui-origin-header.component';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import {
   BuiltInIcon,
@@ -81,6 +82,9 @@ export class SignBitcoinPsbtPage implements OnInit {
   private receivedIntent: EssentialsIntentPlugin.ReceivedIntent;
   public intentParams: SignBitcoinPsbtParam = null;
 
+  // DB-3.1: the requesting dApp origin shown at the top of the sheet (anti-phishing).
+  public requestOrigin: RequestOrigin = null;
+
   public loading = true;
   public actionIsGoing = false;
 
@@ -134,6 +138,7 @@ export class SignBitcoinPsbtPage implements OnInit {
     if (navigation && navigation.extras && navigation.extras.state) {
       this.receivedIntent = navigation.extras.state as EssentialsIntentPlugin.ReceivedIntent;
       this.intentParams = this.receivedIntent.params.payload.params[0];
+      this.requestOrigin = parseRequestOrigin(this.receivedIntent?.params?.dappOrigin);
     }
   }
 

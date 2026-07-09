@@ -24,6 +24,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import BigNumber from 'bignumber.js';
 import * as BTC from 'bitcoinjs-lib';
+import { parseRequestOrigin, RequestOrigin } from 'src/app/components/ui/ui-origin-header/ui-origin-header.component';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import {
   BuiltInIcon,
@@ -65,6 +66,8 @@ type SignBitcoinDataParam = {
 export class SignBitcoinDataPage implements OnInit {
   @ViewChild(TitleBarComponent, { static: true }) titleBar: TitleBarComponent;
 
+  // DB-3.1: the requesting dApp origin shown at the top of the sheet (anti-phishing).
+  public requestOrigin: RequestOrigin = null;
   public isSignDataEnable = false;
   public targetNetwork: AnyNetwork = null;
   public networkWallet: AnyNetworkWallet = null;
@@ -103,6 +106,7 @@ export class SignBitcoinDataPage implements OnInit {
     const navigation = this.router.getCurrentNavigation();
     if (navigation && navigation.extras && navigation.extras.state) {
       this.receivedIntent = navigation.extras.state as EssentialsIntentPlugin.ReceivedIntent;
+      this.requestOrigin = parseRequestOrigin(this.receivedIntent?.params?.dappOrigin);
       this.intentParams = this.receivedIntent.params.payload.params[0];
     }
   }

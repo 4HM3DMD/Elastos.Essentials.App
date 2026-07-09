@@ -12,6 +12,8 @@
 
   <ion-grid class="container" [class.dark-container]="theme.darkMode"
     *ngIf="!loading && networkWallet && isSignDataEnable">
+    <!-- DB-3.1: requesting origin (anti-phishing) -->
+    <ui-origin-header [origin]="requestOrigin"></ui-origin-header>
     <div>
       <ion-card>
         <img [src]="networkWallet.network.logo">

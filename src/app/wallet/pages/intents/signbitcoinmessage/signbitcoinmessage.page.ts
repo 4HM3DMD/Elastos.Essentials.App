@@ -23,6 +23,7 @@ import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
+import { parseRequestOrigin, RequestOrigin } from 'src/app/components/ui/ui-origin-header/ui-origin-header.component';
 import {
   BuiltInIcon,
   TitleBarIcon,
@@ -59,6 +60,9 @@ export class SignBitcoinMessagePage implements OnInit {
   private receivedIntent: EssentialsIntentPlugin.ReceivedIntent;
   public message: string = null;
 
+  // DB-3.1: the requesting dApp origin shown at the top of the sheet (anti-phishing).
+  public requestOrigin: RequestOrigin = null;
+
   public loading = true;
   public actionIsGoing = false;
 
@@ -85,6 +89,7 @@ export class SignBitcoinMessagePage implements OnInit {
     if (navigation && navigation.extras && navigation.extras.state) {
       this.receivedIntent = navigation.extras.state as EssentialsIntentPlugin.ReceivedIntent;
       this.message = this.receivedIntent?.params?.payload?.params[0];
+      this.requestOrigin = parseRequestOrigin(this.receivedIntent?.params?.dappOrigin);
     }
   }
 

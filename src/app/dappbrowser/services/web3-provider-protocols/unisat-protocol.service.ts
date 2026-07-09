@@ -381,6 +381,8 @@ export class UnisatProtocolService {
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/pushbitcointx', {
         masterWalletId: this.activeBTCWallet.masterWallet.id,
+        // DB-3.1: requesting dApp origin, rendered on the signing sheet.
+        dappOrigin: this.getCurrentUrl(),
         payload: {
           params: [message.data.object]
         }
@@ -418,6 +420,8 @@ export class UnisatProtocolService {
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/sendbitcoin', {
         masterWalletId: this.activeBTCWallet.masterWallet.id,
+        // DB-3.1: requesting dApp origin, rendered on the signing sheet.
+        dappOrigin: this.getCurrentUrl(),
         payload: {
           params: [message.data.object]
         }
@@ -452,6 +456,8 @@ export class UnisatProtocolService {
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/signbitcoinmessage', {
         masterWalletId: this.activeBTCWallet.masterWallet.id,
+        // DB-3.1: requesting dApp origin, rendered on the signing sheet.
+        dappOrigin: this.getCurrentUrl(),
         payload: {
           params: [message.data.object]
         }
@@ -486,6 +492,8 @@ export class UnisatProtocolService {
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/signbitcoindata', {
         masterWalletId: this.activeBTCWallet.masterWallet.id,
+        // DB-3.1: requesting dApp origin, rendered on the signing sheet.
+        dappOrigin: this.getCurrentUrl(),
         payload: {
           params: [message.data.object]
         }
@@ -520,6 +528,8 @@ export class UnisatProtocolService {
         };
       } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/signbitcoinpsbt', {
         masterWalletId: this.activeBTCWallet.masterWallet.id,
+        // DB-3.1: requesting dApp origin, rendered on the signing sheet.
+        dappOrigin: this.getCurrentUrl(),
         payload: {
           params: [message.data.object]
         }

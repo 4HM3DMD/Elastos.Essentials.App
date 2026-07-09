@@ -29,6 +29,7 @@ import {
   TitleBarIconSlot,
   TitleBarMenuItem
 } from 'src/app/components/titlebar/titlebar.types';
+import { parseRequestOrigin, RequestOrigin } from 'src/app/components/ui/ui-origin-header/ui-origin-header.component';
 import { Logger } from 'src/app/logger';
 import { GlobalFirebaseService } from 'src/app/services/global.firebase.service';
 import { GlobalIntentService } from 'src/app/services/global.intent.service';
@@ -66,6 +67,9 @@ export class PushBitcoinTxPage implements OnInit {
 
   public currentNetworkName = '';
 
+  // DB-3.1: the requesting dApp origin shown at the top of the sheet (anti-phishing).
+  public requestOrigin: RequestOrigin = null;
+
   // Titlebar
   private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void;
 
@@ -84,6 +88,7 @@ export class PushBitcoinTxPage implements OnInit {
     const navigation = this.router.getCurrentNavigation();
     if (navigation && navigation.extras && navigation.extras.state) {
       this.receivedIntent = navigation.extras.state as EssentialsIntentPlugin.ReceivedIntent;
+      this.requestOrigin = parseRequestOrigin(this.receivedIntent?.params?.dappOrigin);
       this.intentParams = this.receivedIntent.params.payload.params[0];
       if (this.intentParams?.rawtx) {
         this.rawtx = this.intentParams.rawtx;
