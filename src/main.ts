@@ -24,6 +24,9 @@ Logger.log("global", "Bootstrapping the App Module");
 platformBrowserDynamic().bootstrapModule(AppModule).then((module) => {
   let applicationRef = module.injector.get(ApplicationRef);
   let appComponent = applicationRef.components[0];
-  enableDebugTools(appComponent);
+  // Angular debug tools expose ng.profiler on the global scope; keep them out of production.
+  if (!environment.production) {
+    enableDebugTools(appComponent);
+  }
   Logger.log("global", "App module bootstrap complete");
 }).catch(err => console.log(err));

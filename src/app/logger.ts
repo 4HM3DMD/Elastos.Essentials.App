@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { Subscription } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { IdentityEntry } from './model/didsessions/identityentry';
 import { GlobalPreferencesService } from './services/global.preferences.service';
 import { GlobalService, GlobalServiceManager } from './services/global.service.manager';
@@ -27,32 +28,47 @@ class _Logger implements GlobalService {
   public init(originalConsole: Console) {
     this.originalConsole = originalConsole;
 
-    // Replace original log methods with placeholders to warn that the migration is needed
+    // Capture the real console methods BEFORE any reassignment. The app Logger.* methods
+    // apply these captured originals, so intentional logging keeps working regardless of the
+    // branch below.
     this.originalDebugLog = this.originalConsole.log;
     this.originalDebugWarn = this.originalConsole.warn;
     this.originalDebugErr = this.originalConsole.error;
 
-    this.originalConsole.log = (...args) => {
-      this.originalDebugLog.apply(this.originalConsole, [
-        '%cConvert-To-Logger',
-        'background: #3078c9; color: #FFF; font-weight:bold; padding:5px;',
-        ...args
-      ]);
-    };
-    this.originalConsole.warn = (...args) => {
-      this.originalDebugWarn.apply(this.originalConsole, [
-        '%cConvert-To-Logger WARNING',
-        'background: #3078c9; color: #FFF; font-weight:bold; padding:5px;',
-        ...args
-      ]);
-    };
-    this.originalConsole.error = (...args) => {
-      this.originalDebugErr.apply(this.originalConsole, [
-        '%cConvert-To-Logger ERROR',
-        'background: #3078c9; color: #FFF; font-weight:bold; padding:5px;',
-        ...args
-      ]);
-    };
+    if (environment.production) {
+      // Production: silence stray direct console.* calls so debug chatter (WalletConnect
+      // proposals, notification payloads, wallet addresses) never reaches the on-device
+      // inspector / adb logcat. console.error is left native for crash triage; the app
+      // Logger keeps printing via the originals captured above.
+      const noop = (..._args: any[]): void => { /* stripped in production */ };
+      this.originalConsole.log = noop;
+      this.originalConsole.warn = noop;
+      this.originalConsole.info = noop;
+      this.originalConsole.debug = noop;
+    } else {
+      // Development: keep the "Convert-To-Logger" nags that flag un-migrated console.* calls.
+      this.originalConsole.log = (...args) => {
+        this.originalDebugLog.apply(this.originalConsole, [
+          '%cConvert-To-Logger',
+          'background: #3078c9; color: #FFF; font-weight:bold; padding:5px;',
+          ...args
+        ]);
+      };
+      this.originalConsole.warn = (...args) => {
+        this.originalDebugWarn.apply(this.originalConsole, [
+          '%cConvert-To-Logger WARNING',
+          'background: #3078c9; color: #FFF; font-weight:bold; padding:5px;',
+          ...args
+        ]);
+      };
+      this.originalConsole.error = (...args) => {
+        this.originalDebugErr.apply(this.originalConsole, [
+          '%cConvert-To-Logger ERROR',
+          'background: #3078c9; color: #FFF; font-weight:bold; padding:5px;',
+          ...args
+        ]);
+      };
+    }
 
     GlobalServiceManager.getInstance().registerService(this);
   }
