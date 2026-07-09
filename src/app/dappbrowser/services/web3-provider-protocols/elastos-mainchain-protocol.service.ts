@@ -385,7 +385,8 @@ export class ElastosMainchainProtocolService {
         break;
       case AddressType.Normal_internal:
         internal = true;
-      // eslint-disable-next-line no-fallthrough
+        addressArray = elaMainChainNetworkWallet.safe.getAddresses(index, count, internal, null);
+        break;
       case AddressType.Normal_external:
         addressArray = elaMainChainNetworkWallet.safe.getAddresses(index, count, internal, null);
         break;
