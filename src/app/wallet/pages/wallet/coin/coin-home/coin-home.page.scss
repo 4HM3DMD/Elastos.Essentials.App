@@ -24,8 +24,8 @@ ion-content {
         margin-bottom: 24px;
 
         .token-hero-disc {
-            width: 56px;
-            height: 56px;
+            width: 70px;
+            height: 70px;
             border-radius: 100%;
             object-fit: contain;
             margin-bottom: 14px;
@@ -33,9 +33,9 @@ ion-content {
 
         .token-hero-caption {
             margin: 0 0 8px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--essentials-text-secondary);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--ion-text-color);
         }
 
         ui-amount-display {
@@ -51,14 +51,14 @@ ion-content {
             font-variant-numeric: tabular-nums;
 
             .hero-fiat {
-                font-size: 15px;
-                font-weight: 500;
+                font-size: 18px;
+                font-weight: 700;
                 color: var(--ion-text-color);
             }
 
             .hero-change {
-                font-size: 15px;
-                font-weight: 600;
+                font-size: 18px;
+                font-weight: 700;
 
                 &.up {
                     color: var(--essentials-success);
@@ -113,8 +113,8 @@ ion-content {
 
         .history-title {
             margin: 0;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
             text-align: left;
         }
 
@@ -342,13 +342,13 @@ ion-content {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            height: 52px;
+            height: 50px;
             padding: 0 20px;
             border: none;
-            border-radius: 26px;
+            border-radius: 25px;
             font-family: inherit;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
             line-height: 1;
             cursor: pointer;
         }
@@ -360,7 +360,7 @@ ion-content {
         }
 
         .pill-accent {
-            color: #ffffff;
+            color: #111111;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%), var(--essentials-primary, #ED6E2B);
         }
 
@@ -369,8 +369,8 @@ ion-content {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border-radius: 100%;
             border: 1px solid rgba(255, 255, 255, 0.08);
             background: var(--essentials-box-color);
