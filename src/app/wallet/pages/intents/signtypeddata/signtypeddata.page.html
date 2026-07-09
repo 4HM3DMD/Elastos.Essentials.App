@@ -4,6 +4,8 @@
     <p>{{ 'wallet.wallet-unsupported-on-network' | translate:{network: currentNetworkName} }}</p>
   </div>
   <ion-grid class="container" *ngIf="evmSubWallet">
+    <!-- DB-3.1: requesting origin (anti-phishing) -->
+    <ui-origin-header [origin]="requestOrigin"></ui-origin-header>
     <!-- CARD HEADER -->
     <div>
       <ion-card>

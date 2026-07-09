@@ -47,6 +47,7 @@ import { CoinTransferService } from '../../../services/cointransfer.service';
 import { Native } from '../../../services/native.service';
 import { UiService } from '../../../services/ui.service';
 import { WalletService } from '../../../services/wallet.service';
+import { parseRequestOrigin, RequestOrigin } from 'src/app/components/ui/ui-origin-header/ui-origin-header.component';
 
 @Component({
   selector: 'app-personalsign',
@@ -64,6 +65,9 @@ export class PersonalSignPage implements OnInit {
 
   private receivedIntent: EssentialsIntentPlugin.ReceivedIntent;
   private payloadToBeSigned: string;
+
+  // DB-3.1: the requesting dApp origin shown at the top of the sheet (anti-phishing).
+  public requestOrigin: RequestOrigin = null;
 
   private alreadySentIntentResponse = false;
 
@@ -91,6 +95,7 @@ export class PersonalSignPage implements OnInit {
       this.receivedIntent = navigation.extras.state as EssentialsIntentPlugin.ReceivedIntent;
       if (this.receivedIntent.params) {
         this.payloadToBeSigned = this.receivedIntent.params.data;
+        this.requestOrigin = parseRequestOrigin(this.receivedIntent.params.dappOrigin);
       }
     }
   }

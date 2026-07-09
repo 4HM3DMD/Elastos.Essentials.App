@@ -46,6 +46,7 @@ import { CoinTransferService } from '../../../services/cointransfer.service';
 import { Native } from '../../../services/native.service';
 import { UiService } from '../../../services/ui.service';
 import { WalletService } from '../../../services/wallet.service';
+import { parseRequestOrigin, RequestOrigin } from 'src/app/components/ui/ui-origin-header/ui-origin-header.component';
 
 type Message = {
   key: string;
@@ -71,6 +72,9 @@ export class SignTypedDataPage implements OnInit {
   private dataToSign = null;
   private useV4: boolean;
   public messageList: Message[] = [];
+
+  // DB-3.1: the requesting dApp origin shown at the top of the sheet (anti-phishing).
+  public requestOrigin: RequestOrigin = null;
 
   private alreadySentIntentResponse = false;
 
@@ -99,6 +103,7 @@ export class SignTypedDataPage implements OnInit {
       this.payloadToBeSigned = this.receivedIntent.params.payload;
       this.useV4 = this.receivedIntent.params.useV4;
       this.dataToSign = JSON.parse(this.payloadToBeSigned);
+      this.requestOrigin = parseRequestOrigin(this.receivedIntent.params.dappOrigin);
 
       if (this.useV4 && this.dataToSign.message) {
         for (let p of Object.keys(this.dataToSign.message)) {

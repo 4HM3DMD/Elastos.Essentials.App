@@ -1,0 +1,13 @@
+<div *ngIf="origin" class="origin-header" [class.insecure]="origin.secure === false"
+  [class.unverified]="origin.verified === 'unverified'">
+  <div class="origin-label">Requested by</div>
+  <div class="origin-host">
+    <span class="host-name">{{ origin.host }}</span>
+    <span *ngIf="origin.verified === 'verified'" class="badge verified">Verified</span>
+    <span *ngIf="origin.verified === 'unverified'" class="badge unverified">Unverified</span>
+  </div>
+  <div class="origin-meta" *ngIf="origin.secure === false || origin.label">
+    <span *ngIf="origin.secure === false" class="insecure-note">Not a secure (https) connection</span>
+    <span *ngIf="origin.label" class="origin-name">{{ origin.label }}</span>
+  </div>
+</div>

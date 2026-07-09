@@ -1,0 +1,70 @@
+.origin-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  margin: 0 0 16px;
+  border-radius: 12px;
+  background: var(--essentials-box-color, #1e1e1e);
+  border: 1px solid transparent;
+  text-align: left;
+
+  .origin-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--essentials-text-tertiary, rgba(255, 255, 255, 0.4));
+  }
+
+  .origin-host {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ion-text-color, #ffffff);
+    word-break: break-all;
+
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+
+      &.verified {
+        color: var(--essentials-success, #6dcd66);
+        background: rgba(109, 205, 102, 0.14);
+      }
+
+      &.unverified {
+        color: var(--essentials-warning, #ffd534);
+        background: rgba(255, 213, 52, 0.14);
+      }
+    }
+  }
+
+  .origin-meta {
+    font-size: 12px;
+    color: var(--essentials-text-secondary, rgba(255, 255, 255, 0.6));
+
+    .insecure-note {
+      color: var(--essentials-danger, #ff5f4b);
+      font-weight: 600;
+    }
+  }
+
+  // Loud states: an insecure or unverified origin is the exact phishing signal,
+  // so it must never read as normal chrome.
+  &.insecure {
+    border-color: var(--essentials-danger, #ff5f4b);
+  }
+
+  &.unverified {
+    border-color: var(--essentials-warning, #ffd534);
+  }
+}

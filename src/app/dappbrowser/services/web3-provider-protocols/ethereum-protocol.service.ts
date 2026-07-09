@@ -495,6 +495,8 @@ export class EthereumProtocolService {
       {
         masterWalletId: this.activeEVMWallet.masterWallet.id,
         chainId: this.activeEVMNetwork.getMainChainID(),
+        // DB-3.1: the requesting dApp origin, rendered on the signing sheet.
+        dappOrigin: this.currentUrl,
         ...rawData
       }
     );
@@ -511,6 +513,8 @@ export class EthereumProtocolService {
       {
         masterWalletId: this.activeEVMWallet.masterWallet.id,
         chainId: this.activeEVMNetwork.getMainChainID(),
+        // DB-3.1: the requesting dApp origin, rendered on the signing sheet.
+        dappOrigin: this.currentUrl,
         ...rawData
       }
     );

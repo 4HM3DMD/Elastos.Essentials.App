@@ -8,6 +8,7 @@ import { UiAmountDisplayComponent } from './ui-amount-display/ui-amount-display.
 import { UiChipRowComponent } from './ui-chip-row/ui-chip-row.component';
 import { UiEmptyStateComponent } from './ui-empty-state/ui-empty-state.component';
 import { UiKvRowComponent } from './ui-kv-row/ui-kv-row.component';
+import { UiOriginHeaderComponent } from './ui-origin-header/ui-origin-header.component';
 import { UiSheetHeaderComponent } from './ui-sheet-header/ui-sheet-header.component';
 import { UiSkeletonComponent } from './ui-skeleton/ui-skeleton.component';
 import { UiSparklineComponent } from './ui-sparkline/ui-sparkline.component';
@@ -27,6 +28,7 @@ import { UiTokenRowComponent } from './ui-token-row/ui-token-row.component';
     UiActionGridComponent,
     UiChipRowComponent,
     UiSheetHeaderComponent,
+    UiOriginHeaderComponent,
     UiKvRowComponent,
     UiEmptyStateComponent,
     UiSkeletonComponent,
@@ -40,6 +42,7 @@ import { UiTokenRowComponent } from './ui-token-row/ui-token-row.component';
     UiActionGridComponent,
     UiChipRowComponent,
     UiSheetHeaderComponent,
+    UiOriginHeaderComponent,
     UiKvRowComponent,
     UiEmptyStateComponent,
     UiSkeletonComponent,
