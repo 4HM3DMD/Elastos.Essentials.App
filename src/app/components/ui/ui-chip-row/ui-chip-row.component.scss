@@ -21,14 +21,19 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 12px 18px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 11px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 999px;
-    background: var(--essentials-box-color);
+    // Figma "Glass Effect": frosted translucent inactive chip.
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 100%),
+      rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.20);
     color: var(--ion-text-color);
     font-family: inherit;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 700;
     line-height: 1;
     cursor: pointer;
     transition: all 0.2s ease;
