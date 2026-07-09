@@ -39,13 +39,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         background: var(--essentials-accent, #ED6E2B);
         color: #FFFFFF;
-        font-size: 18px;
-        font-weight: 600;
+        font-size: 28px;
+        font-weight: 700;
         line-height: 1;
         text-transform: uppercase;
     }
@@ -55,8 +55,8 @@
         min-width: 0;
 
         .wallet-name {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 18px;
+            font-weight: 700;
             color: var(--ion-text-color);
             overflow: hidden;
             text-overflow: ellipsis;
@@ -65,7 +65,8 @@
 
         .wallet-did {
             margin-top: 2px;
-            font-size: 13px;
+            font-size: 14px;
+            font-weight: 700;
             color: var(--essentials-text-secondary);
             overflow: hidden;
             text-overflow: ellipsis;
@@ -86,8 +87,8 @@
     background: var(--essentials-box-color);
     border: 1px solid var(--essentials-border-color, rgba(255, 255, 255, 0.08));
     color: var(--ion-text-color);
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 700;
 
     img {
         width: 18px;
@@ -96,7 +97,7 @@
     }
 
     ion-icon {
-        font-size: 14px;
+        font-size: 18px;
         color: var(--essentials-text-secondary);
     }
 }
@@ -116,16 +117,16 @@
 
     .pnl-line {
         margin-top: 8px;
-        font-size: 13px;
-        font-weight: 600;
+        font-size: 18px;
+        font-weight: 700;
         font-variant-numeric: tabular-nums;
         display: flex;
         align-items: baseline;
         gap: 6px;
 
         .pnl-label {
-            color: var(--essentials-text-secondary);
-            font-weight: 500;
+            color: var(--ion-text-color);
+            font-weight: 700;
         }
 
         .pnl-value.up {
@@ -207,8 +208,8 @@
         margin: 18px 0 10px;
 
         span {
-            font-size: 21px;
-            font-weight: 600;
+            font-size: 28px;
+            font-weight: 700;
             color: var(--ion-text-color);
         }
     }
