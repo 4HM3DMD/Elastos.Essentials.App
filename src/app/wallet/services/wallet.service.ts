@@ -47,7 +47,6 @@ import {
   ElastosMainChainWalletNetworkOptions,
   LedgerAccountOptions,
   PrivateKeyType,
-  SerializedAccountAbstractionMasterWallet,
   SerializedLedgerMasterWallet,
   SerializedMasterWallet,
   SerializedStandardMasterWallet,
@@ -687,43 +686,6 @@ export class WalletService {
     };
 
     return this.createMasterWalletFromSerializedInfo(masterWalletInfo);
-  }
-
-  /**
-   * Creates a new ERC4337 Account Abstraction master wallet.
-   * The new master wallet is saved to storage, and instanciated/added to the local model.
-   */
-  public newAccountAbstractionWallet(
-    masterId: string,
-    walletName: string,
-    controllerWalletId: string,
-    aaProviderId: string,
-    chainId: number,
-    isDeployed = false,
-    deployedAddress?: string,
-    implementationAddress?: string,
-    deploymentTxHash?: string
-  ): Promise<MasterWallet> {
-    Logger.log('wallet', 'Creating a new Account Abstraction master wallet');
-
-    let masterWalletInfo: SerializedAccountAbstractionMasterWallet = {
-      type: WalletType.ACCOUNT_ABSTRACTION,
-      id: masterId,
-      name: walletName,
-      theme: defaultWalletTheme(),
-      networkOptions: [],
-      creator: WalletCreator.USER,
-      controllerMasterWalletId: controllerWalletId,
-      aaProviderId: aaProviderId
-    };
-
-    // Create the wallet first
-    const wallet = this.createMasterWalletFromSerializedInfo(masterWalletInfo);
-
-    // Note: Address saving/recovery is now handled by the AA network wallet
-    // through the account abstraction service, not through the safe
-
-    return wallet;
   }
 
   /**

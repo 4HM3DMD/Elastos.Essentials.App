@@ -63,9 +63,6 @@ import { TelosMainNetNetwork } from '../model/networks/telos/network/telos.mainn
 import { TelosTestNetNetwork } from '../model/networks/telos/network/telos.testnet.network';
 import { TronMainNetNetwork } from '../model/networks/tron/network/tron.mainnet.network';
 import { TronShastaTestNetNetwork } from '../model/networks/tron/network/tron.shasta.network';
-import { AccountAbstractionProvidersService } from './account-abstraction/account-abstraction-providers.service';
-import { AccountAbstractionService } from './account-abstraction/account-abstraction.service';
-import { BundlerService } from './account-abstraction/bundler.service';
 import { ContactsService } from './contacts.service';
 import { CurrencyService } from './currency.service';
 import { BridgeService } from './evm/bridge.service';
@@ -114,13 +111,10 @@ export class WalletInitService extends GlobalService {
     private swapService: SwapService, // IMPORTANT: unused, but keep it here for initialization
     private bridgeService: BridgeService, // IMPORTANT: unused, but keep it here for initialization
     private defiService: DefiService, // IMPORTANT: unused, but keep it here for initialization
-    private accountAbstractionService: AccountAbstractionService, // IMPORTANT: unused, but keep it here for initialization
-    private accountAbstractionBundlerService: BundlerService, // IMPORTANT: unused, but keep it here for initialization
     private erc20CoinService: ERC20CoinService,
     private tron20CoinSerice: TRC20CoinService,
     private walletUIService: WalletUIService, // IMPORTANT: unused, but keep it here for initialization
-    private httpClient: HttpClient,
-    private aaProviderRegistryService: AccountAbstractionProvidersService
+    private httpClient: HttpClient
   ) {
     super();
   }
@@ -144,9 +138,6 @@ export class WalletInitService extends GlobalService {
 
     // Register name resolvers
     this.registerNameResolvers();
-
-    // Initialize AA provider registry
-    await this.aaProviderRegistryService.init();
 
     await this.currencyService.init(); // Currency cache must be ready for other services
     // Do not await.

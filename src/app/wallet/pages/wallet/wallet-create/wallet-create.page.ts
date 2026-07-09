@@ -59,15 +59,6 @@ export class WalletCreatePage implements OnInit {
       if (navigation.extras.state.importType == ImportWalletType.PRIVATEKEY) {
         this.importByPrivateKey = true;
       }
-      if (navigation.extras.state.aaWallet === true) {
-        this.walletCreationService.type = NewWallet.ACCOUNT_ABSTRACTION;
-        // For account abstraction wallets, disable single/multi address and mnemonic passphrase requests
-        this.requestSingleMultiAddress = false;
-        this.requestMnemonicPassphrase = false;
-        // Set default values for account abstraction wallets
-        this.wallet.singleAddress = false; // Default to multi-address for AA wallets
-        this.useMnemonicPassphrase = false; // Default to no passphrase for AA wallets
-      }
     }
 
     // Override constructor settings if requestSingleMultiAddress is false
@@ -82,12 +73,6 @@ export class WalletCreatePage implements OnInit {
     if (this.walletCreationService.type === NewWallet.CREATE) {
       this.titleBar.setTitle(
         this.translate.instant("wallet.launcher-create-wallet")
-      );
-    } else if (
-      this.walletCreationService.type === NewWallet.ACCOUNT_ABSTRACTION
-    ) {
-      this.titleBar.setTitle(
-        this.translate.instant("wallet.settings-add-wallet-create-aa-wallet")
       );
     } else {
       if (this.importByPrivateKey) {
@@ -168,10 +153,6 @@ export class WalletCreatePage implements OnInit {
 
     if (this.walletCreationService.type === NewWallet.CREATE) {
       this.native.go("/wallet/mnemonic/create");
-    } else if (
-      this.walletCreationService.type === NewWallet.ACCOUNT_ABSTRACTION
-    ) {
-      this.native.go("/wallet/account-abstraction/create");
     } else {
       if (this.importByPrivateKey) {
         this.native.go("/wallet/wallet-import-privatekey");

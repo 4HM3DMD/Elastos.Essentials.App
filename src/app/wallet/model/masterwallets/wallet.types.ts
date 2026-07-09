@@ -15,8 +15,6 @@ export enum WalletType {
   MULTI_SIG_STANDARD = "multi_sign_standard",
   /** Multi signature, following the gnosis EVM contract mechanism (account addresses) */
   MULTI_SIG_EVM_GNOSIS = "multi_sign_evm_gnosis",
-  /** ERC4337 Account Abstraction wallet controlled by an existing EOA wallet */
-  ACCOUNT_ABSTRACTION = "account_abstraction",
 }
 
 export enum ImportWalletType {
@@ -130,12 +128,3 @@ export type SerializedStandardMultiSigMasterWallet = SerializedMasterWallet & {
 
   // TODO: network options?
 };
-
-export type SerializedAccountAbstractionMasterWallet =
-  SerializedMasterWallet & {
-    type: WalletType.ACCOUNT_ABSTRACTION;
-    /** Existing EOA wallet (standard) used as controller for this AA wallet */
-    controllerMasterWalletId: string;
-    /** ID of the AA provider used by this wallet */
-    aaProviderId: string;
-  };

@@ -255,15 +255,6 @@ const routes: Routes = [
       import("./pages/wallet/multisig/module").then((m) => m.MultiSigModule),
   },
 
-  // AA Wallet
-  {
-    path: "account-abstraction",
-    loadChildren: () =>
-      import("./pages/wallet/account-abstraction/module").then(
-        (m) => m.AccountAbstractionModule
-      ),
-  },
-
   // Ledger
   {
     path: "ledger",

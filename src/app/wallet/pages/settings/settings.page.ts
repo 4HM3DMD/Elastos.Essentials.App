@@ -209,19 +209,6 @@ export class SettingsPage implements OnInit {
             },
           ],
         },
-        // {
-        //   title: this.translate.instant("wallet.settings-add-wallet-aa-wallet"),
-        //   items: [
-        //     {
-        //       title: this.translate.instant(
-        //         "wallet.settings-add-wallet-create-aa-wallet"
-        //       ),
-        //       routeOrAction: () => {
-        //         this.createAAWallet();
-        //       },
-        //     },
-        //   ],
-        // },
       ],
     };
 
@@ -240,12 +227,5 @@ export class SettingsPage implements OnInit {
     this.walletCreationService.isMulti = false;
     this.walletCreationService.type = NewWallet.IMPORT;
     this.native.go("/wallet/wallet-create", { importType: type });
-  }
-
-  createAAWallet() {
-    this.walletCreationService.reset();
-    this.walletCreationService.isMulti = false;
-    this.walletCreationService.type = NewWallet.ACCOUNT_ABSTRACTION;
-    this.native.go("/wallet/wallet-create", { aaWallet: true });
   }
 }

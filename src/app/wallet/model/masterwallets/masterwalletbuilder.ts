@@ -1,9 +1,7 @@
-import { AccountAbstractionMasterWallet } from "./account.abstraction.masterwallet";
 import { LedgerMasterWallet } from "./ledger.masterwallet";
 import { MasterWallet, StandardMasterWallet } from "./masterwallet";
 import { StandardMultiSigMasterWallet } from "./standard.multisig.masterwallet";
 import {
-  SerializedAccountAbstractionMasterWallet,
   SerializedLedgerMasterWallet,
   SerializedMasterWallet,
   SerializedStandardMasterWallet,
@@ -31,10 +29,6 @@ export class MasterWalletBuilder {
       case WalletType.MULTI_SIG_EVM_GNOSIS:
         throw new Error(
           "Master wallet type not implemented - " + serialized.type
-        );
-      case WalletType.ACCOUNT_ABSTRACTION:
-        return AccountAbstractionMasterWallet.newFromSerializedWallet(
-          serialized as unknown as SerializedAccountAbstractionMasterWallet
         );
       default:
         throw new Error("Unknown master wallet type - " + serialized.type);

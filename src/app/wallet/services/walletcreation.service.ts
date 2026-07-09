@@ -39,7 +39,6 @@ export type SelectableMnemonic = {
 export enum NewWallet {
   CREATE = 1,
   IMPORT = 2,
-  ACCOUNT_ABSTRACTION = 3,
 }
 
 @Injectable({

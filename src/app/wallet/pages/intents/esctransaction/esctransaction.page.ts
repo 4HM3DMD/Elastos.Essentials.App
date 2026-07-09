@@ -52,7 +52,6 @@ import { AnyNetwork } from 'src/app/wallet/model/networks/network';
 import { ERC20CoinService } from 'src/app/wallet/services/evm/erc20coin.service';
 import { EVMService } from 'src/app/wallet/services/evm/evm.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
-import { AccountAbstractionMasterWallet } from '../../../model/masterwallets/account.abstraction.masterwallet';
 import { CoinTransferService, IntentTransfer } from '../../../services/cointransfer.service';
 import { Native } from '../../../services/native.service';
 import { UiService } from '../../../services/ui.service';
@@ -316,13 +315,6 @@ export class EscTransactionPage implements OnInit {
     } else {
       return approveOperation.tokenName; // ERC721
     }
-  }
-
-  /**
-   * Checks if the current master wallet is an Account Abstraction wallet
-   */
-  public isAccountAbstractionWallet(): boolean {
-    return this.networkWallet.masterWallet instanceof AccountAbstractionMasterWallet;
   }
 
   /**

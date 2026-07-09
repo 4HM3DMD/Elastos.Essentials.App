@@ -33,9 +33,6 @@
     "libsodium-wrappers": "0.7.10"
   },
   "dependencies": {
-    "@account-abstraction/contracts": "^0.8.0",
-    "@account-abstraction/sdk": "^0.6.0",
-    "@account-abstraction/utils": "^0.6.0",
     "@angular/animations": "13.1.1",
     "@angular/cdk": "13.1.1",
     "@angular/common": "13.1.1",

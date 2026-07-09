@@ -61,13 +61,8 @@
 
     <!-- TX INFO -->
     <!-- Standard EOA Account Component -->
-    <app-standard-account *ngIf="!isAccountAbstractionWallet()" [balance]="balance" [uiService]="uiService"
+    <app-standard-account [balance]="balance" [uiService]="uiService"
       [parentPage]="this">
     </app-standard-account>
-
-    <!-- Account Abstraction Component -->
-    <app-account-abstraction *ngIf="isAccountAbstractionWallet()" [balance]="balance" [uiService]="uiService"
-      [parentPage]="this">
-    </app-account-abstraction>
   </ion-grid>
 </ion-content>
