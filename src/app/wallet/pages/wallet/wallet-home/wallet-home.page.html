@@ -29,7 +29,7 @@
         <div *ngIf="networkWallet && balanceVm" class="balance-block">
             <div class="balance-hero" (click)="toggleCurrency()">
                 <ui-amount-display [value]="balanceVm.primary" [unit]="balanceVm.unit"
-                    [size]="3" [hidden]="hideBalances"></ui-amount-display>
+                    [size]="6" [hidden]="hideBalances"></ui-amount-display>
                 <button type="button" class="icon-btn balance-eye" aria-label="Hide or show balances"
                     (click)="onToggleHideBalances($event)">
                     <ion-icon [name]="hideBalances ? 'eye-off-outline' : 'eye-outline'"></ion-icon>

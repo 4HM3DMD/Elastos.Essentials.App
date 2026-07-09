@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostBinding,
   Input,
   NgZone,
   OnChanges,
@@ -15,7 +16,7 @@ const MIN_FONT_SIZE_PX = 14;
 const SHRINK_STEP_PX = 2;
 const HIDDEN_MASK = '••••••';
 const ELLIPSIS = '…';
-const BASE_FONT_SIZE_BY_SIZE: { [size: number]: number } = { 1: 18, 2: 28, 3: 36, 4: 46 };
+const BASE_FONT_SIZE_BY_SIZE: { [size: number]: number } = { 1: 18, 2: 28, 3: 36, 4: 46, 5: 50, 6: 60 };
 
 /**
  * A large amount value with an optional unit and fiat sub-line. Steps its font
@@ -33,7 +34,7 @@ export class UiAmountDisplayComponent implements AfterViewInit, OnChanges, OnDes
   @Input() public value = '';
   @Input() public unit: string = null;
   @Input() public fiat: string = null;
-  @Input() public size: 1 | 2 | 3 | 4 = 3;
+  @Input() public size: 1 | 2 | 3 | 4 | 5 | 6 = 3;
   @Input() public hidden = false;
   /** When true, renders an eye button that emits (toggleHidden). */
   @Input() public showToggle = false;
@@ -44,6 +45,13 @@ export class UiAmountDisplayComponent implements AfterViewInit, OnChanges, OnDes
   @ViewChild('valueEl') private valueEl: ElementRef<HTMLElement>;
 
   public readonly mask = HIDDEN_MASK;
+
+  // Exposes the size tier as a host class so the scss can style the larger heroes
+  // (bolder value, larger white unit) per the Figma spec without affecting the
+  // smaller shared uses (home, confirm sheet).
+  @HostBinding('class') public get sizeClass(): string {
+    return `amount-size-${this.size}`;
+  }
 
   private pendingResize: ReturnType<typeof setTimeout> = null;
 

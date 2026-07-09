@@ -14,7 +14,7 @@
             <div *ngIf="networkWallet" class="token-hero">
                 <img class="token-hero-disc" [src]="subWallet.getMainIcon() || networkWallet.network.logo" />
                 <h3 class="token-hero-caption">{{ 'wallet.coin-est-total-value' | translate }}</h3>
-                <ui-amount-display [size]="3" [value]="coinDisplayValue" [unit]="coinDisplayUnit"></ui-amount-display>
+                <ui-amount-display [size]="5" [value]="coinDisplayValue" [unit]="coinDisplayUnit"></ui-amount-display>
                 <div class="token-hero-sub">
                     <!-- SCR-097: while scrubbing the chart, the fiat slot shows the touched point's
                          price and the %change is hidden. Reverts to the live value on release. -->

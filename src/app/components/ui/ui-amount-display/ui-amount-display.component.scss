@@ -60,3 +60,18 @@
     text-overflow: ellipsis;
   }
 }
+
+// Large hero tiers (Value screen size 6, Token Detail size 5) per the measured
+// Figma spec: the value is bold (700) and the unit is a large white bold label,
+// not a small muted one. Scoped to these tiers so the smaller shared uses
+// (launcher home, confirm sheet) are untouched.
+:host(.amount-size-5) .amount .value-line .value,
+:host(.amount-size-6) .amount .value-line .value {
+  font-weight: 700;
+}
+
+:host(.amount-size-5) .amount .value-line .unit {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--ion-text-color);
+}
