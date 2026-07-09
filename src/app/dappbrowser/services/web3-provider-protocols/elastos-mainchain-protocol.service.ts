@@ -16,7 +16,7 @@ import {
 } from 'src/app/wallet/services/browser-wallet-connections.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { WalletService } from 'src/app/wallet/services/wallet.service';
-import { DABMessage } from '../dappbrowser.service';
+import { DABMessage, DappBrowserService } from '../dappbrowser.service';
 
 declare let dappBrowser: DappBrowserPlugin.DappBrowser;
 
@@ -216,6 +216,8 @@ export class ElastosMainchainProtocolService {
             signedDatas: string[];
           };
         } = await GlobalIntentService.instance.sendIntent('https://wallet.web3essentials.io/elamainsignmessage', {
+          // DB-3.1: requesting dApp origin, rendered on the signing sheet.
+          dappOrigin: DappBrowserService.instance.url,
           payload: message.data.object
         });
         if (response.result.signedDatas) {

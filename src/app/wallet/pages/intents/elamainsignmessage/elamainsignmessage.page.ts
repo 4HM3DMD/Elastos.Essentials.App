@@ -46,6 +46,7 @@ import { CoinTransferService } from '../../../services/cointransfer.service';
 import { Native } from '../../../services/native.service';
 import { UiService } from '../../../services/ui.service';
 import { WalletService } from '../../../services/wallet.service';
+import { parseRequestOrigin, RequestOrigin } from 'src/app/components/ui/ui-origin-header/ui-origin-header.component';
 
 /**
  * This operation is dangerous and is deprecated, but we handle it for backward compatibility
@@ -68,6 +69,9 @@ export class ElamainSignMessagePage implements OnInit {
   private digest = null;
   public message = null;
   private specialAddresses: string[] = [];
+
+  // DB-3.1: the requesting dApp origin shown at the top of the sheet (anti-phishing).
+  public requestOrigin: RequestOrigin = null;
 
   private alreadySentIntentResponse = false;
 
@@ -132,6 +136,7 @@ export class ElamainSignMessagePage implements OnInit {
 
     this.receivedIntent = navigation.extras.state as EssentialsIntentPlugin.ReceivedIntent;
     if (this.receivedIntent.params) this.payloadToBeSigned = this.receivedIntent.params.payload;
+    this.requestOrigin = parseRequestOrigin(this.receivedIntent?.params?.dappOrigin);
 
     // No message ? Just exit immediatelly
     if (!this.payloadToBeSigned) {
