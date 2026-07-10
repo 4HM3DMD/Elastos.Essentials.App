@@ -9,35 +9,47 @@
 
         <!-- Can't use ngIf here, otherwise fetchmoretrigger will be invalid -->
         <ion-grid class="container">
-            <!-- Centered token hero: coin disc, the token balance, its fiat value below.
-                 No "Estimated Total Value" caption - that label belongs to the aggregate
-                 Value screen; here the big number is a token AMOUNT, so labelling it a
-                 "value" while showing it in ELA was wrong. No card. -->
-            <div *ngIf="networkWallet" class="token-hero">
-                <img class="token-hero-disc" [src]="subWallet.getMainIcon() || networkWallet.network.logo" />
-                <ui-amount-display [size]="5" [value]="coinDisplayValue" [unit]="coinDisplayUnit"></ui-amount-display>
-                <div *ngIf="coinDisplayFiat" class="token-hero-sub">
-                    <span class="hero-fiat">{{ coinDisplayFiat }}</span>
+            <!-- Balance card - the classic Essentials anchor, in the 2026 skin: identity
+                 row, a Balance label over a TAPPABLE amount (native <-> fiat, as the old
+                 app had), the staked line, and the canonical Transfer / Send / Receive
+                 row inside the card. The washed network mark keeps the old card-art
+                 feeling without a loud gradient. -->
+            <div *ngIf="networkWallet" class="balance-card">
+                <img class="card-art" [src]="networkWallet.network.logo" alt="" />
+
+                <div class="card-identity">
+                    <img class="card-coin" [src]="subWallet.getMainIcon() || networkWallet.network.logo" />
+                    <div class="card-names">
+                        <span class="card-token">{{ subWallet.getDisplayTokenName() }}</span>
+                        <span class="card-network">{{ networkWallet.network.getEffectiveName() }}</span>
+                    </div>
                 </div>
+
+                <h3 class="card-balance-label">{{ 'wallet.coin-balance' | translate }}</h3>
+                <button type="button" class="card-balance" (click)="toggleBalanceCurrency()">
+                    <ui-amount-display [size]="3" [value]="coinDisplayValue" [unit]="coinDisplayUnit"></ui-amount-display>
+                    <span *ngIf="coinDisplaySub" class="card-sub">≈ {{ coinDisplaySub }}</span>
+                </button>
+
                 <div *ngIf="stakedBalance" class="staked-line">
                     <span class="staked-label">{{ getStakeTitle() | translate }}</span>
                     <span class="staked-value">{{ getStakedBalanceInNative() }} {{ networkWallet.getDisplayTokenName() }}</span>
                 </div>
-            </div>
 
-            <!-- Only the two core actions live on the token page (owner call: Stake and
-                 cross-chain Transfer crowded it; they remain reachable from their own
-                 flows). Compact centered discs, not full-width slabs - the balance above
-                 stays the only large element on screen. -->
-            <div *ngIf="subWallet" class="action-row">
-                <button *ngIf="coinCanBeSent()" type="button" class="action-item" (click)="sendFunds()">
-                    <span class="action-disc"><img src="assets/wallet/action/send.png" alt="" /></span>
-                    <span class="action-label">Send</span>
-                </button>
-                <button type="button" class="action-item" (click)="receiveFunds()">
-                    <span class="action-disc"><img src="assets/wallet/action/receive.png" alt="" /></span>
-                    <span class="action-label">Receive</span>
-                </button>
+                <div class="card-actions">
+                    <button *ngIf="coinCanBeTransferred()" type="button" class="card-action" (click)="transferFunds()">
+                        <span class="card-action-disc"><img src="assets/wallet/action/swap.png" alt="" /></span>
+                        <span class="card-action-label">{{ (chainIsELA() ? 'wallet.coin-action-recharge' : 'wallet.coin-action-withdraw') | translate }}</span>
+                    </button>
+                    <button *ngIf="coinCanBeSent()" type="button" class="card-action" (click)="sendFunds()">
+                        <span class="card-action-disc"><img src="assets/wallet/action/send.png" alt="" /></span>
+                        <span class="card-action-label">{{ 'wallet.coin-action-send' | translate }}</span>
+                    </button>
+                    <button type="button" class="card-action" (click)="receiveFunds()">
+                        <span class="card-action-disc"><img src="assets/wallet/action/receive.png" alt="" /></span>
+                        <span class="card-action-label">{{ 'wallet.coin-action-receive' | translate }}</span>
+                    </button>
+                </div>
             </div>
 
             <!-- History section header. No view-all chevron until a dedicated

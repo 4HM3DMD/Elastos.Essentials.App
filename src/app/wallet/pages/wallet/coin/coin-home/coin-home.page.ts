@@ -501,6 +501,10 @@ export class CoinHomePage implements OnInit {
     this.startUpdateInterval();
   }
 
+  chainIsELA(): boolean {
+    return this.subWalletId === StandardCoinName.ELA;
+  }
+
   chainIsETHSC(): boolean {
     return this.subWalletId === StandardCoinName.ETHSC;
   }
@@ -638,6 +642,26 @@ export class CoinHomePage implements OnInit {
     this.native.go('/wallet/coin-transfer');
   }
 
+  transferFunds() {
+    if (this.chainIsELA()) {
+      this.rechargeFunds();
+    } else {
+      this.withdrawFunds();
+    }
+  }
+
+  // mainchain to sidechain
+  rechargeFunds() {
+    this.coinTransferService.transferType = TransferType.RECHARGE;
+    this.native.go('/wallet/coin-select');
+  }
+
+  // sidechain to mainchain
+  withdrawFunds() {
+    this.coinTransferService.transferType = TransferType.WITHDRAW;
+    this.native.go('/wallet/coin-transfer');
+  }
+
   fetchMoreTransactions() {
     this.restartUpdateInterval();
     this.start = this.transactions.length;
@@ -671,13 +695,43 @@ export class CoinHomePage implements OnInit {
 
   /** Returns the currency to be displayed for this coin. */
   /** Native balance for the shared amount display. */
+  /** Fiat equivalent of the display balance, or null when no rate exists (most ERC20s). */
+  private get fiatBalance(): BigNumber | null {
+    if (!this.subWallet) return null;
+    let fiat = this.subWallet.getAmountInExternalCurrency(this.subWallet.getDisplayBalance());
+    return fiat && !fiat.isNaN() ? fiat : null;
+  }
+
+  /** Whether the balance is currently expressed in fiat (global preference + a rate exists). */
+  private get showsFiatBalance(): boolean {
+    return this.currencyService.useCurrency && !!this.fiatBalance;
+  }
+
   public get coinDisplayValue(): string {
     if (!this.subWallet) return '';
+    if (this.showsFiatBalance) return this.fiatBalance.toString();
     return WalletUtil.getFriendlyBalance(this.subWallet.getDisplayBalance(), this.networkWallet.getDecimalPlaces());
   }
 
   public get coinDisplayUnit(): string {
-    return this.subWallet ? this.subWallet.getDisplayTokenName() : '';
+    if (!this.subWallet) return '';
+    if (this.showsFiatBalance) return this.currencyService.selectedCurrency.symbol;
+    return this.subWallet.getDisplayTokenName();
+  }
+
+  /** The other denomination, shown under the tappable balance. */
+  public get coinDisplaySub(): string {
+    if (!this.subWallet) return null;
+    if (this.showsFiatBalance) {
+      return `${WalletUtil.getFriendlyBalance(this.subWallet.getDisplayBalance(), this.networkWallet.getDecimalPlaces())} ${this.subWallet.getDisplayTokenName()}`;
+    }
+    return this.coinDisplayFiat;
+  }
+
+  /** Flips the balance between native and fiat, as the old balance card did. */
+  public toggleBalanceCurrency() {
+    if (!this.coinDisplayFiat) return; // no rate - nothing to flip to
+    void this.currencyService.toggleCurrencyDisplay();
   }
 
   /** Fiat value for the amount display, or null when no rate is available (renders no line). */
@@ -812,6 +866,10 @@ export class CoinHomePage implements OnInit {
 
   getSubwalletTitle() {
     return this.subWallet.getFriendlyName();
+  }
+
+  coinCanBeTransferred() {
+    return this.subWallet.supportsCrossChainTransfers();
   }
 
   // For FRC759 token on fusion network, We can only transfer parent token.

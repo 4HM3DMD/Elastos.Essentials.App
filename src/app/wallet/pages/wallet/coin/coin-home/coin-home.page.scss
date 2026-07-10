@@ -15,53 +15,94 @@ ion-content.intersection-container {
     margin: 0;
     padding: 15px 16px 30px;
 
-    // ---- Hierarchy in three levels ----
-    // 1. The balance is the page: one large number, everything else steps down from it.
-    // 2. Two quiet action discs serve the balance.
-    // 3. History is a clearly separated, smaller-scale reading zone.
+    // Balance card - the classic Essentials anchor in the 2026 skin: one tonal
+    // surface holding identity, the tappable balance and the canonical action row.
+    // Everything below it (history) steps down in scale.
+    .balance-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        background: var(--essentials-box-color);
+        padding: 18px 18px 14px;
+        margin: 6px 0 28px;
 
-    // Centered token hero: modest disc, the amount as the single dominant element,
-    // fiat whispered underneath. No caption, no card - space carries the structure.
-    .token-hero {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        margin: 14px 0 32px;
-
-        .token-hero-disc {
-            width: 56px;
-            height: 56px;
-            border-radius: 100%;
+        // Washed network mark as card art (the old card had a blurred logo too).
+        .card-art {
+            position: absolute;
+            top: -26px;
+            right: -30px;
+            width: 150px;
+            height: 150px;
             object-fit: contain;
-            margin-bottom: 16px;
-            // Lift the mark off the flat background without a border.
-            filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.45));
+            opacity: 0.06;
+            filter: blur(1px);
+            pointer-events: none;
         }
 
-        // The component's value row is a full-width flex that starts left (built for
-        // the left-aligned Home/Value heroes); center its content on this page.
-        ui-amount-display {
-            display: block;
+        .card-identity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
 
-            ::ng-deep .amount .value-line {
-                justify-content: center;
+            .card-coin {
+                width: 40px;
+                height: 40px;
+                border-radius: 100%;
+                object-fit: contain;
+            }
+
+            .card-names {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+
+                .card-token {
+                    font-size: 16px;
+                    font-weight: 700;
+                    line-height: 1.1;
+                    color: var(--ion-text-color);
+                }
+
+                .card-network {
+                    font-size: 12px;
+                    font-weight: 500;
+                    color: var(--essentials-text-secondary);
+                }
             }
         }
 
-        .token-hero-sub {
-            margin-top: 6px;
-            font-variant-numeric: tabular-nums;
+        .card-balance-label {
+            margin: 0 0 4px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--essentials-text-secondary);
+        }
 
-            .hero-fiat {
-                font-size: 15px;
+        // The whole balance block toggles native <-> fiat on tap (old Essentials).
+        .card-balance {
+            display: block;
+            width: 100%;
+            padding: 0;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            text-align: left;
+            cursor: pointer;
+
+            .card-sub {
+                display: block;
+                margin-top: 4px;
+                font-size: 14px;
                 font-weight: 500;
+                font-variant-numeric: tabular-nums;
                 color: var(--essentials-text-secondary);
             }
         }
 
         .staked-line {
-            margin-top: 12px;
+            margin-top: 10px;
             display: flex;
             align-items: baseline;
             gap: 8px;
@@ -77,54 +118,55 @@ ion-content.intersection-container {
                 color: var(--ion-text-color);
             }
         }
-    }
 
-    // Compact centered action discs (icon over label), sized to serve the hero
-    // rather than compete with it.
-    .action-row {
-        display: flex;
-        justify-content: center;
-        gap: 48px;
-        margin-bottom: 40px;
-
-        .action-item {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 9px;
-            padding: 0;
-            border: none;
-            background: transparent;
-            font-family: inherit;
-            cursor: pointer;
-            transition: transform 0.15s ease;
-
-            &:active {
-                transform: scale(0.94);
-            }
-        }
-
-        .action-disc {
+        // Canonical Transfer / Send / Receive row, inside the card like the old app.
+        .card-actions {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            background: rgba(255, 255, 255, 0.07);
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
 
-            img {
-                width: 30px;
-                height: 30px;
-                object-fit: contain;
+            .card-action {
+                flex: 1;
+                display: inline-flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                padding: 4px 0 2px;
+                border: none;
+                background: transparent;
+                font-family: inherit;
+                cursor: pointer;
+                transition: transform 0.15s ease;
+
+                &:active {
+                    transform: scale(0.94);
+                }
             }
-        }
 
-        .action-label {
-            font-size: 13px;
-            font-weight: 500;
-            line-height: 1;
-            color: var(--essentials-text-secondary);
+            .card-action-disc {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                border-radius: 14px;
+                background: rgba(255, 255, 255, 0.08);
+
+                img {
+                    width: 24px;
+                    height: 24px;
+                    object-fit: contain;
+                }
+            }
+
+            .card-action-label {
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                line-height: 1;
+                color: var(--essentials-text-secondary);
+            }
         }
     }
 
