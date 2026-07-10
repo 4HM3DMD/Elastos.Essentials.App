@@ -12,8 +12,8 @@ import { WalletNetworkService } from './network.service';
 import { PortfolioPnl, PriceHistoryService } from './pricehistory.service';
 import { WalletService } from './wallet.service';
 
-/** The networks merged into the all-chains view (v1; extension point for more). */
-const TARGET_NETWORK_KEYS = ['elastos', 'elastossmartchain', 'ethereum', 'elastosecopgp'];
+/** Refresh-priority networks and the fixed order for the zero-balance default rows. */
+const DEFAULT_NETWORK_ORDER = ['elastos', 'elastossmartchain', 'ethereum', 'elastosecopgp'];
 
 /** The four always-visible ELA instruments. EID is deliberately excluded for now. */
 const DEFAULT_ELA_ERC20_BY_NETWORK: { [networkKey: string]: string } = {
@@ -45,6 +45,7 @@ export class AggregatedTokensService {
   private builtForMasterId: string = null;
   private building: Promise<void> = null;
   private refreshing = false;
+  private didFullSweep = false;
   private activeWalletSub: Subscription = null;
 
   constructor(
@@ -70,6 +71,7 @@ export class AggregatedTokensService {
     // dropping the references releases them.
     this.instances.clear();
     this.builtForMasterId = null;
+    this.didFullSweep = false;
     this.rows.next(null);
   }
 
@@ -91,10 +93,10 @@ export class AggregatedTokensService {
     this.builtForMasterId = masterId;
     this.instances.clear();
 
-    for (const key of TARGET_NETWORK_KEYS) {
-      const network = this.networkService.getNetworkByKey(key);
-      if (!network) continue; // network not registered on this template (e.g. testnet)
-
+    // Every visible network participates: default ELA chains always show their rows,
+    // any other network contributes assets once a balance exists.
+    for (const network of this.networkService.getDisplayableNetworks()) {
+      const key = network.key;
       try {
         // Reuse the wallet service's live instance when this network is the active
         // one (avoids a duplicate SPV mainchain instance); side instances otherwise.
@@ -149,8 +151,18 @@ export class AggregatedTokensService {
   }
 
   /** Balance-holding rows first (USD desc, unpriced after priced), then zero-balance defaults in fixed chain order. */
+  private hasKnownBalance(nw: AnyNetworkWallet): boolean {
+    return nw.getSubWallets().some(sw =>
+      sw.shouldShowOnHomeScreen() && !sw.getBalance().isNaN() && sw.getBalance().gt(0));
+  }
+
+  /** The Elastos mainchain instance (staking lives there), if built. */
+  public getMainchainInstance(): AnyNetworkWallet {
+    return this.instances.get('elastos') || null;
+  }
+
   private sortRows(rows: AggregatedTokenRow[]): AggregatedTokenRow[] {
-    const defaultOrder = (row: AggregatedTokenRow) => TARGET_NETWORK_KEYS.indexOf(row.network.key);
+    const defaultOrder = (row: AggregatedTokenRow) => DEFAULT_NETWORK_ORDER.indexOf(row.network.key);
 
     const funded = rows.filter(r => !r.subWallet.getBalance().isNaN() && r.subWallet.getBalance().gt(0));
     const empty = rows.filter(r => !funded.includes(r));
@@ -190,10 +202,16 @@ export class AggregatedTokensService {
     if (this.instances.size === 0) return;
 
     this.refreshing = true;
+    // Bounded refresh: the default chains and funded networks every cycle; every
+    // network once per build (discovery sweep) so unknown balances get learned.
+    const fullSweep = !this.didFullSweep;
+    this.didFullSweep = true;
+    const entries = Array.from(this.instances.entries()).filter(([key, nw]) =>
+      fullSweep || DEFAULT_NETWORK_ORDER.includes(key) || this.hasKnownBalance(nw));
     try {
       // Each per-network task swallows its own errors, so Promise.all cannot reject.
       await Promise.all(
-        Array.from(this.instances.entries()).map(async ([key, nw]) => {
+        entries.map(async ([key, nw]) => {
           try {
             for (const sw of nw.getSubWallets()) {
               if (!sw.shouldShowOnHomeScreen()) continue;
