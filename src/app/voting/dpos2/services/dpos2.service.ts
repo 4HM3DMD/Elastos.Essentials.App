@@ -327,8 +327,6 @@ export class DPoS2Service {
             continue;
           }
 
-          node.index += 1;
-
           if (node.state === 'Active' || node.state === 'Inactive') {
             //Check stake Until
             let until = node.stakeuntil - this.currentHeight;
@@ -379,6 +377,16 @@ export class DPoS2Service {
             this.dposList.push(node);
           }
         }
+
+        // The RPC 'index' ranks producers by legacy DPoS v1 votes, which is
+        // meaningless for BPoS nodes. Recompute it as the 1-based BPoS
+        // vote-rights rank so every display site ("Current Rank" sliders, the
+        // search rank column) shows a rank consistent with the votes-sorted
+        // list. Recomputing (instead of incrementing) is also idempotent
+        // against the shared RPC cache when fetchNodes re-runs.
+        [...this.dposList]
+          .sort((a, b) => b.dposv2votesNumber - a.dposv2votesNumber)
+          .forEach((rankedNode, i) => { rankedNode.index = i + 1; });
 
         Logger.log('dposvoting', 'Active Nodes..', this.activeNodes);
         this.fetchNodesTimestamp = currentBlockTimestamp;
