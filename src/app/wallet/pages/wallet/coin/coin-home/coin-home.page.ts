@@ -978,12 +978,11 @@ export class CoinHomePage implements OnInit {
         if (extTxInfo && extTxInfo.evm && extTxInfo.evm.txInfo && extTxInfo.evm.txInfo.operation && extTxInfo.evm.txInfo.operation.description)
             return this.translate.instant(extTxInfo.evm.txInfo.operation.description, extTxInfo.evm.txInfo.operation.descriptionTranslationParams);
  */
-    // SCR-155: compose the row title as "<SYMBOL> | <Action>" (e.g. "ELA | Sent")
-    // so the token is always visible alongside the transaction action.
+    // Just the action ("Sent" / "Received" / "Vote"...). Every row on this page is
+    // the same token - prefixing the symbol repeated it three times per screen, and
+    // the "SYM | Action" pipe read as a capital I ("ELA I Sent").
     if (transfer && transfer.name) {
-      const action = this.translate.instant(transfer.name);
-      const sym = this.subWallet ? this.subWallet.getDisplayTokenName() : '';
-      return sym ? `${sym} | ${action}` : action;
+      return this.translate.instant(transfer.name);
     }
   }
 

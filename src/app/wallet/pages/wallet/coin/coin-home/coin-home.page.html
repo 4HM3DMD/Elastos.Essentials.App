@@ -27,13 +27,18 @@
 
             <!-- Only the two core actions live on the token page (owner call: Stake and
                  cross-chain Transfer crowded it; they remain reachable from their own
-                 flows). Same tile language as the wallet home grid. -->
-            <ui-action-grid *ngIf="subWallet" [columns]="2" class="token-actions">
-                <ui-action-tile *ngIf="coinCanBeSent()" label="Send" icon="assets/wallet/action/send.png"
-                    (pressed)="sendFunds()"></ui-action-tile>
-                <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png"
-                    (pressed)="receiveFunds()"></ui-action-tile>
-            </ui-action-grid>
+                 flows). Compact centered discs, not full-width slabs - the balance above
+                 stays the only large element on screen. -->
+            <div *ngIf="subWallet" class="action-row">
+                <button *ngIf="coinCanBeSent()" type="button" class="action-item" (click)="sendFunds()">
+                    <span class="action-disc"><img src="assets/wallet/action/send.png" alt="" /></span>
+                    <span class="action-label">Send</span>
+                </button>
+                <button type="button" class="action-item" (click)="receiveFunds()">
+                    <span class="action-disc"><img src="assets/wallet/action/receive.png" alt="" /></span>
+                    <span class="action-label">Receive</span>
+                </button>
+            </div>
 
             <!-- History section header. No view-all chevron until a dedicated
                  cross-token History page exists (SCR-154, deferred) - a chevron with
@@ -46,8 +51,10 @@
             <ui-chip-row *ngIf="txTabs.length > 1" class="tx-source-tabs" [chips]="txTabs" [active]="activeTxTab"
                 (activeChange)="onTxTabChange($event)"></ui-chip-row>
 
-            <!-- Transaction-type filter chips (All / Sent / Received / Swap / Staked) — SYS-008 -->
-            <ui-chip-row class="tx-type-filter" [chips]="txTypeChips" [active]="txTypeFilter"
+            <!-- Transaction-type filter (All / Sent / Received / Staked) — SYS-008.
+                 Ghost variant: the filter is a quiet control, it must not compete with
+                 the section header above or the rows below. -->
+            <ui-chip-row class="tx-type-filter" variant="ghost" [chips]="txTypeChips" [active]="txTypeFilter"
                 (activeChange)="onTxTypeFilterChange($event)"></ui-chip-row>
 
             <!-- Loading skeleton -->

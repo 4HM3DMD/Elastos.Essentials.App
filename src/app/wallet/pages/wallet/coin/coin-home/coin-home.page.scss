@@ -13,41 +13,49 @@ ion-content.intersection-container {
 .container {
     min-height: 100%;
     margin: 0;
-    padding: 15px 10px 30px;
+    padding: 15px 16px 30px;
 
-    // In-flow Send / Receive tiles between the hero and the history list.
-    .token-actions {
-        margin-bottom: 32px;
-    }
+    // ---- Hierarchy in three levels ----
+    // 1. The balance is the page: one large number, everything else steps down from it.
+    // 2. Two quiet action discs serve the balance.
+    // 3. History is a clearly separated, smaller-scale reading zone.
 
-    // Centered token hero: coin disc, the token amount, its fiat value below.
-    // No caption, no card surface - the page breathes instead.
+    // Centered token hero: modest disc, the amount as the single dominant element,
+    // fiat whispered underneath. No caption, no card - space carries the structure.
     .token-hero {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        margin: 12px 0 28px;
+        margin: 14px 0 32px;
 
         .token-hero-disc {
-            width: 70px;
-            height: 70px;
+            width: 56px;
+            height: 56px;
             border-radius: 100%;
             object-fit: contain;
             margin-bottom: 16px;
+            // Lift the mark off the flat background without a border.
+            filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.45));
         }
 
+        // The component's value row is a full-width flex that starts left (built for
+        // the left-aligned Home/Value heroes); center its content on this page.
         ui-amount-display {
             display: block;
+
+            ::ng-deep .amount .value-line {
+                justify-content: center;
+            }
         }
 
         .token-hero-sub {
-            margin-top: 8px;
+            margin-top: 6px;
             font-variant-numeric: tabular-nums;
 
             .hero-fiat {
-                font-size: 16px;
-                font-weight: 600;
+                font-size: 15px;
+                font-weight: 500;
                 color: var(--essentials-text-secondary);
             }
         }
@@ -71,16 +79,65 @@ ion-content.intersection-container {
         }
     }
 
-    // History section header with a view-all chevron (SCR-104).
+    // Compact centered action discs (icon over label), sized to serve the hero
+    // rather than compete with it.
+    .action-row {
+        display: flex;
+        justify-content: center;
+        gap: 48px;
+        margin-bottom: 40px;
+
+        .action-item {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 9px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+
+            &:active {
+                transform: scale(0.94);
+            }
+        }
+
+        .action-disc {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.07);
+
+            img {
+                width: 30px;
+                height: 30px;
+                object-fit: contain;
+            }
+        }
+
+        .action-label {
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1;
+            color: var(--essentials-text-secondary);
+        }
+    }
+
+    // History section header - a section label, not a second hero.
     .history-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 12px;
+        margin-bottom: 4px;
 
         .history-title {
             margin: 0;
-            font-size: 24px;
+            font-size: 17px;
             font-weight: 700;
             text-align: left;
         }
@@ -91,18 +148,33 @@ ion-content.intersection-container {
         margin-bottom: 12px;
     }
 
-    // Transaction-type filter chips (All / Sent / Received / Swap / Staked) — SYS-008.
+    // Transaction-type filter - ghost text chips, left-aligned under the header.
     .tx-type-filter {
         display: block;
-        margin-bottom: 12px;
+        margin-bottom: 6px;
+
+        ::ng-deep .chip-row.ghost {
+            justify-content: flex-start;
+
+            .chip {
+                padding: 7px 12px;
+                font-size: 13px;
+
+                &:first-child {
+                    margin-left: -12px; // optically align "All" with the header above
+                }
+            }
+        }
     }
 
-    // Day-group section headers in the transaction list (Today / Earlier) — SYS-007.
+    // Day-group labels (Today / Earlier) - small caps eyebrow, quietest text on page.
     .tx-group-header {
-        margin: 18px 0 10px;
-        font-size: 15px;
+        margin: 16px 0 4px;
+        font-size: 11px;
         font-weight: 600;
-        color: var(--ion-text-color);
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: var(--essentials-text-secondary);
         text-align: left;
     }
 
