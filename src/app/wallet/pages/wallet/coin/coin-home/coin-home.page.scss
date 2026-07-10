@@ -222,24 +222,10 @@ ion-content.intersection-container {
         text-align: left;
     }
 
+    // Fetch-more spinner row at the list end (the only survivor of the legacy
+    // ion-grid list styles - rows are ui-token-row, empty state is ui-empty-state).
     .list-title-row {
         margin-bottom: 10px;
-        border-radius: 17px;
-
-        .title-col {
-            opacity: 0.6;
-
-            h1 {
-                margin: 0;
-                font-weight: 500;
-                font-size: 18px;
-                text-align: left;
-            }
-
-            &.active {
-                opacity: 1;
-            }
-        }
 
         .spinner-col {
             display: flex;
@@ -250,130 +236,6 @@ ion-content.intersection-container {
                 margin: 20px;
             }
         }
-    }
-
-    .item-row {
-        border-radius: 17px;
-        padding: 7.5px 10px 7.5px 0;
-        margin-bottom: 7.5px;
-        background-color: var(--essentials-box-color);
-
-        .left-col {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-left: 10px;
-
-            // Neutral circle in both themes. The tx glyphs (arrows, the colour
-            // red-packet illustration, the red error disc) keep their own colours,
-            // so the circle is not type-tinted and the glyphs are not recoloured:
-            // type-tinting would need a monochrome glyph set, which does not exist yet.
-            .icon-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 40px;
-                height: 40px;
-                object-fit: contain;
-                border-radius: 100%;
-                background: linear-gradient(305deg, rgba(255, 255, 255, 0.5) 0%, rgba(0, 0, 0, 0.1) 100%);
-
-                .inline-svg {
-                    width: 24px;
-                    height: 24px;
-                }
-            }
-
-            .redpacket {
-                img {
-                    width: 36px;
-                    height: 36px;
-                    border-radius: 100%;
-                }
-            }
-        }
-
-        .middle-col,
-        .right-col {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            overflow: hidden;
-
-            h1,
-            p {
-                margin: 0;
-            }
-
-            h1 {
-                font-size: 14px;
-                font-weight: 600;
-                letter-spacing: 0.7px;
-            }
-
-            p {
-                font-size: 13px;
-                font-weight: 400;
-                text-align: left;
-                padding-top: 3px;
-            }
-
-            .memo {
-                width: 100%;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                -o-text-overflow: ellipsis;
-            }
-        }
-
-        .right-col {
-            align-items: flex-end;
-        }
-    }
-
-    .empty-list {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin-top: 60px;
-
-        img {
-            width: 40px;
-            height: 40px;
-        }
-
-        h1,
-        h2 {
-            margin-top: 15px;
-        }
-
-        h1 {
-            font-size: 26px;
-            font-weight: 500;
-            line-height: 1.21;
-            letter-spacing: -0.56px;
-            text-align: center;
-        }
-
-        h2 {
-            font-size: 16px;
-            font-weight: 500;
-            line-height: 1.21;
-            letter-spacing: -0.56px;
-            text-align: center;
-            padding: 0 30px;
-        }
-    }
-
-    .more {
-        margin-top: 30px;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 0.7px;
-        text-align: center;
     }
 }
 
