@@ -6,7 +6,7 @@ ion-content {
 
 .home {
     min-height: 100%;
-    padding: calc(env(safe-area-inset-top) + 12px) 20px calc(env(safe-area-inset-bottom) + 20px);
+    padding: calc(env(safe-area-inset-top) + 22px) 24px calc(env(safe-area-inset-bottom) + 20px);
     // Exact 2026 header wave texture (exported from the Figma file), faded into the
     // page background. The linear overlay reproduces Figma's fade-to-#111 (Rectangle
     // 1850); the image fills the top edge-to-edge (border-box origin ignores padding).
@@ -28,11 +28,12 @@ ion-content {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 6px 12px 6px 6px;
+            height: 44px;
+            padding: 5px 14px 5px 5px;
             // Translucent glass pill over the header wave with a light hairline border.
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            border-radius: 22px;
-            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             color: var(--ion-text-color);
@@ -41,8 +42,8 @@ ion-content {
             max-width: 55%;
 
             .avatar {
-                width: 30px;
-                height: 30px;
+                width: 32px;
+                height: 32px;
                 border-radius: 50%;
                 object-fit: cover;
                 flex-shrink: 0;
@@ -50,21 +51,23 @@ ion-content {
                 box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
             }
 
-            // The default avatar (no custom picture) is an orange disc with the
-            // identity's initial, matching the design's account pill.
+            // Default avatar (no custom picture): transparent circle with a thin
+            // white ring and the identity's initial, per the design. No filled disc.
             .avatar-initial {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background: var(--essentials-accent);
-                color: var(--essentials-accent-ink);
+                background: transparent;
+                border: 1.5px solid rgba(255, 255, 255, 0.55);
+                box-shadow: none;
+                color: var(--ion-text-color);
                 font-size: 15px;
-                font-weight: 700;
+                font-weight: 500;
             }
 
             .name {
-                font-size: 14px;
-                font-weight: 600;
+                font-size: 16px;
+                font-weight: 500;
                 line-height: 1;
                 white-space: nowrap;
                 overflow: hidden;
@@ -73,15 +76,15 @@ ion-content {
 
             .chev {
                 flex-shrink: 0;
-                font-size: 13px;
-                color: var(--essentials-text-secondary);
+                font-size: 12px;
+                color: rgba(255, 255, 255, 0.8);
             }
         }
 
         .actions {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
 
             .icon-btn {
                 position: relative;
@@ -98,7 +101,7 @@ ion-content {
                 cursor: pointer;
 
                 ion-icon {
-                    font-size: 22px;
+                    font-size: 23px;
                 }
 
                 .dot {
@@ -110,33 +113,25 @@ ion-content {
                     border-radius: 50%;
                     background: var(--essentials-danger);
                 }
-            }
 
-            // Chain selector: boxed pill with logo + chevron, mirroring the account
-            // pill so it clearly reads as a tappable dropdown control.
-            .chain-pill {
-                display: inline-flex;
-                align-items: center;
-                gap: 4px;
-                height: 36px;
-                padding: 4px 9px 4px 5px;
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                border-radius: 999px;
-                background: var(--essentials-box-color);
-                color: var(--ion-text-color);
-                font-family: inherit;
-                cursor: pointer;
+                // Chain selector: floating logo + small chevron, boxless like the
+                // other header icons; the chevron is the dropdown affordance.
+                &.chain {
+                    width: auto;
+                    gap: 3px;
+                    padding: 0 3px;
 
-                img {
-                    width: 26px;
-                    height: 26px;
-                    border-radius: 50%;
-                    object-fit: cover;
-                }
+                    img {
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                    }
 
-                ion-icon {
-                    font-size: 12px;
-                    color: var(--essentials-text-secondary);
+                    .chain-chev {
+                        font-size: 11px;
+                        color: rgba(255, 255, 255, 0.8);
+                    }
                 }
             }
         }

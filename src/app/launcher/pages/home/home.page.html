@@ -6,10 +6,7 @@
         <img *ngIf="avatarDataUrl" class="avatar" [src]="avatarDataUrl" alt="" />
         <span *ngIf="!avatarDataUrl" class="avatar avatar-initial">{{ (identityName || 'E').charAt(0) | uppercase }}</span>
         <span class="name">{{ identityName }}</span>
-        <!-- Forward chevron: the pill navigates to the identity page. A down chevron would
-             promise an account-switcher dropdown (the MetaMask pattern) that is not there;
-             the switcher sheet itself is tracked in the super-wallet-patterns audit. -->
-        <ion-icon class="chev" name="chevron-forward" aria-hidden="true"></ion-icon>
+        <ion-icon class="chev" name="chevron-down" aria-hidden="true"></ion-icon>
       </button>
       <div class="actions">
         <button type="button" class="icon-btn" aria-label="Notifications" (click)="onNotifications()">
@@ -19,12 +16,12 @@
         <button type="button" class="icon-btn" aria-label="Scan" (click)="onScan()">
           <ion-icon name="scan-outline"></ion-icon>
         </button>
-        <!-- Active-chain selector: a pill (logo + chevron) so it reads as a dropdown control.
-             No text to keep the header uncluttered. Settings lives on the tab bar. -->
-        <button type="button" class="chain-pill" aria-label="Switch network" *ngIf="currentNetwork"
+        <!-- Active-chain selector: floating logo + down chevron, matching the header's
+             boxless icon language; the chevron signals the dropdown. Settings lives on the tab bar. -->
+        <button type="button" class="icon-btn chain" aria-label="Switch network" *ngIf="currentNetwork"
           (click)="onPickNetwork()">
           <img [src]="currentNetwork.logo" alt="" />
-          <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+          <ion-icon class="chain-chev" name="chevron-down" aria-hidden="true"></ion-icon>
         </button>
       </div>
     </div>
