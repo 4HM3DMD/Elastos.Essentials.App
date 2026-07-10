@@ -22,7 +22,7 @@
 
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Platform, PopoverController } from '@ionic/angular';
+import { IonContent, Platform, PopoverController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { BigNumber } from 'bignumber.js';
 import * as moment from 'moment';
@@ -93,6 +93,7 @@ const STAKING_TX_NAME_KEYS = new Set<string>([
 export class CoinHomePage implements OnInit {
   @ViewChild(TitleBarComponent, { static: true }) titleBar: TitleBarComponent;
   @ViewChild('fetchmoretrigger', { static: true }) fetchMoreTrigger: ElementRef;
+  @ViewChild('tokenContent') tokenContent: IonContent;
 
   public masterWalletInfo = '';
   public networkWallet: AnyNetworkWallet = null;
@@ -194,25 +195,10 @@ export class CoinHomePage implements OnInit {
       clearTimeout(this.updateTmeout);
       this.updateTmeout = null;
     }
-    if (this.transactionListChangedSubscription) {
-      this.transactionListChangedSubscription.unsubscribe();
-      this.transactionListChangedSubscription = null;
-    }
-    if (this.transactionFetchStatusChangedSubscription) {
-      this.transactionFetchStatusChangedSubscription.unsubscribe();
-      this.transactionFetchStatusChangedSubscription = null;
-    }
-    if (this.extendedInfoChangeSubscription) {
-      this.extendedInfoChangeSubscription.unsubscribe();
-      this.extendedInfoChangeSubscription = null;
-    }
+    this.unsubscribeWalletEvents();
     if (this.fetchMoreTriggerObserver) {
       this.fetchMoreTriggerObserver.disconnect();
       this.fetchMoreTriggerObserver = null;
-    }
-    if (this.sendTransactionSubscription) {
-      this.sendTransactionSubscription.unsubscribe();
-      this.sendTransactionSubscription = null;
     }
     // SCR-095: detach the titlebar favourite click listener.
     if (this.titleBarIconClickedListener) {
@@ -238,6 +224,7 @@ export class CoinHomePage implements OnInit {
   }
 
   ionViewWillEnter() {
+    this.rebindIfNavigationTargetChanged();
     this.coinTransferService.subWalletId = this.subWalletId;
     // Figma parity (SCR-100): the nav title is the token symbol (e.g. "ELA" / "USDT").
     this.titleBar.setTitle(this.subWallet ? this.subWallet.getDisplayTokenName() : this.translate.instant('wallet.coin-transactions'));
@@ -306,26 +293,47 @@ export class CoinHomePage implements OnInit {
     const navigation = this.router.getCurrentNavigation();
     if (!Util.isEmptyObject(navigation.extras.state)) {
       let masterWalletId = navigation.extras.state.masterWalletId;
-      this.subWalletId = navigation.extras.state.subWalletId as StandardCoinName;
-
-      this.networkWallet = this.walletManager.getNetworkWalletFromMasterWalletId(masterWalletId);
-      if (!this.networkWallet) {
-        Logger.warn('wallet', 'coin-home error this.networkWallet = null,', masterWalletId);
+      let subWalletId = navigation.extras.state.subWalletId as StandardCoinName;
+      if (!this.bindToWallet(masterWalletId, subWalletId)) {
         return;
       }
-      this.coinTransferService.reset();
-      this.coinTransferService.masterWalletId = masterWalletId;
-      this.coinTransferService.subWalletId = this.subWalletId;
-
-      this.subWallet = this.networkWallet.getSubWallet(this.subWalletId);
-
-      void this.getStakedBalance();
-
-      this.startUpdateInterval();
     }
 
     void this.initData(true);
+    this.subscribeToWalletEvents();
+  }
 
+  /**
+   * Points the page at a wallet/subwallet pair and primes the transfer service.
+   * Returns false when the wallet cannot be resolved (page left untouched).
+   */
+  private bindToWallet(masterWalletId: string, subWalletId: StandardCoinName): boolean {
+    const networkWallet = this.walletManager.getNetworkWalletFromMasterWalletId(masterWalletId);
+    if (!networkWallet) {
+      Logger.warn('wallet', 'coin-home error this.networkWallet = null,', masterWalletId);
+      return false;
+    }
+    const subWallet = networkWallet.getSubWallet(subWalletId);
+    if (!subWallet) {
+      Logger.warn('wallet', 'coin-home error subwallet not found on network,', subWalletId);
+      return false;
+    }
+
+    this.networkWallet = networkWallet;
+    this.subWalletId = subWalletId;
+    this.subWallet = subWallet;
+
+    this.coinTransferService.reset();
+    this.coinTransferService.masterWalletId = masterWalletId;
+    this.coinTransferService.subWalletId = this.subWalletId;
+
+    void this.getStakedBalance();
+
+    this.startUpdateInterval();
+    return true;
+  }
+
+  private subscribeToWalletEvents() {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.transactionListChangedSubscription = this.subWallet.transactionsListChanged().subscribe(value => {
       if (value === null) return; // null is the initial value.
@@ -354,6 +362,76 @@ export class CoinHomePage implements OnInit {
     this.sendTransactionSubscription = this.events.subscribe('wallet:transactionpublished', () => {
       void this.updateWalletInfo();
     });
+  }
+
+  private unsubscribeWalletEvents() {
+    if (this.transactionListChangedSubscription) {
+      this.transactionListChangedSubscription.unsubscribe();
+      this.transactionListChangedSubscription = null;
+    }
+    if (this.transactionFetchStatusChangedSubscription) {
+      this.transactionFetchStatusChangedSubscription.unsubscribe();
+      this.transactionFetchStatusChangedSubscription = null;
+    }
+    if (this.extendedInfoChangeSubscription) {
+      this.extendedInfoChangeSubscription.unsubscribe();
+      this.extendedInfoChangeSubscription = null;
+    }
+    if (this.sendTransactionSubscription) {
+      this.sendTransactionSubscription.unsubscribe();
+      this.sendTransactionSubscription = null;
+    }
+  }
+
+  /**
+   * The Ionic route reuse strategy keeps this page alive in the tab stack, so navigating
+   * here again (e.g. from another network's token list while a previous token page is
+   * still stacked) reuses this instance and the constructor-time init() never sees the
+   * new navigation state - the page kept showing the previous token's balance and
+   * transactions. Angular persists the navigation extras in history.state, so on every
+   * view entry compare the navigated target with the current binding and rebind when
+   * they differ.
+   */
+  private rebindIfNavigationTargetChanged() {
+    const state = window.history.state;
+    if (!state || !state.masterWalletId || !state.subWalletId) return;
+
+    const targetNetworkWallet = this.walletManager.getNetworkWalletFromMasterWalletId(state.masterWalletId);
+    if (!targetNetworkWallet) return;
+    if (targetNetworkWallet === this.networkWallet && state.subWalletId === this.subWalletId) return;
+
+    this.unsubscribeWalletEvents();
+    if (!this.bindToWallet(state.masterWalletId, state.subWalletId as StandardCoinName)) {
+      // Target unresolvable - keep the previous binding alive.
+      this.subscribeToWalletEvents();
+      return;
+    }
+    this.resetTransactionViewState();
+    void this.initData(true);
+    this.subscribeToWalletEvents();
+    void this.tokenContent?.scrollToTop(0);
+  }
+
+  /** Clears every per-token view field so a rebound page starts clean. */
+  private resetTransactionViewState() {
+    this.transferList = [];
+    this.extendedTxInfo = {};
+    this.offlineTransactions = [];
+    this.transactionsLoaded = false;
+    this.transactions = [];
+    this.transactionListType = TransactionListType.NORMAL;
+    this.hasInternalTransactions = false;
+    this.hasRechargeTransactions = false;
+    this.txTypeFilter = 'all';
+    this.txGroups = [];
+    this.stakedBalance = null;
+    this.todaysTransactions = 0;
+    this.prevTransactionCount = 0;
+    this.start = 0;
+    this.canFetchMore = true;
+    this.updateTransactionsTimesamp = 0;
+    this.priceSeriesVm = null;
+    this.coinPercentChangeVm = null;
   }
 
   ngOnInit() {}
