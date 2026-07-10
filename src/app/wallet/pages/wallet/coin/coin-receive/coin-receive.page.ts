@@ -123,6 +123,26 @@ export class CoinReceivePage implements OnInit, OnDestroy {
     this.setAddressType(Number(key));
   }
 
+  // Anti-poisoning emphasis (super-wallet pattern): the first and last characters are
+  // what users compare, so they render bright while the middle stays muted. Poisoned
+  // look-alike addresses match the ends far less often than the middle.
+  private static readonly ADDRESS_EDGE_CHARS = 6;
+
+  public get addressHead(): string {
+    if (!this.qrcode || this.qrcode.length < 16) return this.qrcode || '';
+    return this.qrcode.slice(0, CoinReceivePage.ADDRESS_EDGE_CHARS);
+  }
+
+  public get addressBody(): string {
+    if (!this.qrcode || this.qrcode.length < 16) return '';
+    return this.qrcode.slice(CoinReceivePage.ADDRESS_EDGE_CHARS, -CoinReceivePage.ADDRESS_EDGE_CHARS);
+  }
+
+  public get addressTail(): string {
+    if (!this.qrcode || this.qrcode.length < 16) return '';
+    return this.qrcode.slice(-CoinReceivePage.ADDRESS_EDGE_CHARS);
+  }
+
   public get networkName(): string {
     if (!this.networkWallet) {
       return '';

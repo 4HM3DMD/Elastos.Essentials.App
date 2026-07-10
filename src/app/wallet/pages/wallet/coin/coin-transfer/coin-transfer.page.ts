@@ -969,6 +969,18 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Estimated network fee shown on the entry screen when it is already known at entry
+   * time (super-wallet pattern: fee visible before Continue). ELA main chain has a fixed
+   * fee and TRON estimates on load; EVM/BTC estimates arrive later in the flow and stay
+   * on the confirm step.
+   */
+  public get entryFeeText(): string | null {
+    if (this.feeOfELA) return `${this.feeOfELA} ELA`;
+    if (this.feeOfTRX) return `${this.feeOfTRX} TRX`;
+    return null;
+  }
+
+  /**
    * True when the entered amount exceeds the spendable balance - shown inline and blocking
    * Continue (super-wallet pattern), instead of only failing with a toast at Continue time.
    * Max (-1 sentinel) is exempt: send-all is resolved downstream.

@@ -451,6 +451,16 @@
                     color: #FFFFFF;
                 }
             }
+
+            // Entry-screen fee line, same quiet tier as the Available line.
+            .fee-label {
+                margin: 0;
+                font-size: 12px;
+                font-weight: 500;
+                letter-spacing: normal;
+                text-align: center;
+                color: var(--essentials-text-secondary);
+            }
         }
 
         /* SCR-002: quick-amount chips (25 / 50 / 75 / Max) — frosted glass, orange when active */

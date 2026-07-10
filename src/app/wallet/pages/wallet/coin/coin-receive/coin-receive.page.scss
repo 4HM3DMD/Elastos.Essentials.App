@@ -106,6 +106,16 @@
       white-space: normal;
       word-break: break-all;
       font-variant-numeric: tabular-nums;
+
+      // Anti-poisoning emphasis: bright edges (what users compare), muted middle.
+      .addr-edge {
+        color: #FFFFFF;
+        font-weight: 700;
+      }
+
+      .addr-mid {
+        color: var(--essentials-text-secondary);
+      }
     }
 
     .copy-disc {

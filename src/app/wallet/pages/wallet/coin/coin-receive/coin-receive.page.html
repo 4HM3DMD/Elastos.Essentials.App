@@ -35,9 +35,10 @@
       <p class="section-label">{{ 'wallet.coin-receive-address-label' | translate }}</p>
       <div class="address-row">
         <!-- Full address, wrapped: a Receive address must be shown in full so it can
-             be read off / verified. The middle-ellipsized shortAddress is only for
-             compact references elsewhere; here the whole point is the complete value. -->
-        <span class="address" (click)="copyAddress()">{{ qrcode }}</span>
+             be read off / verified. Anti-poisoning emphasis: the first/last characters
+             (the ones users actually compare) render bright, the middle stays muted. -->
+        <span class="address" (click)="copyAddress()"><span class="addr-edge">{{ addressHead }}</span><span
+            class="addr-mid">{{ addressBody }}</span><span class="addr-edge">{{ addressTail }}</span></span>
         <button type="button" class="copy-disc" aria-label="Copy address" (click)="copyAddress()">
           <ion-icon name="copy-outline"></ion-icon>
         </button>

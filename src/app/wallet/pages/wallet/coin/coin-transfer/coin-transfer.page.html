@@ -173,6 +173,9 @@
                     <strong *ngIf="displayBalanceLocked != ''"> {{ 'wallet.balance-locked' |
                         translate:{locked: displayBalanceLocked} }}</strong>
                 </p>
+                <!-- Fee visible before Continue (super-wallet pattern), when known at entry. -->
+                <p class="fee-label" *ngIf="entryFeeText">{{ 'wallet.network-fee' | translate }}: {{ entryFeeText }}
+                </p>
             </ion-row>
 
             <!-- Inline over-balance error, live at input time (super-wallet pattern). -->
