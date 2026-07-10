@@ -87,13 +87,15 @@ export class WalletNetworkUIService {
     return new Promise(resolve => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises, require-await
       modal.onWillDismiss().then(async params => {
+        // The preference writes are awaited so callers can re-read the mode
+        // right after this promise resolves (no stale-read race).
         if (params.data && params.data.selectedAllChains) {
-          void this.prefs.setAllChainsMode(
+          await this.prefs.setAllChainsMode(
             DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, true
           );
           resolve(true);
         } else if (params.data && params.data.selectedNetworkKey) {
-          void this.prefs.setAllChainsMode(
+          await this.prefs.setAllChainsMode(
             DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, false
           );
           void this.networkService.setActiveNetwork(
