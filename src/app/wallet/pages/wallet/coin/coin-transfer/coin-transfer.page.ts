@@ -1302,6 +1302,25 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       );
     }
 
+    // Receive Amount + Total Deducted rows (Figma Confirm Send 213:11939). The total
+    // only exists when the fee is paid in the sent token (native-coin send: fixed-fee
+    // ELA main chain, TRON main coin) and this is not send-all (send-all resolves the
+    // final amount downstream, after fee subtraction).
+    let receiveAmount: string = null;
+    let totalDeducted: string = null;
+    if (!this.sendMax && this.amount && this.amount > 0) {
+      receiveAmount = confirmedAmount.toFixed();
+      let feeInSentToken: string = null;
+      if (this.feeOfELA && this.subWalletId === StandardCoinName.ELA) {
+        feeInSentToken = this.feeOfELA;
+      } else if (this.feeOfTRX && this.fromSubWallet instanceof TronSubWallet) {
+        feeInSentToken = this.feeOfTRX;
+      }
+      if (feeInSentToken) {
+        totalDeducted = confirmedAmount.plus(new BigNumber(feeInSentToken)).toFixed();
+      }
+    }
+
     const txInfo = {
       type: this.transferType,
       transferFrom: this.getFromTitle(),
@@ -1318,6 +1337,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       // SCR-017: network + resolved contact name rows ('- -' fallback handled in the sheet).
       networkName: WalletNetworkService.instance.activeNetwork.value.getEffectiveName(),
       addressName: this.addressName,
+      // Figma 213:11939 detail rows.
+      receiveAmount: receiveAmount,
+      totalDeducted: totalDeducted,
       // SCR-016: fiat value beneath the amount hero.
       amountFiat: amountFiat
     };
