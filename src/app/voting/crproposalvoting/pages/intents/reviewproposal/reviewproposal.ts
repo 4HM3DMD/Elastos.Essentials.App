@@ -80,7 +80,9 @@ export class ReviewProposalPage {
             });
 
             this.voteResult = this.onGoingCommand.data.voteResult || "approve";
-            this.voteResult.toLowerCase()
+            // Normalize the caller-supplied casing ("Reject", "APPROVE"...) so the
+            // voteResultTypes lookup in getProposalPayload() can't map it to undefined.
+            this.voteResult = this.voteResult.toLowerCase();
         }
     }
 
