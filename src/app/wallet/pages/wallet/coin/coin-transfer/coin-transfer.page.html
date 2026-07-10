@@ -137,7 +137,8 @@
                 <!-- Custom entry: the value is driven by the on-screen numpad below, so the
                      native keyboard never opens on the amount field (SCR-002). -->
                 <div class="amount-hero__entry">
-                    <span class="amount-hero__value" [class.is-empty]="!heroHasValue">{{ heroDisplayValue }}</span>
+                    <span class="amount-hero__value" [class.is-empty]="!heroHasValue"
+                        [class.exceeds]="amountExceedsBalance">{{ heroDisplayValue }}</span>
                     <span class="amount-hero__unit">{{ heroUnitSymbol }}</span>
                 </div>
                 <!-- Fiat/native conversion pill with swap toggle (SCR-002) -->
@@ -173,6 +174,9 @@
                         translate:{locked: displayBalanceLocked} }}</strong>
                 </p>
             </ion-row>
+
+            <!-- Inline over-balance error, live at input time (super-wallet pattern). -->
+            <p class="inline-error" *ngIf="amountExceedsBalance">{{ 'wallet.insufficient-balance' | translate }}</p>
 
             <!-- SCR-002: quick-amount chips (fractions of the spendable balance) + Max. -->
             <div class="quick-amounts" *ngIf="!isTransferTypeSendNFT()">
@@ -213,7 +217,7 @@
             </div>
 
             <!-- SCR-024: full-width address field. SCR-025: press-and-hold to paste. -->
-            <ion-row class="item-row" *ngIf="!addressName">
+            <ion-row class="item-row" [class.error]="toAddressInvalid" *ngIf="!addressName">
                 <ion-col size="12">
                     <ion-input type="url" placeholder="{{ 'wallet.press-and-hold-paste' | translate}}"
                         autocomplete="off" autocorrect="off" [(ngModel)]="toAddress" name="toAddress" ngDefaultControl
@@ -223,6 +227,10 @@
                     </ion-input>
                 </ion-col>
             </ion-row>
+
+            <!-- Inline invalid-address error, live at input time (super-wallet pattern). -->
+            <p class="inline-error inline-error--left" *ngIf="toAddressInvalid && !addressName">
+                {{ 'wallet.not-a-valid-address' | translate }}</p>
 
             <!-- Address quick actions (SCR-026: Saved Addresses first, then Paste; SCR-004: saved-addresses sheet on all networks) -->
             <div class="address-chips" *ngIf="!addressName">
@@ -320,7 +328,7 @@
             [class.dark-footer]="theme.darkMode">
             <ion-row class="btn-container">
                 <ebutton (clicked)="goTransaction()" [title]="buttonTitle()" [arrow]="true"
-                    [disabled]="actionIsGoing || !toAddress || (!isTransferTypeSendNFT() && !amount)">
+                    [disabled]="actionIsGoing || !toAddress || toAddressInvalid || (!isTransferTypeSendNFT() && (!amount || amountExceedsBalance))">
                 </ebutton>
             </ion-row>
         </div>

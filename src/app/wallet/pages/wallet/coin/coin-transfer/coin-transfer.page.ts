@@ -122,6 +122,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   // The active quick-percent chip (0.25 / 0.5 / 0.75), or null when entering manually
   // or when Max is armed. Drives the highlighted state of the quick-amount chips.
   public activePercent: number | null = null;
+  // Inline validation (super-wallet pattern: surface problems at input time, not at
+  // Continue time). True when the typed recipient fails the network's address check.
+  public toAddressInvalid = false;
 
   public displayBalanceString = '';
   public displayBalanceLocked = '';
@@ -966,6 +969,17 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   }
 
   /**
+   * True when the entered amount exceeds the spendable balance - shown inline and blocking
+   * Continue (super-wallet pattern), instead of only failing with a toast at Continue time.
+   * Max (-1 sentinel) is exempt: send-all is resolved downstream.
+   */
+  public get amountExceedsBalance(): boolean {
+    if (this.sendMax || !this.amount || this.amount <= 0) return false;
+    if (!this.networkWallet || !this.subWalletId) return false;
+    return new BigNumber(this.amount).gt(this.getSpendableDisplayBalance());
+  }
+
+  /**
    * Quick-amount chip: sets the entry to a fraction (0.25 / 0.5 / 0.75) of the spendable
    * balance. Always expressed in token units so the fraction is exact regardless of the
    * current fiat/token toggle, and rounded DOWN so it can never exceed the balance.
@@ -1348,6 +1362,8 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   async onSendToAddressInput(enteredText: string) {
     this.suggestedAddresses = [];
     this.addressName = null;
+    // Typing always clears the inline error until the new value is re-checked.
+    this.toAddressInvalid = false;
 
     if (!enteredText) {
       return;
@@ -1358,6 +1374,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       // Quick and dirty way to not try to resolve a name when it's actually an address already, not name.
       if (enteredText.length > 30) {
         let addressValid = await this.isAddressValid(enteredText);
+        // Address-length input that fails the network check: surface it inline right away
+        // (super-wallet pattern) instead of waiting for the Continue tap.
+        this.toAddressInvalid = !addressValid;
         if (addressValid) return;
       }
 

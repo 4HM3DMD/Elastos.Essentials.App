@@ -257,6 +257,12 @@
                     &.is-empty {
                         color: var(--essentials-text-secondary);
                     }
+
+                    // Live over-balance state: the amount itself turns danger (super-wallet
+                    // pattern - the problem is visible where the user is looking).
+                    &.exceeds {
+                        color: var(--essentials-danger);
+                    }
                 }
 
                 .amount-hero__unit {
@@ -298,6 +304,23 @@
             }
         }
 
+        // Inline validation message (over-balance under the hero, invalid address under
+        // the field). Overrides the send-container's generic right-aligned p defaults.
+        .inline-error {
+            width: 100%;
+            margin: 6px 0 0;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: normal;
+            text-align: center;
+            color: var(--essentials-danger);
+
+            &.inline-error--left {
+                margin-top: 8px;
+                text-align: left;
+            }
+        }
+
         .item-row {
             /* SCR-024: full-width field, hairline border. Figma Send input is 345x50. */
             width: 100%;
@@ -309,6 +332,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+
+            // Invalid-address state: the field's hairline turns danger.
+            &.error {
+                border-color: rgba(255, 56, 60, 0.55);
+            }
 
             ion-col {
                 display: flex;
