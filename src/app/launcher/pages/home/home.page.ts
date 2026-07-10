@@ -479,27 +479,45 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.networkWallet.masterWallet.creator === WalletCreator.WALLET_APP) {
       void this.checkBackupThenReceive();
     } else {
-      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
+      this.goReceiveDestination();
     }
+  }
+
+  /** Aggregate mode asks which token/chain to receive on; single mode goes straight to the QR. */
+  private goReceiveDestination() {
+    if (this.allChainsOn && this.networkWallet) {
+      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-select-send', {
+        state: { masterWalletId: this.networkWallet.id, mode: 'receive' }
+      });
+      return;
+    }
+    void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
   }
 
   /** Same semantics as the Value screen: offer backup first, but never block receiving. */
   private async checkBackupThenReceive() {
     const needsBackup = !(await GlobalDIDSessionsService.instance.activeIdentityWasBackedUp());
     if (!needsBackup) {
-      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
+      this.goReceiveDestination();
       return;
     }
     const goToBackup = await this.globalPopupService.ionicConfirm('launcher.backup-title', 'launcher.backup-message');
     if (goToBackup) {
       void this.globalNav.navigateTo('identitybackup', '/identity/backupdid');
     } else {
-      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
+      this.goReceiveDestination();
     }
   }
 
   /** Swap: the swap-providers screen for the main subwallet (mirrors the Value screen). */
   public onSwap() {
+    if (this.allChainsOn && this.networkWallet) {
+      // Aggregate mode: ask which token to swap (picker lists swappable tokens only).
+      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-select-send', {
+        state: { masterWalletId: this.networkWallet.id, mode: 'swap' }
+      });
+      return;
+    }
     let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
     if (!main) return;
     this.coinTransferService.masterWalletId = main.networkWallet.id;
@@ -518,20 +536,36 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.canStakeTRX()) {
       void this.globalNav.navigateTo(App.WALLET, '/wallet/wallet-tron-resource');
     } else if (this.canStakeELA()) {
+      // Aggregate mode: switch to mainchain silently so the staking flow's own
+      // "switch network?" prompt never fires (same pattern as row taps).
+      if (this.allChainsOn && this.currentNetwork?.key !== 'elastos') {
+        void this.walletNetworkService.setActiveNetwork(this.walletNetworkService.getNetworkByKey('elastos'))
+          .then(() => this.stakingInitService.start());
+        return;
+      }
       void this.stakingInitService.start();
     }
   }
 
   /** Whether the Swap tile should show: the active network exposes swap providers for the main token. */
   public canSwap(): boolean {
+    if (this.allChainsOn) return this.hasSwappableAggregatedRow();
     let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
     if (!main) return false;
     return SwapService.instance.getAvailableSwapProviders(main).length > 0;
   }
 
+  /** Aggregate mode: whether any merged row's token has a swap provider on its chain. */
+  private hasSwappableAggregatedRow(): boolean {
+    return (this.aggService.rows.value || [])
+      .some(r => SwapService.instance.getAvailableSwapProviders(r.subWallet).length > 0);
+  }
+
   /** Whether ELA staking is available (mirrors wallet-home.canStakeELA). */
   public canStakeELA(): boolean {
-    if (!this.networkWallet || this.networkWallet.network.key !== 'elastos') return false;
+    if (!this.networkWallet) return false;
+    // Aggregate mode: mainchain is always part of the portfolio, so staking stays offered.
+    if (!this.allChainsOn && this.networkWallet.network.key !== 'elastos') return false;
     let status = this.voteService.dPoSStatus.value;
     return status === DposStatus.DPoSV2 || status === DposStatus.DPoSV1V2;
   }

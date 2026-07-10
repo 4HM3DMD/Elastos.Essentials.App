@@ -16,6 +16,7 @@ import { GlobalPreferencesService } from 'src/app/services/global.preferences.se
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { PriceHistoryService } from 'src/app/wallet/services/pricehistory.service';
+import { SwapService } from 'src/app/wallet/services/evm/swap.service';
 import { CoinTransferService, TransferType } from '../../../../services/cointransfer.service';
 import { CurrencyService } from '../../../../services/currency.service';
 import { Native } from '../../../../services/native.service';
@@ -50,6 +51,8 @@ export class CoinSelectSendPage {
   @ViewChild(TitleBarComponent, { static: true }) titleBar: TitleBarComponent;
 
   private masterWalletId: string = null;
+  /** What the picked token feeds into: the transfer form, the receive QR, or the swap screen. */
+  private mode: 'send' | 'receive' | 'swap' = 'send';
   private networkWallet: AnyNetworkWallet = null;
   public rows: SendTokenRow[] = null;
   public shownRows: SendTokenRow[] = null;
@@ -70,6 +73,7 @@ export class CoinSelectSendPage {
     const navigation = this.router.getCurrentNavigation();
     if (navigation && navigation.extras.state && !Util.isEmptyObject(navigation.extras.state)) {
       this.masterWalletId = navigation.extras.state.masterWalletId;
+      if (navigation.extras.state.mode) this.mode = navigation.extras.state.mode;
     }
   }
 
@@ -88,7 +92,11 @@ export class CoinSelectSendPage {
 
     if (allChains) {
       await this.aggService.ensureBuilt();
-      const aggRows = this.aggService.rows.value || [];
+      let aggRows = this.aggService.rows.value || [];
+      // Swap only lists tokens with a swap provider on their chain.
+      if (this.mode === 'swap') {
+        aggRows = aggRows.filter(r => SwapService.instance.getAvailableSwapProviders(r.subWallet).length > 0);
+      }
       this.rows = aggRows.map(r => this.buildAggregatedRow(r));
       this.shownRows = this.rows;
       return;
@@ -162,7 +170,16 @@ export class CoinSelectSendPage {
     this.coinTransferService.reset();
     this.coinTransferService.masterWalletId = row.subWallet.networkWallet.id;
     this.coinTransferService.subWalletId = row.subWallet.id;
-    this.coinTransferService.transferType = TransferType.SEND;
-    this.native.go('/wallet/coin-transfer');
+    switch (this.mode) {
+      case 'receive':
+        this.native.go('/wallet/coin-receive');
+        return;
+      case 'swap':
+        this.native.go('/wallet/coin-swap');
+        return;
+      default:
+        this.coinTransferService.transferType = TransferType.SEND;
+        this.native.go('/wallet/coin-transfer');
+    }
   }
 }

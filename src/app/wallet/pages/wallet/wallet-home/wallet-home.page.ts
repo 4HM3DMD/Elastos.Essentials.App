@@ -347,6 +347,9 @@ export class WalletHomePage implements OnInit, OnDestroy {
             await this.aggService.ensureBuilt();
             this.rebuildTokenRows(); // cached balances render instantly
             this.rebuildBalanceVm();
+            // Staking stays sourced from mainchain even when it is not the active network.
+            this.refreshStakingAssetsList();
+            void this.getStakedBalance();
             this.cdr.markForCheck();
             void this.aggService.refresh(); // fresh values fill in progressively
         });
@@ -570,8 +573,17 @@ export class WalletHomePage implements OnInit, OnDestroy {
         if (this.masterWallet && this.masterWallet.creator === WalletCreator.WALLET_APP) {
             void this.checkBackupThenReceive();
         } else {
-            this.native.go('/wallet/coin-receive');
+            this.goReceiveDestination();
         }
+    }
+
+    /** Aggregate mode asks which token/chain to receive on; single mode goes straight to the QR. */
+    private goReceiveDestination() {
+        if (this.allChainsOn && this.networkWallet) {
+            this.native.go('/wallet/coin-select-send', { masterWalletId: this.networkWallet.id, mode: 'receive' });
+            return;
+        }
+        this.native.go('/wallet/coin-receive');
     }
 
     private async checkBackupThenReceive() {
@@ -579,7 +591,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
         if (needsBackup) {
             await this.showReceiveBackupPrompt();
         } else {
-            this.native.go('/wallet/coin-receive');
+            this.goReceiveDestination();
         }
     }
 
@@ -608,6 +620,11 @@ export class WalletHomePage implements OnInit, OnDestroy {
 
     /** Swap: navigate to the swap providers screen for the main subwallet. */
     public onSwap() {
+        if (this.allChainsOn && this.networkWallet) {
+            // Aggregate mode: ask which token to swap (picker lists swappable tokens only).
+            this.native.go('/wallet/coin-select-send', { masterWalletId: this.networkWallet.id, mode: 'swap' });
+            return;
+        }
         let main = this.getMainSubWallet();
         if (!main) return;
         this.coinTransferService.masterWalletId = main.networkWallet.id;
@@ -627,12 +644,23 @@ export class WalletHomePage implements OnInit, OnDestroy {
         if (this.canStakeTRX()) {
             this.native.go('wallet-tron-resource');
         } else if (this.canStakeELA()) {
+            // Aggregate mode: switch to mainchain silently so the staking flow's own
+            // "switch network?" prompt never fires (same pattern as row taps).
+            if (this.allChainsOn && this.currentNetwork?.key !== 'elastos') {
+                void this.networkService.setActiveNetwork(this.networkService.getNetworkByKey('elastos'))
+                    .then(() => this.stakingInitService.start());
+                return;
+            }
             void this.stakingInitService.start();
         }
     }
 
     /** Whether the Swap tile should show: the active network exposes swap providers for the main token. */
     public canSwap(): boolean {
+        if (this.allChainsOn) {
+            return (this.aggService.rows.value || [])
+                .some(r => SwapService.instance.getAvailableSwapProviders(r.subWallet).length > 0);
+        }
         let main = this.getMainSubWallet();
         if (!main) return false;
         return SwapService.instance.getAvailableSwapProviders(main).length > 0;
@@ -640,7 +668,9 @@ export class WalletHomePage implements OnInit, OnDestroy {
 
     /** Whether ELA staking is available (mirrors coin-home.canStakeELA). */
     public canStakeELA(): boolean {
-        if (!this.networkWallet || this.networkWallet.network.key !== 'elastos') return false;
+        if (!this.networkWallet) return false;
+        // Aggregate mode: mainchain is always part of the portfolio, so staking stays offered.
+        if (!this.allChainsOn && this.networkWallet.network.key !== 'elastos') return false;
         let status = this.voteService.dPoSStatus.value;
         return status === DposStatus.DPoSV2 || status === DposStatus.DPoSV1V2;
     }
@@ -687,9 +717,16 @@ export class WalletHomePage implements OnInit, OnDestroy {
         return row.nft.contractAddress;
     }
 
+    /** Aggregate mode reads staking from the aggregator's mainchain instance so it never vanishes. */
+    private stakingSourceWallet(): AnyNetworkWallet {
+        if (this.allChainsOn) return this.aggService.getMainchainInstance() || this.networkWallet;
+        return this.networkWallet;
+    }
+
     private refreshStakingAssetsList() {
         this.zone.run(() => {
-            this.stakingAssets = this.networkWallet.getStakingAssets();
+            const src = this.stakingSourceWallet();
+            this.stakingAssets = src ? src.getStakingAssets() : [];
             this.rebuildStakingRows();
             // LOGIC:wallet-concept: DeFi assets can arrive after the initial render;
             // re-derive tabs so the Staked chip appears once positions are known.
@@ -896,7 +933,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
             this.cdr.markForCheck();
         })
 
-        await this.networkWallet.fetchStakingAssets();
+        await (this.stakingSourceWallet() || this.networkWallet).fetchStakingAssets();
 
         setTimeout(() => {
             this.zone.run(() => {
@@ -957,14 +994,15 @@ export class WalletHomePage implements OnInit, OnDestroy {
     public async getStakedBalance() {
         // Can't use WalletNetworkService.instance.isActiveNetworkElastosMainchain()
         // We got the activeNetworkWallet event first, but the WalletNetworkService.instance.isActiveNetworkElastosMainchain still return true.
-        if (this.networkWallet) {
-            if (this.networkWallet.network.key === 'elastos') {
-                let subwallet = this.networkWallet.getMainTokenSubWallet() as MainChainSubWallet;
+        const src = this.stakingSourceWallet();
+        if (src) {
+            if (src.network.key === 'elastos') {
+                let subwallet = src.getMainTokenSubWallet() as MainChainSubWallet;
                 if (subwallet) {
                     this.stakedBalance = await subwallet.getStakedBalance();
                 }
-            } else if (this.networkWallet.network.key === 'tron') {
-                let subwallet = this.networkWallet.getMainTokenSubWallet() as TronSubWallet;
+            } else if (src.network.key === 'tron') {
+                let subwallet = src.getMainTokenSubWallet() as TronSubWallet;
                 if (subwallet) {
                     this.stakedBalance = await subwallet.getStakedBalance();
                 }
@@ -977,8 +1015,9 @@ export class WalletHomePage implements OnInit, OnDestroy {
     }
 
     public getStakedBalanceInCurrency() {
+        const src = this.stakingSourceWallet() || this.networkWallet;
         let balance = CurrencyService.instance.getMainTokenValue(new BigNumber(this.stakedBalance),
-            this.networkWallet.network, this.currencyService.selectedCurrency.symbol);
+            src.network, this.currencyService.selectedCurrency.symbol);
         return WalletUtil.getFiatBalance(balance);
     }
 
