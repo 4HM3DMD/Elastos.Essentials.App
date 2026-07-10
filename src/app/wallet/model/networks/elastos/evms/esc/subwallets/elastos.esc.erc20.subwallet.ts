@@ -14,12 +14,6 @@ export class ElastosEscERC20SubWallet extends ERC20SubWallet {
     this.spvConfigEVMCode = StandardCoinName.ETHSC;
   }
 
-  public getMainIcon(): string {
-    // Transparent token mark, decoupled from the network logo; the chain identity
-    // shows on the badge (getSecondaryIcon) instead.
-    return 'assets/wallet/coins/ela.png';
-  }
-
   public getSecondaryIcon(): string {
     // SCR-082: show the network logo as the chain badge on ERC20 tokens.
     return this.networkWallet.network.logo;

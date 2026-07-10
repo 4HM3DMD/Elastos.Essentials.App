@@ -283,6 +283,8 @@ export class WalletHomePage implements OnInit, OnDestroy {
             if (this.allChainsOn) {
                 this.rebuildTokenRows();
                 this.rebuildBalanceVm();
+                this.refreshStakingAssetsList();
+                void this.getStakedBalance();
                 this.cdr.markForCheck();
             }
         });
@@ -425,7 +427,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
             this.allChainsOn = await this.prefs.getAllChainsMode(
                 DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate);
         } catch (e) {
-            this.allChainsOn = true;
+            // Keep the current mode on read failure; never override the user's choice.
         }
     }
 
@@ -908,7 +910,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
     }
 
     public pickNetwork() {
-        void this.walletNetworkUIService.chooseActiveNetwork().then(async changed => {
+        void this.walletNetworkUIService.chooseActiveNetwork(undefined, true).then(async changed => {
             if (!changed) return;
             await this.loadAllChains();
             this.rebuildTokenRows();

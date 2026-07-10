@@ -262,7 +262,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   public onPickNetwork() {
-    void this.walletNetworkUIService.chooseActiveNetwork().then(async changed => {
+    void this.walletNetworkUIService.chooseActiveNetwork(undefined, true).then(async changed => {
       if (!changed) return;
       await this.loadAllChains();
       this.refreshWalletData();
@@ -285,7 +285,10 @@ export class HomePage implements OnInit, OnDestroy {
       this.subWalletsListChangeSub?.unsubscribe();
       this.subWalletsListChangeSub = null;
       if (networkWallet) {
-        this.subWalletsListChangeSub = networkWallet.subWalletsListChange.subscribe(() => this.rebuildWalletSummary());
+        this.subWalletsListChangeSub = networkWallet.subWalletsListChange.subscribe(() => {
+          if (this.allChainsOn) this.rebuildAggregateSummary();
+          else this.rebuildWalletSummary();
+        });
       }
     }
 
@@ -361,7 +364,7 @@ export class HomePage implements OnInit, OnDestroy {
       this.allChainsOn = await this.globalPrefs.getAllChainsMode(
         DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate);
     } catch (e) {
-      this.allChainsOn = true;
+      // Keep the current mode on read failure; never override the user's choice.
     }
   }
 

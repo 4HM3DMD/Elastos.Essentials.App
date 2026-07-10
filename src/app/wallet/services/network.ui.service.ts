@@ -70,12 +70,14 @@ export class WalletNetworkUIService {
    * @param filter Optional filter to show only specific networks
    * @dependson NetworkChooserComponentModule
    */
-  async chooseActiveNetwork(filter?: NetworkChooserFilter): Promise<boolean> {
+  async chooseActiveNetwork(filter?: NetworkChooserFilter, showAllChains = false): Promise<boolean> {
     let options: NetworkChooserComponentOptions = {
       currentNetwork: this.networkService.activeNetwork.value,
       filter,
       showActiveNetwork: true,
-      showAllChains: true
+      // Only the wallet surfaces that render the aggregate view opt in; other
+      // callers (dApp browser, widgets, red packets) need a concrete network.
+      showAllChains
     };
 
     let modal = await this.modalCtrl.create({
@@ -98,7 +100,8 @@ export class WalletNetworkUIService {
           await this.prefs.setAllChainsMode(
             DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, false
           );
-          void this.networkService.setActiveNetwork(
+          // Await the switch so callers re-render against the NEW network's wallets.
+          await this.networkService.setActiveNetwork(
             this.networkService.getNetworkByKey(params.data.selectedNetworkKey)
           );
           resolve(true);

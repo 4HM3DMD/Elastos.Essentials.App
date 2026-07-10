@@ -45,8 +45,13 @@ export class AggregatedTokensService {
   private builtForMasterId: string = null;
   private building: Promise<void> = null;
   private refreshing = false;
-  private didFullSweep = false;
+  private lastFullSweepAt = 0; // epoch ms of the last discovery sweep (0 = never)
+  private failedNetworkKeys: string[] = []; // side-instance creation failures, retried on refresh
+  private buildGeneration = 0; // invalidates in-flight builds on clear/rebuild
+  private buildRequested = false; // ensureBuilt was called before any wallet existed
+  private sharedInstanceKey: string = null; // which network key borrows the wallet service's live instance
   private activeWalletSub: Subscription = null;
+  private activeNetworkSub: Subscription = null;
 
   constructor(
     private walletService: WalletService,
@@ -54,7 +59,8 @@ export class AggregatedTokensService {
   ) {
     AggregatedTokensService.instance = this;
 
-    // Rebuild for the new master wallet; clear on sign-out (active wallet becomes null).
+    // Rebuild for the new master wallet; clear on sign-out (active wallet becomes
+    // null); serve a build that was requested before the first wallet was ready.
     this.activeWalletSub = this.walletService.activeNetworkWallet.subscribe(nw => {
       const masterId = nw ? nw.masterWallet.id : null;
       if (!masterId) {
@@ -62,16 +68,61 @@ export class AggregatedTokensService {
       } else if (this.builtForMasterId && this.builtForMasterId !== masterId) {
         this.clear();
         void this.ensureBuilt();
+      } else if (!this.builtForMasterId && this.buildRequested) {
+        void this.ensureBuilt();
       }
     });
+
+    // On active-network switches the wallet service terminates and rebuilds its
+    // instances: adopt the fresh live one for the new key and give the previous
+    // key its own side instance, so the map never holds terminated wallets.
+    this.activeNetworkSub = this.networkService.activeNetwork.subscribe(() => {
+      void this.onActiveNetworkChanged();
+    });
+  }
+
+  private async onActiveNetworkChanged() {
+    if (!this.builtForMasterId) return;
+    const gen = this.buildGeneration;
+    const masterId = this.builtForMasterId;
+    const activeKey = this.networkService.activeNetwork.value?.key;
+    if (!activeKey || this.sharedInstanceKey === activeKey) return;
+
+    try {
+      // The previous borrower's live instance was terminated by the wallet
+      // service during the switch: give that key its own fresh side instance.
+      const previousKey = this.sharedInstanceKey;
+      if (previousKey && this.instances.has(previousKey)) {
+        const network = this.networkService.getNetworkByKey(previousKey);
+        if (network) {
+          const side = await this.walletService.newNetworkWalletInstance(masterId, network);
+          if (gen !== this.buildGeneration) return;
+          this.instances.set(previousKey, side);
+        }
+      }
+
+      // Adopt the wallet service's fresh live instance for the new active key
+      // (never keep a duplicate side instance beside it, esp. SPV mainchain).
+      const shared = this.walletService.getNetworkWalletFromMasterWalletId(masterId);
+      if (shared && this.instances.has(activeKey) && gen === this.buildGeneration) {
+        this.instances.set(activeKey, shared);
+        this.sharedInstanceKey = activeKey;
+      }
+    } catch (e) {
+      Logger.warn('wallet', 'AggregatedTokens: instance swap failed', e);
+    }
+    if (gen === this.buildGeneration) this.emitRows();
   }
 
   private clear() {
     // Side instances never started background updates, so there is nothing to stop;
     // dropping the references releases them.
+    this.buildGeneration++;
     this.instances.clear();
     this.builtForMasterId = null;
-    this.didFullSweep = false;
+    this.sharedInstanceKey = null;
+    this.lastFullSweepAt = 0;
+    this.failedNetworkKeys = [];
     this.rows.next(null);
   }
 
@@ -81,7 +132,12 @@ export class AggregatedTokensService {
    */
   public ensureBuilt(): Promise<void> {
     const activeNw = this.walletService.activeNetworkWallet.value;
-    if (!activeNw) return Promise.resolve();
+    if (!activeNw) {
+      // Wallets not ready yet: remember the request; the subscription builds later.
+      this.buildRequested = true;
+      return Promise.resolve();
+    }
+    this.buildRequested = false;
     if (this.builtForMasterId === activeNw.masterWallet.id) return this.building || Promise.resolve();
 
     this.building = this.build(activeNw);
@@ -90,8 +146,10 @@ export class AggregatedTokensService {
 
   private async build(activeNw: AnyNetworkWallet): Promise<void> {
     const masterId = activeNw.masterWallet.id;
+    const gen = ++this.buildGeneration;
     this.builtForMasterId = masterId;
     this.instances.clear();
+    this.failedNetworkKeys = [];
 
     // Every visible network participates: default ELA chains always show their rows,
     // any other network contributes assets once a balance exists.
@@ -103,20 +161,43 @@ export class AggregatedTokensService {
         if (this.networkService.activeNetwork.value?.key === key) {
           const shared = this.walletService.getNetworkWalletFromMasterWalletId(masterId);
           if (shared) {
+            if (gen !== this.buildGeneration) return; // superseded mid-build
             this.instances.set(key, shared);
+            this.sharedInstanceKey = key;
             continue;
           }
         }
         const instance = await this.walletService.newNetworkWalletInstance(masterId, network);
+        if (gen !== this.buildGeneration) return; // superseded mid-build
         this.instances.set(key, instance);
       } catch (e) {
         // SPV/native errors (e.g. wallet needs the pay password) must never surface
-        // from the aggregator; the network is skipped this round and retried later.
+        // from the aggregator; the network is skipped and retried on later refreshes.
         Logger.warn('wallet', 'AggregatedTokens: skipping network', key, e);
+        this.failedNetworkKeys.push(key);
       }
     }
 
-    this.emitRows();
+    if (gen === this.buildGeneration) this.emitRows();
+  }
+
+  /** Retries side-instance creation for networks that failed during build. */
+  private async retryFailedNetworks() {
+    if (!this.builtForMasterId || this.failedNetworkKeys.length === 0) return;
+    const gen = this.buildGeneration;
+    const keys = this.failedNetworkKeys;
+    this.failedNetworkKeys = [];
+    for (const key of keys) {
+      try {
+        const network = this.networkService.getNetworkByKey(key);
+        if (!network) continue;
+        const instance = await this.walletService.newNetworkWalletInstance(this.builtForMasterId, network);
+        if (gen !== this.buildGeneration) return;
+        this.instances.set(key, instance);
+      } catch (e) {
+        if (gen === this.buildGeneration) this.failedNetworkKeys.push(key);
+      }
+    }
   }
 
   /** Recomputes and emits the merged, filtered, sorted rows from current subwallet state. */
@@ -198,14 +279,24 @@ export class AggregatedTokensService {
    */
   public async refresh(): Promise<void> {
     if (this.refreshing) return;
-    await this.ensureBuilt();
-    if (this.instances.size === 0) return;
+    this.refreshing = true; // set before any await so concurrent callers bail
+    try {
+      await this.ensureBuilt();
+      await this.retryFailedNetworks();
+    } catch (e) {
+      this.refreshing = false;
+      throw e;
+    }
+    if (this.instances.size === 0) {
+      this.refreshing = false;
+      return;
+    }
 
-    this.refreshing = true;
-    // Bounded refresh: the default chains and funded networks every cycle; every
-    // network once per build (discovery sweep) so unknown balances get learned.
-    const fullSweep = !this.didFullSweep;
-    this.didFullSweep = true;
+    // Bounded refresh: the default chains and funded networks every cycle; a full
+    // discovery sweep periodically so balances received later still get learned.
+    const FULL_SWEEP_INTERVAL_MS = 10 * 60 * 1000;
+    const fullSweep = Date.now() - this.lastFullSweepAt > FULL_SWEEP_INTERVAL_MS;
+    if (fullSweep) this.lastFullSweepAt = Date.now();
     const entries = Array.from(this.instances.entries()).filter(([key, nw]) =>
       fullSweep || DEFAULT_NETWORK_ORDER.includes(key) || this.hasKnownBalance(nw));
     try {
@@ -249,7 +340,6 @@ export class AggregatedTokensService {
   public getAggregatePnl24h(): PortfolioPnl {
     let absUSD = 0;
     let absCurrency = 0;
-    let baseUSD = 0;
     let any = false;
     for (const nw of this.instances.values()) {
       const pnl = PriceHistoryService.instance.getPortfolioPnl24h(nw);
@@ -257,11 +347,13 @@ export class AggregatedTokensService {
       any = true;
       absUSD += pnl.absUSD;
       absCurrency += pnl.absCurrency;
-      // Reconstruct each network's base value to derive the aggregate percentage.
-      if (pnl.pct !== 0) baseUSD += pnl.absUSD / (pnl.pct / 100);
     }
     if (!any) return null;
-    const pct = baseUSD !== 0 ? (absUSD / baseUSD) * 100 : 0;
+    // Percentage against the WHOLE portfolio (networks without history included),
+    // so a small mover on one chain cannot masquerade as a portfolio-wide move.
+    const total = this.getAggregateFiatTotal();
+    const base = !total.isNaN() ? total.toNumber() - absCurrency : 0;
+    const pct = base > 0 ? (absCurrency / base) * 100 : 0;
     return { absUSD, absCurrency, pct };
   }
 }

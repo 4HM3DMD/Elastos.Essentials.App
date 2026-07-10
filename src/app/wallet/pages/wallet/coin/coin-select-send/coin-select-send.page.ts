@@ -175,7 +175,10 @@ export class CoinSelectSendPage {
         this.native.go('/wallet/coin-receive');
         return;
       case 'swap':
-        this.native.go('/wallet/coin-swap');
+        // coin-swap reads its context from router state, not CoinTransferService.
+        this.native.go('/wallet/coin-swap', {
+          masterWalletId: row.subWallet.networkWallet.id, subWalletId: row.subWallet.id
+        });
         return;
       default:
         this.coinTransferService.transferType = TransferType.SEND;
