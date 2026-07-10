@@ -162,4 +162,27 @@ export class GlobalEthereumRPCService {
     let result = await this.globalJsonRPCService.httpPost(rpcApiUrl, param, limitatorName, 5000, false, true);
     return parseInt(result);
   }
+
+  /**
+   * Fetches the EVM chain ID (eth_chainId - EIP-695) from the given RPC endpoint.
+   * Returns the chain id as a decimal number, or null if it cannot be retrieved
+   * (unreachable endpoint, or endpoint that does not implement eth_chainId).
+   */
+  public async eth_chainId(rpcApiUrl: string, limitatorName = 'default'): Promise<number> {
+    const param = {
+      method: 'eth_chainId',
+      params: [],
+      jsonrpc: '2.0',
+      id: '1'
+    };
+
+    try {
+      let result = await this.globalJsonRPCService.httpPost<string>(rpcApiUrl, param, limitatorName);
+      let chainId = parseInt(result, 16);
+      return Number.isNaN(chainId) ? null : chainId;
+    } catch (err) {
+      Logger.error('RPCService', 'eth_chainId: http post error:', err);
+      return null;
+    }
+  }
 }

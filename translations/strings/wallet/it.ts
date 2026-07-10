@@ -528,6 +528,8 @@ export const it = {
     'wrong-rpc-url': "L'URL RPC fornito non può essere contattato e potrebbe essere errato. Per favore ricontrollalo.",
     'wrong-account-rpc-url':
       "L'URL RPC dell'account fornito non può essere contattato e potrebbe essere errato. Per favore ricontrollalo.",
+    'rpc-url-chain-id-mismatch': "L'URL RPC fornito appartiene a un'altra rete (chain ID diverso). Per favore ricontrollalo.",
+    'invalid-chain-id': 'Il chain ID deve essere un numero intero positivo.',
     'cant-delete-active-network': "La rete attiva non può essere eliminata. Scegli prima un'altra rete.",
     'delete-network-prompt-title': 'Eliminare la rete ?',
     'delete-network-prompt-text': 'Vuoi davvero eliminare questa rete ?',

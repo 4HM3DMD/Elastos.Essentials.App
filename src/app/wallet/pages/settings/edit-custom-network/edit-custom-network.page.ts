@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { AddEthereumChainParameter } from 'src/app/model/ethereum/requestparams';
+import { GlobalEthereumRPCService } from 'src/app/services/global.ethereum.service';
 import { GlobalIntentService } from 'src/app/services/global.intent.service';
 import { GlobalJsonRPCService } from 'src/app/services/global.jsonrpc.service';
 import { GlobalNativeService } from 'src/app/services/global.native.service';
@@ -173,6 +174,13 @@ export class EditCustomNetworkPage implements OnInit {
   }
 
   public async saveChanges(): Promise<void> {
+    // Make sure the chain ID is a valid positive integer (EVM chain IDs must be > 0)
+    const expectedChainId = Number(this.editedNetworkEntry.chainId);
+    if (!Number.isSafeInteger(expectedChainId) || expectedChainId <= 0) {
+      this.native.errToast('wallet.invalid-chain-id');
+      return;
+    }
+
     // First, check that the RPC URL is accessible
     let rpcUrlIsReachable = false;
     try {
@@ -201,6 +209,22 @@ export class EditCustomNetworkPage implements OnInit {
 
     if (!rpcUrlIsReachable) {
       this.native.errToast('wallet.wrong-rpc-url');
+      return;
+    }
+
+    // Then, make sure the RPC URL really serves the chain ID entered by the user,
+    // so we don't save a network whose RPC endpoint belongs to a different chain.
+    // Endpoints that don't implement eth_chainId (null result) keep saving as before.
+    let rpcChainId: number = null;
+    try {
+      await this.native.showLoading('wallet.checking-rpc-url');
+      rpcChainId = await GlobalEthereumRPCService.instance.eth_chainId(this.editedNetworkEntry.rpcUrl);
+    } finally {
+      await this.native.hideLoading();
+    }
+
+    if (rpcChainId !== null && rpcChainId !== expectedChainId) {
+      this.native.errToast('wallet.rpc-url-chain-id-mismatch');
       return;
     }
 

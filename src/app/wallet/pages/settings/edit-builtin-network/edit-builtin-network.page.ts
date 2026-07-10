@@ -3,10 +3,12 @@ import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
+import { GlobalEthereumRPCService } from 'src/app/services/global.ethereum.service';
 import { GlobalNativeService } from 'src/app/services/global.native.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalPopupService } from 'src/app/services/global.popup.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
+import type { EVMNetwork } from 'src/app/wallet/model/networks/evms/evm.network';
 import type { AnyNetwork } from 'src/app/wallet/model/networks/network';
 import type { RPCUrlProvider } from 'src/app/wallet/model/rpc-url-provider';
 import { EVMService } from 'src/app/wallet/services/evm/evm.service';
@@ -151,6 +153,25 @@ export class EditBuiltinNetworkPage implements OnInit {
     if (!rpcUrlIsReachable) {
       this.native.errToast('wallet.wrong-rpc-url');
       return;
+    }
+
+    // For EVM networks, make sure the selected RPC URL serves the expected chain ID.
+    // Non-EVM networks (BTC, Tron...) cannot be checked with eth_chainId. Endpoints
+    // that don't implement eth_chainId (null result) keep saving as before.
+    if (this.network.isEVMNetwork()) {
+      const expectedChainId = (this.network as EVMNetwork).getMainChainID();
+      let rpcChainId: number = null;
+      try {
+        await this.native.showLoading('wallet.checking-rpc-url');
+        rpcChainId = await GlobalEthereumRPCService.instance.eth_chainId(this.selectedRpcUrl);
+      } finally {
+        await this.native.hideLoading();
+      }
+
+      if (rpcChainId !== null && rpcChainId !== expectedChainId) {
+        this.native.errToast('wallet.rpc-url-chain-id-mismatch');
+        return;
+      }
     }
 
     // Check if values have changed from defaults

@@ -3,10 +3,12 @@ import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
+import { GlobalEthereumRPCService } from 'src/app/services/global.ethereum.service';
 import { GlobalNativeService } from 'src/app/services/global.native.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalPopupService } from 'src/app/services/global.popup.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
+import type { EVMNetwork } from 'src/app/wallet/model/networks/evms/evm.network';
 import type { AnyNetwork } from 'src/app/wallet/model/networks/network';
 import type { RPCUrlProvider } from 'src/app/wallet/model/rpc-url-provider';
 import { BuiltinNetworkOverride, WalletNetworkService } from 'src/app/wallet/services/network.service';
@@ -56,6 +58,7 @@ export class EditRpcProvidersPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     // Stop quality monitoring when component is destroyed
     this.qualityService.stopMonitoring();
+    void this.native.hideLoading(); // Maybe RPC request timeout
   }
 
   private init() {
@@ -155,6 +158,29 @@ export class EditRpcProvidersPage implements OnInit, OnDestroy {
     if (this.allRpcProviders.some(p => p.url === url.trim())) {
       this.native.errToast('wallet.rpc-url-already-exists');
       return;
+    }
+
+    // For EVM networks, check that the RPC URL is reachable and serves the
+    // network's expected chain ID, so a provider for a different chain can't
+    // be attached to this network. Non-EVM networks can't be checked generically.
+    if (this.network.isEVMNetwork()) {
+      const expectedChainId = (this.network as EVMNetwork).getMainChainID();
+      let rpcChainId: number = null;
+      try {
+        await this.native.showLoading('wallet.checking-rpc-url');
+        rpcChainId = await GlobalEthereumRPCService.instance.eth_chainId(url.trim());
+      } finally {
+        await this.native.hideLoading();
+      }
+
+      if (rpcChainId === null) {
+        this.native.errToast('wallet.wrong-rpc-url');
+        return;
+      }
+      if (rpcChainId !== expectedChainId) {
+        this.native.errToast('wallet.rpc-url-chain-id-mismatch');
+        return;
+      }
     }
 
     // Add the new provider

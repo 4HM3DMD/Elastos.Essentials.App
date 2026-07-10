@@ -573,6 +573,8 @@ export const en = {
     'checking-account-rpc-url': 'Checking account RPC URL',
     'wrong-rpc-url': 'The RPC URL could not be reached and could be wrong, please check it.',
     'wrong-account-rpc-url': 'The account RPC URL could not be reached and could be wrong, please check it.',
+    'rpc-url-chain-id-mismatch': 'This RPC URL serves a different chain ID than expected, please check it.',
+    'invalid-chain-id': 'The chain ID must be a positive integer.',
     'cant-delete-active-network': "The active network can't be deleted. Please first change the current network.",
     'delete-network-prompt-title': 'Delete network ?',
     'delete-network-prompt-text': 'Do you really want to delete this network ?',
