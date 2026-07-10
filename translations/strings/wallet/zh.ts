@@ -139,6 +139,7 @@ export const zh = {
     'coin-internal-transactions': '内部交易',
     'coin-recharge-transactions': '跨链充值',
     'coin-no-transactions': '没有交易',
+    'coin-no-filtered-transactions': '没有此类型的交易',
     'coin-op-received-token': '接收',
     'coin-op-sent-token': '发送',
     'coin-op-transfered-token': '钱包内部转账',

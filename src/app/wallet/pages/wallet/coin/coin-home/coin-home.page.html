@@ -9,19 +9,15 @@
 
         <!-- Can't use ngIf here, otherwise fetchmoretrigger will be invalid -->
         <ion-grid class="container">
-            <!-- Centered token hero (SCR-094/099/105): coin disc, "Est. total value" caption,
-                 large native amount + grey unit, then fiat + %change on one line. No card. -->
+            <!-- Centered token hero: coin disc, the token balance, its fiat value below.
+                 No "Estimated Total Value" caption - that label belongs to the aggregate
+                 Value screen; here the big number is a token AMOUNT, so labelling it a
+                 "value" while showing it in ELA was wrong. No card. -->
             <div *ngIf="networkWallet" class="token-hero">
                 <img class="token-hero-disc" [src]="subWallet.getMainIcon() || networkWallet.network.logo" />
-                <h3 class="token-hero-caption">{{ 'wallet.coin-est-total-value' | translate }}</h3>
                 <ui-amount-display [size]="5" [value]="coinDisplayValue" [unit]="coinDisplayUnit"></ui-amount-display>
-                <div class="token-hero-sub">
-                    <!-- SCR-097: while scrubbing the chart, the fiat slot shows the touched point's
-                         price and the %change is hidden. Reverts to the live value on release. -->
-                    <span *ngIf="scrubReadout || coinDisplayFiat" class="hero-fiat">{{ scrubReadout || coinDisplayFiat }}</span>
-                    <span *ngIf="coinPercentChangeVm && !scrubReadout" class="hero-change"
-                        [class.up]="coinPercentChangeVm.tone === 'up'"
-                        [class.down]="coinPercentChangeVm.tone === 'down'">{{ coinPercentChangeVm.text }}</span>
+                <div *ngIf="coinDisplayFiat" class="token-hero-sub">
+                    <span class="hero-fiat">{{ coinDisplayFiat }}</span>
                 </div>
                 <div *ngIf="stakedBalance" class="staked-line">
                     <span class="staked-label">{{ getStakeTitle() | translate }}</span>
@@ -29,36 +25,15 @@
                 </div>
             </div>
 
-            <!-- Action tiles in the content flow, same language as the wallet home grid.
-                 Previously a fixed bottom bar: it occluded short history lists (nothing to
-                 scroll them out from under it) and hid Stake/Transfer behind an overflow
-                 menu. In-flow tiles keep every action visible and free the list. -->
-            <ui-action-grid *ngIf="subWallet" [columns]="4" class="token-actions">
+            <!-- Only the two core actions live on the token page (owner call: Stake and
+                 cross-chain Transfer crowded it; they remain reachable from their own
+                 flows). Same tile language as the wallet home grid. -->
+            <ui-action-grid *ngIf="subWallet" [columns]="2" class="token-actions">
                 <ui-action-tile *ngIf="coinCanBeSent()" label="Send" icon="assets/wallet/action/send.png"
                     (pressed)="sendFunds()"></ui-action-tile>
                 <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png"
                     (pressed)="receiveFunds()"></ui-action-tile>
-                <ui-action-tile *ngIf="canStakeELA() || canStakeTRX()" label="Stake" icon="assets/wallet/action/stake.png"
-                    (pressed)="onStakeAction()"></ui-action-tile>
-                <!-- Transfer = cross-chain move, only on the Elastos mainchain and its sidechains -->
-                <ui-action-tile *ngIf="coinCanBeTransferred()" label="Transfer" icon="assets/wallet/action/swap.png"
-                    (pressed)="transferFunds()"></ui-action-tile>
             </ui-action-grid>
-
-            <!-- Price chart from local history — hidden until enough points exist.
-                 Full-bleed to the screen edges (SCR-102), compact enough to keep the
-                 history list near the fold now that the action tiles sit above it. -->
-            <div *ngIf="priceSeriesVm" class="price-chart">
-                <div class="chart-canvas">
-                    <!-- Direction-aware chart: green when the range closes up, red when down,
-                         with the matching gradient fill + pulsing end dot. -->
-                    <ui-sparkline [points]="priceSeriesVm" [height]="160" tone="auto"
-                        (scrub)="onChartScrub($event)"></ui-sparkline>
-                </div>
-                <!-- SCR-103: ghost range selector (text-only chips, dark active disc) -->
-                <ui-chip-row variant="ghost" [chips]="rangeChips" [active]="chartRange"
-                    (activeChange)="setChartRange($event)"></ui-chip-row>
-            </div>
 
             <!-- History section header. No view-all chevron until a dedicated
                  cross-token History page exists (SCR-154, deferred) - a chevron with
@@ -100,9 +75,11 @@
                         (pressed)="onItem(item)"></ui-token-row>
                 </ng-container>
 
-                <!-- Empty transactions list -->
+                <!-- Empty transactions list. A filtered-out list says so instead of the
+                     generic "No transactions", which reads as broken when rows exist. -->
                 <ui-empty-state *ngIf="txGroups.length === 0 && offlineTransactions.length === 0"
-                    icon="receipt-outline" [message]="'wallet.coin-no-transactions' | translate"></ui-empty-state>
+                    icon="receipt-outline"
+                    [message]="(txTypeFilter === 'all' ? 'wallet.coin-no-transactions' : 'wallet.coin-no-filtered-transactions') | translate"></ui-empty-state>
             </ng-container>
 
             <!-- Used to detect when user reaches the screen bottom to load more transactions -->

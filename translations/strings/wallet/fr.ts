@@ -143,6 +143,7 @@ export const fr = {
     'coin-internal-transactions': 'Trans. internes',
     'coin-recharge-transactions': 'Chaîne princ.',
     'coin-no-transactions': 'Aucune transaction',
+    'coin-no-filtered-transactions': 'Aucune transaction de ce type',
     'coin-op-received-token': 'Reçu',
     'coin-op-sent-token': 'Envoyé',
     'coin-op-transfered-token': 'Transféré',

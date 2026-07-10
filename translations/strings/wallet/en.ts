@@ -165,6 +165,7 @@ export const en = {
     'coin-internal-transactions': 'Int. Trans.',
     'coin-recharge-transactions': 'From Main Chain',
     'coin-no-transactions': 'No transactions',
+    'coin-no-filtered-transactions': 'No transactions of this type',
     'coin-est-total-value': 'Estimated Total Value',
     'coin-history': 'History',
     'coin-filter-all': 'All',

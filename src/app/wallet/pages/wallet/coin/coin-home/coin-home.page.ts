@@ -40,7 +40,6 @@ import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { DposStatus, VoteService } from 'src/app/voting/services/vote.service';
-import { StakingInitService } from 'src/app/voting/staking/services/init.service';
 import { WarningComponent } from 'src/app/wallet/components/warning/warning.component';
 import { ExtendedTransactionInfo } from 'src/app/wallet/model/extendedtxinfo';
 import { WalletCreator } from 'src/app/wallet/model/masterwallets/wallet.types';
@@ -65,7 +64,6 @@ import {
 } from '../../../../model/tx-providers/transaction.types';
 import { CoinTransferService, TransferType } from '../../../../services/cointransfer.service';
 import { CurrencyService } from '../../../../services/currency.service';
-import { ChartRange, PriceHistoryService } from '../../../../services/pricehistory.service';
 import { Native } from '../../../../services/native.service';
 import { LocalStorage } from '../../../../services/storage.service';
 import { UiService } from '../../../../services/ui.service';
@@ -120,14 +118,6 @@ export class CoinHomePage implements OnInit {
 
   public stakedBalance = null; // Staked on ELA main chain or Tron
 
-  // Local price-history driven chart + 24h change (null until enough history has accrued).
-  public chartRange: ChartRange = '1D';
-  public readonly rangeChips: { key: string; label: string }[] = [
-    { key: '1D', label: '1D' }, { key: '1W', label: '1W' }, { key: '1M', label: '1M' }, { key: '1Y', label: '1Y' }
-  ];
-  public priceSeriesVm: number[] | null = null;
-  public coinPercentChangeVm: { text: string; tone: 'up' | 'down' } | null = null;
-
   // Total transactions today
   public todaysTransactions = 0;
   // Only for fetchMoreTransactions
@@ -179,9 +169,7 @@ export class CoinHomePage implements OnInit {
     private globalNav: GlobalNavService,
     private didSessions: GlobalDIDSessionsService,
     private platform: Platform,
-    public stakingInitService: StakingInitService,
-    private voteService: VoteService,
-    private priceHistoryService: PriceHistoryService
+    private voteService: VoteService
   ) {
     void this.init();
   }
@@ -231,7 +219,6 @@ export class CoinHomePage implements OnInit {
 
     this.rebuildTxTabs();
     this.buildTxTypeChips();
-    this.refreshPriceVm();
     void this.loadShowAllActions();
     // SCR-095: show the favourite toggle in the titlebar and reflect persisted state.
     if (!this.titleBarIconClickedListener) {
@@ -430,8 +417,6 @@ export class CoinHomePage implements OnInit {
     this.start = 0;
     this.canFetchMore = true;
     this.updateTransactionsTimesamp = 0;
-    this.priceSeriesVm = null;
-    this.coinPercentChangeVm = null;
   }
 
   ngOnInit() {}
@@ -472,7 +457,6 @@ export class CoinHomePage implements OnInit {
     // Update balance and get the latest transactions.
     await this.subWallet.update();
     await this.getStakedBalance();
-    this.refreshPriceVm();
     void this.initData();
   }
 
@@ -515,10 +499,6 @@ export class CoinHomePage implements OnInit {
     clearInterval(this.updateInterval);
     this.updateInterval = null;
     this.startUpdateInterval();
-  }
-
-  chainIsELA(): boolean {
-    return this.subWalletId === StandardCoinName.ELA;
   }
 
   chainIsETHSC(): boolean {
@@ -658,26 +638,6 @@ export class CoinHomePage implements OnInit {
     this.native.go('/wallet/coin-transfer');
   }
 
-  transferFunds() {
-    if (this.chainIsELA()) {
-      this.rechargeFunds();
-    } else {
-      this.withdrawFunds();
-    }
-  }
-
-  // mainchain to sidechain
-  rechargeFunds() {
-    this.coinTransferService.transferType = TransferType.RECHARGE;
-    this.native.go('/wallet/coin-select');
-  }
-
-  // sidechain to mainchain
-  withdrawFunds() {
-    this.coinTransferService.transferType = TransferType.WITHDRAW;
-    this.native.go('/wallet/coin-transfer');
-  }
-
   fetchMoreTransactions() {
     this.restartUpdateInterval();
     this.start = this.transactions.length;
@@ -754,15 +714,25 @@ export class CoinHomePage implements OnInit {
 
   /** Builds the transaction-type filter chips (labels are locale-aware) — SYS-008. */
   public buildTxTypeChips() {
-    this.txTypeChips = [
+    const chips = [
       { key: 'all', label: this.translate.instant('wallet.coin-filter-all') },
       { key: 'sent', label: this.translate.instant('wallet.coin-filter-sent') },
-      { key: 'received', label: this.translate.instant('wallet.coin-filter-received') },
-      // 'swap' chip omitted: there is no DEX-swap detection yet (matchesTxTypeFilter
-      // returns false), so the chip would always yield an empty list. Re-add when a
-      // real swap flag is threaded through TransactionInfo (Phase 11).
-      { key: 'staked', label: this.translate.instant('wallet.coin-filter-staked') }
+      { key: 'received', label: this.translate.instant('wallet.coin-filter-received') }
     ];
+    // 'swap' chip omitted: there is no DEX-swap detection yet (matchesTxTypeFilter
+    // returns false), so the chip would always yield an empty list. Re-add when a
+    // real swap flag is threaded through TransactionInfo (Phase 11).
+    // 'staked' only where staking transactions can exist (ELA mainchain / Tron) -
+    // on every other chain it was a filter that could never match anything.
+    if (this.canStakeELA() || this.canStakeTRX()) {
+      chips.push({ key: 'staked', label: this.translate.instant('wallet.coin-filter-staked') });
+    }
+    this.txTypeChips = chips;
+    // The active filter can vanish when this page is rebound to another chain.
+    if (!chips.some(chip => chip.key === this.txTypeFilter)) {
+      this.txTypeFilter = 'all';
+      this.rebuildTxGroups();
+    }
   }
 
   /** Applies the active type filter to a single transaction — SYS-008. */
@@ -844,10 +814,6 @@ export class CoinHomePage implements OnInit {
     return this.subWallet.getFriendlyName();
   }
 
-  coinCanBeTransferred() {
-    return this.subWallet.supportsCrossChainTransfers();
-  }
-
   // For FRC759 token on fusion network, We can only transfer parent token.
   coinCanBeSent() {
     return !(
@@ -885,14 +851,6 @@ export class CoinHomePage implements OnInit {
       masterWalletId: subWallet.networkWallet.masterWallet.id,
       subWalletId: subWallet.id
     });
-  }
-
-  /**
-   * Returns the ion-col size for the transfer/send/receive row, based on the available features.
-   */
-  public transfersColumnSize(): number {
-    if (this.coinCanBeTransferred()) return 4; // 3 columns - 3x4 = 12
-    else return 6; // 2 columns - 2x6 = 12
   }
 
   public swapsColumnSize(): number {
@@ -1066,74 +1024,4 @@ export class CoinHomePage implements OnInit {
     return WalletUtil.getFriendlyBalance(new BigNumber(this.stakedBalance));
   }
 
-  public goStakeApp() {
-    void this.stakingInitService.start();
-  }
-
-  public goTronResource() {
-    this.native.go('wallet-tron-resource');
-  }
-
-  /** Routes the Stake action to Tron resource freezing or ELA staking, whichever applies. */
-  public onStakeAction() {
-    if (this.canStakeTRX()) {
-      this.goTronResource();
-    } else {
-      this.goStakeApp();
-    }
-  }
-
-  public setChartRange(range: string) {
-    this.chartRange = range as ChartRange;
-    this.refreshPriceVm();
-  }
-
-  /**
-   * Reads the local price history into the chart + %change view-models (stable references so the
-   * sparkline only recomputes when the data actually changes). Both stay null until enough history
-   * exists — nothing is fabricated.
-   */
-  private refreshPriceVm() {
-    if (!this.subWallet) {
-      this.priceSeriesVm = null;
-      this.coinPercentChangeVm = null;
-      return;
-    }
-    let networkKey = this.networkWallet.network.key;
-    let tokenId = String(this.subWallet.id).toLowerCase();
-    this.priceSeriesVm = this.priceHistoryService.getSeries(networkKey, tokenId, this.chartRange);
-    // LOGIC:data-semantics — the %change must track the selected chart range, not always be 24h.
-    // The series is oldest -> newest for the active range, so the range change is (last - first)/first.
-    let pct = this.getPercentChangeForRange();
-    this.coinPercentChangeVm = pct === null
-      ? null
-      : { text: `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`, tone: pct >= 0 ? 'up' : 'down' };
-  }
-
-  /**
-   * Percent change over the currently selected chart range, derived from the same series that
-   * drives the chart so the two never disagree — LOGIC:data-semantics. Returns null when there is
-   * not enough history (matching the chart, which also hides in that case).
-   */
-  private getPercentChangeForRange(): number | null {
-    let series = this.priceSeriesVm;
-    if (!series || series.length < 2) return null;
-    let first = series[0];
-    let last = series[series.length - 1];
-    if (!(first > 0)) return null;
-    return ((last - first) / first) * 100;
-  }
-
-  /**
-   * SCR-097: readout shown while the user scrubs the chart — the price at the touched point,
-   * fed by the sparkline's (scrub) index. Null when not scrubbing, so the hero shows the live value.
-   */
-  public scrubReadout: string | null = null;
-  public onChartScrub(index: number | null): void {
-    if (index === null || !this.priceSeriesVm || index < 0 || index >= this.priceSeriesVm.length) {
-      this.scrubReadout = null;
-      return;
-    }
-    this.scrubReadout = `${this.priceSeriesVm[index]} ${this.currencyService.selectedCurrency.symbol}`;
-  }
 }

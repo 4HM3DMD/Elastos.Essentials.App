@@ -15,33 +15,26 @@ ion-content.intersection-container {
     margin: 0;
     padding: 15px 10px 30px;
 
-    // In-flow Send / Receive / Stake / Transfer tiles between the hero and the chart.
+    // In-flow Send / Receive tiles between the hero and the history list.
     .token-actions {
-        margin-bottom: 24px;
+        margin-bottom: 32px;
     }
 
-    // Centered token hero (SCR-094/099/105): coin disc, "Est. total value" caption, large
-    // native amount + grey unit, then fiat + %change together on one line. No card surface.
+    // Centered token hero: coin disc, the token amount, its fiat value below.
+    // No caption, no card surface - the page breathes instead.
     .token-hero {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        margin-bottom: 24px;
+        margin: 12px 0 28px;
 
         .token-hero-disc {
             width: 70px;
             height: 70px;
             border-radius: 100%;
             object-fit: contain;
-            margin-bottom: 14px;
-        }
-
-        .token-hero-caption {
-            margin: 0 0 8px;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--ion-text-color);
+            margin-bottom: 16px;
         }
 
         ui-amount-display {
@@ -50,29 +43,12 @@ ion-content.intersection-container {
 
         .token-hero-sub {
             margin-top: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: baseline;
-            gap: 8px;
             font-variant-numeric: tabular-nums;
 
             .hero-fiat {
-                font-size: 18px;
-                font-weight: 700;
-                color: var(--ion-text-color);
-            }
-
-            .hero-change {
-                font-size: 18px;
-                font-weight: 700;
-
-                &.up {
-                    color: var(--essentials-success);
-                }
-
-                &.down {
-                    color: var(--essentials-danger);
-                }
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--essentials-text-secondary);
             }
         }
 
@@ -92,21 +68,6 @@ ion-content.intersection-container {
                 font-weight: 600;
                 color: var(--ion-text-color);
             }
-        }
-    }
-
-    .price-chart {
-        margin: 0 0 24px;
-
-        // Full-bleed the chart canvas to the screen edges (cancels the container's 10px
-        // horizontal padding); the range chips stay inset (SCR-102).
-        .chart-canvas {
-            margin: 0 -10px;
-        }
-
-        ui-chip-row {
-            display: block;
-            margin-top: 10px;
         }
     }
 

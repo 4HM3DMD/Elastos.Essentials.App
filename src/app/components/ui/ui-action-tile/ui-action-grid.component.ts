@@ -7,7 +7,7 @@ import { Component, HostBinding, Input } from '@angular/core';
   styleUrls: ['./ui-action-grid.component.scss']
 })
 export class UiActionGridComponent {
-  @Input() public columns: 3 | 4 = 4;
+  @Input() public columns: 2 | 3 | 4 = 4;
 
   @HostBinding('style.--ui-action-columns')
   public get columnsVar(): string {
