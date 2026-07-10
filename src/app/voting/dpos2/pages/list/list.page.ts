@@ -261,21 +261,33 @@ export class ListPage implements OnInit {
             await this.globalNative.showLoading(this.translate.instant('common.please-wait'));
             let dposInfo = await this.dpos2Service.checkDPoSStatus();
             Logger.log(App.DPOS2, ' dposInfo:', dposInfo);
-            if (dposInfo) {
-                // Can't register BPoS node again. remove 'Register' from menu.
-                await this.prepareActionMenu();
+            if (!dposInfo) {
+                await this.globalNative.hideLoading();
+                this.globalNative.genericToast('dposvoting.no-registered-dpos-node');
+                return;
+            }
 
-                if ((dposInfo.state == 'Canceled') && (dposInfo.identity == "DPoSV1")) {
-                    this.available = await this.dpos2Service.getDepositcoin();
-                    await this.globalNative.hideLoading();
-                    if (this.available > 0) {
-                        return this.goToWithdraw();
-                    }
+            // Keep the real node state: prepareActionMenu() resets it to
+            // 'Unregistered' for active DPoSV1 nodes to expose the BPoS
+            // registration entry.
+            let nodeState = dposInfo.state;
+
+            // Can't register BPoS node again. remove 'Register' from menu.
+            await this.prepareActionMenu();
+
+            if ((nodeState == 'Canceled') && (dposInfo.identity == "DPoSV1")) {
+                this.available = await this.dpos2Service.getDepositcoin();
+                await this.globalNative.hideLoading();
+                if (this.available > 0) {
+                    return this.goToWithdraw();
                 }
             }
 
+            // The wallet owns a registered node: report its actual status
+            // instead of the misleading "no registered node" message.
             await this.globalNative.hideLoading();
-            this.globalNative.genericToast('dposvoting.no-registered-dpos-node');
+            this.globalNative.genericToast(
+                this.translate.instant('dposvoting.node-status') + ': ' + this.translate.instant('dposvoting.' + nodeState), 4000);
         }
         catch (e) {
             Logger.warn(App.DPOS2, 'checkDPoSStatus exception:', e)
