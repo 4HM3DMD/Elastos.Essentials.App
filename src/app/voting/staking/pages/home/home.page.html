@@ -155,7 +155,10 @@
         <div class="footer-space"></div>
         <ion-footer>
             <div id="button-list">
-                <ebutton *ngFor="let button of buttonList" [topicon]="button.icon" [title]="button.label"
+                <!-- One primary action (Stake); the companions are quiet tonal buttons so the
+                     row has hierarchy instead of four competing accent fills. -->
+                <ebutton *ngFor="let button of buttonList; let i = index" [topicon]="button.icon"
+                    [title]="button.label" [mode]="i === 0 ? 'default' : 'secondary'"
                     (clicked)="clickButton(button.url)" [disabled]="signingAndTransacting"></ebutton>
             </div>
         </ion-footer>

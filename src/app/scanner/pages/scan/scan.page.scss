@@ -140,19 +140,27 @@ $scan-text-secondary: rgba(255, 255, 255, 0.65);
 }
 
 .enable-camera-btn {
+    // Minimal 2026 CTA: flat accent soft-rect lifted by a warm glow, ink label.
     display: inline-flex;
     align-items: center;
     justify-content: center;
     height: 48px;
     padding: 0 24px;
-    border-radius: 24px;
+    border-radius: 16px;
     background: $scan-accent;
     border: none;
-    color: #FFFFFF;
+    box-shadow: 0 10px 30px rgba(237, 110, 43, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    color: #111111;
     font-family: inherit;
     font-size: 15px;
+    font-weight: 600;
     line-height: 1;
     cursor: pointer;
+    transition: transform 0.15s ease;
+
+    &:active {
+        transform: scale(0.97);
+    }
 }
 
 .transparentBody {

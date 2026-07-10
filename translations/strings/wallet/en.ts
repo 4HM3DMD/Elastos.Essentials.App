@@ -26,7 +26,7 @@ export const en = {
      *******************/
     'send-to': 'Send to',
     'enter-name': 'Enter name',
-    'enter-amount': 'Enter amount',
+    'enter-amount': 'Amount to send',
     'total-amount': 'TOTAL AMOUNT',
     'advanced-options': 'Advanced Options',
     recharge: 'Recharge',

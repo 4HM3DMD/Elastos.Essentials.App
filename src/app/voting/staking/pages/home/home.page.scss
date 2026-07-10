@@ -145,7 +145,8 @@
     white-space: nowrap;
     flex-direction: column;
     list-style: none;
-    background: var(--essentials-box-color);
+    // Soft bottom fade instead of an opaque strip; the minimal ebuttons carry their own light.
+    background: linear-gradient(to top, var(--ion-background-color) 60%, transparent 100%);
 
     ebutton {
         width: 24%;

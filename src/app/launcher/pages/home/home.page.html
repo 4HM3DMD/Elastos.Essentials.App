@@ -6,7 +6,10 @@
         <img *ngIf="avatarDataUrl" class="avatar" [src]="avatarDataUrl" alt="" />
         <span *ngIf="!avatarDataUrl" class="avatar avatar-initial">{{ (identityName || 'E').charAt(0) | uppercase }}</span>
         <span class="name">{{ identityName }}</span>
-        <ion-icon class="chev" name="chevron-down" aria-hidden="true"></ion-icon>
+        <!-- Forward chevron: the pill navigates to the identity page. A down chevron would
+             promise an account-switcher dropdown (the MetaMask pattern) that is not there;
+             the switcher sheet itself is tracked in the super-wallet-patterns audit. -->
+        <ion-icon class="chev" name="chevron-forward" aria-hidden="true"></ion-icon>
       </button>
       <div class="actions">
         <button type="button" class="icon-btn" aria-label="Notifications" (click)="onNotifications()">
