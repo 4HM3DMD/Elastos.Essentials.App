@@ -78,7 +78,7 @@ export const fr = {
     'developer-screen-capture': "Autoriser la capture de l'écran",
     'developer-bitcoin-signdata': 'Autoriser les requêtes Bitcoin signData',
     'developer-bitcoin-signdata-prompt':
-      "If you enable this setting, you might get signature requests that aren't readable. By signing a message you don't understand, you could be agreeing to give away your funds. You're at risk for phishing attacks. Protect youself by truning off signData.",
+      "If you enable this setting, you might get signature requests that aren't readable. By signing a message you don't understand, you could be agreeing to give away your funds. You're at risk for phishing attacks. Protect yourself by turning off signData.",
     'developer-logs': 'Capturer les logs',
     'developer-export-logs': 'Exporter les logs capturés',
 

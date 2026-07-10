@@ -36,7 +36,7 @@ export const en = {
         'elastos-voting': 'Elastos Voting',
         'other': 'Other',
         'backup-title': 'IDENTITY NOT BACKED UP',
-        'backup-message': 'Saving your identity’s paper key is a very important step as this the only way to recover it later.',
+        'backup-message': 'Saving your identity’s paper key is a very important step as this is the only way to recover it later.',
         'backup-button': 'Backup Now',
         'wallet-connect-sessions': 'Wallet Connect sessions',
         'active-network': 'Active network',
