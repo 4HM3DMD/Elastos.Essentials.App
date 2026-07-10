@@ -16,11 +16,16 @@ import { GlobalStartupService } from 'src/app/services/global.startup.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
+import { DposStatus, VoteService } from 'src/app/voting/services/vote.service';
+import { StakingInitService } from 'src/app/voting/staking/services/init.service';
 import { AnyNetworkWallet } from 'src/app/wallet/model/networks/base/networkwallets/networkwallet';
 import { AnySubWallet } from 'src/app/wallet/model/networks/base/subwallets/subwallet';
+import { TronSubWallet } from 'src/app/wallet/model/networks/tron/subwallets/tron.subwallet';
 import { WalletUtil } from 'src/app/wallet/model/wallet.util';
 import { WalletSortType } from 'src/app/wallet/model/walletaccount';
+import { CoinTransferService } from 'src/app/wallet/services/cointransfer.service';
 import { CurrencyService } from 'src/app/wallet/services/currency.service';
+import { SwapService } from 'src/app/wallet/services/evm/swap.service';
 import { PriceHistoryService } from 'src/app/wallet/services/pricehistory.service';
 import { formatFiatAmount } from 'src/app/helpers/currency-format';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
@@ -110,7 +115,10 @@ export class HomePage implements OnInit, OnDestroy {
     private walletService: WalletService,
     private walletNetworkService: WalletNetworkService,
     private currencyService: CurrencyService,
-    private uiService: UiService
+    private uiService: UiService,
+    private coinTransferService: CoinTransferService,
+    private voteService: VoteService,
+    private stakingInitService: StakingInitService
   ) {}
 
   /** Masks amounts while the hide-balances pref is on, and (privacy-safe) while it is still loading. */
@@ -351,13 +359,66 @@ export class HomePage implements OnInit, OnDestroy {
     return !!this.networkWallet;
   }
 
-  /** Receive/Swap/Stake land on the main token's coin home (v1 depth, D6). */
-  public onMainAction() {
+  /**
+   * Receive: point CoinTransferService at the main subwallet (coin-receive reads
+   * masterWalletId/subWalletId from it) and open the receive screen. Mirrors the
+   * Value screen's onReceive().
+   */
+  public onReceive() {
     let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
     if (!main) return;
-    void this.globalNav.navigateTo(App.WALLET, '/wallet/coin', {
+    this.coinTransferService.masterWalletId = main.networkWallet.id;
+    this.coinTransferService.subWalletId = main.id;
+    void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
+  }
+
+  /** Swap: the swap-providers screen for the main subwallet (mirrors the Value screen). */
+  public onSwap() {
+    let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
+    if (!main) return;
+    this.coinTransferService.masterWalletId = main.networkWallet.id;
+    this.coinTransferService.subWalletId = main.id;
+    void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-swap', {
       state: { masterWalletId: main.networkWallet.id, subWalletId: main.id }
     });
+  }
+
+  /** Stake: ELA DPoS staking app or TRON resource freezing (mirrors the Value screen). */
+  public onStake() {
+    let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
+    if (!main) return;
+    this.coinTransferService.masterWalletId = main.networkWallet.id;
+    this.coinTransferService.subWalletId = main.id;
+    if (this.canStakeTRX()) {
+      void this.globalNav.navigateTo(App.WALLET, '/wallet/wallet-tron-resource');
+    } else if (this.canStakeELA()) {
+      void this.stakingInitService.start();
+    }
+  }
+
+  /** Whether the Swap tile should show: the active network exposes swap providers for the main token. */
+  public canSwap(): boolean {
+    let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
+    if (!main) return false;
+    return SwapService.instance.getAvailableSwapProviders(main).length > 0;
+  }
+
+  /** Whether ELA staking is available (mirrors wallet-home.canStakeELA). */
+  public canStakeELA(): boolean {
+    if (!this.networkWallet || this.networkWallet.network.key !== 'elastos') return false;
+    let status = this.voteService.dPoSStatus.value;
+    return status === DposStatus.DPoSV2 || status === DposStatus.DPoSV1V2;
+  }
+
+  /** Whether TRON resource freezing (staking) is available (mirrors wallet-home.canStakeTRX). */
+  public canStakeTRX(): boolean {
+    let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
+    return main instanceof TronSubWallet;
+  }
+
+  /** Whether the Stake tile should show at all. */
+  public canStake(): boolean {
+    return this.canStakeELA() || this.canStakeTRX();
   }
 
   /** Send opens the 2026 token picker first, then the transfer form for the chosen token. */

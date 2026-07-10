@@ -34,12 +34,14 @@
       </div>
     </div>
 
-    <!-- Quick actions -->
+    <!-- Quick actions: real destinations, gated per network (mirrors the Value screen).
+         Swap/Stake hide when the active network has no such flow instead of falling
+         through to the token-detail page. -->
     <ui-action-grid *ngIf="hasWallet()" [columns]="4" class="tiles">
       <ui-action-tile label="Send" icon="assets/wallet/action/send.png" (pressed)="onSend()"></ui-action-tile>
-      <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png" (pressed)="onMainAction()"></ui-action-tile>
-      <ui-action-tile label="Swap" icon="assets/wallet/action/swap.png" (pressed)="onMainAction()"></ui-action-tile>
-      <ui-action-tile label="Stake" icon="assets/wallet/action/stake.png" (pressed)="onMainAction()"></ui-action-tile>
+      <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png" (pressed)="onReceive()"></ui-action-tile>
+      <ui-action-tile *ngIf="canSwap()" label="Swap" icon="assets/wallet/action/swap.png" (pressed)="onSwap()"></ui-action-tile>
+      <ui-action-tile *ngIf="canStake()" label="Stake" icon="assets/wallet/action/stake.png" (pressed)="onStake()"></ui-action-tile>
     </ui-action-grid>
 
     <!-- Active wallet not available on the current network -->
