@@ -12,7 +12,7 @@ import { StakingInitService } from 'src/app/voting/staking/services/init.service
 /**
  * The Elastos hub: the landing page of the tab bar's center button. Groups the
  * Elastos main chain features (staking, BPoS voting, network statistics) and the
- * Elastos DAO features (identity, proposals, council) as two card sections.
+ * Elastos DAO features (identity, contacts, proposals, council) as two card sections.
  */
 @Component({
   selector: 'app-elastos-hub',
@@ -65,6 +65,10 @@ export class ElastosHubPage {
 
   public onIdentity(): void {
     void this.launch(() => this.globalNav.navigateTo(App.IDENTITY, '/identity/myprofile/home'));
+  }
+
+  public onContacts(): void {
+    void this.launch(() => this.globalNav.navigateTo(App.CONTACTS, '/contacts/friends'));
   }
 
   public onProposals(): void {
