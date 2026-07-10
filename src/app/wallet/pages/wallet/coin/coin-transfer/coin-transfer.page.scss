@@ -2,6 +2,14 @@
 
 /********************** Container **********************/
 .container {
+    // Column layout so the send composition (flex: 1) plus the in-flow Continue footer
+    // together fill exactly one viewport; previously the grid alone was min-height 100%,
+    // which pushed the footer below the fold on every send. The titlebar sits above this
+    // container inside the same scroll view, so subtract its height (64px + top inset).
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100% - 64px - env(safe-area-inset-top));
+
     /********************** Recharge Container **********************/
     .recharge-container {
         min-height: 100%;
@@ -149,10 +157,13 @@
         flex-direction: column;
         justify-content: flex-start;
         align-items: center;
-        min-height: 100%;
+        // Fill the space above the Continue footer (the .container column) instead of a
+        // whole viewport, so amount + address + numpad + Continue fit one screen (Figma Send).
+        flex: 1 1 auto;
+        min-height: 0;
         margin: 0;
         /* SCR-043: normalized page gutter to the 24px shared inset */
-        padding: 20px 24px;
+        padding: 12px 24px 0;
 
         .header-img {
             width: 75px;
@@ -161,11 +172,13 @@
         }
 
         h1 {
-            /* SCR-023 / SCR-043: section label on the shared tier (18px / 500 / white, no tracking) */
-            margin: 24px 0 10px;
-            font-size: 18px;
+            /* Figma Send (207:11520): section label 16 / 500, left-aligned, tight rhythm */
+            width: 100%;
+            margin: 12px 0 6px;
+            font-size: 16px;
             font-weight: 500;
             letter-spacing: normal;
+            text-align: left;
             color: #FFFFFF;
 
             img,
@@ -197,22 +210,24 @@
             visibility: hidden;
         }
 
-        /* SCR-001 centered chromeless amount hero */
+        /* SCR-001 centered chromeless amount hero.
+           Figma Send (207:11520, newest compact scale): caption 12/500 muted,
+           amount 36/500 white, unit 16/500 muted, fiat pill 12/500. */
         .amount-hero {
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
-            margin: 8px 0 4px;
+            margin: 4px 0 0;
 
             .amount-hero__caption {
-                margin: 0 0 12px;
+                margin: 0 0 8px;
                 padding: 0;
-                font-size: 18px;
-                font-weight: 700;
+                font-size: 12px;
+                font-weight: 500;
                 letter-spacing: normal;
                 text-align: center;
-                color: var(--ion-text-color);
+                color: var(--essentials-text-secondary);
             }
 
             .amount-hero__entry {
@@ -220,18 +235,18 @@
                 align-items: baseline;
                 justify-content: center;
                 width: 100%;
-                gap: 8px;
+                gap: 6px;
 
                 // Custom tap-display (replaces the native input so the system keyboard
-                // never opens). A brief pop animates each value change for liveliness.
+                // never opens).
                 .amount-hero__value {
                     flex: 0 1 auto;
                     min-width: 0;
                     max-width: 100%;
                     margin: 0;
-                    font-size: 80px;
-                    font-weight: 700;
-                    line-height: 1.05;
+                    font-size: 36px;
+                    font-weight: 500;
+                    line-height: 1.1;
                     letter-spacing: normal;
                     text-align: right;
                     white-space: nowrap;
@@ -246,10 +261,10 @@
 
                 .amount-hero__unit {
                     flex: 0 0 auto;
-                    font-size: 32px;
-                    font-weight: 700;
+                    font-size: 16px;
+                    font-weight: 500;
                     letter-spacing: normal;
-                    color: var(--ion-text-color);
+                    color: var(--essentials-text-secondary);
                 }
             }
         }
@@ -259,16 +274,16 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            margin: 14px auto 0;
-            padding: 10px 16px;
+            gap: 5px;
+            margin: 8px auto 0;
+            padding: 6px 12px;
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 999px;
             background: transparent;
-            color: var(--ion-text-color);
+            color: var(--essentials-text-secondary);
             font-family: inherit;
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 12px;
+            font-weight: 500;
             line-height: 1;
             letter-spacing: normal;
             cursor: pointer;
@@ -278,17 +293,17 @@
             }
 
             .conversion-pill__swap {
-                font-size: 18px;
-                color: var(--ion-text-color);
+                font-size: 14px;
+                color: var(--essentials-text-secondary);
             }
         }
 
         .item-row {
-            /* SCR-024: taller full-width field with a softer radius and a hairline border */
+            /* SCR-024: full-width field, hairline border. Figma Send input is 345x50. */
             width: 100%;
             border-radius: 18px;
-            padding: 10px 16px;
-            min-height: 54px;
+            padding: 8px 16px;
+            min-height: 50px;
             background-color: var(--essentials-box-color);
             border: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
@@ -391,19 +406,20 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 8px;
-            margin-top: 4px;
+            gap: 6px;
+            margin-top: 6px;
 
             .available-label {
+                /* Figma: "Available: 1,240.52 ELA" 12/500 muted */
                 margin: 0;
-                font-size: 18px;
-                font-weight: 700;
+                font-size: 12px;
+                font-weight: 500;
                 letter-spacing: normal;
                 text-align: center;
-                color: var(--ion-text-color);
+                color: var(--essentials-text-secondary);
 
                 strong {
-                    font-weight: 700;
+                    font-weight: 500;
                     color: #FFFFFF;
                 }
             }
@@ -415,20 +431,20 @@
             justify-content: center;
             gap: 8px;
             width: 100%;
-            margin-top: 18px;
+            margin-top: 10px;
 
             .quick-chip {
                 flex: 1 1 0;
-                max-width: 92px;
+                max-width: 80px;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                height: 40px;
-                padding: 0 12px;
+                height: 32px;
+                padding: 0 10px;
                 border-radius: 999px;
                 font-family: inherit;
-                font-size: 15px;
-                font-weight: 700;
+                font-size: 13px;
+                font-weight: 600;
                 line-height: 1;
                 letter-spacing: 0.2px;
                 cursor: pointer;
@@ -460,28 +476,31 @@
             }
         }
 
-        /* SCR-002: custom on-screen numpad (Figma "Custom Numpad" 342x304: 3x4 stadium
-           keys, chromeless — big white 34px/700 digits, soft circular press wash). */
+        /* SCR-002: custom on-screen numpad (Figma "Custom Numpad": 3x4 stadium keys,
+           chromeless white digits, soft circular press wash). Pinned to the bottom of
+           the send composition via margin-top:auto so the whole flow shares one screen. */
         .amount-keypad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            row-gap: 4px;
+            row-gap: 2px;
             column-gap: 6px;
             width: 100%;
             max-width: 342px;
-            margin: 20px auto 4px;
+            margin: 10px auto 4px;
+            margin-top: auto;
+            padding-top: 8px;
 
             .key {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                height: 64px;
+                height: 52px;
                 border: none;
                 border-radius: 9999px;
                 background: transparent;
                 font-family: inherit;
-                font-size: 34px;
-                font-weight: 700;
+                font-size: 28px;
+                font-weight: 600;
                 line-height: 1;
                 color: #FFFFFF;
                 cursor: pointer;
@@ -496,7 +515,7 @@
                 }
 
                 ion-icon {
-                    font-size: 30px;
+                    font-size: 24px;
                 }
             }
         }
@@ -710,7 +729,10 @@
     }
 
     .footer-container {
-        padding: 0 10px;
+        // In-flow footer at the bottom of the .container column; the tab bar is hidden on
+        // this route, so only the home-indicator safe area needs reserving.
+        width: 100%;
+        padding: 0 10px calc(env(safe-area-inset-bottom) + 4px);
 
         .btn-container {
             padding: 10px 10px;
@@ -968,9 +990,12 @@
     }
 }
 
-/* Address quick-action chips (Paste / Contacts), replacing the vertical-dots popover. */
+/* Address quick-action chips (Paste / Contacts), replacing the vertical-dots popover.
+   Left-aligned under the address field per the Figma Send frame. */
 .address-chips {
     display: flex;
+    justify-content: flex-start;
+    width: 100%;
     gap: 8px;
     margin: 8px 2px 0;
 

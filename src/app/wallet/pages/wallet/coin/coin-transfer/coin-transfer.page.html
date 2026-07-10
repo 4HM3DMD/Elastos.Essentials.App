@@ -186,24 +186,6 @@
                     [class.active]="sendMax" (click)="setMaxTransfer()">{{ 'wallet.max' | translate }}</button>
             </div>
 
-            <!-- SCR-002: custom on-screen numpad. Drives the amount hero directly so the
-                 system keyboard never covers the send screen. -->
-            <div class="amount-keypad" *ngIf="!isTransferTypeSendNFT()">
-                <button type="button" class="key" (click)="onAmountKey('1')">1</button>
-                <button type="button" class="key" (click)="onAmountKey('2')">2</button>
-                <button type="button" class="key" (click)="onAmountKey('3')">3</button>
-                <button type="button" class="key" (click)="onAmountKey('4')">4</button>
-                <button type="button" class="key" (click)="onAmountKey('5')">5</button>
-                <button type="button" class="key" (click)="onAmountKey('6')">6</button>
-                <button type="button" class="key" (click)="onAmountKey('7')">7</button>
-                <button type="button" class="key" (click)="onAmountKey('8')">8</button>
-                <button type="button" class="key" (click)="onAmountKey('9')">9</button>
-                <button type="button" class="key key--dot" (click)="onAmountKey('.')">.</button>
-                <button type="button" class="key" (click)="onAmountKey('0')">0</button>
-                <button type="button" class="key key--del" (click)="onAmountKey('del')" aria-label="delete">
-                    <ion-icon name="backspace-outline"></ion-icon>
-                </button>
-            </div>
             <ion-row class="toggle-row" *ngIf="canShowToogleForInscription()">
                 <ion-col class="left-col" size="10">
                     <h1 *ngIf="useInscriptionUTXO">{{ 'wallet.btc-send-inscription-utxos' | translate:{utxos: inscriptionUtxoBalanceOnBTCString}  }}</h1>
@@ -293,6 +275,26 @@
                   <ion-icon name="chevron-forward-outline" class="section-chevron"></ion-icon>
               </ion-col>
             </ion-row>
+
+            <!-- SCR-002: custom on-screen numpad, pinned to the bottom of the composition so
+                 amount, address and Continue share one non-scrolling screen (Figma Send).
+                 It drives the amount hero directly; the system keyboard never opens for it. -->
+            <div class="amount-keypad" *ngIf="!isTransferTypeSendNFT()">
+                <button type="button" class="key" (click)="onAmountKey('1')">1</button>
+                <button type="button" class="key" (click)="onAmountKey('2')">2</button>
+                <button type="button" class="key" (click)="onAmountKey('3')">3</button>
+                <button type="button" class="key" (click)="onAmountKey('4')">4</button>
+                <button type="button" class="key" (click)="onAmountKey('5')">5</button>
+                <button type="button" class="key" (click)="onAmountKey('6')">6</button>
+                <button type="button" class="key" (click)="onAmountKey('7')">7</button>
+                <button type="button" class="key" (click)="onAmountKey('8')">8</button>
+                <button type="button" class="key" (click)="onAmountKey('9')">9</button>
+                <button type="button" class="key key--dot" (click)="onAmountKey('.')">.</button>
+                <button type="button" class="key" (click)="onAmountKey('0')">0</button>
+                <button type="button" class="key key--del" (click)="onAmountKey('del')" aria-label="delete">
+                    <ion-icon name="backspace-outline"></ion-icon>
+                </button>
+            </div>
         </ion-grid>
 
         <div *ngIf="transferType === 4" class="note">
