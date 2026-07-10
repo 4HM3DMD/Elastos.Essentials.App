@@ -709,7 +709,7 @@ export class CoinHomePage implements OnInit {
 
   public get coinDisplayValue(): string {
     if (!this.subWallet) return '';
-    if (this.showsFiatBalance) return this.fiatBalance.toString();
+    if (this.showsFiatBalance) return WalletUtil.getFiatBalance(this.fiatBalance);
     return WalletUtil.getFriendlyBalance(this.subWallet.getDisplayBalance(), this.networkWallet.getDecimalPlaces());
   }
 
@@ -738,7 +738,7 @@ export class CoinHomePage implements OnInit {
   public get coinDisplayFiat(): string {
     if (!this.subWallet) return null;
     let fiat = this.subWallet.getAmountInExternalCurrency(this.subWallet.getDisplayBalance());
-    return fiat && !fiat.isNaN() ? `${fiat.toString()} ${this.currencyService.selectedCurrency.symbol}` : null;
+    return fiat && !fiat.isNaN() ? `${WalletUtil.getFiatBalance(fiat)} ${this.currencyService.selectedCurrency.symbol}` : null;
   }
 
   /** Rebuilds the transaction-list segmented control from the currently available lists. */

@@ -34,7 +34,7 @@
               {{ activeWalletEntry.networkWallet.getDisplayTokenName() }}
             </div>
             <div *ngIf="activeWalletEntry.networkWallet && currencyService.useCurrency" class="balance">
-              {{ WalletUtil.getFriendlyBalance(activeWalletEntry.networkWallet.getDisplayBalanceInActiveCurrency()) }}
+              {{ WalletUtil.getFiatBalance(activeWalletEntry.networkWallet.getDisplayBalanceInActiveCurrency()) }}
               {{ currencyService.selectedCurrency.symbol }}
             </div>
 

@@ -410,9 +410,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
         let nativeDecimals = WalletUtil.getDecimalBalance(this.networkWallet.getDisplayBalance(), this.networkWallet.getDecimalPlaces());
         let native = nativeDecimals ? `${nativeWhole}.${nativeDecimals}` : nativeWhole;
 
-        let fiatWhole = WalletUtil.getWholeBalance(this.networkWallet.getDisplayBalanceInActiveCurrency());
-        let fiatDecimals = WalletUtil.getDecimalBalance(this.networkWallet.getDisplayBalanceInActiveCurrency());
-        let fiat = fiatDecimals ? `${fiatWhole}.${fiatDecimals}` : fiatWhole;
+        let fiat = WalletUtil.getFiatBalance(this.networkWallet.getDisplayBalanceInActiveCurrency());
 
         let tokenName = this.networkWallet.getDisplayTokenName();
         let symbol = this.currencyService.selectedCurrency.symbol;
@@ -887,7 +885,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
     public getStakedBalanceInCurrency() {
         let balance = CurrencyService.instance.getMainTokenValue(new BigNumber(this.stakedBalance),
             this.networkWallet.network, this.currencyService.selectedCurrency.symbol);
-        return WalletUtil.getFriendlyBalance(balance);
+        return WalletUtil.getFiatBalance(balance);
     }
 
     public async pickWalletAddress(event) {

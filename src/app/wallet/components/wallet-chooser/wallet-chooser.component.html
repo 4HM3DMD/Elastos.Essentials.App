@@ -31,9 +31,9 @@
                         <h4 *ngIf="currencyService.useCurrency">{{
                             WalletUtil.getWholeBalance(netWallet.getDisplayBalanceInActiveCurrency())
                             }}<span class="dot"
-                                *ngIf="!netWallet.getDisplayBalance().isZero() && WalletUtil.getDecimalBalance(currencyService.getMainTokenValue(netWallet.getDisplayBalance()))">.</span>
+                                *ngIf="!netWallet.getDisplayBalance().isZero() && WalletUtil.getFiatDecimalBalance(currencyService.getMainTokenValue(netWallet.getDisplayBalance()))">.</span>
                             <span>{{
-                                WalletUtil.getDecimalBalance(currencyService.getMainTokenValue(netWallet.getDisplayBalance()))
+                                WalletUtil.getFiatDecimalBalance(currencyService.getMainTokenValue(netWallet.getDisplayBalance()))
                                 }}</span>
                             <span> {{ currencyService.selectedCurrency.symbol }}</span>
                         </h4>

@@ -77,6 +77,43 @@ export class WalletUtil {
     }
   }
 
+  /**
+   * Decimal part of a FIAT amount. Always uses the selected display currency's own
+   * decimal places (e.g. 2 for USD); unlike getDecimalBalance(), it never expands
+   * to 8 decimals for amounts below 1 - that bump only makes sense for crypto units.
+   */
+  public static getFiatDecimalBalance(balance: BigNumber): string {
+    if (!balance || balance.isNaN()) {
+      return '';
+    }
+
+    let decimalplace = CurrencyService.instance.selectedCurrency.decimalplace;
+    if (!decimalplace) {
+      decimalplace = 2;
+    }
+
+    const decimalBalance = balance.modulo(1);
+    if (decimalBalance.isZero()) {
+      return '';
+    }
+
+    // BigNumber.ROUND_DOWN: 0.9997 => "99", so the displayed total is never rounded up.
+    return decimalBalance.toFixed(decimalplace, BigNumber.ROUND_DOWN).substring(2);
+  }
+
+  /**
+   * Full FIAT amount string ("2140.20"), for surfaces that render the fiat value
+   * as a single string instead of split whole/decimal spans.
+   */
+  public static getFiatBalance(balance: BigNumber): string {
+    if (!balance || balance.isNaN()) {
+      return '...';
+    }
+    const whole = WalletUtil.getWholeBalance(balance);
+    const decimals = WalletUtil.getFiatDecimalBalance(balance);
+    return decimals ? `${whole}.${decimals}` : whole;
+  }
+
   public static getFriendlyBalance(balance: BigNumber, decimalplace = -1): string {
     if (!balance || balance.isNaN()) {
       return '...';
