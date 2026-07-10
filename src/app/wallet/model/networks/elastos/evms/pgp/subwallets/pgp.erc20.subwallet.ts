@@ -18,7 +18,8 @@ export class PGPERC20SubWallet extends ERC20SubWallet {
 
   // Centralized mapping for ECO ERC20 token contract addresses to icon assets
   private static readonly TOKEN_ICON_MAP: Record<string, string> = {
-    '0x0000000000000000000000000000000000000065': 'assets/wallet/networks/elastos-eco.svg',
+    // ELA token: the transparent mark (chain identity shows on the badge instead).
+    '0x0000000000000000000000000000000000000065': 'assets/wallet/coins/ela.png',
     '0xf9bf836fed97a9c9bfe4d4c28316b9400c59cc6b': 'assets/wallet/coins/btcd.png',
     '0x800e5c441b84a3e809e2ec922beee9f32f954b11': 'assets/wallet/coins/fist.png',
     '0xdf72788af68e7902f61377d246dd502b0b383385': 'assets/wallet/coins/usdt.svg'
