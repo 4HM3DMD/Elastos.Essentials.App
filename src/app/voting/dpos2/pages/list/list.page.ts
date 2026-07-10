@@ -283,11 +283,20 @@ export class ListPage implements OnInit {
                 }
             }
 
-            // The wallet owns a registered node: report its actual status
-            // instead of the misleading "no registered node" message.
+            // The wallet owns a registered node: report its actual status instead
+            // of the misleading "no registered node" message. Only the known chain
+            // states have translation keys; anything else (including the
+            // 'Unregistered' sentinel that prepareActionMenu writes onto the shared
+            // cached node for active DPoSV1 nodes) falls back to a generic message
+            // rather than rendering a raw translation key.
+            const KNOWN_NODE_STATES = ['Pending', 'Active', 'Inactive', 'Canceled', 'Illegal', 'Returned'];
             await this.globalNative.hideLoading();
-            this.globalNative.genericToast(
-                this.translate.instant('dposvoting.node-status') + ': ' + this.translate.instant('dposvoting.' + nodeState), 4000);
+            if (KNOWN_NODE_STATES.indexOf(nodeState) >= 0) {
+                this.globalNative.genericToast(
+                    this.translate.instant('dposvoting.node-status') + ': ' + this.translate.instant('dposvoting.' + nodeState), 4000);
+            } else {
+                this.globalNative.genericToast('dposvoting.already-registered-node', 4000);
+            }
         }
         catch (e) {
             Logger.warn(App.DPOS2, 'checkDPoSStatus exception:', e)

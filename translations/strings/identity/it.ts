@@ -251,7 +251,6 @@ export const it = {
 
         // page: sethiveprovider
         'sethiveprovider-title': 'Spazio di archiviazione Hive',
-        'sethiveprovider-app-id': 'ID applicazione:',
         'sethiveprovider-intro': 'Questo nuovo fornitore verrà registrato nel tuo profilo pubblico (identità) come gestore del tuo spazio di archiviazione.',
         'sethiveprovider-name': 'Nome:',
         'sethiveprovider-address': 'Indirizzo:',

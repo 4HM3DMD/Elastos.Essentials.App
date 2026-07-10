@@ -531,7 +531,8 @@ export const fr = {
     'wrong-rpc-url': "L'url fournie n'a pas pu être contactée et est peut-être erronée. Veuillez la vérifier.",
     'wrong-account-rpc-url':
       "L'url de compte fournie n'a pas pu être contactée et est peut-être erronée. Veuillez la vérifier.",
-    'rpc-url-chain-id-mismatch': "L'url RPC fournie correspond à un autre réseau (chain ID différent). Veuillez la vérifier.",
+    'rpc-url-chain-id-mismatch':
+      "L'url RPC fournie correspond à un autre réseau (chain ID différent). Veuillez la vérifier.",
     'invalid-chain-id': 'Le chain ID doit être un nombre entier positif.',
     'cant-delete-active-network':
       "Le réseau actif ne peut pas être supprimé. Veuillez d'abord choisir un autre réseau.",

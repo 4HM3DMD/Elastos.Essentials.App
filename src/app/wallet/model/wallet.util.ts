@@ -92,7 +92,9 @@ export class WalletUtil {
       decimalplace = 2;
     }
 
-    const decimalBalance = balance.modulo(1);
+    // abs() so a negative amount does not leave a sign in the "0.xx" string that
+    // substring(2) then mis-slices.
+    const decimalBalance = balance.abs().modulo(1);
     if (decimalBalance.isZero()) {
       return '';
     }

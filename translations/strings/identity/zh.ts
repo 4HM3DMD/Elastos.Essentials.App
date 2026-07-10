@@ -252,7 +252,6 @@ export const zh = {
 
         // page: sethiveprovider
         'sethiveprovider-title': '注册 Hive 服务',
-        'sethiveprovider-app-id': '应用ID：',
         'sethiveprovider-intro': '此新服务将保存在您的身份配置文件中',
         'sethiveprovider-name': '名称：',
         'sethiveprovider-address': '地址：',

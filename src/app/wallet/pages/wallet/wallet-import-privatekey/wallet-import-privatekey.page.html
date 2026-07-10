@@ -2,7 +2,8 @@
   <app-titlebar></app-titlebar>
   <ion-grid class="ion-text-center container">
     <ion-row class="txt-container">
-      <ion-textarea row=5 placeholder="{{ 'wallet.paste-privatekey' | translate }}" [(ngModel)]="privatekey" mode="ios">
+      <ion-textarea row=5 placeholder="{{ 'wallet.paste-privatekey' | translate }}" [(ngModel)]="privatekey"
+        (ngModelChange)="getContentType()" mode="ios">
       </ion-textarea>
       <ebutton (clicked)="pasteFromClipboard()" [title]="'wallet.paste' | translate"> </ebutton>
     </ion-row>

@@ -252,7 +252,6 @@ export const fr = {
 
         // page: sethiveprovider
         'sethiveprovider-title': 'Espace de stockage Hive',
-        'sethiveprovider-app-id': 'Application:',
         'sethiveprovider-intro': 'Ce nouveau fournisseur va être enregistré dans votre profil public (identité) comme gestionnaire de votre espace de stockage.',
         'sethiveprovider-name': 'Nom:',
         'sethiveprovider-address': 'Adresse:',

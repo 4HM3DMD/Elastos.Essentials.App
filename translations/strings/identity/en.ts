@@ -251,7 +251,6 @@ export const en = {
 
         // page: sethiveprovider
         'sethiveprovider-title': 'Register Hive Provider',
-        'sethiveprovider-app-id': 'App ID:',
         'sethiveprovider-intro': 'This new provider is going to be saved on your profile identity profile as your main storage space manager.',
         'sethiveprovider-name': 'Name:',
         'sethiveprovider-address': 'Address:',

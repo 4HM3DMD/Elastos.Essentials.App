@@ -621,6 +621,13 @@ export class WalletService {
         throw new Error('Unsupported keystore: no seed or mnemonic information found');
       }
 
+      // The keystore import above created the SDK master wallet, so the lazy
+      // maybeCreateStandardWalletFromJSWallet() path (which builds the Elastos
+      // mainchain sub-wallet) will short-circuit on "wallet already exists".
+      // Create the ELA sub-wallet here, exactly as that path does, so the
+      // imported wallet works on the Elastos main chain.
+      await sdkMasterWallet.createSubWallet("ELA");
+
       const elastosNetworkOptions: ElastosMainChainWalletNetworkOptions = {
         network: 'elastos',
         singleAddress: basicInfo.SingleAddress

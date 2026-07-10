@@ -385,7 +385,7 @@ export class DPoS2Service {
         // list. Recomputing (instead of incrementing) is also idempotent
         // against the shared RPC cache when fetchNodes re-runs.
         [...this.dposList]
-          .sort((a, b) => b.dposv2votesNumber - a.dposv2votesNumber)
+          .sort((a, b) => (b.dposv2votesNumber || 0) - (a.dposv2votesNumber || 0))
           .forEach((rankedNode, i) => { rankedNode.index = i + 1; });
 
         Logger.log('dposvoting', 'Active Nodes..', this.activeNodes);

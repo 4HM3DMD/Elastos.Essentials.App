@@ -4,8 +4,10 @@
     <ion-card>
       <img src="assets/shared/essentials-black-circle.svg">
       <ion-card-title>{{ 'identity.sign-data' | translate }}</ion-card-title>
-      <!-- No unknown-app label: Essentials' own flows (CR voting) send signdigest internally without a caller -->
-      <requesting-app [caller]="receivedIntent.params.caller" [showUnknownLabel]="false"></requesting-app>
+      <!-- Only warn "Unknown application" when a caller was declared but could not be
+           resolved (an external request): Essentials' own flows (CR voting) invoke
+           signdigest internally with no caller, so no warning is shown there. -->
+      <requesting-app [caller]="receivedIntent.params.caller" [showUnknownLabel]="!!receivedIntent.params.caller"></requesting-app>
     </ion-card>
 
     <div class="msg-container">

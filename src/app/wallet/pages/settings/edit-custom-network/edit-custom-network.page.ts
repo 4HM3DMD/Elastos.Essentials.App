@@ -174,9 +174,13 @@ export class EditCustomNetworkPage implements OnInit {
   }
 
   public async saveChanges(): Promise<void> {
-    // Make sure the chain ID is a valid positive integer (EVM chain IDs must be > 0)
-    const expectedChainId = Number(this.editedNetworkEntry.chainId);
-    if (!Number.isSafeInteger(expectedChainId) || expectedChainId <= 0) {
+    // Make sure the chain ID is a valid positive integer (EVM chain IDs must be > 0).
+    // Require a plain decimal-digit string: the value is persisted as-is and later
+    // read with parseInt(), so exponent/hex forms like "1e5" would pass Number()
+    // but resolve to a different chain downstream.
+    const chainIdStr = String(this.editedNetworkEntry.chainId).trim();
+    const expectedChainId = Number(chainIdStr);
+    if (!/^\d+$/.test(chainIdStr) || !Number.isSafeInteger(expectedChainId) || expectedChainId <= 0) {
       this.native.errToast('wallet.invalid-chain-id');
       return;
     }
