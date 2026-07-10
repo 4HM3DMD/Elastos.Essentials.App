@@ -19,8 +19,10 @@
         <button type="button" class="icon-btn" aria-label="Scan" (click)="onScan()">
           <ion-icon name="scan-outline"></ion-icon>
         </button>
-        <button type="button" class="icon-btn" aria-label="Settings" (click)="onSettings()">
-          <ion-icon name="settings-outline"></ion-icon>
+        <!-- Active-chain selector: logo only, opens the network chooser. Settings lives on the tab bar. -->
+        <button type="button" class="icon-btn chain" aria-label="Switch network" *ngIf="currentNetwork"
+          (click)="onPickNetwork()">
+          <img [src]="currentNetwork.logo" alt="" />
         </button>
       </div>
     </div>

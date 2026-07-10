@@ -31,7 +31,9 @@ import { CurrencyService } from 'src/app/wallet/services/currency.service';
 import { SwapService } from 'src/app/wallet/services/evm/swap.service';
 import { PriceHistoryService } from 'src/app/wallet/services/pricehistory.service';
 import { formatFiatAmount } from 'src/app/helpers/currency-format';
+import { AnyNetwork } from 'src/app/wallet/model/networks/network';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
+import { WalletNetworkUIService } from 'src/app/wallet/services/network.ui.service';
 import { UiService } from 'src/app/wallet/services/ui.service';
 import { WalletService } from 'src/app/wallet/services/wallet.service';
 import { DIDManagerService } from '../../services/didmanager.service';
@@ -88,6 +90,7 @@ export class HomePage implements OnInit, OnDestroy {
   public avatarDataUrl: string = null;
   public hasNewNotifications = false;
   public networkBanner: string = null;
+  public currentNetwork: AnyNetwork = null;
 
   // TODO(SCR-054): the Value pillar sub is meant to show live "N networks · M staked".
   // That needs real cross-network balance + staking aggregation (not yet available),
@@ -122,7 +125,8 @@ export class HomePage implements OnInit, OnDestroy {
     private coinTransferService: CoinTransferService,
     private voteService: VoteService,
     private stakingInitService: StakingInitService,
-    private globalPopupService: GlobalPopupService
+    private globalPopupService: GlobalPopupService,
+    private walletNetworkUIService: WalletNetworkUIService
   ) {}
 
   /** Masks amounts while the hide-balances pref is on, and (privacy-safe) while it is still loading. */
@@ -142,7 +146,8 @@ export class HomePage implements OnInit, OnDestroy {
     this.networkWalletSub = this.walletService.activeNetworkWallet.subscribe(() => {
       if (this.walletService.walletServiceStatus.value) this.refreshWalletData();
     });
-    this.activeNetworkSub = this.walletNetworkService.activeNetwork.subscribe(() => {
+    this.activeNetworkSub = this.walletNetworkService.activeNetwork.subscribe(network => {
+      this.currentNetwork = network;
       if (this.walletService.walletServiceStatus.value) this.refreshWalletData();
     });
     this.currencyChangeSub = this.currencyService.currencyChangedSubject.subscribe(() => {
@@ -232,8 +237,8 @@ export class HomePage implements OnInit, OnDestroy {
     void this.globalNav.navigateTo(App.SCANNER, '/scanner/scan');
   }
 
-  public onSettings() {
-    void this.globalNav.navigateTo(App.SETTINGS, '/settings/menu');
+  public onPickNetwork() {
+    void this.walletNetworkUIService.chooseActiveNetwork();
   }
 
   /* -------------------------- Wallet summary -------------------------- */

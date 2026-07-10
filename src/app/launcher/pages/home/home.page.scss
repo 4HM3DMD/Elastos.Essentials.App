@@ -110,6 +110,16 @@ ion-content {
                     border-radius: 50%;
                     background: var(--essentials-danger);
                 }
+
+                // Chain selector: the active network's logo disc. The hairline keeps
+                // the white ESC and dark navy ELA discs legible on the dark header.
+                &.chain img {
+                    width: 26px;
+                    height: 26px;
+                    border-radius: 50%;
+                    border: 1px solid rgba(255, 255, 255, 0.12);
+                    object-fit: cover;
+                }
             }
         }
     }
