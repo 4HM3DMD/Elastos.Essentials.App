@@ -515,21 +515,35 @@ export class CoinTxInfoPage implements OnInit {
         show: true
       });
     } else {
-      // Total deducted = amount + fee, only when the sent token IS the native token
-      // (so amount and fee are in the same unit). Compare the real ticker, not the sign.
+      // Total deducted only exists when the sent token IS the native token (amount and
+      // fee share the unit). Chain semantics differ: the UTXO main chain (ELA) reports
+      // the sent amount FEE-INCLUSIVE, so the reported amount is already the total and
+      // the value row is amount minus fee; account-model chains (EVM, ...) report the
+      // transferred value only, so the total is amount plus fee. Getting this wrong
+      // double-counted the fee in the Total row.
+      let sentAmount = new BigNumber(String(this.displayAmount).replace(/,/g, ''));
+      let valueAmount = sentAmount;
+      let totalDeducted: BigNumber = null;
       if (this.payFee !== null && this.ticker === this.mainTokenSymbol) {
-        const total = new BigNumber(String(this.displayAmount).replace(/,/g, '')).plus(new BigNumber(this.payFee));
+        if (this.subWallet.id === StandardCoinName.ELA) {
+          totalDeducted = sentAmount;
+          valueAmount = sentAmount.minus(new BigNumber(this.payFee));
+        } else {
+          totalDeducted = sentAmount.plus(new BigNumber(this.payFee));
+        }
+      }
+      if (totalDeducted !== null) {
         this.txDetails.unshift({
           type: TransactionInfoType.AMOUNT,
           title: 'wallet.tx-info-total',
-          value: `${WalletUtil.getAmountWithoutScientificNotation(total, this.subWallet.tokenDecimals)} ${this.ticker}`,
+          value: `${WalletUtil.getAmountWithoutScientificNotation(totalDeducted, this.subWallet.tokenDecimals)} ${this.ticker}`,
           show: true
         });
       }
       this.txDetails.unshift({
         type: TransactionInfoType.AMOUNT,
         title: 'wallet.tx-info-amount',
-        value: amountWithSymbol,
+        value: `${WalletUtil.getAmountWithoutScientificNotation(valueAmount, this.subWallet.tokenDecimals)} ${this.ticker}`,
         show: true
       });
     }
@@ -733,6 +747,37 @@ export class CoinTxInfoPage implements OnInit {
       return ValueType.StringArray;
     }
     return ValueType.Normal;
+  }
+
+  // Readability split: the rows that answer "what happened" render in a primary card,
+  // in a fixed human order; everything else (txid, token internals, vote arrays, memo)
+  // collapses behind a Technical details toggle. Purely presentational - every row the
+  // per-chain builders produce is still shown, nothing is dropped.
+  private static readonly ESSENTIAL_ROW_ORDER = [
+    'wallet.tx-info-amount',
+    'wallet.tx-info-erc20-amount',
+    'wallet.tx-info-receive-amount',
+    'wallet.tx-info-address',
+    'wallet.tx-info-address-name',
+    'wallet.tx-info-network',
+    'wallet.tx-info-network-fee',
+    'wallet.tx-info-total',
+    'wallet.tx-info-time'
+  ];
+
+  public showTechnical = false;
+
+  public get essentialDetails(): TransactionDetail[] {
+    return this.txDetails
+      .filter(item => CoinTxInfoPage.ESSENTIAL_ROW_ORDER.includes(item.title))
+      .sort(
+        (a, b) =>
+          CoinTxInfoPage.ESSENTIAL_ROW_ORDER.indexOf(a.title) - CoinTxInfoPage.ESSENTIAL_ROW_ORDER.indexOf(b.title)
+      );
+  }
+
+  public get technicalDetails(): TransactionDetail[] {
+    return this.txDetails.filter(item => !CoinTxInfoPage.ESSENTIAL_ROW_ORDER.includes(item.title));
   }
 
   private async getVoteInfo(voteContents: VotesContentInfo[]) {

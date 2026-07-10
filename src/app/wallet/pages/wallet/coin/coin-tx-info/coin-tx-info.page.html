@@ -23,45 +23,61 @@
         <tx-details-multisig *ngIf="offlineTransaction" [offlineTransaction]="offlineTransaction"
             [subWallet]="subWallet"></tx-details-multisig>
 
-        <!-- TRANSACTION DETAILS -->
-        <div class="details-list">
-            <ng-container *ngFor="let item of txDetails">
-                <!-- Simple single-value rows render as shared key/value rows -->
-                <ui-kv-row *ngIf="item.value && getValueType(item) == 1" [label]="item.title | translate"
-                    [value]="item.value" [divider]="false" [ellipsisMiddle]="item.value.length > 40"
-                    [copyValue]="worthCopying(item) ? item.value : null"
-                    [explorerUrl]="worthOpenForBrowser(item) ? item.value : null" (copy)="copy(item.value)"
-                    (openExplorer)="openForBrowseMode(item)"></ui-kv-row>
-
-                <!-- Multi-value rows (address lists, votes) keep an expandable row -->
-                <ion-row *ngIf="item.value && getValueType(item) != 1" class="item-row">
-                    <ion-col size="11" class="title-col">
-                        <h1>{{ item.title | translate }}</h1>
-                    </ion-col>
-                    <ion-col size="1" class="arrow-col" (click)="item.show = ! item.show">
-                        <img [src]="!theme.darkMode ? 'assets/wallet/icons/down-arrow.svg' : 'assets/wallet/icons/darkmode/down-arrow.svg'"
-                            [class.rotate]="item.show" />
-                    </ion-col>
-                    <div *ngIf="item.show" class="details-container" (click)="item.show = ! item.show">
-                        <div *ngIf="getValueType(item) == 2" class="array-row">
-                            <ion-row class="subcontent-row" *ngFor="let value of item.value">
-                                <ion-col size="12">
-                                    <h2>{{ value }}</h2>
-                                </ion-col>
-                            </ion-row>
-                        </div>
-                        <div *ngIf="getValueType(item) == 3" class="array-row">
-                            <ion-row class="subcontent-row" *ngFor="let value of item.value">
-                                <ion-col size="12">
-                                    <h2>{{ value.Title }}</h2>
-                                    <h2>{{ value.Votes }} {{ 'dposvoting.votes' | translate }}</h2>
-                                    <h2 *ngIf="value.LockDate">{{ 'dposvoting.stake-until' | translate }}: {{ value.LockDate }}</h2>
-                                </ion-col>
-                            </ion-row>
-                        </div>
-                    </div>
-                </ion-row>
+        <!-- TRANSACTION DETAILS: the rows that answer "what happened" in a readable card;
+             chain internals collapse behind Technical details. Row templates are shared. -->
+        <div class="details-card" *ngIf="essentialDetails.length > 0">
+            <ng-container *ngFor="let item of essentialDetails">
+                <ng-container *ngTemplateOutlet="detailRow; context: { $implicit: item }"></ng-container>
             </ng-container>
         </div>
+
+        <button type="button" class="tech-toggle" *ngIf="technicalDetails.length > 0"
+            (click)="showTechnical = !showTechnical">
+            <span>{{ 'wallet.tx-info-technical-details' | translate }}</span>
+            <ion-icon name="chevron-down-outline" [class.rotate]="showTechnical"></ion-icon>
+        </button>
+        <div class="details-card technical" *ngIf="showTechnical">
+            <ng-container *ngFor="let item of technicalDetails">
+                <ng-container *ngTemplateOutlet="detailRow; context: { $implicit: item }"></ng-container>
+            </ng-container>
+        </div>
+
+        <ng-template #detailRow let-item>
+            <!-- Simple single-value rows render as shared key/value rows -->
+            <ui-kv-row *ngIf="item.value && getValueType(item) == 1" [label]="item.title | translate"
+                [value]="item.value" [divider]="false" [ellipsisMiddle]="item.value.length > 40"
+                [copyValue]="worthCopying(item) ? item.value : null"
+                [explorerUrl]="worthOpenForBrowser(item) ? item.value : null" (copy)="copy(item.value)"
+                (openExplorer)="openForBrowseMode(item)"></ui-kv-row>
+
+            <!-- Multi-value rows (address lists, votes) keep an expandable row -->
+            <ion-row *ngIf="item.value && getValueType(item) != 1" class="item-row">
+                <ion-col size="11" class="title-col">
+                    <h1>{{ item.title | translate }}</h1>
+                </ion-col>
+                <ion-col size="1" class="arrow-col" (click)="item.show = ! item.show">
+                    <img [src]="!theme.darkMode ? 'assets/wallet/icons/down-arrow.svg' : 'assets/wallet/icons/darkmode/down-arrow.svg'"
+                        [class.rotate]="item.show" />
+                </ion-col>
+                <div *ngIf="item.show" class="details-container" (click)="item.show = ! item.show">
+                    <div *ngIf="getValueType(item) == 2" class="array-row">
+                        <ion-row class="subcontent-row" *ngFor="let value of item.value">
+                            <ion-col size="12">
+                                <h2>{{ value }}</h2>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                    <div *ngIf="getValueType(item) == 3" class="array-row">
+                        <ion-row class="subcontent-row" *ngFor="let value of item.value">
+                            <ion-col size="12">
+                                <h2>{{ value.Title }}</h2>
+                                <h2>{{ value.Votes }} {{ 'dposvoting.votes' | translate }}</h2>
+                                <h2 *ngIf="value.LockDate">{{ 'dposvoting.stake-until' | translate }}: {{ value.LockDate }}</h2>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                </div>
+            </ion-row>
+        </ng-template>
     </ion-grid>
 </ion-content>

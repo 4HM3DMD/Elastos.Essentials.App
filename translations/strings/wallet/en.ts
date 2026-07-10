@@ -353,6 +353,7 @@ export const en = {
     'tx-info-confirmations': 'Confirmations',
     'tx-info-time': 'Time',
     'tx-info-network': 'Network',
+    'tx-info-technical-details': 'Technical details',
     'tx-info-address': 'Address',
     'tx-info-address-name': 'Address Name',
     'tx-info-amount': 'Amount',

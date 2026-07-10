@@ -82,8 +82,40 @@ ion-grid {
 
 @import "./item-rows.scss";
 
-/* Spacing for the kv-row detail list (WO-14). Rows separate by whitespace only;
-   the per-row divider is disabled via [divider]="false" (SYS-020). */
-.details-list {
+/* Readable detail groups (WO-14 / SYS-020): the essential rows sit in a rounded
+   surface card; chain internals live in a second card behind the Technical
+   details toggle. Per-row dividers stay disabled via [divider]="false". */
+.details-card {
     margin-top: 8px;
+    padding: 6px 14px;
+    border-radius: 14px;
+    background: var(--essentials-box-color);
+
+    &.technical {
+        margin-top: 10px;
+    }
+}
+
+.tech-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 16px 2px 0;
+    padding: 4px 0;
+    border: none;
+    background: transparent;
+    color: var(--essentials-text-secondary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+
+    ion-icon {
+        font-size: 14px;
+        transition: transform 0.2s ease;
+
+        &.rotate {
+            transform: rotate(180deg);
+        }
+    }
 }
