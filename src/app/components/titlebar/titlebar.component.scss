@@ -28,16 +28,25 @@
                     width: 22px;
                 }
 
-                // Sub-page back/close control: thin chevron inside a raised circular disc (SYS-011).
+                // Sub-page back/close control: thin chevron in a 40x40 frosted glass circle
+                // (Figma "Glass Effect" 40x40). min/max-width pin the box because Ionic's
+                // global img { max-width: 100% } otherwise squeezes it inside the narrow
+                // title-bar column, rendering a tall egg instead of a circle (SYS-011).
                 img.nav-back {
                     box-sizing: border-box;
+                    flex-shrink: 0;
                     height: 40px;
                     width: 40px;
-                    padding: 9px;
+                    min-width: 40px;
+                    max-width: none;
+                    padding: 10px;
                     border-radius: 50%;
-                    background: rgba(255, 255, 255, 0.06);
-                    border: 1px solid var(--essentials-border-separator-color);
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+                    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%),
+                        rgba(255, 255, 255, 0.05);
+                    backdrop-filter: blur(16px);
+                    -webkit-backdrop-filter: blur(16px);
+                    border: 0.5px solid rgba(255, 255, 255, 0.14);
+                    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.14);
                 }
 
                 .logo {
