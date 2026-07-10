@@ -28,25 +28,29 @@
                     width: 22px;
                 }
 
-                // Sub-page back/close control: thin chevron in a 40x40 frosted glass circle
-                // (Figma "Glass Effect" 40x40). min/max-width pin the box because Ionic's
-                // global img { max-width: 100% } otherwise squeezes it inside the narrow
-                // title-bar column, rendering a tall egg instead of a circle (SYS-011).
+                // Sub-page back/close control: a bare thin chevron, no enclosing chip
+                // (minimal 2026 language - the glyph IS the button). The padding forms an
+                // invisible 44x44 hit area; min/max-width pin the box because Ionic's
+                // global img { max-width: 100% } would otherwise squeeze it inside the
+                // narrow title-bar column (SYS-011). Pressing nudges it toward the exit.
                 img.nav-back {
                     box-sizing: border-box;
                     flex-shrink: 0;
-                    height: 40px;
-                    width: 40px;
-                    min-width: 40px;
+                    height: 44px;
+                    width: 44px;
+                    min-width: 44px;
                     max-width: none;
-                    padding: 10px;
+                    padding: 11px;
                     border-radius: 50%;
-                    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%),
-                        rgba(255, 255, 255, 0.05);
-                    backdrop-filter: blur(16px);
-                    -webkit-backdrop-filter: blur(16px);
-                    border: 0.5px solid rgba(255, 255, 255, 0.14);
-                    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+                    background: transparent;
+                    border: none;
+                    box-shadow: none;
+                    transition: transform 0.15s ease, opacity 0.15s ease;
+
+                    &:active {
+                        transform: translateX(-2px);
+                        opacity: 0.55;
+                    }
                 }
 
                 .logo {

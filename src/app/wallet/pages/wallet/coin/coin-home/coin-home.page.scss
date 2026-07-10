@@ -320,14 +320,14 @@ ion-content {
             justify-content: center;
             height: 48px;
             padding: 0 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
+            border: none;
+            border-radius: 14px;
             font-family: inherit;
             font-size: 15px;
             font-weight: 500;
             line-height: 1;
-            color: var(--ion-text-color);
-            background: var(--essentials-box-color);
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(30, 30, 30, 0.96);
             cursor: pointer;
         }
     }
@@ -337,37 +337,39 @@ ion-content {
         align-items: center;
         gap: 10px;
 
+        // Minimal 2026 action bar: soft-rect tonal Send, glowing flat-accent Receive.
+        // No hairlines, no gloss gradients - tonal contrast and light carry the hierarchy.
         .pill {
             flex: 1;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            height: 50px;
+            height: 52px;
             padding: 0 20px;
             border: none;
-            border-radius: 25px;
+            border-radius: 16px;
             font-family: inherit;
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 17px;
+            font-weight: 600;
             line-height: 1;
+            letter-spacing: 0.1px;
             cursor: pointer;
+            transition: transform 0.15s ease;
+
+            &:active {
+                transform: scale(0.97);
+            }
         }
 
         .pill-dark {
-            color: var(--ion-text-color);
-            // Figma: frosted glass Send pill.
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 0.5px solid rgba(255, 255, 255, 0.14);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.07);
         }
 
         .pill-accent {
             color: #111111;
-            // A richer glossy accent: brighter top highlight, subtle bottom shade, warm glow.
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 255, 255, 0.04) 55%, rgba(0, 0, 0, 0.06) 100%), var(--essentials-primary, #ED6E2B);
-            box-shadow: 0 4px 18px rgba(237, 110, 43, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            background: var(--essentials-primary, #ED6E2B);
+            box-shadow: 0 8px 24px rgba(237, 110, 43, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.22);
         }
 
         .pill-more {
@@ -375,12 +377,12 @@ ion-content {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: var(--essentials-box-color);
-            color: var(--ion-text-color);
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            border: none;
+            background: rgba(255, 255, 255, 0.07);
+            color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
 
             ion-icon {

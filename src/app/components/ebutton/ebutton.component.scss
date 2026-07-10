@@ -4,26 +4,37 @@
     font-size: 16px;
     transition: all 0.2s ease;
     padding: 4px 2px;
-    min-height: 60px; // Min for standard button, but can grow if top icon in use
+    min-height: 56px; // Min for standard button, but can grow if top icon in use
     margin: 0 auto;
 
     &.full {
         width: 100%;
     }
 
+    // Minimal 2026 primary CTA: a flat accent soft-rect (no stadium, no sheen, no arrow),
+    // lifted by a warm glow instead of chrome. Depth comes from light, not borders.
     .root {
         position: relative;
-        // Glossy orange stadium pill: a soft top sheen over the accent base (2026 primary CTA).
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 55%),
-            var(--essentials-button-background-color);
+        background: var(--essentials-button-background-color);
         color: var(--essentials-button-text-color);
-        border-radius: 999px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(237, 110, 43, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.22);
         display: flex;
         align-items: center;
         place-content: center;
         width: 100%;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
         //height: 100%; // Don't use height, conflicting with parent align items stretch
+
+        &:active {
+            transform: scale(0.985);
+            box-shadow: 0 4px 14px rgba(237, 110, 43, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        }
+
+        .title {
+            font-weight: 600;
+            letter-spacing: 0.1px;
+        }
 
         &.cancel {
             .title {
@@ -32,45 +43,28 @@
         }
 
         &.danger {
-            background:
-                linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 55%),
-                var(--essentials-danger);
+            background: var(--essentials-danger);
             color: white;
+            box-shadow: 0 10px 30px rgba(255, 56, 60, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.18);
         }
 
-        // Dark secondary CTA: a flat #1E1E1E surface with a hairline and white label
-        // (the 2026 "Import" companion to the primary "Create").
+        // Tonal secondary: a quiet translucent surface, no hairline (the minimal language
+        // relies on tonal contrast rather than strokes).
         &.secondary {
-            background: var(--essentials-box-color);
+            background: rgba(255, 255, 255, 0.07);
             color: var(--ion-text-color);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: none;
         }
 
-        // Disabled is a flat dark-gray surface with a faint label, never a dimmed orange (doc-145).
+        // Disabled is a quiet tonal surface with a faint label, never a dimmed orange (doc-145).
         &.disabled {
-            background: #2A2A2C;
-            color: rgba(255, 255, 255, 0.32);
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.30);
+            box-shadow: none;
             opacity: 1;
-        }
 
-        // Trailing circular arrow disc pinned to the right edge; label stays centered.
-        .arrow-disc {
-            position: absolute;
-            top: 50%;
-            right: 7px;
-            transform: translateY(-50%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.92);
-            color: var(--essentials-button-background-color);
-
-            svg {
-                width: 21px;
-                height: 21px;
+            &:active {
+                transform: none;
             }
         }
 
