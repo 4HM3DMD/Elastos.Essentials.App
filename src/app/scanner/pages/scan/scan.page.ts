@@ -180,7 +180,13 @@ export class ScanPage {
                 Logger.log("Scanner", "Access to QRScanner plugin is currently denied")
                 this.zone.run(() => { this.cameraDenied = true; });
             }
-        }).catch((e: any) => Logger.error("Scanner", 'Unexpected error: ', e, e));
+        }).catch((e: any) => {
+            // prepare() rejects when no camera is available at all (e.g. simulator) or the
+            // plugin fails. Without this, neither the camera nor the fallback state would
+            // render, leaving a blank page - show the designed camera-unavailable state.
+            Logger.error("Scanner", 'Unexpected error: ', e, e);
+            this.zone.run(() => { this.cameraDenied = true; });
+        });
     }
 
     stopScanning() {
