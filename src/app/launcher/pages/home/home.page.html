@@ -19,10 +19,12 @@
         <button type="button" class="icon-btn" aria-label="Scan" (click)="onScan()">
           <ion-icon name="scan-outline"></ion-icon>
         </button>
-        <!-- Active-chain selector: logo only, opens the network chooser. Settings lives on the tab bar. -->
-        <button type="button" class="icon-btn chain" aria-label="Switch network" *ngIf="currentNetwork"
+        <!-- Active-chain selector: a pill (logo + chevron) so it reads as a dropdown control.
+             No text to keep the header uncluttered. Settings lives on the tab bar. -->
+        <button type="button" class="chain-pill" aria-label="Switch network" *ngIf="currentNetwork"
           (click)="onPickNetwork()">
           <img [src]="currentNetwork.logo" alt="" />
+          <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
         </button>
       </div>
     </div>
