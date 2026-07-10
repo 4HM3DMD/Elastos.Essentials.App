@@ -55,10 +55,17 @@ export class ContactsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     void this.getContacts(this.subWallet)
     // SCR-006: surface recent recipients above the saved list. Refresh from storage so
-    // sends made after service init appear immediately.
-    this.recents = this.contactsService.recents || [];
-    void this.contactsService.getRecents().then(recents => {
-      this.recents = recents || [];
+    // sends made after service init appear immediately, and filter for the current
+    // network exactly like the saved list - a BTC recent must not be pickable while
+    // sending ELA (it would only dead-end at Continue-time validation).
+    void this.contactsService.getRecents().then(async recents => {
+      let usable: RecentRecipient[] = [];
+      for (let recent of recents || []) {
+        if (await this.isAddressValid(this.subWallet, recent.address)) {
+          usable.push(recent);
+        }
+      }
+      this.recents = usable;
     });
   }
 

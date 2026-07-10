@@ -16,8 +16,11 @@ import { GlobalStartupService } from 'src/app/services/global.startup.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
+import { GlobalDIDSessionsService } from 'src/app/services/global.didsessions.service';
+import { GlobalPopupService } from 'src/app/services/global.popup.service';
 import { DposStatus, VoteService } from 'src/app/voting/services/vote.service';
 import { StakingInitService } from 'src/app/voting/staking/services/init.service';
+import { WalletCreator } from 'src/app/wallet/model/masterwallets/wallet.types';
 import { AnyNetworkWallet } from 'src/app/wallet/model/networks/base/networkwallets/networkwallet';
 import { AnySubWallet } from 'src/app/wallet/model/networks/base/subwallets/subwallet';
 import { TronSubWallet } from 'src/app/wallet/model/networks/tron/subwallets/tron.subwallet';
@@ -118,7 +121,8 @@ export class HomePage implements OnInit, OnDestroy {
     private uiService: UiService,
     private coinTransferService: CoinTransferService,
     private voteService: VoteService,
-    private stakingInitService: StakingInitService
+    private stakingInitService: StakingInitService,
+    private globalPopupService: GlobalPopupService
   ) {}
 
   /** Masks amounts while the hide-balances pref is on, and (privacy-safe) while it is still loading. */
@@ -362,14 +366,34 @@ export class HomePage implements OnInit, OnDestroy {
   /**
    * Receive: point CoinTransferService at the main subwallet (coin-receive reads
    * masterWalletId/subWalletId from it) and open the receive screen. Mirrors the
-   * Value screen's onReceive().
+   * Value screen's onReceive(), including the backup prompt for app-created wallets
+   * whose identity was never backed up.
    */
   public onReceive() {
     let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
     if (!main) return;
     this.coinTransferService.masterWalletId = main.networkWallet.id;
     this.coinTransferService.subWalletId = main.id;
-    void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
+    if (this.networkWallet.masterWallet.creator === WalletCreator.WALLET_APP) {
+      void this.checkBackupThenReceive();
+    } else {
+      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
+    }
+  }
+
+  /** Same semantics as the Value screen: offer backup first, but never block receiving. */
+  private async checkBackupThenReceive() {
+    const needsBackup = !(await GlobalDIDSessionsService.instance.activeIdentityWasBackedUp());
+    if (!needsBackup) {
+      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
+      return;
+    }
+    const goToBackup = await this.globalPopupService.ionicConfirm('launcher.backup-title', 'launcher.backup-message');
+    if (goToBackup) {
+      void this.globalNav.navigateTo('identitybackup', '/identity/backupdid');
+    } else {
+      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
+    }
   }
 
   /** Swap: the swap-providers screen for the main subwallet (mirrors the Value screen). */

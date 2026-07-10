@@ -735,9 +735,11 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       // Feed the Recents group of the saved-addresses sheet (SCR-006) once the
       // transaction is actually published; the store caps and dedups by address.
       if (result && result.published && this.transferType === TransferType.SEND && this.toAddress) {
+        // toFixed() never emits exponential notation (send-max dust balances would
+        // otherwise read "1e-8" in the Recents subline).
         void this.contactsService.addRecent({
           address: this.toAddress,
-          amount: String(transfer.amount ?? ''),
+          amount: transfer.amount != null ? new BigNumber(transfer.amount).toFixed() : '',
           symbol: this.tokensymbol,
           timestamp: Date.now()
         });
@@ -1035,7 +1037,10 @@ export class CoinTransferPage implements OnInit, OnDestroy {
           });
         }
       } else if (this.fromSubWallet instanceof BTCSubWallet && !this.feeOfBTC) {
-        await this.estimateBTCFees();
+        // Silent: a failed estimate just leaves the fee line off. estimateBTCFees would
+        // otherwise toast (e.g. amount+fee exceeding UTXOs) the moment the step opens;
+        // that feedback belongs to Continue time, where the same call runs with toasts.
+        await this.estimateBTCFees(false);
       }
     } catch (err) {
       Logger.warn('wallet', 'Entry fee estimation failed:', err);
@@ -1085,6 +1090,10 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   /** Back to the amount step (summary tap on the recipient step). */
   public backToAmountStep() {
     this.sendStep = 'amount';
+    // The BTC fee depends on the amount/UTXO selection - drop it so the next step
+    // entry re-estimates instead of showing a stale figure. The EVM native-transfer
+    // fee is amount-independent and can stay cached.
+    this.feeOfBTC = null;
   }
 
   /**
@@ -2052,7 +2061,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   //     return true;
   // }
 
-  public async estimateBTCFees() {
+  public async estimateBTCFees(showToast = true) {
     // Calculate fee after input amount
     let amountBigNumber = new BigNumber(this.amount || 0);
     // For custom fee rate, convert sat/vB to sat/kB
@@ -2085,7 +2094,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
         //     }
         // }
       }
-      this.conditionalShowToast(message, true);
+      this.conditionalShowToast(message, showToast);
       return false;
     }
   }

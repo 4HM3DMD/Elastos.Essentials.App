@@ -56,10 +56,11 @@ export class ContactsService {
     return this.recents;
   }
 
-  // SCR-006: record a recipient after a successful send. De-dupes by address,
-  // keeps the newest first and caps the stored list.
+  // SCR-006: record a recipient after a successful send. De-dupes by address
+  // (case-insensitive: the same EVM address can arrive in different checksum
+  // casing), keeps the newest first and caps the stored list.
   async addRecent(recent: RecentRecipient): Promise<void> {
-    this.recents = this.recents.filter((r) => r.address !== recent.address);
+    this.recents = this.recents.filter((r) => r.address.toLowerCase() !== recent.address.toLowerCase());
     this.recents.unshift(recent);
     if (this.recents.length > ContactsService.MAX_RECENTS) {
       this.recents = this.recents.slice(0, ContactsService.MAX_RECENTS);
