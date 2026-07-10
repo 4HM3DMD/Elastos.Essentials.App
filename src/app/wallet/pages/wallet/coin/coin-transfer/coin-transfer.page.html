@@ -353,7 +353,7 @@
                 <!-- Recipient step / NFT / recharge-withdraw: the actual transaction CTA. -->
                 <ebutton *ngIf="!(transferType === 2 && !isTransferTypeSendNFT() && sendStep === 'amount')"
                     (clicked)="goTransaction()" [title]="buttonTitle()" [arrow]="true"
-                    [disabled]="actionIsGoing || !toAddress || toAddressInvalid || (!isTransferTypeSendNFT() && (!amount || amountExceedsBalance))">
+                    [disabled]="transactionCtaDisabled">
                 </ebutton>
             </ion-row>
         </div>

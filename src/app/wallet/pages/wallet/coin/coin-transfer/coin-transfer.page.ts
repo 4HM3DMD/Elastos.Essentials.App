@@ -255,8 +255,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     await this.init();
     this.addressUpdateSubscription = this.events.subscribe('address:update', address => {
       this.zone.run(() => {
-        this.toAddress = address;
-        this.addressName = null;
+        this.setRecipient(address);
       });
     });
   }
@@ -755,7 +754,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       this.native.toast_trans('wallet.not-a-valid-address');
       return;
     }
-    this.toAddress = pasted;
+    this.setRecipient(pasted);
   }
 
   /** SCR-025: press-and-hold the address field to paste from the clipboard. */
@@ -794,11 +793,23 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     return `${value.slice(0, 8)}...${value.slice(-6)}`;
   }
 
+  /**
+   * Single entry point for programmatic recipient writes (paste, contact and cryptoname
+   * selection, personal wallet, scan). Programmatic ngModel writes do not fire the
+   * (input) handler, so the inline invalid flag must be reset here - otherwise a stale
+   * "not a valid address" state would silently keep Send disabled after a valid
+   * recipient was chosen.
+   */
+  private setRecipient(address: string, name: string | null = null) {
+    this.toAddress = address;
+    this.addressName = name;
+    this.toAddressInvalid = false;
+  }
+
   /** SCR-007: clear the selected recipient and restore the address input. */
   public clearRecipient() {
     this.zone.run(() => {
-      this.toAddress = '';
-      this.addressName = null;
+      this.setRecipient('');
       this.suggestedAddresses = [];
     });
   }
@@ -981,6 +992,23 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     if (this.feeOfELA) return `${this.feeOfELA} ELA`;
     if (this.feeOfTRX) return `${this.feeOfTRX} TRX`;
     return null;
+  }
+
+  /**
+   * Disabled state for the transaction CTA. The inline-validation gates
+   * (toAddressInvalid, amountExceedsBalance) apply only to the flows that render the
+   * inline error messages (send and NFT send); recharge/withdraw keep their original
+   * gating with Continue-time toasts, so they can never dead-button without feedback.
+   */
+  public get transactionCtaDisabled(): boolean {
+    if (this.actionIsGoing || !this.toAddress) return true;
+    if (this.isTransferTypeSendNFT()) {
+      return this.toAddressInvalid;
+    }
+    if (this.transferType === TransferType.SEND) {
+      return !this.amount || this.amountExceedsBalance || this.toAddressInvalid;
+    }
+    return !this.amount; // recharge / withdraw: original behavior
   }
 
   /** Amount recap shown on the recipient step; tapping it returns to the amount step. */
@@ -1323,13 +1351,15 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       );
     }
 
-    // Receive Amount + Total Deducted rows (Figma Confirm Send 213:11939). The total
-    // only exists when the fee is paid in the sent token (native-coin send: fixed-fee
-    // ELA main chain, TRON main coin) and this is not send-all (send-all resolves the
-    // final amount downstream, after fee subtraction).
+    // Receive Amount + Total Deducted rows (Figma Confirm Send 213:11939). SEND only:
+    // withdraw credits amount minus the crosschain fee on the other side, so a plain
+    // echo of the amount would overstate what arrives there. The total only exists when
+    // the fee is paid in the sent token (native-coin send: fixed-fee ELA main chain,
+    // TRON main coin) and this is not send-all (send-all resolves the final amount
+    // downstream, after fee subtraction).
     let receiveAmount: string = null;
     let totalDeducted: string = null;
-    if (!this.sendMax && this.amount && this.amount > 0) {
+    if (this.transferType === TransferType.SEND && !this.sendMax && this.amount && this.amount > 0) {
       receiveAmount = confirmedAmount.toFixed();
       let feeInSentToken: string = null;
       if (this.feeOfELA && this.subWalletId === StandardCoinName.ELA) {
@@ -1427,11 +1457,21 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     // Cryptoname
     if (enteredText.length >= 3) {
       // Quick and dirty way to not try to resolve a name when it's actually an address already, not name.
-      if (enteredText.length > 30) {
-        let addressValid = await this.isAddressValid(enteredText);
+      // Payment-link content ("elastos:ADDR", "ethereum:0x...") is accepted at Continue time
+      // by stripping the scheme prefix - mirror that here so the inline check matches.
+      let candidate = enteredText;
+      const schemeIndex = candidate.indexOf(':');
+      if (schemeIndex !== -1) {
+        candidate = candidate.substring(schemeIndex + 1);
+      }
+      if (candidate.length > 30) {
+        let addressValid = await this.isAddressValid(candidate);
         // Address-length input that fails the network check: surface it inline right away
-        // (super-wallet pattern) instead of waiting for the Continue tap.
-        this.toAddressInvalid = !addressValid;
+        // (super-wallet pattern) instead of waiting for the Continue tap. Only apply if the
+        // field still holds this text, so a slow check can never flag newer input.
+        if (this.toAddress === enteredText) {
+          this.toAddressInvalid = !addressValid;
+        }
         if (addressValid) return;
       }
 
@@ -1468,9 +1508,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
    * with its real address.
    */
   async selectSuggestedAddress(suggestedAddress: CryptoAddressResolvers.CryptoNameAddress): Promise<void> {
-    this.toAddress = suggestedAddress.address;
-    // this.addressName = suggestedAddress.getDisplayName();
-    this.addressName = suggestedAddress.name;
+    this.setRecipient(suggestedAddress.address, suggestedAddress.name);
 
     // Hide/reset suggestions
     this.suggestedAddresses = [];
@@ -1506,8 +1544,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     this.modal.onWillDismiss().then(params => {
       Logger.log('wallet', 'Contact selected', params);
       if (params.data && params.data.contact) {
-        this.addressName = params.data.contact.cryptoname;
-        this.toAddress = params.data.contact.address;
+        this.setRecipient(params.data.contact.address, params.data.contact.cryptoname);
       }
 
       this.modal = null;
@@ -1525,8 +1562,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
     });
     if (res.result.friends && res.result.friends[0]) {
       this.zone.run(() => {
-        this.toAddress = res.result.friends[0].credentials.elaAddress;
-        this.addressName = res.result.friends[0].credentials.name;
+        this.setRecipient(res.result.friends[0].credentials.elaAddress, res.result.friends[0].credentials.name);
       });
     }
   }
@@ -1624,7 +1660,7 @@ export class CoinTransferPage implements OnInit, OnDestroy {
           selectedSubwallet = selectedWallet.getSubWallet(this.subWalletId);
         }
 
-        this.toAddress = await selectedSubwallet.getCurrentReceiverAddress(AddressUsage.SEND_FUNDS);
+        this.setRecipient(await selectedSubwallet.getCurrentReceiverAddress(AddressUsage.SEND_FUNDS));
       }
 
       this.modal = null;
@@ -1736,9 +1772,10 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   public enableCustumReceiverAddress() {
     this.zone.run(() => {
       this.useCustumReceiverAddress = !this.useCustumReceiverAddress;
-      // Reset toAddress
+      // Reset toAddress (restoring the wallet's own valid address clears any stale
+      // invalid flag from a previously typed custom address).
       if (!this.useCustumReceiverAddress) {
-        this.toAddress = this.toSubWallet.getCurrentReceiverAddress();
+        this.setRecipient(this.toSubWallet.getCurrentReceiverAddress());
       }
     });
   }
