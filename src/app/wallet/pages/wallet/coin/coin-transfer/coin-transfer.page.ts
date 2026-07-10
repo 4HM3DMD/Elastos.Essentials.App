@@ -839,6 +839,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   }
 
   setMaxTransfer() {
+    // Send-all requires funds: with a zero (or not yet loaded) spendable balance there is
+    // nothing to send, and arming Max would let a 0-amount send-all reach the recipient step.
+    if (!this.spendableHasFunds) return;
     this.zone.run(() => {
       this.sendMax = true;
       // -1 means send all.
@@ -1006,7 +1009,10 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       return this.toAddressInvalid;
     }
     if (this.transferType === TransferType.SEND) {
-      return !this.amount || this.amountExceedsBalance || this.toAddressInvalid;
+      if (this.toAddressInvalid) return true;
+      // Send-all needs a positive spendable balance; a 0 send must never be possible.
+      if (this.sendMax) return !this.spendableHasFunds;
+      return !this.amount || this.amountExceedsBalance;
     }
     return !this.amount; // recharge / withdraw: original behavior
   }
@@ -1020,13 +1026,29 @@ export class CoinTransferPage implements OnInit, OnDestroy {
 
   /** Advance to the recipient step once a valid amount exists (MetaMask flow). */
   public goToRecipientStep() {
-    if (!this.sendMax && (!this.amount || this.amount <= 0 || this.amountExceedsBalance)) return;
+    if (this.sendMax) {
+      // Belt and braces: Max cannot arm without funds, but never advance a 0 send-all.
+      if (!this.spendableHasFunds) return;
+    } else if (!this.amount || this.amount <= 0 || this.amountExceedsBalance) {
+      return;
+    }
     this.sendStep = 'recipient';
   }
 
   /** Back to the amount step (summary tap on the recipient step). */
   public backToAmountStep() {
     this.sendStep = 'amount';
+  }
+
+  /**
+   * True when the spendable balance is a positive, loaded amount. Send-all (Max) and the
+   * transaction CTA both require this: a zero balance must never produce a 0-amount send.
+   * An unloaded balance reads as NaN and correctly counts as "no funds yet".
+   */
+  public get spendableHasFunds(): boolean {
+    if (!this.networkWallet || !this.subWalletId || !this.fromSubWallet) return false;
+    let spendable = this.getSpendableDisplayBalance();
+    return spendable && !spendable.isNaN() && spendable.gt(0);
   }
 
   /**

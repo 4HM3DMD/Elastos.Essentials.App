@@ -348,7 +348,7 @@
                 <!-- Amount step: advance to the recipient step (MetaMask flow). -->
                 <ebutton *ngIf="transferType === 2 && !isTransferTypeSendNFT() && sendStep === 'amount'"
                     (clicked)="goToRecipientStep()" [title]="'common.next' | translate"
-                    [disabled]="!sendMax && (!amount || amountExceedsBalance)">
+                    [disabled]="sendMax ? !spendableHasFunds : (!amount || amountExceedsBalance)">
                 </ebutton>
                 <!-- Recipient step / NFT / recharge-withdraw: the actual transaction CTA. -->
                 <ebutton *ngIf="!(transferType === 2 && !isTransferTypeSendNFT() && sendStep === 'amount')"
