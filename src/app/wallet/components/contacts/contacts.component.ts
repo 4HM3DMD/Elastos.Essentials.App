@@ -54,8 +54,12 @@ export class ContactsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     void this.getContacts(this.subWallet)
-    // SCR-006: surface recent recipients above the saved list.
+    // SCR-006: surface recent recipients above the saved list. Refresh from storage so
+    // sends made after service init appear immediately.
     this.recents = this.contactsService.recents || [];
+    void this.contactsService.getRecents().then(recents => {
+      this.recents = recents || [];
+    });
   }
 
   ionViewWillEnter() {

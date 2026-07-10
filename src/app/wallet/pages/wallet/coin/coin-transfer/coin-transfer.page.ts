@@ -128,6 +128,8 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   // Two-step send (MetaMask pattern): the amount gets a whole screen (hero + chips +
   // numpad), then Next reveals the recipient step (address, advanced options, Send).
   public sendStep: 'amount' | 'recipient' = 'amount';
+  // Display-only EVM fee estimate for the recipient step (gasLimit x current gas price).
+  private feeOfEVM: string = null;
 
   public displayBalanceString = '';
   public displayBalanceLocked = '';
@@ -730,6 +732,17 @@ export class CoinTransferPage implements OnInit, OnDestroy {
 
       const result = await this.fromSubWallet.signAndSendRawTransaction(rawTx, transfer);
 
+      // Feed the Recents group of the saved-addresses sheet (SCR-006) once the
+      // transaction is actually published; the store caps and dedups by address.
+      if (result && result.published && this.transferType === TransferType.SEND && this.toAddress) {
+        void this.contactsService.addRecent({
+          address: this.toAddress,
+          amount: String(transfer.amount ?? ''),
+          symbol: this.tokensymbol,
+          timestamp: Date.now()
+        });
+      }
+
       if (transfer.intentId) {
         this.alreadySentIntentResponse = true;
         await this.globalIntentService.sendIntentResponse(result, transfer.intentId);
@@ -994,7 +1007,39 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   public get entryFeeText(): string | null {
     if (this.feeOfELA) return `${this.feeOfELA} ELA`;
     if (this.feeOfTRX) return `${this.feeOfTRX} TRX`;
+    if (this.feeOfEVM) {
+      return `${this.feeOfEVM} ${WalletNetworkService.instance.activeNetwork.value.getMainTokenSymbol()}`;
+    }
+    if (this.feeOfBTC && this.fromSubWallet) {
+      let fee = new BigNumber(this.feeOfBTC).dividedBy(this.fromSubWallet.tokenAmountMulipleTimes);
+      return `${WalletUtil.getAmountWithoutScientificNotation(fee, 8)} ${WalletNetworkService.instance.activeNetwork.value.getMainTokenSymbol()}`;
+    }
     return null;
+  }
+
+  /**
+   * Best-effort fee estimation when entering the recipient step, for networks whose fee
+   * is not known at load: EVM (gasLimit from load x current gas price) and BTC (vsize
+   * estimate once the amount is known). Display only - failures just leave the line off;
+   * the confirm step keeps its own authoritative fee.
+   */
+  private async estimateEntryFee() {
+    try {
+      if (this.networkWallet.network.isEVMNetwork() && this.gasLimit && !this.feeOfEVM) {
+        let mainEvmSubWallet = this.networkWallet.getMainEvmSubWallet();
+        if (mainEvmSubWallet) {
+          let gasPrice = await mainEvmSubWallet.getGasPrice();
+          let fee = new BigNumber(this.gasLimit).multipliedBy(new BigNumber(gasPrice)).dividedBy(new BigNumber(10).pow(18));
+          this.zone.run(() => {
+            this.feeOfEVM = WalletUtil.getAmountWithoutScientificNotation(fee, 8);
+          });
+        }
+      } else if (this.fromSubWallet instanceof BTCSubWallet && !this.feeOfBTC) {
+        await this.estimateBTCFees();
+      }
+    } catch (err) {
+      Logger.warn('wallet', 'Entry fee estimation failed:', err);
+    }
   }
 
   /**
@@ -1033,6 +1078,8 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       return;
     }
     this.sendStep = 'recipient';
+    // Fee for the recipient step on networks that need a live estimate (EVM, BTC).
+    void this.estimateEntryFee();
   }
 
   /** Back to the amount step (summary tap on the recipient step). */
