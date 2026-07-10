@@ -218,7 +218,7 @@ export const zh = {
     'transfer-custum-address': '自定义接收地址',
     'transfer-send-ela': '发送ELA',
     balance: '余额',
-    'balance-remaining': '余额:',
+    'balance-remaining': '剩余余额:',
     'insufficient-balance': '余额不足',
     'transfer-all': '全部',
     max: '全部',

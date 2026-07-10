@@ -52,7 +52,7 @@
   <div class="item-row ripple ion-activatable">
     <div class="item-label">{{ 'wallet.balance-remaining' | translate }}</div>
     <div class="item-value">
-      <span>{{ uiService.getFixedBalance(balance) }} {{ getCurrencyInUse() }}</span>
+      <span>{{ uiService.getFixedBalance(getRemainingBalance()) }} {{ getCurrencyInUse() }}</span>
     </div>
   </div>
 </div>

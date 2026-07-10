@@ -126,6 +126,16 @@ export class StandardAccountComponent implements OnInit, OnDestroy {
     return this.totalTransactionCost.totalAsBigNumber.lte(this.balance);
   }
 
+  /**
+   * Returns the estimated balance remaining after this transaction (current
+   * balance minus total cost), clamped to zero. Only rendered inside the
+   * template's *ngIf="totalTransactionCost" block.
+   */
+  public getRemainingBalance(): BigNumber {
+    const remaining = this.balance.minus(this.totalTransactionCost.totalAsBigNumber);
+    return remaining.isNegative() ? new BigNumber(0) : remaining;
+  }
+
   // ELA, HT, etc
   public getCurrencyInUse(): string {
     return this.parentPage.getEvmSubWallet().getDisplayTokenName();

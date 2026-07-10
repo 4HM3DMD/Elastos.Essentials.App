@@ -72,7 +72,7 @@
           <div>{{ 'wallet.balance-remaining' | translate }}</div>
         </ion-col>
         <ion-col size="7" class="price">
-          <span> {{ uiService.getFixedBalance(balanceBTC) }}</span> {{ getCurrencyInUse() }}
+          <span> {{ uiService.getFixedBalance(getRemainingBalance()) }}</span> {{ getCurrencyInUse() }}
         </ion-col>
       </ion-row>
       <ion-row *ngIf="showEditFeeRate" class="btc-fee-row" (click)="pickBTCFeeSpeed()">

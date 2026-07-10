@@ -249,6 +249,16 @@ export class SendBitcoinPage implements OnInit {
   }
 
   /**
+   * Returns the estimated balance remaining after this transaction (current
+   * balance minus total cost), clamped to zero. A NaN fee (estimation failure)
+   * propagates so the UI shows '...' like the other cost rows.
+   */
+  public getRemainingBalance(): BigNumber {
+    const remaining = this.balanceBTC.minus(this.getTotalTransactionCostInCurrency().totalAsBigNumber);
+    return remaining.isNegative() ? new BigNumber(0) : remaining;
+  }
+
+  /**
    * Returns the total transaction cost, Currency value + fees, in currency.
    *
    * Input values in "payloadParam" are in SAT
