@@ -125,6 +125,9 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   // Inline validation (super-wallet pattern: surface problems at input time, not at
   // Continue time). True when the typed recipient fails the network's address check.
   public toAddressInvalid = false;
+  // Two-step send (MetaMask pattern): the amount gets a whole screen (hero + chips +
+  // numpad), then Next reveals the recipient step (address, advanced options, Send).
+  public sendStep: 'amount' | 'recipient' = 'amount';
 
   public displayBalanceString = '';
   public displayBalanceLocked = '';
@@ -969,15 +972,33 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Estimated network fee shown on the entry screen when it is already known at entry
-   * time (super-wallet pattern: fee visible before Continue). ELA main chain has a fixed
-   * fee and TRON estimates on load; EVM/BTC estimates arrive later in the flow and stay
-   * on the confirm step.
+   * Estimated network fee shown on the recipient step when it is already known (super-
+   * wallet pattern: fee visible before Continue). ELA main chain has a fixed fee and
+   * TRON estimates on load; EVM/BTC estimates arrive later in the flow and stay on the
+   * confirm step.
    */
   public get entryFeeText(): string | null {
     if (this.feeOfELA) return `${this.feeOfELA} ELA`;
     if (this.feeOfTRX) return `${this.feeOfTRX} TRX`;
     return null;
+  }
+
+  /** Amount recap shown on the recipient step; tapping it returns to the amount step. */
+  public get amountSummaryText(): string {
+    let amount = this.sendMax ? this.displayBalanceString : (this.rawAmountInput || '0');
+    let unit = this.sendMax ? this.tokensymbol : this.heroUnitSymbol;
+    return `${amount} ${unit}`;
+  }
+
+  /** Advance to the recipient step once a valid amount exists (MetaMask flow). */
+  public goToRecipientStep() {
+    if (!this.sendMax && (!this.amount || this.amount <= 0 || this.amountExceedsBalance)) return;
+    this.sendStep = 'recipient';
+  }
+
+  /** Back to the amount step (summary tap on the recipient step). */
+  public backToAmountStep() {
+    this.sendStep = 'amount';
   }
 
   /**

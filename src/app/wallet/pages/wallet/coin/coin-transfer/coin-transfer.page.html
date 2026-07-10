@@ -131,8 +131,9 @@
             <img class="header-img" *ngIf="isTransferTypeSendNFT()"
                 [src]="!theme.darkMode ? this.networkWallet.network.logo : this.networkWallet.network.logo" />
 
-            <!-- Sent data - Not for NFT: centered chromeless amount hero (SCR-001) -->
-            <div class="amount-hero" *ngIf="transferType === 2">
+            <!-- Sent data - Not for NFT: centered chromeless amount hero (SCR-001).
+                 Two-step send: the amount owns this whole screen (MetaMask pattern). -->
+            <div class="amount-hero" *ngIf="transferType === 2 && sendStep === 'amount'">
                 <p class="amount-hero__caption">{{ 'wallet.enter-amount' | translate }}</p>
                 <!-- Custom entry: the value is driven by the on-screen numpad below, so the
                      native keyboard never opens on the amount field (SCR-002). -->
@@ -167,22 +168,32 @@
             </ion-grid>
 
             <!-- Token balance (SCR-022: single centered "Available" line). -->
-            <ion-row class="balance-row" *ngIf="!isTransferTypeSendNFT()">
+            <ion-row class="balance-row" *ngIf="!isTransferTypeSendNFT() && sendStep === 'amount'">
                 <p class="available-label">{{ 'wallet.available' | translate }}: <strong>{{ displayBalanceString }} {{
                         tokensymbol }}</strong>
                     <strong *ngIf="displayBalanceLocked != ''"> {{ 'wallet.balance-locked' |
                         translate:{locked: displayBalanceLocked} }}</strong>
                 </p>
-                <!-- Fee visible before Continue (super-wallet pattern), when known at entry. -->
-                <p class="fee-label" *ngIf="entryFeeText">{{ 'wallet.network-fee' | translate }}: {{ entryFeeText }}
-                </p>
             </ion-row>
 
             <!-- Inline over-balance error, live at input time (super-wallet pattern). -->
-            <p class="inline-error" *ngIf="amountExceedsBalance">{{ 'wallet.insufficient-balance' | translate }}</p>
+            <p class="inline-error" *ngIf="sendStep === 'amount' && amountExceedsBalance">
+                {{ 'wallet.insufficient-balance' | translate }}</p>
+
+            <!-- Recipient-step recap: the chosen amount, tappable to go back and edit. -->
+            <button type="button" class="amount-summary"
+                *ngIf="transferType === 2 && !isTransferTypeSendNFT() && sendStep === 'recipient'"
+                (click)="backToAmountStep()">
+                <span class="amount-summary__value">{{ amountSummaryText }}</span>
+                <span class="amount-summary__fiat" *ngIf="conversionPillText">≈ {{ conversionPillText }}</span>
+                <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+            </button>
+            <!-- Fee visible before Continue (super-wallet pattern), when known. -->
+            <p class="fee-label" *ngIf="sendStep === 'recipient' && entryFeeText">
+                {{ 'wallet.network-fee' | translate }}: {{ entryFeeText }}</p>
 
             <!-- SCR-002: quick-amount chips (fractions of the spendable balance) + Max. -->
-            <div class="quick-amounts" *ngIf="!isTransferTypeSendNFT()">
+            <div class="quick-amounts" *ngIf="!isTransferTypeSendNFT() && sendStep === 'amount'">
                 <button type="button" class="quick-chip" [class.active]="activePercent === 0.25"
                     (click)="setPercentAmount(0.25)">25%</button>
                 <button type="button" class="quick-chip" [class.active]="activePercent === 0.5"
@@ -193,7 +204,7 @@
                     [class.active]="sendMax" (click)="setMaxTransfer()">{{ 'wallet.max' | translate }}</button>
             </div>
 
-            <ion-row class="toggle-row" *ngIf="canShowToogleForInscription()">
+            <ion-row class="toggle-row" *ngIf="canShowToogleForInscription() && sendStep === 'amount'">
                 <ion-col class="left-col" size="10">
                     <h1 *ngIf="useInscriptionUTXO">{{ 'wallet.btc-send-inscription-utxos' | translate:{utxos: inscriptionUtxoBalanceOnBTCString}  }}</h1>
                     <h1 *ngIf="!useInscriptionUTXO">{{ 'wallet.btc-not-send-inscription-utxos' | translate }}</h1>
@@ -203,6 +214,9 @@
                     </ion-toggle>
                 </ion-col>
             </ion-row>
+
+            <!-- Recipient step (or NFT send, which has no amount step): address + options. -->
+            <div class="recipient-block" *ngIf="isTransferTypeSendNFT() || sendStep === 'recipient'">
 
             <!-- Receiver info (SCR-023: "Address" label, restyled in .scss) -->
             <h1>{{ 'wallet.address-label' | translate }}</h1>
@@ -287,10 +301,11 @@
               </ion-col>
             </ion-row>
 
-            <!-- SCR-002: custom on-screen numpad, pinned to the bottom of the composition so
-                 amount, address and Continue share one non-scrolling screen (Figma Send).
-                 It drives the amount hero directly; the system keyboard never opens for it. -->
-            <div class="amount-keypad" *ngIf="!isTransferTypeSendNFT()">
+            </div><!-- /recipient-block -->
+
+            <!-- SCR-002: custom on-screen numpad, bottom-anchored under the quick chips; the
+                 amount owns this whole step (MetaMask pattern). Soft tonal key surfaces. -->
+            <div class="amount-keypad" *ngIf="!isTransferTypeSendNFT() && sendStep === 'amount'">
                 <button type="button" class="key" (click)="onAmountKey('1')">1</button>
                 <button type="button" class="key" (click)="onAmountKey('2')">2</button>
                 <button type="button" class="key" (click)="onAmountKey('3')">3</button>
@@ -330,7 +345,14 @@
         <div *ngIf="!native.popup && transferType !== 3" class="footer-container ion-no-border"
             [class.dark-footer]="theme.darkMode">
             <ion-row class="btn-container">
-                <ebutton (clicked)="goTransaction()" [title]="buttonTitle()" [arrow]="true"
+                <!-- Amount step: advance to the recipient step (MetaMask flow). -->
+                <ebutton *ngIf="transferType === 2 && !isTransferTypeSendNFT() && sendStep === 'amount'"
+                    (clicked)="goToRecipientStep()" [title]="'common.next' | translate"
+                    [disabled]="!sendMax && (!amount || amountExceedsBalance)">
+                </ebutton>
+                <!-- Recipient step / NFT / recharge-withdraw: the actual transaction CTA. -->
+                <ebutton *ngIf="!(transferType === 2 && !isTransferTypeSendNFT() && sendStep === 'amount')"
+                    (clicked)="goTransaction()" [title]="buttonTitle()" [arrow]="true"
                     [disabled]="actionIsGoing || !toAddress || toAddressInvalid || (!isTransferTypeSendNFT() && (!amount || amountExceedsBalance))">
                 </ebutton>
             </ion-row>
