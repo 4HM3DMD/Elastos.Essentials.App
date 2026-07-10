@@ -19,6 +19,7 @@ export const en = {
         'submit': 'Submit',
         'next': 'Next',
         'back': 'Back',
+        'scan': 'Scan',
         'copy-to-clipboard': 'Copy',
         'photo-library': 'Photo Library',
         'take-pictures': 'Take Picture',

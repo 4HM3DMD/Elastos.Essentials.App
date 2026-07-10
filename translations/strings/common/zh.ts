@@ -20,6 +20,7 @@ export const zh = {
         'submit': '提交',
         'next': '下一步',
         'back': '返回',
+        'scan': '扫描',
         'copy-to-clipboard': '复制',
         'take-pictures': '拍摄',
         'photo-library': '从手机相册选择',

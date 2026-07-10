@@ -19,6 +19,7 @@ export const fr = {
         'submit': 'Envoyer',
         'next': 'Suivant',
         'back': 'Retour',
+        'scan': 'Scanner',
         'copy-to-clipboard': 'Copier',
         'photo-library': 'Bibliothèque de photos',
         'take-pictures': 'Prendre une photo',

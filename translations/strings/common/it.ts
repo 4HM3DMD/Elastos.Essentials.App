@@ -19,6 +19,7 @@ export const it = {
         'submit': 'Invia',
         'next': 'Avanti',
         'back': 'Indietro',
+        'scan': 'Scansiona',
         'copy-to-clipboard': 'Copia',
         'photo-library': 'Galleria',
         'take-pictures': 'Scatta Immagine',

@@ -69,7 +69,7 @@ import { WalletUtil } from 'src/app/wallet/model/wallet.util';
 import { ERC1155Service } from 'src/app/wallet/services/evm/erc1155.service';
 import { ERC721Service } from 'src/app/wallet/services/evm/erc721.service';
 import { EVMService } from 'src/app/wallet/services/evm/evm.service';
-import { IntentService } from 'src/app/wallet/services/intent.service';
+import { IntentService, ScanType } from 'src/app/wallet/services/intent.service';
 import { NameResolvingService } from 'src/app/wallet/services/nameresolving.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { ContactsComponent } from '../../../../components/contacts/contacts.component';
@@ -755,6 +755,15 @@ export class CoinTransferPage implements OnInit, OnDestroy {
         await this.globalIntentService.sendIntentResponse({ txid: null, status: 'error' }, this.intentId);
       }
     }
+  }
+
+  /**
+   * Opens the QR scanner for a recipient address; the scanned value comes back through
+   * the address:update event (see ngOnInit) and lands via setRecipient(). Scanning a
+   * recipient QR is a primary entry method - it was lost in the send redesign.
+   */
+  public scanAddress() {
+    void this.intentService.scan(ScanType.Address);
   }
 
   async pasteFromClipboard() {

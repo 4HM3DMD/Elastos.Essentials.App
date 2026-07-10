@@ -438,7 +438,11 @@ export class IntentService {
 
   async scan(type: ScanType) {
     let res = await this.globalIntentService.sendIntent('https://scanner.web3essentials.io/scanqrcode', {});
-    let content: string = res.result.scannedContent;
+    let content: string = res && res.result && res.result.scannedContent;
+    if (!content) {
+      // Scanner dismissed without scanning anything - nothing to publish.
+      return;
+    }
 
     // Some address star with "xxx:", eg "etherum:"
     const index = content.indexOf(':');

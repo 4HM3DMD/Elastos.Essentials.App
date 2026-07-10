@@ -249,8 +249,12 @@
             <p class="inline-error inline-error--left" *ngIf="toAddressInvalid && !addressName">
                 {{ 'wallet.not-a-valid-address' | translate }}</p>
 
-            <!-- Address quick actions (SCR-026: Saved Addresses first, then Paste; SCR-004: saved-addresses sheet on all networks) -->
+            <!-- Address quick actions (SCR-026/SCR-004): Scan (primary entry method),
+                 Saved Addresses, Paste. -->
             <div class="address-chips" *ngIf="!addressName">
+                <button type="button" class="addr-chip" (click)="scanAddress()">
+                    <ion-icon name="scan-outline"></ion-icon>{{ 'common.scan' | translate }}
+                </button>
                 <button type="button" class="addr-chip" (click)="showCryptonames()">
                     <ion-icon name="people-outline"></ion-icon>{{ 'wallet.saved-addresses' | translate }}
                 </button>
