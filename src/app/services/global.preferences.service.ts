@@ -110,7 +110,9 @@ export class GlobalPreferencesService implements GlobalService {
       'developer.backgroundservices.startonboot': true,
       'developer.screencapture': false,
       'developer.collectLogs': false,
-      'privacy.bitcoinSignData': true,
+      // Blind signing of unreadable bitcoin signData requests is a phishing/fund-loss
+      // risk (see the privacy screen's own warning), so it must be an explicit opt-in.
+      'privacy.bitcoinSignData': false,
       'privacy.browser.usebuiltin': useBuiltInBrowser,
       'developer.core.mode': false,
       'privacy.identity.publication.medium': 'assist',
