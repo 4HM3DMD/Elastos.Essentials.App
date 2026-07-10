@@ -1,18 +1,24 @@
 @import "src/app/wallet/root.scss";
 
-// The Send/Receive/Transfer action bar is fixed at the bottom and the global tab
-// bar is hidden on this page, so reserve the footer's height on the scroll view
-// (tile height + its padding) so the last transactions clear it — the global
-// has-tabbar clearance no longer applies here.
-ion-content {
-    --padding-bottom: calc(112px + env(safe-area-inset-bottom));
+// The inner scroll view sits below the titlebar (64px + status area) but a nested
+// ion-content keeps its parent's full height, so its bottom hangs offscreen by the
+// titlebar height and the scroll end clips the last row. Give it the remaining
+// height exactly; actions live in the content flow (no fixed footer anymore), so
+// only the home-indicator area needs clearing.
+ion-content.intersection-container {
+    height: calc(100% - 64px - env(safe-area-inset-top));
+    --padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
 }
 
 .container {
     min-height: 100%;
     margin: 0;
     padding: 15px 10px 30px;
-    margin-bottom: 50px;
+
+    // In-flow Send / Receive / Stake / Transfer tiles between the hero and the chart.
+    .token-actions {
+        margin-bottom: 24px;
+    }
 
     // Centered token hero (SCR-094/099/105): coin disc, "Est. total value" caption, large
     // native amount + grey unit, then fiat + %change together on one line. No card surface.
@@ -294,95 +300,3 @@ ion-content {
     }
 }
 
-.footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    transition: transform 0.3s ease-in-out; // Transition on hide/show.
-    // Floating over the list: a soft bottom fade instead of an opaque strip (SCR-096).
-    background: linear-gradient(to top, var(--ion-background-color) 55%, transparent 100%);
-    padding: 20px 16px calc(env(safe-area-inset-bottom) + 12px);
-
-    .more-actions-menu {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-bottom: 12px;
-
-        .menu-item {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 48px;
-            padding: 0 20px;
-            border: none;
-            border-radius: 14px;
-            font-family: inherit;
-            font-size: 15px;
-            font-weight: 500;
-            line-height: 1;
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(30, 30, 30, 0.96);
-            cursor: pointer;
-        }
-    }
-
-    .action-pills {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        // Minimal 2026 action bar: soft-rect tonal Send, glowing flat-accent Receive.
-        // No hairlines, no gloss gradients - tonal contrast and light carry the hierarchy.
-        .pill {
-            flex: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 52px;
-            padding: 0 20px;
-            border: none;
-            border-radius: 16px;
-            font-family: inherit;
-            font-size: 17px;
-            font-weight: 600;
-            line-height: 1;
-            letter-spacing: 0.1px;
-            cursor: pointer;
-            transition: transform 0.15s ease;
-
-            &:active {
-                transform: scale(0.97);
-            }
-        }
-
-        .pill-dark {
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.07);
-        }
-
-        .pill-accent {
-            color: #111111;
-            background: var(--essentials-primary, #ED6E2B);
-            box-shadow: 0 8px 24px rgba(237, 110, 43, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-        }
-
-        .pill-more {
-            flex: 0 0 auto;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
-            border: none;
-            background: rgba(255, 255, 255, 0.07);
-            color: rgba(255, 255, 255, 0.9);
-            cursor: pointer;
-
-            ion-icon {
-                font-size: 22px;
-            }
-        }
-    }
-}

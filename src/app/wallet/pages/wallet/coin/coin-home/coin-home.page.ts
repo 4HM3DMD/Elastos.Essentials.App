@@ -117,9 +117,6 @@ export class CoinHomePage implements OnInit {
   // Onchain transactions bucketed into day groups (Today / Earlier) — SYS-007.
   public txGroups: { key: string; label: string; items: TransactionInfo[] }[] = [];
 
-  // Whether the footer overflow menu (Stake / Transfer) is open — SCR-096.
-  public moreActionsOpen = false;
-
   public stakedBalance = null; // Staked on ELA main chain or Tron
 
   // Local price-history driven chart + 24h change (null until enough history has accrued).
@@ -1006,16 +1003,6 @@ export class CoinHomePage implements OnInit {
     } else {
       this.goStakeApp();
     }
-  }
-
-  /** Whether the footer overflow (...) button has any actions to reveal — SCR-096. */
-  public hasMoreActions(): boolean {
-    return this.canStakeELA() || this.canStakeTRX() || this.coinCanBeTransferred();
-  }
-
-  /** Toggles the footer overflow menu (Stake / Transfer) — SCR-096. */
-  public toggleMoreActions() {
-    this.moreActionsOpen = !this.moreActionsOpen;
   }
 
   public setChartRange(range: string) {

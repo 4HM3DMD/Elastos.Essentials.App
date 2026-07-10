@@ -1,7 +1,7 @@
 <ion-content class="lightmode" [class.darkmode]="theme.darkMode">
     <app-titlebar></app-titlebar>
 
-    <ion-content ngxDetectHideOnScroll scrollEvents class="intersection-container">
+    <ion-content class="intersection-container">
         <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
             <ion-refresher-content pullingIcon="arrow-down" refreshingSpinner="crescent">
             </ion-refresher-content>
@@ -29,13 +29,30 @@
                 </div>
             </div>
 
+            <!-- Action tiles in the content flow, same language as the wallet home grid.
+                 Previously a fixed bottom bar: it occluded short history lists (nothing to
+                 scroll them out from under it) and hid Stake/Transfer behind an overflow
+                 menu. In-flow tiles keep every action visible and free the list. -->
+            <ui-action-grid *ngIf="subWallet" [columns]="4" class="token-actions">
+                <ui-action-tile *ngIf="coinCanBeSent()" label="Send" icon="assets/wallet/action/send.png"
+                    (pressed)="sendFunds()"></ui-action-tile>
+                <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png"
+                    (pressed)="receiveFunds()"></ui-action-tile>
+                <ui-action-tile *ngIf="canStakeELA() || canStakeTRX()" label="Stake" icon="assets/wallet/action/stake.png"
+                    (pressed)="onStakeAction()"></ui-action-tile>
+                <!-- Transfer = cross-chain move, only on the Elastos mainchain and its sidechains -->
+                <ui-action-tile *ngIf="coinCanBeTransferred()" label="Transfer" icon="assets/wallet/action/swap.png"
+                    (pressed)="transferFunds()"></ui-action-tile>
+            </ui-action-grid>
+
             <!-- Price chart from local history — hidden until enough points exist.
-                 Full-bleed to the screen edges and taller (SCR-102). -->
+                 Full-bleed to the screen edges (SCR-102), compact enough to keep the
+                 history list near the fold now that the action tiles sit above it. -->
             <div *ngIf="priceSeriesVm" class="price-chart">
                 <div class="chart-canvas">
                     <!-- Direction-aware chart: green when the range closes up, red when down,
                          with the matching gradient fill + pulsing end dot. -->
-                    <ui-sparkline [points]="priceSeriesVm" [height]="200" tone="auto"
+                    <ui-sparkline [points]="priceSeriesVm" [height]="160" tone="auto"
                         (scrub)="onChartScrub($event)"></ui-sparkline>
                 </div>
                 <!-- SCR-103: ghost range selector (text-only chips, dark active disc) -->
@@ -97,23 +114,4 @@
             </ion-row>
         </ion-grid>
     </ion-content>
-
-    <div class="footer" ngxHideOnScroll *ngIf="subWallet">
-        <!-- Overflow actions (Stake / Transfer) revealed above the pill trio (SCR-096) -->
-        <div *ngIf="moreActionsOpen" class="more-actions-menu">
-            <button *ngIf="canStakeELA() || canStakeTRX()" type="button" class="menu-item"
-                (click)="onStakeAction(); toggleMoreActions()">Stake</button>
-            <!-- Transfer = cross-chain move, only on the Elastos mainchain and its sidechains -->
-            <button *ngIf="coinCanBeTransferred()" type="button" class="menu-item"
-                (click)="transferFunds(); toggleMoreActions()">Transfer</button>
-        </div>
-        <div class="action-pills">
-            <button *ngIf="coinCanBeSent()" type="button" class="pill pill-dark" (click)="sendFunds()">Send</button>
-            <button type="button" class="pill pill-accent" (click)="receiveFunds()">Receive</button>
-            <button *ngIf="hasMoreActions()" type="button" class="pill-more" (click)="toggleMoreActions()"
-                aria-label="More actions">
-                <ion-icon name="ellipsis-horizontal"></ion-icon>
-            </button>
-        </div>
-    </div>
 </ion-content>
