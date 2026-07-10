@@ -37,9 +37,32 @@ const HIDE_TABBAR_ROUTE_PREFIXES = [
 // siblings (receive, tx-info, ...) unaffected. The send screen
 // '/wallet/coin-transfer' is a full-height composition (amount + numpad + address
 // + pinned Continue) with no room for the bar, matching the Figma Send frames.
+// The remaining entries are pushed sub-pages whose primary CTA is pinned to the
+// bottom band the floating bar overlays: the wallet token add/details/name
+// screens (ion-footer or fixed Delete/Share buttons), the dpos2 voting screen
+// (its local tab bar lives under /dpos2/menu/ and is untouched), and the
+// Elastos DAO detail + command screens - their fixed sign/vote footers also
+// appear OUTSIDE intent flows (CR-member commands from the detail pages, scan),
+// so the intent-based hide does not cover them. The DAO list pages
+// (/crproposalvoting/proposals|suggestions) keep the bar: browse destinations,
+// no bottom chrome. Route spellings follow crproposalvoting/routing.ts:
+// 'proposal-details' (plural) but 'suggestion-detail' (singular).
 const HIDE_TABBAR_EXACT_ROUTES = [
   '/wallet/coin',
-  '/wallet/coin-transfer'
+  '/wallet/coin-transfer',
+  '/wallet/coin-add-erc20',
+  '/wallet/coin-erc20-details',
+  '/wallet/wallet-create-name',
+  '/dpos2/vote',
+  '/crproposalvoting/proposal-details',
+  '/crproposalvoting/suggestion-detail',
+  '/crproposalvoting/createsuggestion',
+  '/crproposalvoting/createproposal',
+  '/crproposalvoting/reviewproposal',
+  '/crproposalvoting/voteforproposal',
+  '/crproposalvoting/updatemilestone',
+  '/crproposalvoting/reviewmilestone',
+  '/crproposalvoting/withdraw'
 ];
 
 /**
