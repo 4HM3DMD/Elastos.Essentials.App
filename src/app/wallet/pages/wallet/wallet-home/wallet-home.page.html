@@ -17,9 +17,12 @@
                      on the Receive screen. -->
                 <div *ngIf="didShort" class="wallet-did">{{ didShort }}</div>
             </div>
-            <div *ngIf="currentNetwork" class="network-pill ion-activatable" (click)="pickNetwork()">
-                <img [src]="currentNetwork.logo" alt="" />
-                <span>{{ currentNetwork.getEffectiveName() }}</span>
+            <div *ngIf="currentNetwork || allChainsOn" class="network-pill ion-activatable" (click)="pickNetwork()">
+                <span *ngIf="allChainsOn" class="all-glyph" aria-hidden="true">
+                    <img *ngFor="let logo of allChainsGlyphLogos" [src]="logo" alt="" />
+                </span>
+                <img *ngIf="!allChainsOn && currentNetwork" [src]="currentNetwork.logo" alt="" />
+                <span>{{ allChainsOn ? ('wallet.network-all-chains' | translate) : currentNetwork.getEffectiveName() }}</span>
                 <ion-icon name="chevron-down"></ion-icon>
                 <ion-ripple-effect></ion-ripple-effect>
             </div>
@@ -80,6 +83,7 @@
                 <ui-token-row *ngFor="let row of tokenRows; trackBy: trackRow" [icon]="row.icon" [badge]="row.badge"
                     [title]="row.title" [sub]="hideBalances ? '••••' : row.native"
                     [value]="hideBalances ? '••••' : row.fiat"
+                    [valueSkeleton]="row.valueLoading"
                     [subValue]="hideBalances ? null : row.changeSubValue" [subValueTone]="row.tone"
                     (pressed)="viewTransactions(row.subWallet)">
                 </ui-token-row>

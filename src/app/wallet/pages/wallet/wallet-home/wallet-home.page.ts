@@ -54,6 +54,8 @@ import { MainCoinSubWallet } from '../../../model/networks/base/subwallets/mainc
 import { AnySubWallet } from '../../../model/networks/base/subwallets/subwallet';
 import { CurrencyService } from '../../../services/currency.service';
 import { PriceHistoryService } from '../../../services/pricehistory.service';
+import { AggregatedTokenRow, ALL_CHAINS_GLYPH_LOGOS } from '../../../model/aggregated-token';
+import { AggregatedTokensService } from '../../../services/aggregated-tokens.service';
 import { Native } from '../../../services/native.service';
 import { LocalStorage } from '../../../services/storage.service';
 import { UiService } from '../../../services/ui.service';
@@ -87,6 +89,10 @@ interface TokenRowViewModel {
     changeSubValue: string | null; // local 24h %change label, null until enough history
     tone: SubValueTone; // tone for the %change line
     subWallet: AnySubWallet;
+    /** Aggregate mode: the chain this row lives on (drives the badge and tap-switch). */
+    network?: AnyNetwork;
+    /** Aggregate mode: true until the subwallet has ever known a balance. */
+    valueLoading?: boolean;
 }
 
 /** Precomputed presentation model for one collectible (NFT) row. */
@@ -167,6 +173,9 @@ export class WalletHomePage implements OnInit, OnDestroy {
 
     // Dummy Current Network
     public currentNetwork: AnyNetwork = null;
+    public allChainsOn = false;
+    public readonly allChainsGlyphLogos = ALL_CHAINS_GLYPH_LOGOS;
+    private aggRowsSubscription: Subscription = null;
 
     private sendTransactionSubscription: Subscription = null;
 
@@ -196,7 +205,8 @@ export class WalletHomePage implements OnInit, OnDestroy {
         private coinTransferService: CoinTransferService,
         private voteService: VoteService,
         private stakingInitService: StakingInitService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private aggService: AggregatedTokensService
     ) {
         GlobalFirebaseService.instance.logEvent("wallet_home_enter");
     }
@@ -268,6 +278,15 @@ export class WalletHomePage implements OnInit, OnDestroy {
             this.cdr.markForCheck();
         });
 
+        // Aggregate rows land progressively (per network); re-render while the mode is on.
+        this.aggRowsSubscription = this.aggService.rows.subscribe(() => {
+            if (this.allChainsOn) {
+                this.rebuildTokenRows();
+                this.rebuildBalanceVm();
+                this.cdr.markForCheck();
+            }
+        });
+
         this.sendTransactionSubscription = this.events.subscribe("wallet:transactionpublished", () => {
             // Update balance and transactions.
             this.restartUpdateInterval();
@@ -276,6 +295,10 @@ export class WalletHomePage implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        if (this.aggRowsSubscription) {
+            this.aggRowsSubscription.unsubscribe();
+            this.aggRowsSubscription = null;
+        }
         if (this.activeNetworkWalletSubscription) {
             this.activeNetworkWalletSubscription.unsubscribe();
             this.activeNetworkWalletSubscription = null;
@@ -316,6 +339,17 @@ export class WalletHomePage implements OnInit, OnDestroy {
         // capabilities in rebuildWalletTabs() (driven by the activeNetworkWallet
         // subscription), not built once here regardless of network.
         this.titleBar.setTitle(this.translate.instant("wallet.value-title"));
+
+        void this.loadAllChains().then(async () => {
+            if (!this.allChainsOn) return;
+            this.rebuildTokenRows();
+            this.rebuildBalanceVm();
+            await this.aggService.ensureBuilt();
+            this.rebuildTokenRows(); // cached balances render instantly
+            this.rebuildBalanceVm();
+            this.cdr.markForCheck();
+            void this.aggService.refresh(); // fresh values fill in progressively
+        });
         // Value is a tab root (reached via navigateRoot), so it must not show a
         // back control — there is nothing to go "back" to.
         this.titleBar.setNavigationMode(TitleBarNavigationMode.NONE);
@@ -360,11 +394,36 @@ export class WalletHomePage implements OnInit, OnDestroy {
 
     /** Precomputes a token row view-model per subwallet (keeps getters out of the template). */
     private rebuildTokenRows() {
+        if (this.allChainsOn) {
+            const rows = this.aggService.rows.value;
+            this.tokenRows = rows ? rows.map(r => this.buildAggregatedTokenRow(r)) : null;
+            return;
+        }
         if (!this.displayableSubWallets) {
             this.tokenRows = null;
             return;
         }
         this.tokenRows = this.displayableSubWallets.map(sw => this.buildTokenRow(sw));
+    }
+
+    private buildAggregatedTokenRow(r: AggregatedTokenRow): TokenRowViewModel {
+        const row = this.buildTokenRow(r.subWallet);
+        row.network = r.network;
+        row.badge = r.network.logo; // the chain is always identifiable in the merged list
+        row.valueLoading = !r.hasValue;
+        // The ELA instrument always wears the ELA mark; the chain lives on the badge.
+        if (r.isDefaultEla) row.icon = 'assets/wallet/coins/ela.png';
+        row.native = `${row.native} · ${r.network.getEffectiveName()}`;
+        return row;
+    }
+
+    private async loadAllChains() {
+        try {
+            this.allChainsOn = await this.prefs.getAllChainsMode(
+                DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate);
+        } catch (e) {
+            this.allChainsOn = true;
+        }
     }
 
     private buildTokenRow(subWallet: AnySubWallet): TokenRowViewModel {
@@ -404,6 +463,21 @@ export class WalletHomePage implements OnInit, OnDestroy {
     private rebuildBalanceVm() {
         if (!this.networkWallet) {
             this.balanceVm = null;
+            return;
+        }
+
+        if (this.allChainsOn) {
+            // Whole-portfolio hero: one fiat number across chains (the native toggle
+            // has no meaning over multiple native tokens).
+            let symbol = this.currencyService.selectedCurrency.symbol;
+            let fiatTotal = this.aggService.getAggregateFiatTotal();
+            let fiat = WalletUtil.getFiatBalance(fiatTotal);
+            let pnlData = this.aggService.getAggregatePnl24h();
+            let pnl = pnlData ? {
+                text: `${pnlData.absCurrency >= 0 ? '+' : '-'}${formatFiatAmount(Math.abs(pnlData.absCurrency), symbol)} (${pnlData.pct.toFixed(1)}%)`,
+                tone: (pnlData.absCurrency >= 0 ? 'up' : 'down') as 'up' | 'down'
+            } : null;
+            this.balanceVm = { primary: fiat, unit: symbol, secondary: null, pnl };
             return;
         }
         let nativeWhole = WalletUtil.getWholeBalance(this.networkWallet.getDisplayBalance());
@@ -605,7 +679,8 @@ export class WalletHomePage implements OnInit, OnDestroy {
     }
 
     public trackRow(_index: number, row: TokenRowViewModel): string {
-        return row.subWallet.id;
+        // Aggregate rows can share a coin id across chains; qualify by network.
+        return `${row.network ? row.network.key : 'active'}-${row.subWallet.id}`;
     }
 
     public trackNft(_index: number, row: NftRowViewModel): string {
@@ -785,11 +860,30 @@ export class WalletHomePage implements OnInit, OnDestroy {
 
     public viewTransactions(subWallet: AnySubWallet) {
         // Invoked from ui-token-row's (pressed) output, which carries no DOM event.
+        // Aggregate rows may live on another chain: switch silently first.
+        const rowNetwork = subWallet.networkWallet.network;
+        if (this.allChainsOn && this.currentNetwork && rowNetwork.key !== this.currentNetwork.key) {
+            void this.networkService.setActiveNetwork(rowNetwork)
+                .then(() => this.goCoinHome(subWallet.networkWallet.id, subWallet.id));
+            return;
+        }
         this.goCoinHome(subWallet.networkWallet.id, subWallet.id)
     }
 
     public pickNetwork() {
-        void this.walletNetworkUIService.chooseActiveNetwork();
+        void this.walletNetworkUIService.chooseActiveNetwork().then(async changed => {
+            if (!changed) return;
+            await this.loadAllChains();
+            this.rebuildTokenRows();
+            this.rebuildBalanceVm();
+            if (this.allChainsOn) {
+                await this.aggService.ensureBuilt();
+                this.rebuildTokenRows();
+                this.rebuildBalanceVm();
+                void this.aggService.refresh();
+            }
+            this.cdr.markForCheck();
+        });
     }
 
     public onStakingAssetClicked(stakingAsset: StakingData) {

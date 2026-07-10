@@ -107,6 +107,25 @@
         border-radius: 50%;
     }
 
+    // All-chains mode: 2x2 cluster of the aggregate chains' discs.
+    .all-glyph {
+        display: grid;
+        grid-template-columns: repeat(2, 8px);
+        grid-template-rows: repeat(2, 8px);
+        gap: 1px;
+        place-content: center;
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+
+        img {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    }
+
     ion-icon {
         font-size: 18px;
         color: var(--essentials-text-secondary);

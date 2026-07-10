@@ -8,6 +8,13 @@ import { SubValueTone } from 'src/app/components/ui/ui-token-row/ui-token-row.co
 import { AnyNetworkWallet } from 'src/app/wallet/model/networks/base/networkwallets/networkwallet';
 import { AnySubWallet } from 'src/app/wallet/model/networks/base/subwallets/subwallet';
 import { WalletSortType } from 'src/app/wallet/model/walletaccount';
+import { AggregatedTokenRow } from 'src/app/wallet/model/aggregated-token';
+import { AnyNetwork } from 'src/app/wallet/model/networks/network';
+import { AggregatedTokensService } from 'src/app/wallet/services/aggregated-tokens.service';
+import { WalletNetworkService } from 'src/app/wallet/services/network.service';
+import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
+import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
+import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { PriceHistoryService } from 'src/app/wallet/services/pricehistory.service';
 import { CoinTransferService, TransferType } from '../../../../services/cointransfer.service';
 import { CurrencyService } from '../../../../services/currency.service';
@@ -25,6 +32,8 @@ interface SendTokenRow {
   changeSubValue: string | null; // local 24h %change, null until enough history
   tone: SubValueTone;
   subWallet: AnySubWallet;
+  /** Aggregate mode: the chain this row lives on (picking switches to it). */
+  network?: AnyNetwork;
 }
 
 /**
@@ -53,7 +62,10 @@ export class CoinSelectSendPage {
     public uiService: UiService,
     public currencyService: CurrencyService,
     private translate: TranslateService,
-    private coinTransferService: CoinTransferService
+    private coinTransferService: CoinTransferService,
+    private prefs: GlobalPreferencesService,
+    private networkService: WalletNetworkService,
+    private aggService: AggregatedTokensService
   ) {
     const navigation = this.router.getCurrentNavigation();
     if (navigation && navigation.extras.state && !Util.isEmptyObject(navigation.extras.state)) {
@@ -63,10 +75,25 @@ export class CoinSelectSendPage {
 
   ionViewWillEnter() {
     this.titleBar.setTitle(this.translate.instant('wallet.select-token'));
-    this.init();
+    void this.init();
   }
 
-  private init() {
+  private async init() {
+    // All-chains mode: offer every aggregated token; picking one switches chain.
+    let allChains = false;
+    try {
+      allChains = await this.prefs.getAllChainsMode(
+        DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate);
+    } catch (e) { /* default single-network list */ }
+
+    if (allChains) {
+      await this.aggService.ensureBuilt();
+      const aggRows = this.aggService.rows.value || [];
+      this.rows = aggRows.map(r => this.buildAggregatedRow(r));
+      this.shownRows = this.rows;
+      return;
+    }
+
     this.networkWallet = this.walletManager.getNetworkWalletFromMasterWalletId(this.masterWalletId);
     if (!this.networkWallet) {
       this.rows = [];
@@ -78,6 +105,15 @@ export class CoinSelectSendPage {
       .filter(subWallet => subWallet.shouldShowOnHomeScreen())
       .map(subWallet => this.buildRow(subWallet));
     this.shownRows = this.rows;
+  }
+
+  private buildAggregatedRow(r: AggregatedTokenRow): SendTokenRow {
+    const row = this.buildRow(r.subWallet);
+    row.network = r.network;
+    row.badge = r.network.logo;
+    if (r.isDefaultEla) row.icon = 'assets/wallet/coins/ela.png';
+    row.sub = `${row.sub} · ${r.network.getEffectiveName()}`;
+    return row;
   }
 
   private buildRow(subWallet: AnySubWallet): SendTokenRow {
@@ -108,13 +144,23 @@ export class CoinSelectSendPage {
   }
 
   public trackRow(_index: number, row: SendTokenRow): string {
-    return row.subWallet.id;
+    return `${row.network ? row.network.key : 'active'}-${row.subWallet.id}`;
   }
 
   /** Hands the chosen token to the transfer form via the shared CoinTransferService (as coin-home does). */
   public onRow(row: SendTokenRow) {
+    // Aggregate rows may live on another chain: switch silently, then continue
+    // into the standard per-network transfer flow.
+    if (row.network && this.networkService.activeNetwork.value?.key !== row.network.key) {
+      void this.networkService.setActiveNetwork(row.network).then(() => this.continueToTransfer(row));
+      return;
+    }
+    this.continueToTransfer(row);
+  }
+
+  private continueToTransfer(row: SendTokenRow) {
     this.coinTransferService.reset();
-    this.coinTransferService.masterWalletId = this.masterWalletId;
+    this.coinTransferService.masterWalletId = row.subWallet.networkWallet.id;
     this.coinTransferService.subWalletId = row.subWallet.id;
     this.coinTransferService.transferType = TransferType.SEND;
     this.native.go('/wallet/coin-transfer');
