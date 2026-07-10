@@ -467,6 +467,10 @@ export const it = {
         'search-network': 'Cerca reti',
         'network-tools-chip': 'Strumenti',
         'network-no-results': 'Nessuna rete corrisponde alla ricerca.',
+        'network-all-chains': 'Tutte le chain',
+        'network-group-elastos': 'Ecosistema Elastos',
+        'network-group-other': 'Altre reti',
+        'network-manage': 'Gestisci le reti',
 
     /***********************
      * Export Mnemonic Page *

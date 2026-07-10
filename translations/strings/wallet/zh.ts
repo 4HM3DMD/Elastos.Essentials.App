@@ -459,6 +459,10 @@ export const zh = {
         'search-network': '搜索网络',
         'network-tools-chip': '工具',
         'network-no-results': '没有符合搜索条件的网络。',
+        'network-all-chains': '全部链',
+        'network-group-elastos': 'Elastos 生态',
+        'network-group-other': '其他网络',
+        'network-manage': '管理网络',
 
     /***********************
      * Export Mnemonic Page *

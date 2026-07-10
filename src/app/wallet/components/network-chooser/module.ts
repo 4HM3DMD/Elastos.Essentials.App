@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedComponentsModule } from 'src/app/components/sharedcomponents.module';
+import { UiComponentsModule } from 'src/app/components/ui/ui-components.module';
 import { NetworkChooserComponent } from './network-chooser.component';
 
 @NgModule({
@@ -15,7 +16,8 @@ import { NetworkChooserComponent } from './network-chooser.component';
     IonicModule,
     FormsModule,
     TranslateModule,
-    SharedComponentsModule
+    SharedComponentsModule,
+    UiComponentsModule
   ],
   exports: [
     NetworkChooserComponent

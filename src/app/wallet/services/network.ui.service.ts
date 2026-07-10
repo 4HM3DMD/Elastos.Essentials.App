@@ -22,6 +22,9 @@
 
 import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
+import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
+import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import {
   NetworkChooserComponent,
@@ -33,6 +36,15 @@ import { WalletNetworkService } from './network.service';
 
 export type PriorityNetworkChangeCallback = (newNetwork) => Promise<void>;
 
+/** Ionic sheet presentation shared by the chooser entry points (SCR-005 sheet pattern). */
+const CHOOSER_SHEET_PRESENTATION = {
+  breakpoints: [0, 0.72, 0.95],
+  initialBreakpoint: 0.72,
+  // The shared ui-sheet-header renders the grabber; Ionic's own handle would double it.
+  handle: false,
+  cssClass: 'network-chooser-sheet'
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -42,14 +54,18 @@ export class WalletNetworkUIService {
   constructor(
     private modalCtrl: ModalController,
     private networkService: WalletNetworkService,
-    private theme: GlobalThemeService
+    private theme: GlobalThemeService,
+    private prefs: GlobalPreferencesService
   ) {
     WalletNetworkUIService.instance = this;
   }
 
   /**
-   * Lets user pick a network in the list of all available networks.
-   * Promise resolves when a new network is chosen or when cancelled.
+   * Lets user pick a network in the list of all available networks, or the
+   * "All Chains" aggregate view. Picking a specific network switches to it and
+   * leaves the aggregate view; picking All Chains enables the aggregate view
+   * without touching the underlying active network.
+   * Promise resolves when a choice is made or when cancelled.
    *
    * @param filter Optional filter to show only specific networks
    * @dependson NetworkChooserComponentModule
@@ -58,19 +74,28 @@ export class WalletNetworkUIService {
     let options: NetworkChooserComponentOptions = {
       currentNetwork: this.networkService.activeNetwork.value,
       filter,
-      showActiveNetwork: true
+      showActiveNetwork: true,
+      showAllChains: true
     };
 
     let modal = await this.modalCtrl.create({
       component: NetworkChooserComponent,
       componentProps: options,
-      cssClass: 'network-chooser-component'
+      ...CHOOSER_SHEET_PRESENTATION
     });
 
     return new Promise(resolve => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises, require-await
       modal.onWillDismiss().then(async params => {
-        if (params.data && params.data.selectedNetworkKey) {
+        if (params.data && params.data.selectedAllChains) {
+          void this.prefs.setAllChainsMode(
+            DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, true
+          );
+          resolve(true);
+        } else if (params.data && params.data.selectedNetworkKey) {
+          void this.prefs.setAllChainsMode(
+            DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate, false
+          );
           void this.networkService.setActiveNetwork(
             this.networkService.getNetworkByKey(params.data.selectedNetworkKey)
           );
@@ -95,7 +120,7 @@ export class WalletNetworkUIService {
     let modal = await this.modalCtrl.create({
       component: NetworkChooserComponent,
       componentProps: options,
-      cssClass: 'network-chooser-component'
+      ...CHOOSER_SHEET_PRESENTATION
     });
 
     return new Promise(resolve => {

@@ -470,6 +470,10 @@ export const fr = {
         'search-network': 'Rechercher des réseaux',
         'network-tools-chip': 'Outils',
         'network-no-results': 'Aucun réseau ne correspond à votre recherche.',
+        'network-all-chains': 'Toutes les chaînes',
+        'network-group-elastos': 'Écosystème Elastos',
+        'network-group-other': 'Autres réseaux',
+        'network-manage': 'Gérer les réseaux',
 
     /***********************
      * Export Mnemonic Page *

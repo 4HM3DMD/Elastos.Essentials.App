@@ -41,6 +41,8 @@ export interface AllPreferences {
   'ui.lightweight': boolean;
   'ui.tabbar': boolean;
   'ui.hidebalances': boolean;
+  /** All-chains aggregate view on the home and wallet token lists (vs a single active network) */
+  'ui.allchains': boolean;
   /** Startup screen setting */
   'ui.startupscreen': string;
   'network.template': string;
@@ -124,6 +126,8 @@ export class GlobalPreferencesService implements GlobalService {
       'ui.lightweight': false, // Lightweight mode retired (WO-5); kept for the one-time migration in WidgetsService
       'ui.tabbar': true, // Bottom tab bar (WO-7); kill switch via developer tools
       'ui.hidebalances': false, // Mask wallet balances (WO-8)
+      'ui.allchains': true, // All-chains aggregate view is the default experience
+
       'ui.startupscreen': 'home',
       'network.template': 'MainNet',
       'chain.network.config': '',
@@ -248,6 +252,15 @@ export class GlobalPreferencesService implements GlobalService {
 
   public setUseBuiltInBrowser(did: string, networkTemplate: string, useBuiltIn: boolean): Promise<void> {
     return this.setPreference(did, networkTemplate, 'privacy.browser.usebuiltin', useBuiltIn);
+  }
+
+  /** All-chains aggregate view (home and wallet token lists) vs single active network. */
+  public getAllChainsMode(did: string, networkTemplate: string): Promise<boolean> {
+    return this.getPreference(did, networkTemplate, 'ui.allchains');
+  }
+
+  public setAllChainsMode(did: string, networkTemplate: string, enabled: boolean): Promise<void> {
+    return this.setPreference(did, networkTemplate, 'ui.allchains', enabled);
   }
 
   /**

@@ -3,6 +3,9 @@ import { ModalController, NavParams } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { Logger } from 'src/app/logger';
+import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
+import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
+import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { CoinType } from '../../model/coin';
 import { AnyNetwork } from '../../model/networks/network';
@@ -10,6 +13,14 @@ import { CurrencyService } from '../../services/currency.service';
 import { Native } from '../../services/native.service';
 import { WalletNetworkService } from '../../services/network.service';
 import { UiService } from '../../services/ui.service';
+
+/** Logos composing the "All Chains" glyph (the four aggregate default chains). */
+export const ALL_CHAINS_GLYPH_LOGOS = [
+  'assets/wallet/networks/elastos.png',
+  'assets/wallet/networks/elastos-esc.png',
+  'assets/wallet/networks/ethereum.png',
+  'assets/wallet/networks/pgp.png'
+];
 
 /**
  * Filter method to return only some networks to show in the chooser.
@@ -35,6 +46,11 @@ export type NetworkChooserComponentOptions = {
    * generic active-network switching, where the bare network name is shown.
    */
   showTokenStandard?: boolean;
+  /**
+   * Shows the pinned "All Chains" aggregate entry at the top of the list. Only meaningful when
+   * choosing the ACTIVE network (not when picking a network for a token or a receive address).
+   */
+  showAllChains?: boolean;
 }
 
 /** SCR-087: token standard label appended to the network name on known chains when picking for a token. */
@@ -55,7 +71,11 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
   public currentNetwork: AnyNetwork;
   public networksToShowInList: AnyNetwork[] = [];
   public displayedNetworks: AnyNetwork[] = [];
+  public elastosNetworks: AnyNetwork[] = [];
+  public otherNetworks: AnyNetwork[] = [];
   public searchInput = '';
+  public allChainsOn = false;
+  public readonly allChainsGlyphLogos = ALL_CHAINS_GLYPH_LOGOS;
 
   private netListSubscription: Subscription = null;
 
@@ -67,7 +87,8 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
     public theme: GlobalThemeService,
     public currencyService: CurrencyService,
     private modalCtrl: ModalController,
-    private native: Native
+    private native: Native,
+    private prefs: GlobalPreferencesService
   ) {
   }
 
@@ -78,6 +99,11 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
       this.currentNetwork = this.options.currentNetwork;
     else
       this.currentNetwork = null;
+
+    if (this.options.showAllChains) {
+      void this.prefs.getAllChainsMode(DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate)
+        .then(on => { this.allChainsOn = on; });
+    }
 
     this.netListSubscription = this.networkService.networksList.subscribe(_ => {
       let networks = this.networkService.getDisplayableNetworks();
@@ -101,6 +127,20 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
     this.displayedNetworks = query
       ? this.networksToShowInList.filter(n => n.getEffectiveName().toLowerCase().includes(query))
       : this.networksToShowInList;
+
+    // Grouped sections (Elastos ecosystem first) shown when not searching; a search
+    // renders the flat filtered list instead.
+    this.elastosNetworks = this.displayedNetworks.filter(n => this.isElastosFamily(n));
+    this.otherNetworks = this.displayedNetworks.filter(n => !this.isElastosFamily(n));
+  }
+
+  public get searching(): boolean {
+    return this.searchInput.trim().length > 0;
+  }
+
+  /** All Elastos ecosystem network keys share the 'elastos' prefix (elastos, elastossmartchain, elastosidchain, elastosecopgp...). */
+  private isElastosFamily(network: AnyNetwork): boolean {
+    return network.key.startsWith('elastos');
   }
 
   public trackByKey(_index: number, network: AnyNetwork): string {
@@ -131,6 +171,20 @@ export class NetworkChooserComponent implements OnInit, OnDestroy {
 
     void this.modalCtrl.dismiss({
       selectedNetworkKey: network.key
+    });
+  }
+
+  /** The single active network row is checked only while the aggregate view is off. */
+  public isNetworkChecked(network: AnyNetwork): boolean {
+    if (this.options.showAllChains && this.allChainsOn) return false;
+    return this.currentNetwork && network.key === this.currentNetwork.key;
+  }
+
+  selectAllChains() {
+    Logger.log("wallet", "All chains aggregate view selected");
+
+    void this.modalCtrl.dismiss({
+      selectedAllChains: true
     });
   }
 

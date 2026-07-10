@@ -459,20 +459,11 @@ a {
   }
 }
 
-// Network chooser: a taller member of the wallet-component-base sheet family,
-// sized for the search box plus the network list.
-.network-chooser-component {
-  --height: 72%;
-  align-items: flex-end;
-
-  .modal-wrapper {
-    position: absolute;
-    left: 0;
-    display: block;
-    width: 100%;
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
-  }
+// Network chooser: presented as a native Ionic sheet (breakpoints in
+// WalletNetworkUIService); this skin only sets the surface and radius.
+ion-modal.network-chooser-sheet {
+  --background: var(--essentials-raised-surface, #242424);
+  --border-radius: 24px;
 }
 
 /********************** CONTACTS **********************/

@@ -514,6 +514,10 @@ export const en = {
         'search-network': 'Search networks',
         'network-tools-chip': 'Tools',
         'network-no-results': 'No networks match your search.',
+        'network-all-chains': 'All Chains',
+        'network-group-elastos': 'Elastos ecosystem',
+        'network-group-other': 'Other networks',
+        'network-manage': 'Manage networks',
 
     /***********************
      * Export Mnemonic Page *

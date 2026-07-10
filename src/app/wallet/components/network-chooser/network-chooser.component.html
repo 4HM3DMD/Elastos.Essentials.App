@@ -1,14 +1,6 @@
 <ion-content>
   <div class="network-sheet">
-    <!-- SCR-083: grab-handle pill signals the sheet is swipe-dismissable. -->
-    <div class="grab-handle"></div>
-
-    <!-- SCR-083: single left-aligned title; subtitle and settings gear removed. -->
-    <div class="sheet-header">
-      <div class="titles">
-        <h1>{{ 'wallet.select-network-title' | translate }}</h1>
-      </div>
-    </div>
+    <ui-sheet-header [title]="'wallet.select-network-title' | translate"></ui-sheet-header>
 
     <!-- SCR-084: search only appears once the list is long enough to warrant filtering. -->
     <div class="search-row" *ngIf="networksToShowInList.length > 6">
@@ -18,21 +10,56 @@
     </div>
 
     <div class="network-list">
-      <button type="button" *ngFor="let network of displayedNetworks; trackBy: trackByKey" class="network-row ion-activatable"
-        [class.selected]="currentNetwork && network.key === currentNetwork.key" (click)="selectNetwork(network)">
-        <img class="logo" [src]="network.logo" alt="" />
-        <!-- SCR-087: appends the token standard (ERC20/BEP20/TRC20) when picking a network for a token. -->
-        <span class="name">{{ getNetworkDisplayName(network) }}</span>
-        <span *ngIf="isMainChain(network)" class="tools-chip">{{ 'wallet.network-tools-chip' | translate }}</span>
+      <!-- Pinned aggregate entry: every chain, one merged token list. -->
+      <button type="button" *ngIf="options?.showAllChains && !searching" class="network-row all-chains ion-activatable"
+        [class.selected]="allChainsOn" (click)="selectAllChains()">
+        <span class="all-glyph" aria-hidden="true">
+          <img *ngFor="let logo of allChainsGlyphLogos" [src]="logo" alt="" />
+        </span>
+        <span class="name">{{ 'wallet.network-all-chains' | translate }}</span>
         <ion-icon class="check" name="checkmark"></ion-icon>
         <ion-ripple-effect></ion-ripple-effect>
       </button>
+
+      <!-- Network row template shared by the grouped and searched lists. -->
+      <ng-template #networkRow let-network>
+        <button type="button" class="network-row ion-activatable" [class.selected]="isNetworkChecked(network)"
+          (click)="selectNetwork(network)">
+          <img class="logo" [src]="network.logo" alt="" />
+          <!-- SCR-087: appends the token standard (ERC20/BEP20/TRC20) when picking a network for a token. -->
+          <span class="name">{{ getNetworkDisplayName(network) }}</span>
+          <span *ngIf="isMainChain(network)" class="tools-chip">{{ 'wallet.network-tools-chip' | translate }}</span>
+          <ion-icon class="check" name="checkmark"></ion-icon>
+          <ion-ripple-effect></ion-ripple-effect>
+        </button>
+      </ng-template>
+
+      <!-- Grouped sections while browsing; a search shows the flat filtered list. -->
+      <ng-container *ngIf="!searching">
+        <div *ngIf="elastosNetworks.length > 0" class="section-label">{{ 'wallet.network-group-elastos' | translate }}</div>
+        <ng-container *ngFor="let network of elastosNetworks; trackBy: trackByKey">
+          <ng-container *ngTemplateOutlet="networkRow; context: { $implicit: network }"></ng-container>
+        </ng-container>
+
+        <div *ngIf="otherNetworks.length > 0" class="section-label">{{ 'wallet.network-group-other' | translate }}</div>
+        <ng-container *ngFor="let network of otherNetworks; trackBy: trackByKey">
+          <ng-container *ngTemplateOutlet="networkRow; context: { $implicit: network }"></ng-container>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="searching">
+        <ng-container *ngFor="let network of displayedNetworks; trackBy: trackByKey">
+          <ng-container *ngTemplateOutlet="networkRow; context: { $implicit: network }"></ng-container>
+        </ng-container>
+      </ng-container>
 
       <div *ngIf="displayedNetworks.length === 0" class="no-results">
         {{ 'wallet.network-no-results' | translate }}
       </div>
     </div>
+
+    <button type="button" class="manage-link" (click)="manageNetworks()">
+      {{ 'wallet.network-manage' | translate }}
+    </button>
   </div>
 </ion-content>
-
-<!-- SCR-084: Cancel footer removed; the sheet dismisses via backdrop tap / swipe-down. -->
