@@ -24,60 +24,88 @@ ion-content {
         align-items: center;
         justify-content: space-between;
 
-        .account {
+        // Split glass pill carrying the session context: identity segment plus
+        // chain segment, separated by a hairline. One anchor control, no floaters.
+        .id-pill {
             display: inline-flex;
-            align-items: center;
-            gap: 10px;
+            align-items: stretch;
             height: 44px;
-            padding: 5px 14px 5px 5px;
-            // Translucent glass pill over the header wave with a light hairline border.
+            // Translucent glass over the header wave with a light hairline border.
             border: 1px solid rgba(255, 255, 255, 0.16);
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            color: var(--ion-text-color);
-            font-family: inherit;
-            cursor: pointer;
-            max-width: 55%;
+            overflow: hidden;
+            max-width: 68%;
 
-            .avatar {
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                object-fit: cover;
-                flex-shrink: 0;
-                // Subtle ring on the avatar disc (Figma).
-                box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
-            }
-
-            // Default avatar (no custom picture): transparent circle with a thin
-            // white ring and the identity's initial, per the design. No filled disc.
-            .avatar-initial {
-                display: flex;
+            .seg {
+                display: inline-flex;
                 align-items: center;
-                justify-content: center;
+                padding: 0;
+                border: none;
                 background: transparent;
-                border: 1.5px solid rgba(255, 255, 255, 0.55);
-                box-shadow: none;
                 color: var(--ion-text-color);
-                font-size: 15px;
-                font-weight: 500;
+                font-family: inherit;
+                cursor: pointer;
             }
 
-            .name {
-                font-size: 16px;
-                font-weight: 500;
-                line-height: 1;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+            .seg.account {
+                gap: 10px;
+                padding: 5px 12px 5px 5px;
+                min-width: 0;
+
+                .avatar {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    flex-shrink: 0;
+                    // Subtle ring on the avatar disc (Figma).
+                    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+                }
+
+                // Default avatar (no custom picture): transparent circle with a thin
+                // white ring and the identity's initial, per the design. No filled disc.
+                .avatar-initial {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: transparent;
+                    border: 1.5px solid rgba(255, 255, 255, 0.55);
+                    box-shadow: none;
+                    font-size: 15px;
+                    font-weight: 500;
+                }
+
+                .name {
+                    font-size: 16px;
+                    font-weight: 500;
+                    line-height: 1;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
             }
 
-            .chev {
-                flex-shrink: 0;
-                font-size: 12px;
-                color: rgba(255, 255, 255, 0.8);
+            .seg.chain {
+                gap: 4px;
+                padding: 5px 13px 5px 12px;
+                border-left: 1px solid rgba(255, 255, 255, 0.14);
+
+                .chain-logo {
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    flex-shrink: 0;
+                }
+
+                ion-icon {
+                    font-size: 10px;
+                    color: rgba(255, 255, 255, 0.8);
+                    flex-shrink: 0;
+                }
             }
         }
 
@@ -112,26 +140,6 @@ ion-content {
                     height: 8px;
                     border-radius: 50%;
                     background: var(--essentials-danger);
-                }
-
-                // Chain selector: floating logo + small chevron, boxless like the
-                // other header icons; the chevron is the dropdown affordance.
-                &.chain {
-                    width: auto;
-                    gap: 3px;
-                    padding: 0 3px;
-
-                    img {
-                        width: 24px;
-                        height: 24px;
-                        border-radius: 50%;
-                        object-fit: cover;
-                    }
-
-                    .chain-chev {
-                        font-size: 11px;
-                        color: rgba(255, 255, 255, 0.8);
-                    }
                 }
             }
         }

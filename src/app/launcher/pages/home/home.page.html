@@ -2,12 +2,20 @@
   <div class="home">
     <!-- In-page header: this screen hides the titlebar and handles the top inset itself -->
     <div class="header">
-      <button type="button" class="account" (click)="onIdentity()" aria-label="My identity">
-        <img *ngIf="avatarDataUrl" class="avatar" [src]="avatarDataUrl" alt="" />
-        <span *ngIf="!avatarDataUrl" class="avatar avatar-initial">{{ (identityName || 'E').charAt(0) | uppercase }}</span>
-        <span class="name">{{ identityName }}</span>
-        <ion-icon class="chev" name="chevron-down" aria-hidden="true"></ion-icon>
-      </button>
+      <!-- Identity-and-chain split pill: one glass control carrying the session context.
+           Left segment opens the identity page, right segment opens the network chooser. -->
+      <div class="id-pill">
+        <button type="button" class="seg account" (click)="onIdentity()" aria-label="My identity">
+          <img *ngIf="avatarDataUrl" class="avatar" [src]="avatarDataUrl" alt="" />
+          <span *ngIf="!avatarDataUrl" class="avatar avatar-initial">{{ (identityName || 'E').charAt(0) | uppercase }}</span>
+          <span class="name">{{ identityName }}</span>
+        </button>
+        <button type="button" class="seg chain" *ngIf="currentNetwork" (click)="onPickNetwork()"
+          aria-label="Switch network">
+          <img class="chain-logo" [src]="currentNetwork.logo" alt="" />
+          <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
       <div class="actions">
         <button type="button" class="icon-btn" aria-label="Notifications" (click)="onNotifications()">
           <ion-icon name="notifications-outline"></ion-icon>
@@ -15,13 +23,6 @@
         </button>
         <button type="button" class="icon-btn" aria-label="Scan" (click)="onScan()">
           <ion-icon name="scan-outline"></ion-icon>
-        </button>
-        <!-- Active-chain selector: floating logo + down chevron, matching the header's
-             boxless icon language; the chevron signals the dropdown. Settings lives on the tab bar. -->
-        <button type="button" class="icon-btn chain" aria-label="Switch network" *ngIf="currentNetwork"
-          (click)="onPickNetwork()">
-          <img [src]="currentNetwork.logo" alt="" />
-          <ion-icon class="chain-chev" name="chevron-down" aria-hidden="true"></ion-icon>
         </button>
       </div>
     </div>

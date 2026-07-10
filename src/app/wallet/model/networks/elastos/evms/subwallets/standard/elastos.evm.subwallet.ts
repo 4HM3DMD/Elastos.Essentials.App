@@ -30,6 +30,13 @@ export class ElastosEVMSubWallet extends MainCoinEVMSubWallet<ElastosMainChainWa
     return this.networkWallet.masterWallet.hasMnemonicSupport();
   }
 
+  public getMainIcon(): string {
+    // The native coin on the Elastos EVM sidechains is ELA: show the transparent
+    // token mark rather than the chain's colored logo (which stays on selectors,
+    // badges and network displays). Chain-branded natives (PGP) override this.
+    return 'assets/wallet/coins/ela.png';
+  }
+
   public getAverageBlocktime(): number {
     return 5;
   }
