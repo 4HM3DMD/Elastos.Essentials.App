@@ -32,10 +32,16 @@
     <div *ngIf="sub" class="sub">{{ sub }}</div>
   </div>
 
-  <ion-icon *ngIf="chevron && !value && !subValue && !subValue2" class="chevron" name="chevron-forward"
-    aria-hidden="true"></ion-icon>
+  <ion-icon *ngIf="chevron && !value && !subValue && !subValue2 && !valueSkeleton" class="chevron"
+    name="chevron-forward" aria-hidden="true"></ion-icon>
 
-  <div *ngIf="value || subValue || subValue2" class="values">
+  <!-- Value column: quiet skeleton while the first balance is being learned. -->
+  <div *ngIf="valueSkeleton" class="values value-skeleton" aria-hidden="true">
+    <ion-skeleton-text animated style="width: 60px"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+  </div>
+
+  <div *ngIf="!valueSkeleton && (value || subValue || subValue2)" class="values">
     <div *ngIf="value" class="value tabular" [class.up]="valueTone === 'up'"
       [class.down]="valueTone === 'down'">{{ value }}</div>
     <div *ngIf="subValue" class="sub-value tabular" [class.up]="subValueTone === 'up'"

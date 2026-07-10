@@ -10,9 +10,12 @@
           <span *ngIf="!avatarDataUrl" class="avatar avatar-initial">{{ (identityName || 'E').charAt(0) | uppercase }}</span>
           <span class="name">{{ identityName }}</span>
         </button>
-        <button type="button" class="seg chain" *ngIf="currentNetwork" (click)="onPickNetwork()"
+        <button type="button" class="seg chain" *ngIf="currentNetwork || allChainsOn" (click)="onPickNetwork()"
           aria-label="Switch network">
-          <img class="chain-logo" [src]="currentNetwork.logo" alt="" />
+          <span *ngIf="allChainsOn" class="all-glyph" aria-hidden="true">
+            <img *ngFor="let logo of allChainsGlyphLogos" [src]="logo" alt="" />
+          </span>
+          <img *ngIf="!allChainsOn && currentNetwork" class="chain-logo" [src]="currentNetwork.logo" alt="" />
           <ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
         </button>
       </div>
@@ -84,9 +87,12 @@
         <ui-token-row *ngFor="let row of tokenRows; trackBy: trackToken" [icon]="row.icon" [badge]="row.badge"
           [title]="row.title" [sub]="effectiveHide ? mask : row.native"
           [value]="row.fiat ? (effectiveHide ? mask : row.fiat) : null"
+          [valueSkeleton]="row.valueLoading"
           [subValue]="row.changePct" [subValueTone]="row.changeTone" (pressed)="onTokenRow(row)"></ui-token-row>
       </div>
-      <div *ngIf="!tokenRows || tokenRows.length === 0" class="tokens-empty">
+      <!-- Quiet skeleton while the list is being learned; never a "no tokens" flash. -->
+      <ui-skeleton *ngIf="!tokenRows" [rows]="4" kind="row"></ui-skeleton>
+      <div *ngIf="tokenRows && tokenRows.length === 0" class="tokens-empty">
         {{ 'launcher.home-no-tokens' | translate }}
       </div>
     </div>

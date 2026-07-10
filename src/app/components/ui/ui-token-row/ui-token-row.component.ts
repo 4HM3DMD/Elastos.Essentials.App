@@ -35,6 +35,8 @@ export class UiTokenRowComponent {
   /** Tints an inlined monochrome glyph (up = received green, down = sent red, muted = white). */
   @Input() public iconGlyphTone: SubValueTone = 'muted';
   @Input() public skeleton = false;
+  /** Quiet loading state for the right-side value column only; the rest of the row stays real. */
+  @Input() public valueSkeleton = false;
   /** Renders a right chevron (for navigation rows with no value column). */
   @Input() public chevron = false;
 

@@ -1,6 +1,14 @@
 import { AnyNetwork } from './networks/network';
 import { AnySubWallet } from './networks/base/subwallets/subwallet';
 
+/** Logos composing the "All Chains" glyph (the four aggregate default chains). */
+export const ALL_CHAINS_GLYPH_LOGOS = [
+  'assets/wallet/networks/elastos.png',
+  'assets/wallet/networks/elastos-esc.png',
+  'assets/wallet/networks/ethereum.png',
+  'assets/wallet/networks/pgp.png'
+];
+
 /**
  * One row of the all-chains aggregate token list: a subwallet plus the network
  * it lives on. Balance and fiat values are read live from the subwallet (they

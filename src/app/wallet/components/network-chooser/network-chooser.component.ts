@@ -7,20 +7,13 @@ import { GlobalPreferencesService } from 'src/app/services/global.preferences.se
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
+import { ALL_CHAINS_GLYPH_LOGOS } from '../../model/aggregated-token';
 import { CoinType } from '../../model/coin';
 import { AnyNetwork } from '../../model/networks/network';
 import { CurrencyService } from '../../services/currency.service';
 import { Native } from '../../services/native.service';
 import { WalletNetworkService } from '../../services/network.service';
 import { UiService } from '../../services/ui.service';
-
-/** Logos composing the "All Chains" glyph (the four aggregate default chains). */
-export const ALL_CHAINS_GLYPH_LOGOS = [
-  'assets/wallet/networks/elastos.png',
-  'assets/wallet/networks/elastos-esc.png',
-  'assets/wallet/networks/ethereum.png',
-  'assets/wallet/networks/pgp.png'
-];
 
 /**
  * Filter method to return only some networks to show in the chooser.

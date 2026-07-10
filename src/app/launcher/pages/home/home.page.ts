@@ -31,7 +31,9 @@ import { CurrencyService } from 'src/app/wallet/services/currency.service';
 import { SwapService } from 'src/app/wallet/services/evm/swap.service';
 import { PriceHistoryService } from 'src/app/wallet/services/pricehistory.service';
 import { formatFiatAmount } from 'src/app/helpers/currency-format';
+import { AggregatedTokenRow, ALL_CHAINS_GLYPH_LOGOS } from 'src/app/wallet/model/aggregated-token';
 import { AnyNetwork } from 'src/app/wallet/model/networks/network';
+import { AggregatedTokensService } from 'src/app/wallet/services/aggregated-tokens.service';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
 import { WalletNetworkUIService } from 'src/app/wallet/services/network.ui.service';
 import { UiService } from 'src/app/wallet/services/ui.service';
@@ -63,6 +65,10 @@ interface HomeTokenRow {
   changePct: string | null; // right sub: signed 24h % change, null until enough history
   changeTone: 'up' | 'down' | 'muted';
   subWallet: AnySubWallet;
+  /** Aggregate mode: the chain this row lives on (drives the badge and tap-switch). */
+  network?: AnyNetwork;
+  /** Aggregate mode: true until the subwallet has ever known a balance (value cell shimmers). */
+  valueLoading?: boolean;
 }
 
 @Component({
@@ -91,6 +97,9 @@ export class HomePage implements OnInit, OnDestroy {
   public hasNewNotifications = false;
   public networkBanner: string = null;
   public currentNetwork: AnyNetwork = null;
+  public allChainsOn = false;
+  public readonly allChainsGlyphLogos = ALL_CHAINS_GLYPH_LOGOS;
+  private aggRowsSub: Subscription = null;
 
   // TODO(SCR-054): the Value pillar sub is meant to show live "N networks · M staked".
   // That needs real cross-network balance + staking aggregation (not yet available),
@@ -126,7 +135,8 @@ export class HomePage implements OnInit, OnDestroy {
     private voteService: VoteService,
     private stakingInitService: StakingInitService,
     private globalPopupService: GlobalPopupService,
-    private walletNetworkUIService: WalletNetworkUIService
+    private walletNetworkUIService: WalletNetworkUIService,
+    private aggService: AggregatedTokensService
   ) {}
 
   /** Masks amounts while the hide-balances pref is on, and (privacy-safe) while it is still loading. */
@@ -168,19 +178,24 @@ export class HomePage implements OnInit, OnDestroy {
         case MAINNET_TEMPLATE: default: this.networkBanner = null;
       }
     });
+
+    // Aggregate rows land progressively (per network); re-render while the view is on.
+    this.aggRowsSub = this.aggService.rows.subscribe(() => {
+      if (this.allChainsOn) this.rebuildAggregateSummary();
+    });
   }
 
   ngOnDestroy() {
     for (let sub of [
       this.walletServiceSub, this.networkWalletSub, this.activeNetworkSub,
       this.subWalletsListChangeSub, this.currencyChangeSub, this.transactionPublishedSub,
-      this.notificationsSub, this.networkTemplateSub
+      this.notificationsSub, this.networkTemplateSub, this.aggRowsSub
     ]) {
       sub?.unsubscribe();
     }
     this.walletServiceSub = this.networkWalletSub = this.activeNetworkSub = null;
     this.subWalletsListChangeSub = this.currencyChangeSub = this.transactionPublishedSub = null;
-    this.notificationsSub = this.networkTemplateSub = null;
+    this.notificationsSub = this.networkTemplateSub = this.aggRowsSub = null;
     this.stopBalanceRefreshInterval();
   }
 
@@ -191,6 +206,15 @@ export class HomePage implements OnInit, OnDestroy {
     void this.loadHideBalances();
     this.refreshWalletData();
     this.startBalanceRefreshInterval();
+
+    void this.loadAllChains().then(() => {
+      if (!this.allChainsOn) return;
+      this.refreshWalletData(); // re-render as aggregate now that the pref is known
+      void this.aggService.ensureBuilt().then(() => {
+        this.rebuildAggregateSummary(); // cached balances render instantly
+        void this.aggService.refresh(); // fresh values fill in progressively
+      });
+    });
   }
 
   ionViewDidEnter() {
@@ -238,7 +262,16 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   public onPickNetwork() {
-    void this.walletNetworkUIService.chooseActiveNetwork();
+    void this.walletNetworkUIService.chooseActiveNetwork().then(async changed => {
+      if (!changed) return;
+      await this.loadAllChains();
+      this.refreshWalletData();
+      if (this.allChainsOn) {
+        await this.aggService.ensureBuilt();
+        this.rebuildAggregateSummary();
+        void this.aggService.refresh();
+      }
+    });
   }
 
   /* -------------------------- Wallet summary -------------------------- */
@@ -256,7 +289,8 @@ export class HomePage implements OnInit, OnDestroy {
       }
     }
 
-    this.rebuildWalletSummary();
+    if (this.allChainsOn) this.rebuildAggregateSummary();
+    else this.rebuildWalletSummary();
   }
 
   /** Formats a fiat amount with the currency glyph prefix (e.g. "$4,286.40"), else a code suffix. */
@@ -310,9 +344,72 @@ export class HomePage implements OnInit, OnDestroy {
 
   /** Fetches fresh balances for the active wallet, then rebuilds the summary. */
   private async updateActiveWallet() {
+    if (this.allChainsOn) {
+      // Aggregate refresh emits rows progressively; the rows subscription re-renders.
+      await this.aggService.refresh();
+      return;
+    }
     if (!this.networkWallet) return;
     await this.networkWallet.update();
     this.rebuildWalletSummary();
+  }
+
+  /* ----------------------- All-chains aggregate ----------------------- */
+
+  private async loadAllChains() {
+    try {
+      this.allChainsOn = await this.globalPrefs.getAllChainsMode(
+        DIDSessionsStore.signedInDIDString, NetworkTemplateStore.networkTemplate);
+    } catch (e) {
+      this.allChainsOn = true;
+    }
+  }
+
+  /** Aggregate-mode summary: merged rows plus the whole-portfolio hero. */
+  private rebuildAggregateSummary() {
+    if (!this.networkWallet) {
+      this.balanceVm = null;
+      this.totalFiatDisplay = null;
+      this.pnlVm = null;
+      this.tokenRows = null;
+      this.walletUnavailable = this.walletService.getMasterWalletsCount() > 0;
+      return;
+    }
+    this.walletUnavailable = false;
+
+    const rows = this.aggService.rows.value;
+    this.tokenRows = rows ? rows.map(r => this.buildAggregatedTokenRow(r)) : null;
+
+    const symbol = this.currencyService.selectedCurrency.symbol;
+    const fiatTotal = this.aggService.getAggregateFiatTotal();
+    if (!fiatTotal.isNaN()) {
+      const fiatStr = this.formatFiat(fiatTotal.toNumber(), symbol);
+      this.balanceVm = { primary: fiatStr, symbol: '', secondary: null };
+      this.totalFiatDisplay = fiatStr;
+      const pnl = this.aggService.getAggregatePnl24h();
+      this.pnlVm = pnl ? {
+        text: `${pnl.absCurrency >= 0 ? '+' : '-'}${this.formatFiat(Math.abs(pnl.absCurrency), symbol)} (${pnl.pct.toFixed(1)}%)`,
+        tone: pnl.absCurrency >= 0 ? 'up' : 'down'
+      } : null;
+    } else {
+      // Nothing known yet (first ever run): an honest zero that fills in as balances land.
+      this.balanceVm = { primary: this.formatFiat(0, symbol), symbol: '', secondary: null };
+      this.totalFiatDisplay = null;
+      this.pnlVm = null;
+    }
+  }
+
+  private buildAggregatedTokenRow(r: AggregatedTokenRow): HomeTokenRow {
+    const row = this.buildTokenRow(r.subWallet);
+    row.network = r.network;
+    row.badge = r.network.logo; // the chain is always identifiable in the merged list
+    row.valueLoading = !r.hasValue;
+    // The ELA instrument always wears the ELA mark; the chain lives on the badge.
+    // (Generic ERC20 icons fall back to the network logo, which would double it.)
+    if (r.isDefaultEla) row.icon = 'assets/wallet/coins/ela.png';
+    // Same-symbol rows across chains: name the chain in the subtitle.
+    row.native = `${row.native} · ${r.network.getEffectiveName()}`;
+    return row;
   }
 
   private buildTokenRow(subWallet: AnySubWallet): HomeTokenRow {
@@ -460,13 +557,23 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   public onTokenRow(row: HomeTokenRow) {
+    // Aggregate rows may live on another chain: silently switch the active network
+    // first so the coin screen opens in the right context.
+    if (row.network && this.currentNetwork && row.network.key !== this.currentNetwork.key) {
+      void this.walletNetworkService.setActiveNetwork(row.network).then(() => this.openTokenDetail(row));
+      return;
+    }
+    this.openTokenDetail(row);
+  }
+
+  private openTokenDetail(row: HomeTokenRow) {
     void this.globalNav.navigateTo(App.WALLET, '/wallet/coin', {
       state: { masterWalletId: row.subWallet.networkWallet.id, subWalletId: row.subWallet.id }
     });
   }
 
   public trackToken(_index: number, row: HomeTokenRow): string {
-    return row.subWallet.id;
+    return `${row.network ? row.network.key : 'active'}-${row.subWallet.id}`;
   }
 
   /* ----------------------------- Pillars ------------------------------ */
