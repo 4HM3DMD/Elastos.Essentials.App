@@ -1,4 +1,4 @@
-import type { MasterWallet as SDKMasterWallet, MasterWalletManager } from "@elastosfoundation/wallet-js-sdk";
+import type { KeystoreInfo, MasterWallet as SDKMasterWallet, MasterWalletManager } from "@elastosfoundation/wallet-js-sdk";
 import moment from "moment";
 import { lazyElastosWalletSDKImport } from "src/app/helpers/import.helper";
 import { Logger } from "src/app/logger";
@@ -151,6 +151,13 @@ export class WalletJSSDKHelper {
     payPassword,
     singleAddress: boolean) {
     return await this.masterWalletManager.importWalletWithMnemonic(masterWalletId, mnemonic, phrasePassword, payPassword, singleAddress, moment().valueOf());
+  }
+
+  public static async importWalletWithKeystore(masterWalletId: string,
+    keystore: KeystoreInfo,
+    backupPassword: string,
+    payPassword: string) {
+    return await this.masterWalletManager.importWalletWithKeystore(masterWalletId, keystore, backupPassword, payPassword);
   }
 
   public static async exportWalletWithMnemonic(masterWalletId: string, payPassWord: string) {

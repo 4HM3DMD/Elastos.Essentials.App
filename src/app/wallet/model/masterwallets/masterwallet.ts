@@ -186,6 +186,7 @@ export class StandardMasterWallet extends MasterWallet {
 
   public supportsNetwork(network: AnyNetwork): boolean {
     if (this.hasMnemonicSupport()) return true; // If we have a mnemonic, we can run everywhere.
+    if (this.getSafe().seed) return true; // A seed is enough to derive keys for every network (eg. wallets imported from a keystore).
 
     return network.supportedPrivateKeyTypes().indexOf(this.getSafe().privateKeyType) >= 0;
   }
@@ -239,7 +240,7 @@ export class StandardMasterWallet extends MasterWallet {
    * Returns the private key for Tron network.
    */
   public async getTronPrivateKey(decryptedWithPayPassword?: string): Promise<string> {
-    if (!this.getSafe().mnemonic) return null;
+    if (!this.getSafe().seed) return null; // Key derivation below only needs the seed (mnemonic-less keystore imports have one too).
 
     const TronDerivePath = "m/44'/195'/0'/0/0";
 
@@ -265,7 +266,7 @@ export class StandardMasterWallet extends MasterWallet {
    * Returns the private key for Bitcoin network.
    */
   public async getBTCPrivateKey(decryptedWithPayPassword?: string): Promise<string> {
-    if (!this.getSafe().mnemonic) return null;
+    if (!this.getSafe().seed) return null; // Key derivation below only needs the seed (mnemonic-less keystore imports have one too).
 
     let seed = await this.getSeed(decryptedWithPayPassword);
     return await this.getBTCPrivateKeyFromSeed(seed);

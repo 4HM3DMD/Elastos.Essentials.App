@@ -21,7 +21,7 @@
  */
 
 import { Injectable, NgZone } from '@angular/core';
-import type { MasterWalletManager } from '@elastosfoundation/wallet-js-sdk';
+import type { KeystoreInfo, MasterWalletManager } from '@elastosfoundation/wallet-js-sdk';
 import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { mnemonicToSeedSync } from 'bip39';
@@ -585,6 +585,71 @@ export class WalletService {
     };
 
     return this.createMasterWalletFromSerializedInfo(masterWalletInfo, activateAfterCreation);
+  }
+
+  /**
+   * Creates a new standard master wallet from an exported keystore.
+   * The keystore is first imported into the wallet JS SDK (this validates the backup
+   * password and persists the SDK wallet used by the elastos mainchain), then the
+   * extracted seed/mnemonic are used to create the Essentials master wallet.
+   */
+  public async newStandardWalletWithKeystore(
+    masterId: string,
+    walletName: string,
+    keystore: KeystoreInfo,
+    backupPassword: string,
+    payPassword: string
+  ): Promise<MasterWallet> {
+    Logger.log('wallet', 'Importing new master wallet with keystore');
+
+    const sdkMasterWallet = await WalletJSSDKHelper.importWalletWithKeystore(masterId, keystore, backupPassword, payPassword);
+
+    try {
+      const basicInfo = sdkMasterWallet.getBasicInfo();
+      const mnemonic = basicInfo.Readonly ? '' : await sdkMasterWallet.exportMnemonic(payPassword);
+
+      let seed: string = null;
+      try {
+        seed = sdkMasterWallet.exportSeed(payPassword);
+      } catch (e) {
+        // Keystore without seed information - the seed can be derived from the mnemonic below.
+      }
+      if (!seed && mnemonic && !basicInfo.HasPassPhrase) {
+        seed = mnemonicToSeedSync(mnemonic).toString('hex');
+      }
+      if (!seed) {
+        throw new Error('Unsupported keystore: no seed or mnemonic information found');
+      }
+
+      const elastosNetworkOptions: ElastosMainChainWalletNetworkOptions = {
+        network: 'elastos',
+        singleAddress: basicInfo.SingleAddress
+      };
+
+      const masterWalletInfo: SerializedStandardMasterWallet = {
+        type: WalletType.STANDARD,
+        id: masterId,
+        name: walletName,
+        theme: defaultWalletTheme(),
+        seed: await AESEncrypt(seed, payPassword),
+        hasPassphrase: basicInfo.HasPassPhrase,
+        networkOptions: [elastosNetworkOptions],
+        creator: WalletCreator.USER
+      };
+      if (mnemonic) {
+        masterWalletInfo.mnemonic = await AESEncrypt(mnemonic, payPassword);
+      }
+
+      return await this.createMasterWalletFromSerializedInfo(masterWalletInfo);
+    } catch (e) {
+      // Roll back the SDK side wallet so a failed import leaves no orphan behind.
+      try {
+        await WalletJSSDKHelper.destroyWallet(masterId);
+      } catch (cleanupError) {
+        Logger.warn('wallet', 'Failed to clean up SDK wallet after keystore import error', cleanupError);
+      }
+      throw e;
+    }
   }
 
   /**

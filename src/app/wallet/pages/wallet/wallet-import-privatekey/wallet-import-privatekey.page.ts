@@ -1,4 +1,5 @@
 import { Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import type { KeystoreInfo } from '@elastosfoundation/wallet-js-sdk';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
@@ -8,6 +9,7 @@ import { Logger } from 'src/app/logger';
 import { BiometricAuthenticationFailedException } from 'src/app/model/exceptions/biometricauthenticationfailed.exception';
 import { BiometricLockedoutException } from 'src/app/model/exceptions/biometriclockedout.exception';
 import { PasswordManagerCancellationException } from 'src/app/model/exceptions/passwordmanagercancellationexception';
+import { WalletAlreadyExistException } from 'src/app/model/exceptions/walletalreadyexist.exception';
 import { WrongPasswordException } from 'src/app/model/exceptions/wrongpasswordexception.exception';
 import { GlobalEvents } from 'src/app/services/global.events.service';
 import { Config } from 'src/app/wallet/config/Config';
@@ -103,6 +105,10 @@ export class WalletImportByPrivateKeyPage implements OnInit, OnDestroy {
         this.native.toast_trans('wallet.wrong-privatekey-msg');
         return;
       }
+    } else if (!this.getKeystoreContent()) {
+      // Validate the keystore shape before any password is created for this wallet id.
+      this.native.toast_trans('wallet.Error-20036'); // JSON format error
+      return;
     }
 
     let payPassword = null;
@@ -128,10 +134,19 @@ export class WalletImportByPrivateKeyPage implements OnInit, OnDestroy {
           await this.importWalletWithPrivateKey(payPassword);
         }
       } catch (err) {
-        Logger.error('wallet', 'Wallet importWalletWithPrivateKey error:', err);
+        Logger.error('wallet', 'Wallet import error:', err);
         await this.walletManager.destroyMasterWallet(this.masterWalletId, false);
         await this.authService.deleteWalletPassword(this.masterWalletId);
-        this.native.toast_trans(err.message || err);
+        const reworkedEx = WalletExceptionHelper.reworkedWalletJSException(err);
+        if (reworkedEx instanceof WalletAlreadyExistException) {
+          this.native.toast_trans('wallet.Error-20005'); // Wallet already exists
+        } else if (this.contentIsJsonObj && this.isWrongKeystorePasswordError(err)) {
+          this.native.toast_trans('wallet.Error-20003'); // Wrong password
+        } else if (this.contentIsJsonObj) {
+          this.native.toast_trans('wallet.Error-10008'); // Import wallet with keystore error
+        } else {
+          this.native.toast_trans(err.message || err);
+        }
       }
       finally {
         await this.native.hideLoading();
@@ -160,20 +175,48 @@ export class WalletImportByPrivateKeyPage implements OnInit, OnDestroy {
   }
 
   async importWalletWithKeyStore(payPassword: string) {
-    /* await this.walletManager.importWalletWithKeystore(
+    await this.walletManager.newStandardWalletWithKeystore(
       this.masterWalletId,
       this.walletCreateService.name,
-      this.privatekey,
+      this.getKeystoreContent(),
       this.keystoreBackupPassword,
       payPassword,
     );
+
+    // Go to wallet's home page.
+    this.native.setRootRouter("/wallet/wallet-home");
 
     this.events.publish("masterwalletcount:changed", {
       action: 'add',
       walletId: this.masterWalletId
     });
 
-    this.native.toast_trans('wallet.import-keystore-sucess'); */
+    this.native.toast_trans('wallet.import-keystore-sucess');
+  }
+
+  /**
+   * Returns the pasted content as a keystore object when it has the expected
+   * shape ({"ciphertext": "..."}), null otherwise.
+   */
+  private getKeystoreContent(): KeystoreInfo {
+    try {
+      const parsed = JSON.parse(this.privatekey);
+      if (parsed && typeof parsed === 'object' && typeof parsed.ciphertext === 'string') {
+        return parsed as KeystoreInfo;
+      }
+    } catch (e) {
+      // Not a valid json keystore.
+    }
+    return null;
+  }
+
+  /**
+   * A wrong keystore backup password makes the SDK AES decryption produce garbage,
+   * which surfaces as an UTF-8/JSON parsing error rather than a typed "wrong
+   * password" error.
+   */
+  private isWrongKeystorePasswordError(err: any): boolean {
+    return err instanceof SyntaxError || (typeof err?.message === 'string' && err.message.includes('Malformed UTF-8'));
   }
 
   async pasteFromClipboard() {
@@ -184,8 +227,10 @@ export class WalletImportByPrivateKeyPage implements OnInit, OnDestroy {
 
   getContentType() {
     try {
-      JSON.parse(this.privatekey);
-      this.contentIsJsonObj = true;
+      // Only a JSON *object* switches the page into keystore mode; scalars like
+      // "1234" are valid JSON but must stay on the private key path.
+      const parsed = JSON.parse(this.privatekey);
+      this.contentIsJsonObj = !!parsed && typeof parsed === 'object';
     }
     catch (err) {
       this.contentIsJsonObj = false;
