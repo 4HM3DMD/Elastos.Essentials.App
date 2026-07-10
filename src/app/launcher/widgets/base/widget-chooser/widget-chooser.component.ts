@@ -211,7 +211,12 @@ export class WidgetChooserComponent implements OnInit, OnDestroy {
       this.receivedIntent.intentId
     );
 
-    this.widgetUrl = res.result.scannedContent;
+    const scannedContent = res && res.result && res.result.scannedContent;
+    if (!scannedContent) {
+      // Scanner dismissed without scanning anything.
+      return;
+    }
+    this.widgetUrl = scannedContent;
     void this.fetchWidget();
   }
 

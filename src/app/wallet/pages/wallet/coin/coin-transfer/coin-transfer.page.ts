@@ -256,7 +256,16 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   async ngOnInit() {
     await this.init();
     this.addressUpdateSubscription = this.events.subscribe('address:update', address => {
-      this.zone.run(() => {
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      void this.zone.run(async () => {
+        // Scanned content gets the same gate as Paste: never place an unvalidated
+        // value, or the Send CTA enables with an unusable address (mis-scanned QR).
+        const isAddressValid = await this.isAddressValid(address);
+        if (!isAddressValid) {
+          this.setRecipient(null);
+          this.native.toast_trans('wallet.not-a-valid-address');
+          return;
+        }
         this.setRecipient(address);
       });
     });

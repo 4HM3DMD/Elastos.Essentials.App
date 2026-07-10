@@ -29,9 +29,12 @@ const HIDE_TABBAR_ROUTE_PREFIXES = [
 ];
 
 // Exact routes (matched against the path, ignoring query/state) where the bar is
-// hidden. The token-detail page '/wallet/coin' has its own fixed Send/Receive/
-// Transfer footer the global bar would cover; an exact match keeps its
-// '/wallet/coin-*' siblings (receive, tx-info, ...) unaffected. The send screen
+// hidden. The token-detail page '/wallet/coin' is an immersive pushed detail
+// (back chevron, in-flow action tiles) - a detail page does not carry the root
+// tab bar. If it is ever unhidden, coin-home.page.scss must drop its page-scoped
+// --padding-bottom, which otherwise beats the global has-tabbar clearance and
+// leaves the last rows under the bar. An exact match keeps its '/wallet/coin-*'
+// siblings (receive, tx-info, ...) unaffected. The send screen
 // '/wallet/coin-transfer' is a full-height composition (amount + numpad + address
 // + pinned Continue) with no room for the bar, matching the Figma Send frames.
 const HIDE_TABBAR_EXACT_ROUTES = [
