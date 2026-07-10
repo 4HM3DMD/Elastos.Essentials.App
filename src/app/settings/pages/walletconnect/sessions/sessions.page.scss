@@ -1,27 +1,23 @@
 @import "src/app/settings/root.scss";
 
 .sessions-container {
-    padding: 20px;
+    /* 2026 shared inset */
+    padding: 8px 24px 24px;
     min-height: 100%;
 
     .session-card {
-        background: var(--ion-background-color);
-        border-radius: 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: 16px;
+        /* Rounded surface card (the old background matched the page, so cards were invisible) */
+        background: var(--essentials-box-color);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 14px;
+        margin-bottom: 12px;
         overflow: hidden;
-        transition: all 0.2s ease;
-
-        &:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-            transform: translateY(-1px);
-        }
 
         .card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px;
+            padding: 14px 16px;
             border-bottom: 1px solid var(--essentials-border-separator-color);
 
             .app-info {
@@ -31,14 +27,14 @@
                 min-width: 0; // Allow flex shrinking
 
                 .connector-logo {
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 12px;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 10px;
                     object-fit: contain;
-                    background: var(--ion-background-color);
-                    padding: 6px;
+                    background: rgba(255, 255, 255, 0.06);
+                    padding: 5px;
                     flex-shrink: 0;
-                    margin-right: 16px;
+                    margin-right: 12px;
                 }
 
                 .app-details {
@@ -46,9 +42,9 @@
                     flex: 1;
 
                     .app-name {
-                        font-size: 18px;
+                        font-size: 16px;
                         font-weight: 600;
-                        margin: 0 0 4px 0;
+                        margin: 0 0 2px 0;
                         color: var(--ion-text-color);
                         white-space: nowrap;
                         overflow: hidden;
@@ -56,9 +52,9 @@
                     }
 
                     .app-description {
-                        font-size: 14px;
-                        color: var(--ion-text-color, #666);
-                        opacity: 0.8;
+                        font-size: 12px;
+                        font-weight: 500;
+                        color: var(--essentials-text-secondary);
                         margin: 0;
                         display: -webkit-box;
                         -webkit-line-clamp: 2;
