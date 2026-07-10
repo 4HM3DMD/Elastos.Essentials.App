@@ -253,9 +253,9 @@ export class CoinBPoSNFTPage {
       coinType: this.sourceSubwallet.type
     };
 
-    this.native.popup = await this.native.popoverCtrl.create({
-      mode: 'ios',
-      cssClass: 'wallet-tx-component',
+    // Bottom sheet, not a popover: the confirm component is designed as a sheet.
+    this.native.popup = await this.native.modalCtrl.create({
+      cssClass: 'tx-confirm-sheet',
       component: TxConfirmComponent,
       componentProps: {
         txInfo: txInfo

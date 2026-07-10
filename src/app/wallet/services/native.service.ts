@@ -21,7 +21,7 @@
  */
 
 import { Injectable, NgZone } from '@angular/core';
-import { LoadingController, PopoverController } from '@ionic/angular';
+import { LoadingController, ModalController, PopoverController } from '@ionic/angular';
 import { Logger } from 'src/app/logger';
 import { App } from "src/app/model/app.enum";
 import { GlobalNativeService } from 'src/app/services/global.native.service';
@@ -40,6 +40,7 @@ export class Native {
     constructor(
         private loadingCtrl: LoadingController,
         public popoverCtrl: PopoverController,
+        public modalCtrl: ModalController,
         private zone: NgZone,
         private globalNative: GlobalNativeService,
         private globalNav: GlobalNavService,

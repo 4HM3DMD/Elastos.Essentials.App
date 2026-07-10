@@ -1473,9 +1473,11 @@ export class CoinTransferPage implements OnInit, OnDestroy {
       amountFiat: amountFiat
     };
 
-    this.native.popup = await this.native.popoverCtrl.create({
-      mode: 'ios',
-      cssClass: 'wallet-tx-component',
+    // Bottom sheet, not a popover: the confirm component is designed as a sheet
+    // (grabber + header) and the popover presentation rendered it as a cramped
+    // centered box.
+    this.native.popup = await this.modalCtrl.create({
+      cssClass: 'tx-confirm-sheet',
       component: TxConfirmComponent,
       componentProps: {
         txInfo: txInfo
@@ -1498,9 +1500,8 @@ export class CoinTransferPage implements OnInit, OnDestroy {
   }
 
   async showSuccess() {
-    this.native.popup = await this.native.popoverCtrl.create({
-      mode: 'ios',
-      cssClass: 'wallet-tx-component',
+    this.native.popup = await this.modalCtrl.create({
+      cssClass: 'wallet-component-base',
       component: TxSuccessComponent
     });
     this.native.popup.onWillDismiss().then(() => {

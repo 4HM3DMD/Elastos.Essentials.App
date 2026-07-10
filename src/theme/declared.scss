@@ -426,7 +426,27 @@ a {
 }
 
 .wallet-component-base {
-  --height: 35%;
+  // Publication sheet (std/eth transaction): tall enough that the success state,
+  // summary rows and TXID are visible WITHOUT scrolling - at the old 35% the
+  // "Transaction Successful" content sat below the fold.
+  --height: 72%;
+  align-items: flex-end;
+
+  .modal-wrapper {
+    position: absolute;
+    left: 0;
+    display: block;
+    width: 100%;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+  }
+}
+
+// Transaction confirmation (Confirm send / NFT approve): a real bottom sheet.
+// The component was designed as a sheet (grabber + header) but was presented in
+// an unstyled centered popover.
+.tx-confirm-sheet {
+  --height: 76%;
   align-items: flex-end;
 
   .modal-wrapper {
