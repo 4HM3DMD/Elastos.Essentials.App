@@ -36,18 +36,20 @@
                     <span class="staked-value">{{ getStakedBalanceInNative() }} {{ networkWallet.getDisplayTokenName() }}</span>
                 </div>
 
+                <!-- Equal tonal pills with clean line icons - the 3D glyphs turn muddy
+                     at this size and dated the card. -->
                 <div class="card-actions">
-                    <button *ngIf="coinCanBeTransferred()" type="button" class="card-action" (click)="transferFunds()">
-                        <span class="card-action-disc"><img src="assets/wallet/action/swap.png" alt="" /></span>
-                        <span class="card-action-label">{{ (chainIsELA() ? 'wallet.coin-action-recharge' : 'wallet.coin-action-withdraw') | translate }}</span>
-                    </button>
                     <button *ngIf="coinCanBeSent()" type="button" class="card-action" (click)="sendFunds()">
-                        <span class="card-action-disc"><img src="assets/wallet/action/send.png" alt="" /></span>
-                        <span class="card-action-label">{{ 'wallet.coin-action-send' | translate }}</span>
+                        <ion-icon name="arrow-up-outline"></ion-icon>
+                        <span>{{ 'common.send' | translate }}</span>
                     </button>
                     <button type="button" class="card-action" (click)="receiveFunds()">
-                        <span class="card-action-disc"><img src="assets/wallet/action/receive.png" alt="" /></span>
-                        <span class="card-action-label">{{ 'wallet.coin-action-receive' | translate }}</span>
+                        <ion-icon name="arrow-down-outline"></ion-icon>
+                        <span>{{ 'common.receive' | translate }}</span>
+                    </button>
+                    <button *ngIf="coinCanBeTransferred()" type="button" class="card-action" (click)="transferFunds()">
+                        <ion-icon name="swap-horizontal-outline"></ion-icon>
+                        <span>{{ 'common.transfer' | translate }}</span>
                     </button>
                 </div>
             </div>
@@ -59,9 +61,10 @@
                 <h1 class="history-title">{{ 'wallet.coin-history' | translate }}</h1>
             </div>
 
-            <!-- Source tabs (Transactions / Internal / Recharge) — only when more than one set exists -->
-            <ui-chip-row *ngIf="txTabs.length > 1" class="tx-source-tabs" [chips]="txTabs" [active]="activeTxTab"
-                (activeChange)="onTxTabChange($event)"></ui-chip-row>
+            <!-- Source tabs (Transactions / Internal / Recharge) — only when more than one
+                 set exists. Ghost like the type filter so the whole filter zone stays quiet. -->
+            <ui-chip-row *ngIf="txTabs.length > 1" class="tx-source-tabs" variant="ghost" [chips]="txTabs"
+                [active]="activeTxTab" (activeChange)="onTxTabChange($event)"></ui-chip-row>
 
             <!-- Transaction-type filter (All / Sent / Received / Staked) — SYS-008.
                  Ghost variant: the filter is a quiet control, it must not compete with

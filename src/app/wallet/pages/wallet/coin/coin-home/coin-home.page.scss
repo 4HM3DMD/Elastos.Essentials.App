@@ -29,13 +29,12 @@ ion-content.intersection-container {
         // Washed network mark as card art (the old card had a blurred logo too).
         .card-art {
             position: absolute;
-            top: -26px;
-            right: -30px;
-            width: 150px;
-            height: 150px;
+            top: -12px;
+            right: -26px;
+            width: 132px;
+            height: 132px;
             object-fit: contain;
-            opacity: 0.06;
-            filter: blur(1px);
+            opacity: 0.05;
             pointer-events: none;
         }
 
@@ -91,6 +90,12 @@ ion-content.intersection-container {
             text-align: left;
             cursor: pointer;
 
+            // The size-3 tier is 500-weight for the launcher hero; in the card the
+            // balance is the star, so bolden it here only.
+            ui-amount-display ::ng-deep .amount .value-line .value {
+                font-weight: 700;
+            }
+
             .card-sub {
                 display: block;
                 margin-top: 4px;
@@ -119,53 +124,43 @@ ion-content.intersection-container {
             }
         }
 
-        // Canonical Transfer / Send / Receive row, inside the card like the old app.
+        // Canonical Send / Receive / Transfer row inside the card: equal tonal
+        // pills, accent line icon + sentence-case label inline.
         .card-actions {
             display: flex;
-            margin-top: 16px;
-            padding-top: 14px;
+            gap: 8px;
+            margin-top: 18px;
+            padding-top: 16px;
             border-top: 1px solid rgba(255, 255, 255, 0.06);
 
             .card-action {
                 flex: 1;
                 display: inline-flex;
-                flex-direction: column;
                 align-items: center;
-                gap: 8px;
-                padding: 4px 0 2px;
+                justify-content: center;
+                gap: 6px;
+                height: 44px;
+                padding: 0 4px;
                 border: none;
-                background: transparent;
+                border-radius: 13px;
+                background: rgba(255, 255, 255, 0.07);
                 font-family: inherit;
+                font-size: 13px;
+                font-weight: 600;
+                line-height: 1;
+                color: rgba(255, 255, 255, 0.92);
                 cursor: pointer;
                 transition: transform 0.15s ease;
 
                 &:active {
-                    transform: scale(0.94);
+                    transform: scale(0.97);
                 }
-            }
 
-            .card-action-disc {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 44px;
-                height: 44px;
-                border-radius: 14px;
-                background: rgba(255, 255, 255, 0.08);
-
-                img {
-                    width: 24px;
-                    height: 24px;
-                    object-fit: contain;
+                ion-icon {
+                    flex-shrink: 0;
+                    font-size: 16px;
+                    color: var(--essentials-primary, #ED6E2B);
                 }
-            }
-
-            .card-action-label {
-                font-size: 11px;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-                line-height: 1;
-                color: var(--essentials-text-secondary);
             }
         }
     }
@@ -187,10 +182,21 @@ ion-content.intersection-container {
 
     .tx-source-tabs {
         display: block;
-        margin-bottom: 12px;
+        margin-bottom: 4px;
+
+        ::ng-deep .chip-row.ghost {
+            justify-content: flex-start;
+
+            .chip {
+                padding: 7px 12px;
+                font-size: 13px;
+            }
+        }
     }
 
     // Transaction-type filter - ghost text chips, left-aligned under the header.
+    // No negative-margin alignment tricks: the row scrolls, so a pulled-out first
+    // chip gets cropped by the scroll viewport.
     .tx-type-filter {
         display: block;
         margin-bottom: 6px;
@@ -201,10 +207,6 @@ ion-content.intersection-container {
             .chip {
                 padding: 7px 12px;
                 font-size: 13px;
-
-                &:first-child {
-                    margin-left: -12px; // optically align "All" with the header above
-                }
             }
         }
     }
