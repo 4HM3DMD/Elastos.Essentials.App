@@ -266,7 +266,9 @@ export class CoinTxInfoPage implements OnInit {
         this.targetAddress = this.extendedTxInfo?.evm?.txInfo?.operation?.descriptionTranslationParams?.toAddress;
       }
 
-      void this.getTransactionDetails();
+      // Await: this fetch fills confirmStatus (and the crosschain real address) that the
+      // row builder below reads - fire-and-forget raced it and lost.
+      await this.getTransactionDetails();
     }
   }
 
@@ -331,6 +333,17 @@ export class CoinTxInfoPage implements OnInit {
             : moment(this.transactionInfo.timestamp).format('D MMM YYYY, hh:mm A'),
         show: true
       });
+
+      // Confirmations: the trust signal for a settled transaction. Deep counts read as
+      // "100+" - the exact figure past that point carries no extra meaning.
+      if (this.transactionInfo.confirmStatus != null && this.transactionInfo.confirmStatus >= 0) {
+        this.txDetails.push({
+          type: TransactionInfoType.CONFIRMATIONS,
+          title: 'wallet.tx-info-confirmations',
+          value: this.transactionInfo.confirmStatus > 100 ? '100+' : String(this.transactionInfo.confirmStatus),
+          show: true
+        });
+      }
 
       // SYS-024: Memo only when present.
       if (this.memo) {
@@ -408,13 +421,33 @@ export class CoinTxInfoPage implements OnInit {
         });
       }
 
+      // Explicit From -> To (super-wallet pattern): the recipient is To; the sender is
+      // this wallet, shown with its own address so the transfer reads as a movement
+      // between two named endpoints instead of one ambiguous "Address".
       if (this.targetAddress !== null) {
         this.txDetails.unshift({
           type: TransactionInfoType.ADDRESS,
-          title: 'wallet.tx-info-address',
+          title: 'wallet.tx-info-to',
           value: this.transactionInfo.isCrossChain
             ? this.targetAddress
             : await this.networkWallet.convertAddressForUsage(this.targetAddress, AddressUsage.DISPLAY_TRANSACTIONS),
+          show: true
+        });
+      }
+
+      let sentFrom = this.fromAddress;
+      if (!sentFrom || sentFrom === '0x0000000000000000000000000000000000000000') {
+        try {
+          sentFrom = await this.subWallet.getCurrentReceiverAddress();
+        } catch (e) {
+          sentFrom = null;
+        }
+      }
+      if (sentFrom) {
+        this.txDetails.unshift({
+          type: TransactionInfoType.ADDRESS,
+          title: 'wallet.tx-info-from',
+          value: await this.networkWallet.convertAddressForUsage(sentFrom, AddressUsage.DISPLAY_TRANSACTIONS),
           show: true
         });
       }
@@ -426,7 +459,7 @@ export class CoinTxInfoPage implements OnInit {
         // TODO: We should show all the inputs and outputs for ELA main chain.
         this.txDetails.unshift({
           type: TransactionInfoType.ADDRESS,
-          title: 'wallet.tx-info-address',
+          title: 'wallet.tx-info-from',
           value: this.transactionInfo.isCrossChain
             ? this.fromAddress
             : await this.networkWallet.convertAddressForUsage(this.fromAddress, AddressUsage.DISPLAY_TRANSACTIONS),
@@ -443,7 +476,7 @@ export class CoinTxInfoPage implements OnInit {
         ) {
           this.txDetails.unshift({
             type: TransactionInfoType.ADDRESS,
-            title: 'wallet.tx-info-address',
+            title: 'wallet.tx-info-to',
             value: this.targetAddress,
             show: true
           });
@@ -757,12 +790,15 @@ export class CoinTxInfoPage implements OnInit {
     'wallet.tx-info-amount',
     'wallet.tx-info-erc20-amount',
     'wallet.tx-info-receive-amount',
+    'wallet.tx-info-from',
+    'wallet.tx-info-to',
     'wallet.tx-info-address',
     'wallet.tx-info-address-name',
     'wallet.tx-info-network',
     'wallet.tx-info-network-fee',
     'wallet.tx-info-total',
-    'wallet.tx-info-time'
+    'wallet.tx-info-time',
+    'wallet.tx-info-confirmations'
   ];
 
   public showTechnical = false;

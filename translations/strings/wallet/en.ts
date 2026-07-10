@@ -355,6 +355,8 @@ export const en = {
     'tx-info-network': 'Network',
     'tx-info-technical-details': 'Technical details',
     'tx-info-address': 'Address',
+    'tx-info-from': 'From',
+    'tx-info-to': 'To',
     'tx-info-address-name': 'Address Name',
     'tx-info-amount': 'Amount',
     'tx-info-receive-amount': 'Amount',
