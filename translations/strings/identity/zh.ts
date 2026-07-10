@@ -3,6 +3,7 @@ export const zh = {
     'identity': {
         /******************** Generic ********************/
         'accept': '接受',
+        'unknown-requesting-app': '未知应用',
         'confirm': '确认',
         'accept-and-publish': '接受并发布',
         'delete-and-publish': '删除并发布',

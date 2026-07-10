@@ -3,6 +3,7 @@ export const fr = {
     'identity': {
         /******************** Generic ********************/
         'accept': 'Accepter',
+        'unknown-requesting-app': 'Application inconnue',
         'confirm': 'Confirmer',
         'accept-and-publish': 'Accepter et Publier',
         'delete-and-publish': 'Supprimer et Publier',

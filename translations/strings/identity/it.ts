@@ -3,6 +3,7 @@ export const it = {
     'identity': {
         /******************** Generic ********************/
         'accept': 'Accetta',
+        'unknown-requesting-app': 'Applicazione sconosciuta',
         'confirm': 'Conferma',
         'accept-and-publish': 'Accetta e Pubblica',
         'delete-and-publish': 'Elimina e Pbblica',

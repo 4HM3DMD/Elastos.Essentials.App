@@ -4,8 +4,7 @@
     <ion-card>
       <img src="assets/identity/images/fingerprint.svg">
       <ion-card-title>{{ 'identity.register-app' | translate }}</ion-card-title>
-      <!-- Temporarily removed as we don't get the info
-       <ion-card-subtitle *ngIf="requestDapp">{{ requestDapp.appPackageId }}</ion-card-subtitle> -->
+      <requesting-app [caller]="receivedIntent.params.caller"></requesting-app>
     </ion-card>
 
     <div class="msg-container">

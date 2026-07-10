@@ -47,7 +47,6 @@ export class CredentialDeleteRequestPage {
   @ViewChild(TitleBarComponent, { static: false }) titleBar: TitleBarComponent;
 
   public receivedIntent: CredDeleteIdentityIntent = null;
-  public requestDappIcon: string = null;
 
   private alreadySentIntentResponse = false;
 
@@ -274,7 +273,4 @@ export class CredentialDeleteRequestPage {
     await this.appServices.sendIntentResponse(result, intentId, navigateBack);
   }
 
-  getDappIcon() {
-    return 'assets/shared/essentials-black-circle.svg';
-  }
 }

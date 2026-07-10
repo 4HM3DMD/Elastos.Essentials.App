@@ -10,6 +10,7 @@ import { CredentialComponent } from "./credential/credential.component";
 import { PrintoptionsComponent } from "./printoptions/printoptions.component";
 import { PublishDIDComponent } from "./publish-did/publish-did.component";
 import { PublishModeComponent } from "./publishmode/publishmode.component";
+import { RequestingAppComponent } from "./requesting-app/requesting-app.component";
 import { ShowQRCodeComponent } from "./showqrcode/showqrcode.component";
 import { WalletChooserComponent } from "./wallet-chooser/wallet-chooser.component";
 import { WalletCredentialComponent } from "./wallet-credential/wallet-credential.component";
@@ -21,6 +22,7 @@ import { WalletCredentialComponent } from "./wallet-credential/wallet-credential
     PublishModeComponent,
     PublishDIDComponent,
     CredentialComponent,
+    RequestingAppComponent,
     WalletChooserComponent,
     WalletCredentialComponent
   ],
@@ -39,6 +41,7 @@ import { WalletCredentialComponent } from "./wallet-credential/wallet-credential
     PublishModeComponent,
     PublishDIDComponent,
     CredentialComponent,
+    RequestingAppComponent,
     WalletChooserComponent,
     WalletCredentialComponent
   ],

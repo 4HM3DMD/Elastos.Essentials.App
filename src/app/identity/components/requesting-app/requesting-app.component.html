@@ -1,0 +1,5 @@
+<div class="requesting-app">
+  <img *ngIf="requestingAppIconUrl" [src]="getDappIcon()">
+  <h2 *ngIf="requestingAppName">{{ requestingAppName }}</h2>
+  <h2 *ngIf="!requestingAppName && showUnknownLabel" class="unknown-app">{{ 'identity.unknown-requesting-app' | translate }}</h2>
+</div>
