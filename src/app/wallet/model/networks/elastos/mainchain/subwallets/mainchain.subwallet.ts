@@ -168,7 +168,9 @@ export class MainChainSubWallet extends MainCoinSubWallet<ElastosTransaction, El
   }
 
   public getMainIcon(): string {
-    return 'assets/wallet/networks/elastos.png';
+    // Transparent token mark, decoupled from the network logo (which carries the
+    // chain's colored disc identity and is used by chain selectors and badges).
+    return 'assets/wallet/coins/ela.png';
   }
 
   public getSecondaryIcon(): string {

@@ -15,7 +15,9 @@ export class ElastosEscERC20SubWallet extends ERC20SubWallet {
   }
 
   public getMainIcon(): string {
-    return 'assets/wallet/networks/elastos-esc.png';
+    // Transparent token mark, decoupled from the network logo; the chain identity
+    // shows on the badge (getSecondaryIcon) instead.
+    return 'assets/wallet/coins/ela.png';
   }
 
   public getSecondaryIcon(): string {
