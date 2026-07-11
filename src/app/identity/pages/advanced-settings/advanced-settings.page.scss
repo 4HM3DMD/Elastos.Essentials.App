@@ -1,82 +1,75 @@
 @import "src/app/identity/root.scss";
 
-ion-grid {
-  height: 100%;
-  padding: 20px;
-  // padding: 15px 0 0;
-
-  /* .options-row {
-    border-bottom: 1px solid #dfdff4;
-    padding: 15px 0;
-
-    ion-col {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-
-      img, ion-icon {
-        width: 18px;
-        height: 18px;
-      }
-
-      ion-label {
-        padding-left: 15px;
-        font-size: 13px;
-        font-weight: 600;
-      }
-    }
-  }
-
-  .top-row {
-    border-top: 1px solid  #dfdff4;
-  } */
-
-  .main-title-row {
-    margin-bottom: 10px;
-    margin-left: 5px;
-
-    p {
-      margin: 0;
-      font-size: 13px;
-      font-weight: 500;
-      line-height: 1;
-      letter-spacing: -0.33px;
-      text-align: left;
-      color: var(--ion-text-color);
-    }
-  }
-
-  .options-row {
-      border-radius: 17px;
-      padding: 12.5px 5px;
-      margin-bottom: 7.5px;
-      box-shadow: 0 3px 15px 0 #ededf0;
-      background: var(--essentials-button-background-color);
-      color: var(--essentials-button-text-color);
-
-
-    ion-col {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      img, ion-icon {
-        width: 22px;
-        height: 22px;
-      }
-
-      ion-label {
-        padding-left: 15px;
-        font-size: 14px;
-        font-weight: 600;
-        letter-spacing: 0.7px;
-      }
-    }
-  }
+ion-content {
+  --background: var(--ion-background-color);
 }
 
-.dark-container {
-  .options-row {
-    box-shadow: none;
+.advanced-settings {
+  padding: 20px 22px;
+
+  .section-label {
+    margin: 2px 2px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--essentials-text-secondary);
+  }
+
+  // Tappable token row: icon circle + title + trailing chevron on a raised card.
+  .option-row {
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    color: var(--ion-text-color);
+    cursor: pointer;
+
+    .icon-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--essentials-border-separator-color);
+
+      ion-icon {
+        font-size: 20px;
+        color: var(--essentials-accent);
+      }
+    }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-left: 12px;
+      min-width: 0;
+
+      .title {
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        color: var(--ion-text-color);
+      }
+    }
+
+    .chevron {
+      margin-left: auto;
+      font-size: 18px;
+      color: var(--essentials-text-secondary);
+      flex-shrink: 0;
+    }
+
+    ion-ripple-effect {
+      --ripple-color: var(--ion-text-color);
+    }
   }
 }

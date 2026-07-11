@@ -1,17 +1,17 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid [class.dark-container]="theme.darkMode">
-    <ion-row class="main-title-row">
-      <ion-col size="12">
-        <p>{{ 'identity.available-options' | translate }}</p>
-      </ion-col>
-    </ion-row>
-    <ion-row class="options-row top-row ion-activatable ripple" (click)="startSync()">
-      <ion-col size="12">
+  <div class="advanced-settings">
+    <p class="section-label">{{ 'identity.available-options' | translate }}</p>
+
+    <div class="option-row ion-activatable ripple" (click)="startSync()">
+      <div class="icon-circle">
         <ion-icon name="refresh"></ion-icon>
-        <ion-label>{{ 'identity.sync-did-profile' | translate }}</ion-label>
-      </ion-col>
+      </div>
+      <div class="meta">
+        <span class="title">{{ 'identity.sync-did-profile' | translate }}</span>
+      </div>
+      <ion-icon class="chevron" name="chevron-forward"></ion-icon>
       <ion-ripple-effect></ion-ripple-effect>
-    </ion-row>
-  </ion-grid>
+    </div>
+  </div>
 </ion-content>

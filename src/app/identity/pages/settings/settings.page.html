@@ -1,13 +1,16 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid>
-    <ion-row class="section-row" (click)="goToSettings('/identity/advanced-settings')">
-      <ion-col size="9" class="left-col">
-        <h1>{{ 'identity.advanced-settings' | translate }}</h1>
-      </ion-col>
-      <ion-col size="3" class="right-col">
-        <ion-icon name="chevron-forward"></ion-icon>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <div class="settings-page">
+    <div class="token-list">
+      <div class="token-row" (click)="goToSettings('/identity/advanced-settings')">
+        <div class="row-icon">
+          <ion-icon name="options-outline"></ion-icon>
+        </div>
+        <div class="meta">
+          <span class="title">{{ 'identity.advanced-settings' | translate }}</span>
+        </div>
+        <ion-icon class="chevron" name="chevron-forward"></ion-icon>
+      </div>
+    </div>
+  </div>
 </ion-content>

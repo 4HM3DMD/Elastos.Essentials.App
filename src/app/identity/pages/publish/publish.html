@@ -1,34 +1,36 @@
 <ion-content>
     <app-titlebar></app-titlebar>
-    <div class="container" [class.darkContainer]="theme.darkMode">
+    <div class="container">
 
-        <ion-row class="header">
-            <ion-col size="12">
-                <ion-label>
-                    {{ 'identity.mycredentials-header' | translate }}
-                </ion-label>
-            </ion-col>
-            <ion-col size="12">
-                <span>- {{ 'identity.showing-all-visible-credentials' | translate }}</span>
-                <span style="margin-top: 10px;">- {{ 'identity.toggle-credentials-to-publish'| translate }}</span>
-            </ion-col>
-        </ion-row>
+        <div class="page-header">
+            <h1 class="page-title">
+                {{ 'identity.mycredentials-header' | translate }}
+            </h1>
+            <div class="page-hints">
+                <div class="hint">
+                    <ion-icon name="ellipse"></ion-icon>
+                    <span>{{ 'identity.showing-all-visible-credentials' | translate }}</span>
+                </div>
+                <div class="hint">
+                    <ion-icon name="ellipse"></ion-icon>
+                    <span>{{ 'identity.toggle-credentials-to-publish' | translate }}</span>
+                </div>
+            </div>
+        </div>
 
-        <ion-grid *ngIf="profileService.isPublishStatusFetched() && !profileService.didNeedsToBePublished"
-            class="status-grid">
-            <ion-row>
-                <ion-col size="1">
-                    <img [src]="theme.darkMode ? '/assets/identity/svg/publish-credentials-white.svg' : '/assets/identity/svg/publish-credentials-black.svg'"
-                        class="published">
-                </ion-col>
-                <ion-col size="11">
-                    <ion-label>
-                        {{ unchangedPublishedCredentials.length }}/{{ profileService.allCreds.length }}
-                        {{ 'identity.credentials-published-on-blockchain' | translate }}
-                    </ion-label>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
+        <div class="status-card" *ngIf="profileService.isPublishStatusFetched() && !profileService.didNeedsToBePublished">
+            <div class="status-icon">
+                <ion-icon name="shield-checkmark"></ion-icon>
+            </div>
+            <div class="meta">
+                <span class="meta-title">
+                    {{ unchangedPublishedCredentials.length }}/{{ profileService.allCreds.length }}
+                </span>
+                <span class="meta-sub">
+                    {{ 'identity.credentials-published-on-blockchain' | translate }}
+                </span>
+            </div>
+        </div>
 
         <div class="credentials">
             <div class="card" *ngFor="let entry of publishableCredentials()">
@@ -60,10 +62,11 @@
                 </div> -->
             </div>
         </div>
-        <ion-row class="btn-row">
+
+        <div class="publish-cta">
             <ebutton (clicked)="profileService.showWarning('publishIdentity', '')"
                 [title]="'common.confirm' | translate"></ebutton>
-        </ion-row>
+        </div>
     </div>
 
 </ion-content>

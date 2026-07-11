@@ -1,48 +1,58 @@
 @import "src/app/identity/root.scss";
 
-ion-grid {
-  padding: 0 20px;
+.settings-page {
+  padding: 16px 20px 32px;
   min-height: 100%;
-
-  .section-row {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--ion-item-border-color);
-
-    ion-col {
-      padding: 0;
-    }
-
-    .left-col {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-
-      h1 {
-        margin: 0;
-        font-size: 15px;
-        font-weight: 600;
-      }
-    }
-
-    .right-col {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-
-      ion-icon {
-        width: 22px;
-        height: 22px;
-      }
-
-      ion-toggle {
-        zoom: 0.85;
-      }
-    }
-  }
-
-  .remove-border {
-    border-bottom: none;
-  }
 }
 
+.token-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.token-row {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%), var(--essentials-box-color);
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+
+  .row-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--essentials-border-separator-color);
+    margin-right: 14px;
+
+    ion-icon {
+      font-size: 20px;
+      color: var(--essentials-accent);
+    }
+  }
+
+  .meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    font-size: 20px;
+    color: var(--essentials-text-secondary);
+    margin-left: 12px;
+  }
+}

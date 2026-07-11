@@ -1,6 +1,10 @@
 @import 'src/app/didsessions/root.scss';
 
-ion-slides {
+ion-content {
+  --background: var(--ion-background-color);
+}
+
+.backup-slides {
   height: calc(100% - (150px + 40px)); // Substract height of slides on approximate height of footer
 
   ion-slide {
@@ -8,124 +12,128 @@ ion-slides {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 0 25px;
+    padding: 0 24px;
     height: 100%;
   }
 
   .first-slide {
-    .qr-container {
-      background: white;
-      border-radius: 17px;
-      padding: 20px 10px;
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.16);
+    .qr-card {
+      width: 100%;
+      max-width: 320px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+        var(--essentials-box-color);
+      border: 1px solid var(--essentials-border-separator-color);
+      border-radius: 18px;
+      padding: 20px 16px;
 
       h1 {
-        margin-top: 0;
-        margin-bottom: 10px;
-        font-size: 22px;
+        margin: 0 0 14px;
+        font-size: 20px;
         font-weight: 700;
         letter-spacing: -0.5px;
-        color: #121212;
+        color: var(--ion-text-color);
       }
 
-      p {
-        margin-top: 10px;
-        margin-bottom: 0;
-        padding: 0 25px;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: -0.5px;
-        color: #121212;
-        opacity: 0.7;
-      }
-    }
-
-    h2 {
-      padding: 0 15px;
-      font-size: 15px;
-      font-weight: 500;
-      letter-spacing: -0.5px;
-      text-align: center;
-    }
-  }
-
-  .second-slide {
-    .mnemonic-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: space-between;
-
-      ion-col {
-        height: 40px;
-        background: linear-gradient(to bottom, #732dcf, #640fd4);
-        border-radius: 8px;
-        margin-bottom: 20px;
+      .qr-image {
         display: flex;
         justify-content: center;
         align-items: center;
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 12px;
+        overflow: hidden;
+      }
 
-        .mnemonic-index {
-          position: absolute;
-          z-index: 100;
-          top: -11px;
-          left: -11px;
-          width: 22px;
-          height: 22px;
-          background: linear-gradient(to bottom, #732dcf, #640fd4);
-          border-radius: 100%;
-          border: 2px solid #f8f8ff;
-          color: #f8f8ff;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 9px;
-          font-weight: 600;
+      p {
+        margin: 14px 0 0;
+        padding: 0 12px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: -0.5px;
+        line-height: 1.5;
+        color: var(--essentials-text-secondary);
+        word-break: break-word;
+      }
+    }
+
+    .warning-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 0 8px;
+
+      ion-icon {
+        flex-shrink: 0;
+        font-size: 18px;
+        color: var(--essentials-warning);
+      }
+
+      span {
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: -0.5px;
+        line-height: 1.4;
+        color: var(--essentials-text-secondary);
+        text-align: left;
+      }
+    }
+  }
+
+  .second-slide {
+    .mnemonic-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px 12px;
+      width: 100%;
+      max-width: 360px;
+
+      .word-chip {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 42px;
+        padding: 8px 10px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+          var(--essentials-box-color);
+        border: 1px solid var(--essentials-border-separator-color);
+        border-radius: 12px;
+
+        .word-index {
+          flex-shrink: 0;
+          min-width: 18px;
+          font-size: 11px;
+          font-weight: 700;
+          text-align: center;
+          color: var(--essentials-accent);
         }
 
-        ion-label {
-          font-size: 12px;
-          font-weight: 500;
-          line-height: 1.25;
+        .word-text {
+          font-size: 13px;
+          font-weight: 600;
+          line-height: 1.2;
           letter-spacing: -0.29px;
-          color: #f8f8ff;
+          color: var(--ion-text-color);
+          word-break: break-word;
         }
       }
     }
 
-    .bottom-row {
-      margin-bottom: 0;
-    }
-
-    p {
-      padding: 0 15px;
-      font-size: 15px;
+    .mnemonic-prompt {
+      margin-top: 22px;
+      padding: 0 12px;
+      font-size: 14px;
       font-weight: 500;
       letter-spacing: -0.5px;
+      line-height: 1.5;
+      color: var(--essentials-text-secondary);
       text-align: center;
-    }
-  }
-}
 
-.dark-slides {
-  .second-slide {
-    .mnemonic-row {
-      ion-col {
-        background: linear-gradient(to bottom, #732dcf, #640fd4);
-
-        .mnemonic-index {
-          border: 2px solid #121212;
-        }
-      }
-    }
-  }
-}
-
-@media screen and (min-height: 670px) {
-  ion-slides {
-    .first-slide {
-      .qr-container {
-        #qrcode {
-        }
+      b {
+        color: var(--ion-text-color);
+        font-weight: 700;
       }
     }
   }

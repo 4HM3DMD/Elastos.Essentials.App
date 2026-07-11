@@ -1,212 +1,196 @@
 @import "src/app/identity/root.scss";
 
-.container {
+.myprofile {
   min-height: 100%;
   width: 100%;
-  /* 2026 shared inset; bottom clearance for the module's floating glass tab bar */
+  /* 2026 shared gutter; bottom clearance for the module's floating glass tab bar */
   padding: 8px 24px calc(100px + env(safe-area-inset-bottom));
 
-  .header-grid {
-    padding: 8px 0 4px;
+  /* ---- Hero identity block ---- */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0 20px;
 
-    .avatar-row {
-      .icon-section {
-        /* Frosted 2026 avatar disc (was a 215px bare person glyph) */
-        width: 96px;
-        height: 96px;
-        margin: 8px auto 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .avatar-disc {
+      width: 96px;
+      height: 96px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      overflow: hidden;
+      /* Frosted glass disc, matching the launcher/wallet identity hero */
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 100%),
+        var(--essentials-box-color);
+      border: 0.5px solid var(--essentials-border-separator-color);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+
+      ion-icon {
+        width: 44px;
+        height: 44px;
+        color: var(--essentials-text-secondary);
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
         border-radius: 50%;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 100%),
-          rgba(255, 255, 255, 0.06);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 0.5px solid rgba(255, 255, 255, 0.14);
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-        overflow: hidden;
-
-        ion-icon {
-          display: block;
-          margin: auto;
-          width: 44px;
-          height: 44px;
-          color: rgba(255, 255, 255, 0.82);
-        }
-
-        img {
-          display: block;
-          margin: auto;
-          border-radius: 50%;
-          object-fit: cover;
-          overflow: hidden;
-          width: 100%;
-          height: 100%;
-        }
+        object-fit: cover;
       }
     }
 
-    .title-row {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin: 14px 0 6px;
+    .hero-label {
+      margin: 16px 0 0;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--essentials-text-secondary);
+    }
 
-      ion-col {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        p,
-        h1 {
-          margin: 0;
-        }
-
-        p {
-          font-size: 12px;
-          font-weight: 500;
-          letter-spacing: normal;
-          color: var(--essentials-text-secondary);
-        }
-
-        h1 {
-          margin-top: 2px;
-          font-size: 24px;
-          font-weight: 700;
-        }
-      }
+    .hero-name {
+      margin: 4px 0 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ion-text-color);
+      text-align: center;
     }
   }
 
-  .status-grid {
-    /* Rounded card instead of the old hairline separators */
-    padding: 12px 14px;
-    margin-top: 10px;
-    border-radius: 14px;
-    background: var(--essentials-box-color);
+  /* ---- Shared token-card row primitives ---- */
+  .icon-circle {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 100%),
+      var(--essentials-box-color);
+    border: 0.5px solid var(--essentials-border-separator-color);
 
-    ion-row {
-      ion-col {
-        display: flex;
-        align-items: center;
+    ion-icon {
+      font-size: 20px;
+      color: var(--essentials-text-secondary);
+    }
 
-        ion-label {
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        .published {
-          width: 24.8px;
-          height: 19.6px;
-          object-fit: contain;
-        }
-
-        .verified {
-          width: 20.2px;
-          height: 22.7px;
-          margin-left: 2px;
-          object-fit: contain;
-        }
-
-        .suggest-kyc {
-          width: 22px;
-          height: 22px;
-          object-fit: contain;
-        }
-      }
-
-      .left-info-col {
-        justify-content: center;
-      }
+    &.warn ion-icon {
+      color: var(--essentials-warning);
     }
   }
 
-  .actions-row {
-    background: var(--essentials-box-color);
-    border-radius: 14px;
-    padding: 12px 10px;
-    margin-top: 12px;
+  .meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
-    ion-col {
+    .title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+
+    .sub {
+      margin: 2px 0 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--essentials-text-secondary);
+    }
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    font-size: 18px;
+    color: var(--essentials-text-secondary);
+  }
+
+  /* ---- Status card ---- */
+  .status-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    border-radius: 18px;
+    padding: 6px 16px;
+
+    .status-row {
       display: flex;
-      justify-content: center;
       align-items: center;
+      gap: 14px;
+      padding: 12px 0;
 
-      .credentials-icon {
-        width: 21.5px;
-        height: 21.5px;
-        object-fit: contain;
+      & + .status-row {
+        border-top: 1px solid var(--essentials-border-separator-color);
       }
     }
 
-    .label-col {
+    .tappable {
+      cursor: pointer;
+    }
+  }
+
+  /* ---- Modified credentials alert ---- */
+  .alert-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 8px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    cursor: pointer;
+  }
+
+  /* ---- Action tiles ---- */
+  .tiles {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+
+    .tile {
+      position: relative;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
+      align-items: center;
+      text-align: center;
+      padding: 20px 12px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+        var(--essentials-box-color);
+      cursor: pointer;
 
-      .title {
-        font-size: 14px;
+      .tile-icon {
+        width: 24px;
+        height: 24px;
+        color: var(--essentials-text-secondary);
+
+        ::ng-deep svg {
+          width: 24px;
+          height: 24px;
+          display: block;
+        }
+      }
+
+      h2 {
+        margin: 12px 0 4px;
+        font-size: 16px;
         font-weight: 600;
-        letter-spacing: normal;
-        text-align: left;
-        margin: 0;
+        color: var(--ion-text-color);
       }
 
-      .description {
+      span {
         font-size: 12px;
         font-weight: 500;
         color: var(--essentials-text-secondary);
-        text-align: left;
-        margin: 0;
       }
-    }
-  }
 
-  .options-grid {
-    padding: 12px 0;
-
-    .options-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: space-between;
-
-      ion-col {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 10px;
-        padding: 16px 10px;
-        border-radius: 14px;
-        /* Frosted glass tile, matching the shared ui-action-tile treatment */
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 100%),
-          rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 0.5px solid rgba(255, 255, 255, 0.14);
-        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.14);
-
-        .inline-svg {
-          width: 24px;
-          color: rgba(255, 255, 255, 0.85);
-        }
-
-        h2 {
-          margin: 10px 2px 3px 2px;
-          font-size: 16px;
-          font-weight: 600;
-        }
-
-        span {
-          font-size: 12px;
-          font-weight: 500;
-          color: var(--essentials-text-secondary);
-          text-align: center;
-        }
+      ion-ripple-effect {
+        --ripple-color: var(--ion-text-color);
       }
     }
   }

@@ -1,117 +1,82 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid class="container" [class.darkContainer]="theme.darkMode">
+  <div class="myprofile">
 
-    <ion-grid class="header-grid">
-      <ion-row class="avatar-row">
-        <div class="icon-section">
-          <ion-icon *ngIf="!avatarDataUrl" mode="ios" name="person"></ion-icon>
-          <img *ngIf="avatarDataUrl" [src]="avatarDataUrl" />
+    <!-- Hero identity block (modelled on launcher / wallet-home identity hero) -->
+    <div class="hero">
+      <div class="avatar-disc">
+        <ion-icon *ngIf="!avatarDataUrl" mode="ios" name="person"></ion-icon>
+        <img *ngIf="avatarDataUrl" [src]="avatarDataUrl" />
+      </div>
+      <p class="hero-label">{{ 'identity.my-identity' | translate }}</p>
+      <h1 *ngIf="profile" class="hero-name">{{ getProfileName() }}</h1>
+    </div>
+
+    <!-- Publication / credential status -->
+    <div class="status-card">
+      <div class="status-row">
+        <div class="icon-circle">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
         </div>
-      </ion-row>
-      <ion-row class="title-row">
-        <ion-col>
-          <p>{{ 'identity.my-identity' | translate }}</p>
-          <h1 *ngIf="profile">{{ getProfileName() }}</h1>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-
-    <ion-grid class="status-grid">
-      <!-- <ion-row *ngIf="profileService.isPublishStatusFetched() && !profileService.didNeedsToBePublished">
-        <ion-col size="1.5">
-          <img src="/assets/identity/svg/credential-published.svg" class="published">
-        </ion-col>
-        <ion-col size="7">
-          <ion-label>{{ 'identity.identity-published-on-blockchain' | translate }}</ion-label>
-        </ion-col>
-        <ion-col size="3.5">
-          <ion-label>{{ getLastPublished() }}</ion-label>
-        </ion-col>
-      </ion-row> -->
-
-      <ion-row>
-        <ion-col size="1.5" class="left-info-col">
-          <img
-            [src]="theme.darkMode ? '/assets/identity/svg/publish-credentials-white.svg' : '/assets/identity/svg/publish-credentials-black.svg'"
-            class="published" />
-        </ion-col>
-        <ion-col size="10.5">
-          <ion-label>
+        <div class="meta">
+          <p class="title">
             {{ profileService.getUnchangedPublishedCredentials().length }}/{{ profileService.allCreds.length }}
-            {{ 'identity.credentials-published-on-blockchain' | translate }}
-          </ion-label>
-        </ion-col>
-      </ion-row>
-
-      <!--  <ion-row *ngIf="profileService.verifiedCredentials.length > 0">
-        <ion-col size="1.5">
-          <img src="/assets/identity/svg/verified.svg" class="verified">
-        </ion-col>
-        <ion-col size="10.5">
-          <ion-label>
-            {{ profileService.verifiedCredentials.length }}/{{ profileService.allCreds.length }}
-            {{ 'identity.credentials-verified' | translate }}
-          </ion-label>
-        </ion-col>
-      </ion-row> -->
+          </p>
+          <p class="sub">{{ 'identity.credentials-published-on-blockchain' | translate }}</p>
+        </div>
+      </div>
 
       <!-- Suggest to get KYCed -->
-      <ion-row *ngIf="!userHasKYCedCredentials()" (click)="launchKYCVerification()">
-        <ion-col size="1.5" class="left-info-col">
-          <img src="/assets/identity/svg/Credentials.svg" class="suggest-kyc">
-        </ion-col>
-        <ion-col size="10.5">
-          <ion-label>
-            Touch here to get your real identity verified
-          </ion-label>
-        </ion-col>
-      </ion-row>
+      <div class="status-row tappable" *ngIf="!userHasKYCedCredentials()" (click)="launchKYCVerification()">
+        <div class="icon-circle">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
+        <div class="meta">
+          <p class="title">Touch here to get your real identity verified</p>
+        </div>
+        <ion-icon class="chevron" name="chevron-forward"></ion-icon>
+      </div>
+    </div>
 
-    </ion-grid>
+    <!-- Modified credentials alert -->
+    <div class="alert-row" *ngIf="profileService.hasModifiedCredentials()" (click)="this.profileService.publish()">
+      <div class="icon-circle warn">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+      </div>
+      <div class="meta">
+        <p class="title">{{ 'identity.credentials-modified' | translate }}</p>
+        <p class="sub">{{ 'identity.credentials-modified-description' | translate }}</p>
+      </div>
+      <ion-icon class="chevron" name="chevron-forward"></ion-icon>
+    </div>
 
-    <ion-row *ngIf="profileService.hasModifiedCredentials()" class="actions-row"
-      (click)="this.profileService.publish()">
-      <ion-col size="2">
-        <ion-icon src="/assets/identity/svg/Credentials.svg" class="credentials-icon"></ion-icon>
-      </ion-col>
-      <ion-col size="9" class="label-col">
-        <h1 class="title">{{ 'identity.credentials-modified' | translate }}</h1>
-        <p class="description">{{ 'identity.credentials-modified-description' | translate }}</p>
-      </ion-col>
-      <ion-col size="1">
-        <ion-icon src="/assets/identity/svg/chevron-thin-right-dark.svg" class="chevron-thin-right"></ion-icon>
-      </ion-col>
-    </ion-row>
+    <!-- Action tiles -->
+    <div class="tiles">
+      <div class="tile ripple ion-activatable" (click)="profileService.publish()">
+        <div class="tile-icon" inlineSVG="/assets/identity/svg/publish.svg"></div>
+        <h2>{{ 'identity.publish' | translate}}</h2>
+        <span>{{ 'identity.publish-description' | translate }}</span>
+        <ion-ripple-effect></ion-ripple-effect>
+      </div>
+      <div class="tile ripple ion-activatable" (click)="profileService.editProfile()">
+        <div class="tile-icon" inlineSVG="/assets/identity/svg/edit.svg"></div>
+        <h2>{{ 'identity.edit' | translate}}</h2>
+        <span>{{ 'identity.edit-description' | translate }}</span>
+        <ion-ripple-effect></ion-ripple-effect>
+      </div>
+      <div class="tile ripple ion-activatable" (click)="profileService.shareIdentity()">
+        <div class="tile-icon" inlineSVG="/assets/identity/svg/share.svg"></div>
+        <h2>{{ 'common.share' | translate}}</h2>
+        <span>{{ 'identity.share-description' | translate }}</span>
+        <ion-ripple-effect></ion-ripple-effect>
+      </div>
+      <div class="tile ripple ion-activatable" (click)="exportMnemonic()">
+        <div class="tile-icon" inlineSVG="/assets/identity/svg/export.svg"></div>
+        <h2>{{ 'identity.export-mnemonics' | translate}}</h2>
+        <span>{{ 'identity.export-mnemonics-description' | translate}}</span>
+        <ion-ripple-effect></ion-ripple-effect>
+      </div>
+    </div>
 
-    <ion-grid class="options-grid">
-      <ion-row class="options-row">
-        <ion-col size="5.8" class="publish ripple ion-activatable" (click)="profileService.publish()">
-          <div class="inline-svg" inlineSVG="/assets/identity/svg/publish.svg"></div>
-          <h2>{{ 'identity.publish' | translate}}</h2>
-          <span>{{ 'identity.publish-description' | translate }}</span>
-          <ion-ripple-effect></ion-ripple-effect>
-        </ion-col>
-        <ion-col size="5.8" class="edit ripple ion-activatable" (click)="profileService.editProfile()">
-          <div class="inline-svg" inlineSVG="/assets/identity/svg/edit.svg"></div>
-          <h2>{{ 'identity.edit' | translate}}</h2>
-          <span>{{ 'identity.edit-description' | translate }}</span>
-          <ion-ripple-effect></ion-ripple-effect>
-        </ion-col>
-        <ion-col size="5.8" class="share ripple ion-activatable" (click)="profileService.shareIdentity()">
-          <div class="inline-svg" inlineSVG="/assets/identity/svg/share.svg"></div>
-          <h2>{{ 'common.share' | translate}}</h2>
-          <span>{{ 'identity.share-description' | translate }} </span>
-          <ion-ripple-effect></ion-ripple-effect>
-        </ion-col>
-        <ion-col size="5.8" class="export ripple ion-activatable" (click)="exportMnemonic()">
-          <div class="inline-svg" inlineSVG="/assets/identity/svg/export.svg"></div>
-          <h2>{{ 'identity.export-mnemonics' | translate}}</h2>
-          <span>{{ 'identity.export-mnemonics-description' | translate}}</span>
-          <ion-ripple-effect></ion-ripple-effect>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-
-  </ion-grid>
+  </div>
 </ion-content>
