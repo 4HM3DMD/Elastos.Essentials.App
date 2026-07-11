@@ -43,7 +43,12 @@ import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  template: '<ion-app><ion-router-outlet [swipeGesture]="false"></ion-router-outlet><ui-tab-bar *ngIf="tabsVisible$ | async"></ui-tab-bar></ion-app>'
+  // The tab bar stays mounted and hides via a class so it can slide away in sync
+  // with page transitions instead of blinking out of the DOM (an *ngIf here made
+  // every push into a bar-less page pop the bar instantly - felt bolted-on). The
+  // async pipe starts null, so the hidden class is applied from the first frame:
+  // a user who disabled the bar never sees it flash on at launch.
+  template: '<ion-app><ion-router-outlet [swipeGesture]="false"></ion-router-outlet><ui-tab-bar [class.tab-bar-hidden]="!(tabsVisible$ | async)"></ui-tab-bar></ion-app>'
   // BPI 20200322: With the onpush detection strategy angular seems to work 5 to 10x faster for rendering
   // But this created some refresh bugs in some components, as we need to manually push more changes
   // To be continued. NOTE: Comment out the line below if too many problems for now!

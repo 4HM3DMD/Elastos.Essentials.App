@@ -59,23 +59,31 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
   // and switch instantly (no forward-push slide), and the view stack is reset each
   // time instead of growing on every tap. The Hub (Elastos) is a tab root like the
   // others, so it shows no back control - users return via the tab bar.
-  public async onHome(): Promise<void> {
-    await this.globalNav.navigateTabRoot(App.LAUNCHER, '/launcher/home');
+  // Re-tapping the tab you are already on (exact root match, not just the same
+  // section - from a section sub-page the tap must still pop to the root) is a
+  // no-op instead of a pointless re-navigation.
+  private async switchTab(context: App, route: string): Promise<void> {
+    if (this.router.url === route) return;
+    await this.globalNav.navigateTabRoot(context, route);
   }
 
-  public async onWallet(): Promise<void> {
-    await this.globalNav.navigateTabRoot(App.WALLET, '/wallet/wallet-home');
+  public onHome(): Promise<void> {
+    return this.switchTab(App.LAUNCHER, '/launcher/home');
   }
 
-  public async onElastos(): Promise<void> {
-    await this.globalNav.navigateTabRoot(App.LAUNCHER, '/launcher/elastos');
+  public onWallet(): Promise<void> {
+    return this.switchTab(App.WALLET, '/wallet/wallet-home');
   }
 
-  public async onBrowser(): Promise<void> {
-    await this.globalNav.navigateTabRoot(App.DAPP_BROWSER, '/dappbrowser/home');
+  public onElastos(): Promise<void> {
+    return this.switchTab(App.LAUNCHER, '/launcher/elastos');
   }
 
-  public async onMenu(): Promise<void> {
-    await this.globalNav.navigateTabRoot(App.SETTINGS, '/settings/menu');
+  public onBrowser(): Promise<void> {
+    return this.switchTab(App.DAPP_BROWSER, '/dappbrowser/home');
+  }
+
+  public onMenu(): Promise<void> {
+    return this.switchTab(App.SETTINGS, '/settings/menu');
   }
 }

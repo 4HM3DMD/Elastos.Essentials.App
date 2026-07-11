@@ -4,6 +4,18 @@
   right: 0;
   bottom: 0;
   z-index: 100;
+  // Slide away/back in sync with page transitions instead of popping: the shell
+  // toggles .tab-bar-hidden (the bar stays mounted). Slightly quicker than the
+  // ~500ms iOS page push so the bar is gone before the incoming page settles.
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease;
+  will-change: transform;
+}
+
+:host(.tab-bar-hidden) {
+  // +40px clears the pill's bottom margin and the Hub disc's raised overhang.
+  transform: translateY(calc(100% + 40px));
+  opacity: 0;
+  pointer-events: none;
 }
 
 .tab-bar {
@@ -37,7 +49,12 @@
     color: var(--essentials-text-tertiary);
     font-family: inherit;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, transform 0.15s ease;
+
+    // Immediate physical response on touch, released with the same ease.
+    &:active {
+      transform: scale(0.92);
+    }
 
     ion-icon {
       font-size: 24px;
