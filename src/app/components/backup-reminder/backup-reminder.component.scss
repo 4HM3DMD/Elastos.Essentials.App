@@ -16,13 +16,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    // Soft warning tint (not alarming red): a nudge, not an error.
-    background: rgba(255, 213, 52, 0.14);
+    // Solid accent disc: the identity glyph is white, so a solid brand-accent disc keeps
+    // it readable in both the light and dark theme (the accent is theme-independent).
+    background: var(--essentials-accent, #ed6e2b);
     margin-bottom: 18px;
 
-    ion-icon {
-      font-size: 28px;
-      color: var(--essentials-warning, #ffd534);
+    img {
+      width: 30px;
+      height: 30px;
     }
   }
 
