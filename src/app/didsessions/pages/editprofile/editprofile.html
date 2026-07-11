@@ -1,18 +1,25 @@
 <ion-content>
   <app-titlebar></app-titlebar>
   <div class="name-identity">
-    <h1 class="heading">{{ 'didsessions.name-your-identity' | translate }}</h1>
-    <p class="subtitle">{{ 'didsessions.name-subtitle' | translate }}</p>
+    <div class="content-top">
+      <div class="hero">
+        <div class="avatar-preview" [class.filled]="name?.trim()">
+          <span class="initial" *ngIf="name?.trim()">{{ name.trim().charAt(0).toUpperCase() }}</span>
+          <ion-icon name="person-outline" *ngIf="!name?.trim()"></ion-icon>
+        </div>
+        <h1 class="heading">{{ 'didsessions.name-your-identity' | translate }}</h1>
+        <p class="subtitle">{{ 'didsessions.name-subtitle' | translate }}</p>
+      </div>
 
-    <label class="field-label">{{ 'didsessions.your-name-label' | translate }}</label>
-    <div class="input-wrap">
-      <ion-input class="name-input" [placeholder]="'didsessions.enter-name-here' | translate" #input
-        [(ngModel)]="name" name="name" ngDefaultControl></ion-input>
-      <span class="change-hint" *ngIf="name?.trim()">{{ 'didsessions.change-anytime' | translate }}</span>
+      <div class="form">
+        <label class="field-label">{{ 'didsessions.your-name-label' | translate }}</label>
+        <div class="input-wrap">
+          <ion-input class="name-input" [placeholder]="'didsessions.enter-name-here' | translate" #input
+            [(ngModel)]="name" name="name" ngDefaultControl></ion-input>
+        </div>
+        <p class="did-helper">{{ 'didsessions.did-explainer' | translate }}</p>
+      </div>
     </div>
-    <p class="did-helper">{{ 'didsessions.did-explainer' | translate }}</p>
-
-    <p class="reassurance">{{ 'didsessions.name-reassurance' | translate }}</p>
 
     <div class="footer">
       <ebutton [arrow]="true" [disabled]="creatingDid || !name?.trim()" (clicked)="next()"

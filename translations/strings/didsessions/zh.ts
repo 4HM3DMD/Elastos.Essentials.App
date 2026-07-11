@@ -62,6 +62,11 @@ export const zh = {
     'enter-mnemonic': '请在此输入助记词',
     'import-prompt': '请输入您的12个安全字（助记词）以导入您的身份',
     'import-wallet-prompt': '请输入您的12个安全字（助记词）以导入您的钱包',
+    'import-identity-heading': '导入您的身份',
+    'import-identity-sub': '输入您的12个助记词以恢复您的身份。您也可以粘贴助记词或扫描二维码。',
+    'enter-recovery-phrase': '输入助记词',
+    'import-edit-hint': '点按任意单词以编辑您的助记词。',
+    'import-continue-entering': '继续输入助记词',
 
     // Multiple DIDs to import screen
     'more-than-one-import-did-pick-one': '有多个身份，请选择一个进行导入',

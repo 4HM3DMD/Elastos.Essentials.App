@@ -70,6 +70,11 @@ export const it = {
       "Inserisci le tue 12 parole mnemoniche o scansiona il tuo codice QR cliccando sull'icona posta in alto per importare la tua identità",
     'import-wallet-prompt':
       "Inserisci le tue 12 parole mnemoniche o scansiona il tuo codice QR cliccando sull'icona posta in alto per importare il tuo portafoglio",
+    'import-identity-heading': 'Importa la tua identità',
+    'import-identity-sub': "Inserisci la tua frase di recupero di 12 parole per ripristinare la tua identità. Puoi incollarla o scansionare il suo codice QR.",
+    'enter-recovery-phrase': 'Inserisci la frase di recupero',
+    'import-edit-hint': 'Tocca una parola per modificare la tua frase di recupero.',
+    'import-continue-entering': 'Continua a inserire la frase',
 
     // Multiple DIDs to import screen
     'more-than-one-import-did-pick-one':

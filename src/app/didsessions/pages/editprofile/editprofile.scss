@@ -15,113 +15,137 @@ ion-content {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: 24px 20px calc(env(safe-area-inset-bottom) + 24px);
+  padding: 24px 22px calc(env(safe-area-inset-bottom) + 20px);
 
-  .heading {
-    margin: 12px 0 12px;
-    font-size: 40px;
-    font-weight: 500;
-    line-height: 1.15;
-    color: var(--ion-text-color);
+  // Hero + form form one block, vertically centred in the space above the footer so
+  // the screen never shows a dead void between the field and the button.
+  .content-top {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
-  // Value-prop line under the heading (SCR-110).
-  .subtitle {
-    margin: 0 0 28px;
-    font-size: 17px;
-    font-weight: 400;
-    line-height: 1.4;
-    color: var(--essentials-text-secondary);
-  }
-
-  // Field label above the input (SCR-111).
-  .field-label {
-    display: block;
-    margin: 0 0 10px 2px;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--ion-text-color);
-  }
-
-  // Wraps the input so the "change anytime" hint can sit inside on the right (SCR-115).
-  .input-wrap {
-    position: relative;
-    flex: 0 0 auto;
-    width: 100%;
-  }
-
-  .name-input {
-    // Fixed height + no grow so the field never stretches to fill the flex column.
-    flex: 0 0 auto;
-    height: 56px;
-    width: 100%;
-    --padding-start: 18px;
-    --padding-end: 110px;
-    --padding-top: 0;
-    --padding-bottom: 0;
-    // Same token-based surface as the 2026 chooser rows: subtle top-light gradient
-    // over the theme-adaptive box color, so one style works for light and dark.
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
-      var(--essentials-box-color);
-    border: 1px solid var(--essentials-border-separator-color);
-    border-radius: 16px;
-    font-size: 17px;
-    color: var(--ion-text-color);
-    text-align: left;
-  }
-
-  // Trailing "change anytime" hint shown only when the field has a value (SCR-115).
-  .change-hint {
-    position: absolute;
-    top: 50%;
-    right: 18px;
-    transform: translateY(-50%);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--essentials-text-secondary);
-    pointer-events: none;
-  }
-
-  // DID explainer helper caption under the field (SCR-112).
-  .did-helper {
-    margin: 10px 2px 0;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.45;
-    color: var(--essentials-text-secondary);
-  }
-
-  // Reassurance microcopy adjacent to the CTA (SCR-113).
-  .reassurance {
-    margin: 0 0 14px;
+  .hero {
     text-align: center;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.45;
-    color: var(--essentials-text-secondary);
+    margin-bottom: 32px;
+
+    // Live avatar preview: a person glyph while empty, the first initial once a name
+    // is typed. Gives the screen a focal point and reflects the identity taking shape.
+    .avatar-preview {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+        var(--essentials-box-color);
+      border: 1px solid var(--essentials-border-separator-color);
+      transition: background 0.2s ease, border-color 0.2s ease;
+
+      ion-icon {
+        font-size: 40px;
+        color: var(--essentials-text-secondary);
+      }
+
+      .initial {
+        font-size: 42px;
+        font-weight: 600;
+        line-height: 1;
+        color: var(--essentials-accent);
+      }
+
+      &.filled {
+        background: linear-gradient(180deg, rgba(237, 110, 43, 0.22) 0%, rgba(237, 110, 43, 0.10) 100%);
+        border-color: rgba(237, 110, 43, 0.4);
+      }
+    }
+
+    .heading {
+      margin: 0 0 10px;
+      font-size: 30px;
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      color: var(--ion-text-color);
+    }
+
+    .subtitle {
+      margin: 0 auto;
+      max-width: 320px;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.45;
+      color: var(--essentials-text-secondary);
+    }
   }
 
-  // Secondary import entry below the primary CTA (SCR-114).
-  .import-link {
-    display: block;
-    width: 100%;
-    margin: 16px auto 0;
-    padding: 0;
-    background: transparent;
-    border: none;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 500;
-    text-align: center;
-    text-decoration: underline;
-    color: var(--ion-text-color);
-    cursor: pointer;
+  .form {
+    // Field label above the input.
+    .field-label {
+      display: block;
+      margin: 0 0 10px 2px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+
+    .input-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .name-input {
+      height: 56px;
+      width: 100%;
+      --padding-start: 18px;
+      --padding-end: 18px;
+      --padding-top: 0;
+      --padding-bottom: 0;
+      // Same token-based surface as the 2026 chooser rows: subtle top-light gradient
+      // over the theme-adaptive box color, so one style works for light and dark.
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+        var(--essentials-box-color);
+      border: 1px solid var(--essentials-border-separator-color);
+      border-radius: 16px;
+      font-size: 17px;
+      color: var(--ion-text-color);
+      text-align: left;
+    }
+
+    // DID explainer helper caption under the field. Left-aligned to the field.
+    .did-helper {
+      margin: 12px 2px 0;
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.45;
+      color: var(--essentials-text-secondary);
+    }
   }
 
-  // Continue button sits at the bottom of the screen.
+  // Continue button + reassurance + import link, pinned to the bottom of the screen.
   .footer {
-    margin-top: auto;
-    padding-top: 24px;
+    flex: 0 0 auto;
+    padding-top: 20px;
+
+    // Secondary import entry below the primary CTA.
+    .import-link {
+      display: block;
+      width: 100%;
+      margin: 16px auto 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 500;
+      text-align: center;
+      text-decoration: underline;
+      color: var(--ion-text-color);
+      cursor: pointer;
+    }
   }
 }

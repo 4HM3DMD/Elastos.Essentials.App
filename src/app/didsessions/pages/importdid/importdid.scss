@@ -1,19 +1,89 @@
 @import "src/app/didsessions/root.scss";
 
 .container {
-  padding: 24px 22px;
+  padding: 24px 22px calc(env(safe-area-inset-bottom) + 20px);
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  min-height: 100%;
 
-  .prompt {
-    margin: 0 0 24px;
-    padding: 0 4px;
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 1.5;
-    color: var(--essentials-text-secondary);
+  // Empty state: a self-contained centred cluster (glyph + heading + subcopy + CTA) that
+  // fills the screen, so it reads as a purposeful starting point rather than a bare grid.
+  .empty-state {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
+    padding: 0 8px;
+
+    .glyph {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 22px;
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+      border: 1px solid rgba(237, 110, 43, 0.28);
+
+      ion-icon {
+        font-size: 38px;
+        color: var(--essentials-accent);
+      }
+    }
+
+    .empty-title {
+      margin: 0 0 10px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      color: var(--ion-text-color);
+    }
+
+    .empty-sub {
+      margin: 0 auto 28px;
+      max-width: 300px;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--essentials-text-secondary);
+    }
+
+    // Primary CTA sits directly under the message; full-width for a strong target.
+    .cta {
+      align-self: stretch;
+      width: 100%;
+    }
+  }
+
+  .filled-state {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding-top: 4px;
+
+    .prompt {
+      margin: 0 0 20px;
+      padding: 0 4px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: var(--essentials-text-secondary);
+      text-align: center;
+    }
+
+    // Action pinned to the bottom of the filled view, full-width.
+    .actions {
+      margin-top: auto;
+      padding-top: 20px;
+
+      ebutton {
+        width: 100%;
+      }
+    }
   }
 
   .mnemonic-grid {
@@ -79,14 +149,6 @@
           }
         }
       }
-    }
-  }
-
-  .btn-row {
-    margin-top: 12px;
-
-    ebutton {
-      width: 100%;
     }
   }
 }

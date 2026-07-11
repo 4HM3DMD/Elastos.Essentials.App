@@ -2,28 +2,45 @@
   <app-titlebar></app-titlebar>
   <div class="container" [class.blur]="loadingIdentity">
 
-    <p class="prompt">{{ 'didsessions.import-prompt' | translate }}</p>
-
-    <div class="mnemonic-grid" (click)="startMnemonicInput()">
-      <ion-row class="mnemonic-row" *ngFor="let i of [1,4,7,10]">
-        <ion-col size="4" class="word-chip" [class.selectedCol]="isWord(mnemonicWords[i - 1])">
-          <span class="mnemonic-index">{{ i }}</span>
-          <ion-label class="word-text">{{ mnemonicWords[i - 1] }}</ion-label>
-        </ion-col>
-        <ion-col size="4" class="word-chip" [class.selectedCol]="isWord(mnemonicWords[i])">
-          <span class="mnemonic-index">{{ i + 1 }}</span>
-          <ion-label class="word-text">{{ mnemonicWords[i] }}</ion-label>
-        </ion-col>
-        <ion-col size="4" class="word-chip" [class.selectedCol]="isWord(mnemonicWords[i + 1])">
-          <span class="mnemonic-index">{{ i + 2 }}</span>
-          <ion-label class="word-text">{{ mnemonicWords[i + 1] }}</ion-label>
-        </ion-col>
-      </ion-row>
+    <!-- Empty state: centred glyph + heading + subcopy + a clear CTA that opens the
+         recovery-phrase keypad (which supports typing word-by-word and pasting). -->
+    <div class="empty-state" *ngIf="mnemonicWords.length === 0">
+      <div class="glyph">
+        <ion-icon name="key-outline"></ion-icon>
+      </div>
+      <h1 class="empty-title">{{ 'didsessions.import-identity-heading' | translate }}</h1>
+      <p class="empty-sub">{{ 'didsessions.import-identity-sub' | translate }}</p>
+      <ebutton class="cta" (clicked)="startMnemonicInput()"
+        [title]="'didsessions.enter-recovery-phrase' | translate"></ebutton>
     </div>
 
-    <ion-row *ngIf="inputMnemonicCompleted()" class="btn-row">
-      <ebutton (clicked)="promptStorePassword()" [title]="'common.continue' | translate"> </ebutton>
-    </ion-row>
+    <!-- Filled state: the entered words shown as a grid. Tapping any word reopens the keypad. -->
+    <div class="filled-state" *ngIf="mnemonicWords.length > 0">
+      <p class="prompt">{{ 'didsessions.import-edit-hint' | translate }}</p>
+      <div class="mnemonic-grid" (click)="startMnemonicInput()">
+        <ion-row class="mnemonic-row" *ngFor="let i of [1,4,7,10]">
+          <ion-col size="4" class="word-chip" [class.selectedCol]="isWord(mnemonicWords[i - 1])">
+            <span class="mnemonic-index">{{ i }}</span>
+            <ion-label class="word-text">{{ mnemonicWords[i - 1] }}</ion-label>
+          </ion-col>
+          <ion-col size="4" class="word-chip" [class.selectedCol]="isWord(mnemonicWords[i])">
+            <span class="mnemonic-index">{{ i + 1 }}</span>
+            <ion-label class="word-text">{{ mnemonicWords[i] }}</ion-label>
+          </ion-col>
+          <ion-col size="4" class="word-chip" [class.selectedCol]="isWord(mnemonicWords[i + 1])">
+            <span class="mnemonic-index">{{ i + 2 }}</span>
+            <ion-label class="word-text">{{ mnemonicWords[i + 1] }}</ion-label>
+          </ion-col>
+        </ion-row>
+      </div>
+
+      <div class="actions">
+        <ebutton *ngIf="!inputMnemonicCompleted()" (clicked)="startMnemonicInput()"
+          [title]="'didsessions.import-continue-entering' | translate"></ebutton>
+        <ebutton *ngIf="inputMnemonicCompleted()" [arrow]="true" (clicked)="promptStorePassword()"
+          [title]="'common.continue' | translate"></ebutton>
+      </div>
+    </div>
 
   </div>
 

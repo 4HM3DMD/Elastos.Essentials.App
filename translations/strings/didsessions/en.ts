@@ -59,7 +59,7 @@ export const en = {
     'name-your-identity': 'Name Your Identity',
     'name-subtitle': 'One identity for money, apps and credentials, owned by you, on chain.',
     'your-name-label': 'Your Name',
-    'did-explainer': 'Creates your DID (did:elastos:...), published to the Identity Chain (EID). This is your self-owned Web3 identity.',
+    'did-explainer': 'Creates your self-owned DID on the Elastos Identity Chain — about 10 seconds, no seed phrase needed now. You can back it up later.',
     'name-reassurance': 'Takes about 10 seconds. No seed phrase now, backup comes later.',
     'already-have-identity': 'I already have one',
     'change-anytime': 'change anytime',
@@ -76,6 +76,11 @@ export const en = {
     'enter-mnemonic': 'Enter mnemonic here',
     'import-prompt': 'Please enter your 12 mnemonic words or scan your QR Code above to import your identity',
     'import-wallet-prompt': 'Please enter your 12 mnemonic words or scan your QR Code above to import your wallet',
+    'import-identity-heading': 'Import your identity',
+    'import-identity-sub': 'Enter your 12-word recovery phrase to restore your identity. You can paste it, or scan its QR code.',
+    'enter-recovery-phrase': 'Enter recovery phrase',
+    'import-edit-hint': 'Tap any word to edit your recovery phrase.',
+    'import-continue-entering': 'Continue entering phrase',
 
     // Multiple DIDs to import screen
     'more-than-one-import-did-pick-one':

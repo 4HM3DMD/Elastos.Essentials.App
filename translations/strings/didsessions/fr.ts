@@ -65,6 +65,11 @@ export const fr = {
     'enter-mnemonic': 'Saisie du mnémonique ici',
     'import-prompt': 'Veuillez saisir vos 12 mots secrets pour importer votre identité',
     'import-wallet-prompt': 'Veuillez saisir vos 12 mots secrets pour importer votre portefeuille',
+    'import-identity-heading': 'Importer votre identité',
+    'import-identity-sub': 'Saisissez votre phrase de récupération de 12 mots pour restaurer votre identité. Vous pouvez la coller ou scanner son QR code.',
+    'enter-recovery-phrase': 'Saisir la phrase de récupération',
+    'import-edit-hint': 'Touchez un mot pour modifier votre phrase de récupération.',
+    'import-continue-entering': 'Continuer la saisie',
 
     // Multiple DIDs to import screen
     'more-than-one-import-did-pick-one':
