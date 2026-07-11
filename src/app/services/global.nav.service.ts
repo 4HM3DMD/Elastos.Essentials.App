@@ -176,6 +176,28 @@ export class GlobalNavService {
   }
 
   /**
+   * Switches to a top-level tab root (Home / Wallet / Hub / dApps / Settings).
+   *
+   * Unlike navigateRoot(), which uses navigateForward() and therefore stacks a new
+   * Ionic view on every call, this uses navCtrl.navigateRoot() so a tab switch RESETS
+   * the view stack: no unbounded view/memory growth, and the iOS swipe-back gesture
+   * can't walk back through tab history. The transition is disabled (animated: false)
+   * for an instant, native tab-switch feel instead of the forward "push" slide. Tab
+   * roots never carry an intent result, so the navigateForward preservation that
+   * navigateRoot() relies on (see BPI NOTE above) does not apply here.
+   */
+  public navigateTabRoot(context: string, route: string): Promise<boolean> {
+    Logger.log('Nav', 'Switching to tab root: ' + route);
+
+    // A tab is always a fresh single-entry root; drop any prior context history.
+    this.navigationHistory = [{ context, route }];
+
+    return this.zone.run(() => {
+      return this.navCtrl.navigateRoot(route, { animated: false });
+    });
+  }
+
+  /**
    * Note: if context is null, uses the current context.
    */
   public navigateTo(context: string, route: string, routerOptions?: NavigationOptions): Promise<boolean> {

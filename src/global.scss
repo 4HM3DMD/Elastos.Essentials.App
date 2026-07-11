@@ -154,10 +154,11 @@ body {
 /** When the bottom tab bar is shown, reserve space at the bottom of scroll views.
     :where() keeps this at zero specificity so any page that sets its own
     --padding-bottom still wins; pages without one get the tab clearance.
-    Clearance = 64px bar + 12px floating bottom margin + 12px breathing room; the
-    old 64px value let the last list row sit half-hidden behind the floating pill. **/
+    Clearance = 64px bar + its bottom margin max(safe-area, 16px) + 12px breathing
+    room; keep this in step with the bar's margin in ui-tab-bar.component.scss so the
+    last list row always clears the floating pill. **/
 body.has-tabbar :where(ion-content) {
-    --padding-bottom: calc(88px + env(safe-area-inset-bottom));
+    --padding-bottom: calc(76px + max(env(safe-area-inset-bottom), 16px));
 }
 
 // For "primary" ion-buttons: match the ebutton accent so all primary actions look alike

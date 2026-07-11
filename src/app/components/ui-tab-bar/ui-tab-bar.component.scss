@@ -11,7 +11,9 @@
   align-items: flex-start;
   justify-content: space-around;
   height: 64px;
-  margin: 0 16px calc(env(safe-area-inset-bottom) + 12px);
+  // Sit just above the home-indicator safe area (anchored low), with a 16px floor
+  // on devices that have no bottom inset - rather than floating a further 12px up.
+  margin: 0 16px max(env(safe-area-inset-bottom), 16px);
   border-radius: 32px;
   // Figma: the floating tab bar is a frosted "Glass Effect" panel. A slightly
   // opaque dark base keeps the labels readable over whatever scrolls behind it.

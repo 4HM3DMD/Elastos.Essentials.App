@@ -55,34 +55,27 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
     else if (url.startsWith('/launcher/home')) this.active = 'home';
   }
 
+  // Every tab switches through navigateTabRoot: all five reset to their own root
+  // and switch instantly (no forward-push slide), and the view stack is reset each
+  // time instead of growing on every tap. The Hub (Elastos) is a tab root like the
+  // others, so it shows no back control - users return via the tab bar.
   public async onHome(): Promise<void> {
-    // LOGIC:inconsistent-navigation-primitive — route Home through the same
-    // navigateRoot primitive as every other tab (Wallet/Elastos/Browser/Menu)
-    // so all five tabs reset their context and animate identically, instead of
-    // Home alone using navigateHome()'s back-animated navCtrl.navigateRoot.
-    this.globalNav.clearNavigationHistory();
-    await this.globalNav.navigateRoot(App.LAUNCHER, '/launcher/home');
+    await this.globalNav.navigateTabRoot(App.LAUNCHER, '/launcher/home');
   }
 
   public async onWallet(): Promise<void> {
-    this.globalNav.clearNavigationHistory();
-    await this.globalNav.navigateRoot(App.WALLET, '/wallet/wallet-home');
+    await this.globalNav.navigateTabRoot(App.WALLET, '/wallet/wallet-home');
   }
 
   public async onElastos(): Promise<void> {
-    // The Hub is a tab root like the others: switch to it (no back stack), so it
-    // does not show a back control. Users return via the tab bar, not a chevron.
-    this.globalNav.clearNavigationHistory();
-    await this.globalNav.navigateRoot(App.LAUNCHER, '/launcher/elastos');
+    await this.globalNav.navigateTabRoot(App.LAUNCHER, '/launcher/elastos');
   }
 
   public async onBrowser(): Promise<void> {
-    this.globalNav.clearNavigationHistory();
-    await this.globalNav.navigateRoot(App.DAPP_BROWSER, '/dappbrowser/home');
+    await this.globalNav.navigateTabRoot(App.DAPP_BROWSER, '/dappbrowser/home');
   }
 
   public async onMenu(): Promise<void> {
-    this.globalNav.clearNavigationHistory();
-    await this.globalNav.navigateRoot(App.SETTINGS, '/settings/menu');
+    await this.globalNav.navigateTabRoot(App.SETTINGS, '/settings/menu');
   }
 }
