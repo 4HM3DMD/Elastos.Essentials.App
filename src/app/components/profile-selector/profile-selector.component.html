@@ -26,6 +26,16 @@
 
         <ion-ripple-effect></ion-ripple-effect>
       </button>
+
+      <!-- Add a new profile (existing create/import flow). -->
+      <button type="button" class="profile-row add-row ion-activatable" (click)="onAddProfile()">
+        <span class="add-icon"><ion-icon name="add"></ion-icon></span>
+        <span class="meta">
+          <span class="name">{{ 'launcher.profile-add' | translate }}</span>
+          <span class="did">{{ 'launcher.profile-add-sub' | translate }}</span>
+        </span>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
     </div>
   </div>
 </ion-content>

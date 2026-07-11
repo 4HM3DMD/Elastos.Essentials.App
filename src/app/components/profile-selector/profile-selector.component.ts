@@ -126,4 +126,10 @@ export class ProfileSelectorComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     this.events.publish('showDeleteIdentityPrompt', row.entry);
   }
+
+  /** Add a profile: the existing create/import flow (its first screen offers both). */
+  public onAddProfile() {
+    void this.modalCtrl.dismiss();
+    void this.globalNav.navigateTo(App.DID_SESSIONS, '/didsessions/createidentity');
+  }
 }

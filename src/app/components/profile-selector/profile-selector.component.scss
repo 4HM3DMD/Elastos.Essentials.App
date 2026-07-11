@@ -105,5 +105,22 @@
         --ripple-color: var(--ion-text-color);
       }
     }
+
+    // "Add profile" row: a + disc in place of the avatar.
+    .add-row .add-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--essentials-border-separator-color);
+      color: var(--essentials-accent, #ed6e2b);
+
+      ion-icon {
+        font-size: 24px;
+      }
+    }
   }
 }
