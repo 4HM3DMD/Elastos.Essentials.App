@@ -127,9 +127,9 @@ export class ProfileSelectorComponent implements OnInit, OnDestroy {
     this.events.publish('showDeleteIdentityPrompt', row.entry);
   }
 
-  /** Add a profile: the existing create/import flow (its first screen offers both). */
+  /** Add a profile: the on-brand Add Profile entry (offers create + import), not the legacy didsessions welcome. */
   public onAddProfile() {
     void this.modalCtrl.dismiss();
-    void this.globalNav.navigateTo(App.DID_SESSIONS, '/didsessions/createidentity');
+    void this.globalNav.navigateTo(App.LAUNCHER, '/launcher/addprofile');
   }
 }

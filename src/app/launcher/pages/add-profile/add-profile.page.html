@@ -1,0 +1,24 @@
+<ion-content>
+  <app-titlebar></app-titlebar>
+
+  <div class="add-profile">
+    <div class="intro">
+      <div class="glyph">
+        <img src="/assets/launcher/apps/app-icons/identity.svg" alt="" />
+      </div>
+      <h1 class="title">{{ 'launcher.add-profile-heading' | translate }}</h1>
+      <p class="subtitle">{{ 'launcher.add-profile-sub' | translate }}</p>
+    </div>
+
+    <div class="card-group">
+      <ui-token-row icon="/assets/launcher/apps/app-icons/identity.svg"
+        [title]="'launcher.add-profile-create' | translate"
+        [sub]="'launcher.add-profile-create-sub' | translate" [chevron]="true"
+        (pressed)="onCreate()"></ui-token-row>
+      <ui-token-row icon="/assets/wallet/settings/wallet.svg"
+        [title]="'launcher.add-profile-import' | translate"
+        [sub]="'launcher.add-profile-import-sub' | translate" [chevron]="true"
+        (pressed)="onImport()"></ui-token-row>
+    </div>
+  </div>
+</ion-content>
