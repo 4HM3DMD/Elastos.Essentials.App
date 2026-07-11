@@ -61,9 +61,13 @@ export class UiTabBarComponent implements OnInit, OnDestroy {
   // others, so it shows no back control - users return via the tab bar.
   // Re-tapping the tab you are already on (exact root match, not just the same
   // section - from a section sub-page the tap must still pop to the root) is a
-  // no-op instead of a pointless re-navigation.
+  // no-op - but ONLY when there is nothing to reset. A tab root can also be
+  // reached by a forward push (e.g. home's Value pillar navigateTo's the wallet
+  // home): the URL then matches but cross-context history and stacked views
+  // remain, and the tap must still perform the root reset.
   private async switchTab(context: App, route: string): Promise<void> {
-    if (this.router.url === route) return;
+    const currentPath = this.router.url.split('?')[0].split('#')[0];
+    if (currentPath === route && !this.globalNav.canGoBack()) return;
     await this.globalNav.navigateTabRoot(context, route);
   }
 

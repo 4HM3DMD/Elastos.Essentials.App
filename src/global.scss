@@ -161,6 +161,16 @@ body.has-tabbar :where(ion-content) {
     --padding-bottom: calc(76px + max(env(safe-area-inset-bottom), 16px));
 }
 
+/** The has-tabbar class flips in one frame while the bar itself slides over
+    280ms, so animate the scroll area's padding at the bar's pace - otherwise
+    bottom-scrolled content reflows ~92px in a single frame mid-transition.
+    Disabled with reduced motion, matching the bar (which then also snaps). **/
+@media (prefers-reduced-motion: no-preference) {
+    ion-content::part(scroll) {
+        transition: padding-bottom 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
 // For "primary" ion-buttons: match the ebutton accent so all primary actions look alike
 .ion-color-primary {
     --ion-color-base: var(--essentials-button-background-color) !important;

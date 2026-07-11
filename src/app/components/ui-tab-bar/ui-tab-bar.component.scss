@@ -7,15 +7,34 @@
   // Slide away/back in sync with page transitions instead of popping: the shell
   // toggles .tab-bar-hidden (the bar stays mounted). Slightly quicker than the
   // ~500ms iOS page push so the bar is gone before the incoming page settles.
-  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease;
+  // Slide only - animating opacity would make the host a grouping element and
+  // detach the pill's backdrop-filter from the page behind it (blur pop).
+  // visibility flips AFTER the slide (0.28s delay) so the hidden bar leaves the
+  // render, focus and accessibility trees - *ngIf used to guarantee that.
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0s;
   will-change: transform;
 }
 
 :host(.tab-bar-hidden) {
   // +40px clears the pill's bottom margin and the Hub disc's raised overhang.
   transform: translateY(calc(100% + 40px));
-  opacity: 0;
+  visibility: hidden;
   pointer-events: none;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.28s;
+}
+
+// Keyboard-driven hides must be immediate: the keyboard rises over the bar's
+// band in the same frames, and a lingering mid-slide pill under a resizing
+// viewport reads as a glitch (KeyboardResizeMode ionic).
+:host-context(body.keyboard-open) {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  :host(.tab-bar-hidden) {
+    transition: none;
+  }
 }
 
 .tab-bar {
@@ -54,6 +73,14 @@
     // Immediate physical response on touch, released with the same ease.
     &:active {
       transform: scale(0.92);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: color 0.2s ease;
+
+      &:active {
+        transform: none;
+      }
     }
 
     ion-icon {

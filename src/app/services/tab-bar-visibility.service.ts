@@ -107,8 +107,17 @@ export class TabBarVisibilityService {
         this.currentUrl$.next(url);
       });
 
-    this.keyboard.onKeyboardWillShow().subscribe(() => this.keyboardOpen$.next(true));
-    this.keyboard.onKeyboardWillHide().subscribe(() => this.keyboardOpen$.next(false));
+    // The keyboard state is mirrored onto <body> so the tab bar can skip its
+    // slide transition for keyboard-driven hides (the keyboard rises over the
+    // bar's band in the same frames - the hide must be immediate there).
+    this.keyboard.onKeyboardWillShow().subscribe(() => {
+      document.body.classList.add('keyboard-open');
+      this.keyboardOpen$.next(true);
+    });
+    this.keyboard.onKeyboardWillHide().subscribe(() => {
+      document.body.classList.remove('keyboard-open');
+      this.keyboardOpen$.next(false);
+    });
 
     // Follow the kill-switch preference (changes apply live).
     this.prefs.preferenceListener.subscribe(pref => {
