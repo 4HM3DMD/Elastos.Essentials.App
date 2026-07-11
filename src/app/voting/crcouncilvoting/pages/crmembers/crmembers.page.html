@@ -78,7 +78,10 @@
 
         <!-- Content-shaped loading state: rows mirroring the member list
              (40px avatar + name lines), instead of a bare spinner. -->
-        <div *ngIf="!crMembersFetched" class="list-skeleton">
+        <!-- Only while genuinely empty-and-loading: on a revisit the singleton
+             service cache already has members (the list above renders), so the
+             skeleton must not stack beneath it. -->
+        <div *ngIf="!crMembersFetched && crCouncilService.crmembers.length == 0" class="list-skeleton">
             <ui-skeleton kind="row" [rows]="12" [disc]="40"></ui-skeleton>
         </div>
 

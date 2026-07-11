@@ -53,14 +53,20 @@ export class MyVotesPage implements OnInit, OnDestroy {
     }
 
     async initData() {
-        if (WalletType.STANDARD !== this.voteService.sourceSubwallet.masterWallet.type) {
-            this.canMintBPoSNFT = false;
-        }
-
         this.dataFetched = false;
-        await this.dpos2Service.init();
-        this.votes = await this.dpos2Service.geMyVoteds();
-        this.dataFetched = true;
+        try {
+            if (WalletType.STANDARD !== this.voteService.sourceSubwallet.masterWallet.type) {
+                this.canMintBPoSNFT = false;
+            }
+
+            await this.dpos2Service.init();
+            this.votes = await this.dpos2Service.geMyVoteds();
+        } catch (e) {
+            Logger.warn(App.DPOS2, 'my-votes initData failed:', e);
+        } finally {
+            // Always clear the skeleton, even on an early throw, so it can't hang.
+            this.dataFetched = true;
+        }
     }
 
     ionViewWillEnter() {

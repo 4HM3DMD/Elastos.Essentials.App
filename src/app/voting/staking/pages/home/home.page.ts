@@ -82,14 +82,20 @@ export class StakingHomePage implements OnInit {
                   return this.globalNav.navigateHome();
               }
 
-              await this.stakeService.initData();
-              this.addShowItems();
-              this.addButtonList();
-              this.addVoteItems();
-              this.votesShowArrow = this.stakeService.votesRight.totalVotesRight > 0;
-              this.dataFetched = true;
+              try {
+                  await this.stakeService.initData();
+                  this.addShowItems();
+                  this.addButtonList();
+                  this.addVoteItems();
+                  this.votesShowArrow = this.stakeService.votesRight.totalVotesRight > 0;
 
-              void this.updateRewardInfo()
+                  void this.updateRewardInfo()
+              } catch (e) {
+                  Logger.warn(App.STAKING, 'staking initData failed:', e);
+              } finally {
+                  // Always clear the skeleton, even on a fetch throw, so it can't hang.
+                  this.dataFetched = true;
+              }
             }
         })
     }

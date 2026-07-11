@@ -131,6 +131,10 @@ export class WalletHomePage implements OnInit, OnDestroy {
     @ViewChild(TitleBarComponent, { static: true }) titleBar: TitleBarComponent;
 
     public masterWallet: MasterWallet = null;
+    // True once the wallet service finished initializing: the page skeleton shows
+    // only before this, so a user with zero wallets is not left on an endless
+    // skeleton (the page body simply stays empty, as before).
+    public walletServiceReady = false;
     public networkWallet: AnyNetworkWallet = null;
     private displayableSubWallets: AnySubWallet[] = null;
     public stakingAssets: StakingData[] = null;
@@ -157,6 +161,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
     public noAddressForLedgerWallet = false;
 
     private activeNetworkWalletSubscription: Subscription = null;
+    private walletServiceStatusSubscription: Subscription = null;
     private activeNetworkSubscription: Subscription = null;
     private subWalletsListChangeSubscription: Subscription = null;
     private stakedAssetsUpdateSubscription: Subscription = null;
@@ -214,6 +219,15 @@ export class WalletHomePage implements OnInit, OnDestroy {
     ngOnInit() {
         this.showRefresher();
         void this.loadHideBalances();
+
+        // Once wallet-service init completes, stop showing the page skeleton even
+        // if no active wallet resolved (zero-wallet users), so it can't hang.
+        this.walletServiceStatusSubscription = this.walletManager.walletServiceStatus.subscribe(complete => {
+            if (complete) {
+                this.walletServiceReady = true;
+                this.cdr.markForCheck();
+            }
+        });
 
         // Re-render when the user toggles the native/fiat currency display.
         this.currencyChangeSubscription = this.currencyService.currencyChangedSubject.subscribe(() => {
@@ -300,6 +314,10 @@ export class WalletHomePage implements OnInit, OnDestroy {
         if (this.aggRowsSubscription) {
             this.aggRowsSubscription.unsubscribe();
             this.aggRowsSubscription = null;
+        }
+        if (this.walletServiceStatusSubscription) {
+            this.walletServiceStatusSubscription.unsubscribe();
+            this.walletServiceStatusSubscription = null;
         }
         if (this.activeNetworkWalletSubscription) {
             this.activeNetworkWalletSubscription.unsubscribe();

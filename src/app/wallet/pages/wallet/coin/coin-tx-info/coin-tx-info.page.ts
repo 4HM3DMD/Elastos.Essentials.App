@@ -147,7 +147,11 @@ export class CoinTxInfoPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    void this.init();
+    // Always clear the details skeleton once init settles, success or failure -
+    // a rejected details RPC must not leave the skeleton animating forever.
+    void this.init()
+      .catch(e => Logger.error('wallet', 'coin-tx-info init failed', e))
+      .finally(() => { this.detailsLoaded = true; });
   }
 
   ionViewWillEnter() {
@@ -273,10 +277,8 @@ export class CoinTxInfoPage implements OnInit {
       // row builder below reads - fire-and-forget raced it and lost.
       await this.getTransactionDetails();
     }
-
-    // The details card shows a kv skeleton until the awaited fetch above has
-    // built the rows (a full RPC round-trip on chain-backed transactions).
-    this.detailsLoaded = true;
+    // detailsLoaded is set by ngOnInit's finally() so it is cleared on both the
+    // success and failure paths (the details fetch is a full RPC round-trip).
   }
 
   async getTransactionDetails() {

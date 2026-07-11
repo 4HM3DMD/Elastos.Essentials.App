@@ -4,7 +4,7 @@
     <!-- Page-level skeleton: this is a startup screen - before the wallet service
          emits, the page used to be titlebar-over-background only. The skeleton
          mirrors the loaded composition (header row, hero, tiles, token rows). -->
-    <div *ngIf="!masterWallet" class="wallet-home page-skeleton">
+    <div *ngIf="!masterWallet && !walletServiceReady" class="wallet-home page-skeleton">
         <ui-skeleton kind="row" [rows]="1" [disc]="44"></ui-skeleton>
         <div class="skeleton-hero">
             <ui-skeleton kind="hero"></ui-skeleton>
