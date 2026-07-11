@@ -1,0 +1,17 @@
+<div class="reminder">
+  <div class="badge">
+    <ion-icon name="shield-outline"></ion-icon>
+  </div>
+
+  <h2 class="title">{{ title }}</h2>
+  <p class="message">{{ message }}</p>
+
+  <button type="button" class="btn primary" (click)="onBackup()">
+    {{ 'launcher.backup-reminder-backup' | translate }}
+  </button>
+
+  <button type="button" class="btn ghost" [class.locked]="skipLocked" [disabled]="skipLocked" (click)="onSkip()">
+    <span *ngIf="skipLocked">{{ 'launcher.backup-reminder-skip-in' | translate:{ seconds: secondsLeft } }}</span>
+    <span *ngIf="!skipLocked">{{ 'launcher.backup-reminder-skip' | translate }}</span>
+  </button>
+</div>

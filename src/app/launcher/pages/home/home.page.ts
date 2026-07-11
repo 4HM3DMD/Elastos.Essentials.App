@@ -16,8 +16,7 @@ import { GlobalStartupService } from 'src/app/services/global.startup.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
-import { GlobalDIDSessionsService } from 'src/app/services/global.didsessions.service';
-import { GlobalPopupService } from 'src/app/services/global.popup.service';
+import { BackupReminderService } from 'src/app/services/backup-reminder.service';
 import { DposStatus, VoteService } from 'src/app/voting/services/vote.service';
 import { StakingInitService } from 'src/app/voting/staking/services/init.service';
 import { WalletCreator } from 'src/app/wallet/model/masterwallets/wallet.types';
@@ -138,9 +137,9 @@ export class HomePage implements OnInit, OnDestroy {
     private coinTransferService: CoinTransferService,
     private voteService: VoteService,
     private stakingInitService: StakingInitService,
-    private globalPopupService: GlobalPopupService,
     private walletNetworkUIService: WalletNetworkUIService,
-    private aggService: AggregatedTokensService
+    private aggService: AggregatedTokensService,
+    private backupReminderService: BackupReminderService
   ) {}
 
   /** Masks amounts while the hide-balances pref is on, and (privacy-safe) while it is still loading. */
@@ -492,14 +491,15 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private async receiveAfterBackupCheck() {
-    const needsBackup = !(await GlobalDIDSessionsService.instance.activeIdentityWasBackedUp());
-    if (!needsBackup) {
-      void this.startReceive();
+    // Once-only, on-brand reminder for not-backed-up app wallets. "Back Up Now" routes to
+    // the identity backup flow; every other outcome (already backed up, already reminded,
+    // or skipped) proceeds to Receive.
+    const outcome = await this.backupReminderService.gate();
+    if (outcome === 'backup') {
+      void this.globalNav.navigateTo('identitybackup', '/identity/backupdid');
       return;
     }
-    // Warn once, then respect the choice: confirm proceeds to receive, cancel aborts.
-    const proceed = await this.globalPopupService.ionicConfirm('launcher.backup-title', 'launcher.backup-message');
-    if (proceed) void this.startReceive();
+    void this.startReceive();
   }
 
   /**

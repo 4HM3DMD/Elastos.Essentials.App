@@ -69,8 +69,8 @@ import { GlobalPreferencesService } from 'src/app/services/global.preferences.se
 import { DposStatus, VoteService } from 'src/app/voting/services/vote.service';
 import { StakingInitService } from 'src/app/voting/staking/services/init.service';
 import { SwapService } from 'src/app/wallet/services/evm/swap.service';
-import { WarningComponent } from 'src/app/wallet/components/warning/warning.component';
-import { GlobalDIDSessionsService } from 'src/app/services/global.didsessions.service';
+import { GlobalNavService } from 'src/app/services/global.nav.service';
+import { BackupReminderService } from 'src/app/services/backup-reminder.service';
 import { CoinTransferService } from '../../../services/cointransfer.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
@@ -210,7 +210,8 @@ export class WalletHomePage implements OnInit, OnDestroy {
         private voteService: VoteService,
         private stakingInitService: StakingInitService,
         private cdr: ChangeDetectorRef,
-        private aggService: AggregatedTokensService
+        private aggService: AggregatedTokensService,
+        private backupReminderService: BackupReminderService
     ) {
         GlobalFirebaseService.instance.logEvent("wallet_home_enter");
     }
@@ -594,14 +595,14 @@ export class WalletHomePage implements OnInit, OnDestroy {
     }
 
     private async receiveAfterBackupCheck() {
-        const needsBackup = !(await GlobalDIDSessionsService.instance.activeIdentityWasBackedUp());
-        if (!needsBackup) {
-            void this.startReceive();
+        // Once-only, on-brand reminder for not-backed-up app wallets. "Back Up Now" routes
+        // to the identity backup flow; every other outcome proceeds to Receive.
+        const outcome = await this.backupReminderService.gate();
+        if (outcome === 'backup') {
+            void GlobalNavService.instance.navigateTo('identitybackup', '/identity/backupdid');
             return;
         }
-        // Warn once, then respect the choice: Continue proceeds to receive, Cancel aborts.
-        const proceed = await this.showReceiveBackupPrompt();
-        if (proceed) void this.startReceive();
+        void this.startReceive();
     }
 
     /**
@@ -628,29 +629,6 @@ export class WalletHomePage implements OnInit, OnDestroy {
         this.coinTransferService.subWalletId = main.id;
         this.coinTransferService.receiveNetworkKey = null; // single-network: use the active network
         this.native.go('/wallet/coin-receive');
-    }
-
-    /** Backup warning popover. Resolves true when the user taps Continue (proceed to receive), false on Cancel. */
-    private showReceiveBackupPrompt(): Promise<boolean> {
-        return new Promise(resolve => {
-            void this.popoverCtrl.create({
-                mode: 'ios',
-                cssClass: 'wallet-warning-component',
-                component: WarningComponent,
-                componentProps: {
-                    title: this.translate.instant('launcher.backup-title'),
-                    message: this.translate.instant('launcher.backup-message')
-                },
-                translucent: false
-            }).then(popover => {
-                this.popover = popover;
-                void popover.onWillDismiss().then(params => {
-                    this.popover = null;
-                    resolve(!!(params && params.data && params.data.confirm));
-                });
-                void popover.present();
-            });
-        });
     }
 
     /** Swap: navigate to the swap providers screen for the main subwallet. */

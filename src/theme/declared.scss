@@ -1,9 +1,74 @@
 // Declared components with custom css properties
 
 /********************** ALERT CONTROLLER **********************/
+// On-brand restyle of every ion-alert (ionicConfirm / ionicAlert / ionicPrompt):
+// a raised, rounded surface with quiet secondary buttons and one accent primary,
+// replacing the generic iOS alert look.
 .alert {
   z-index: 100000 !important;
   --ion-color-step-600: var(--ion-text-color); // subtext color
+
+  .alert-wrapper {
+    border-radius: 22px !important;
+    // Theme-adaptive surface (box color flips light/dark) so title/message text stays readable.
+    background: var(--essentials-box-color) !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+  }
+
+  .alert-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: var(--ion-text-color) !important;
+  }
+
+  .alert-sub-title,
+  .alert-message {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    color: var(--essentials-text-secondary) !important;
+  }
+
+  .alert-input-group .alert-input {
+    border-radius: 12px !important;
+    background: var(--essentials-border-separator-color) !important;
+    color: var(--ion-text-color) !important;
+    border: none !important;
+  }
+
+  .alert-button-group {
+    padding: 10px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .alert-button {
+    flex: 1;
+    margin: 0;
+    min-height: 46px;
+    border: none !important;
+    border-radius: 14px !important;
+    // A text-color tint reads as a quiet button on both the light and dark surface.
+    background: var(--essentials-border-separator-color);
+
+    .alert-button-inner {
+      justify-content: center;
+      color: var(--ion-text-color);
+      font-weight: 600;
+      text-transform: none;
+    }
+
+    // The confirm / primary action (rendered last) carries the accent.
+    &:last-child {
+      background: var(--essentials-accent, #ed6e2b);
+
+      .alert-button-inner {
+        color: var(--essentials-accent-ink, #1a1208);
+      }
+    }
+  }
+
+  // A single-button alert (e.g. ionicAlert "OK") is already the accent primary.
 }
 
 ion-card {
@@ -414,6 +479,30 @@ a {
     left: auto !important;
     top: auto !important;
     width: 85vw !important;
+  }
+}
+
+/********************** BACKUP REMINDER POPOVER **********************/
+// Centered card popover with a dimmed backdrop; the component paints its own
+// rounded surface, so the popover chrome is transparent.
+.backup-reminder-popover {
+  --background: transparent !important;
+  --box-shadow: none;
+  --width: 320px;
+  --max-width: 88vw;
+
+  ion-backdrop {
+    background: #000 !important;
+    opacity: 0.55 !important;
+  }
+
+  .popover-viewport {
+    position: relative !important;
+    margin: 0 auto !important;
+    left: auto !important;
+    top: auto !important;
+    width: 320px !important;
+    max-width: 88vw !important;
   }
 }
 
