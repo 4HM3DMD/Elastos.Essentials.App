@@ -1,12 +1,17 @@
 <ion-content>
     <app-titlebar></app-titlebar>
 
-    <!-- Content-shaped loading state mirroring the loaded layout: wallet row,
-         staked-amount hero card, reward rows - instead of a bare spinner. -->
+    <!-- Near-loaded: every label here is static, so show the real staked-amount
+         card and reward rows and ghost only the ELA figures. -->
     <div *ngIf="!dataFetched" class="page-skeleton">
-        <ui-skeleton kind="row" [rows]="1" [disc]="24"></ui-skeleton>
-        <ui-skeleton kind="card" [rows]="1"></ui-skeleton>
-        <ui-skeleton kind="row" [rows]="3" [disc]="0" [value]="true"></ui-skeleton>
+        <div class="skel-hero-card">
+            <div class="skel-hero-title">{{ 'staking.staked-amount' | translate }}</div>
+            <span class="ui-ghost skel-hero-value"></span>
+        </div>
+        <div class="skel-reward-row" *ngFor="let label of ['staking.your-rewards', 'staking.available-reward', 'staking.staked-for-votes']">
+            <span class="skel-reward-label">{{ label | translate }}</span>
+            <span class="ui-ghost skel-reward-value"></span>
+        </div>
     </div>
 
     <div *ngIf="dataFetched">

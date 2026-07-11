@@ -1,16 +1,22 @@
 <ion-content [class.darkmode]="theme.darkMode">
     <app-titlebar></app-titlebar>
 
-    <!-- Page-level skeleton: this is a startup screen - before the wallet service
-         emits, the page used to be titlebar-over-background only. The skeleton
-         mirrors the loaded composition (header row, hero, tiles, token rows). -->
+    <!-- Near-loaded startup state: the real action tiles and the Tokens header are
+         static, so show them for real; ghost the header, hero and token values that
+         need the wallet. Reads as "almost loaded" rather than a loading screen. -->
     <div *ngIf="!masterWallet && !walletServiceReady" class="wallet-home page-skeleton">
         <ui-skeleton kind="row" [rows]="1" [disc]="44"></ui-skeleton>
         <div class="skeleton-hero">
             <ui-skeleton kind="hero"></ui-skeleton>
         </div>
-        <ui-skeleton class="skeleton-tiles" kind="tile" [rows]="4"></ui-skeleton>
+        <ui-action-grid [columns]="4" class="actions skeleton-tiles">
+            <ui-action-tile label="Send" icon="assets/wallet/action/send.png"></ui-action-tile>
+            <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png"></ui-action-tile>
+            <ui-action-tile label="Swap" icon="assets/wallet/action/swap.png"></ui-action-tile>
+            <ui-action-tile label="Stake" icon="assets/wallet/action/stake.png"></ui-action-tile>
+        </ui-action-grid>
         <div class="skeleton-list">
+            <div class="list-header"><span>{{ 'wallet.tokens' | translate }}</span></div>
             <ui-skeleton kind="row" [rows]="4" [value]="true"></ui-skeleton>
         </div>
     </div>

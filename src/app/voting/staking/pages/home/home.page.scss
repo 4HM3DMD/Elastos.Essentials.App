@@ -1,8 +1,49 @@
 @import "../../root.scss";
 
-// Loading skeleton inherits the page's content inset.
+// Near-loaded state: real labels + ghosted ELA figures, mirroring the loaded cards.
 .page-skeleton {
   padding: 10px 20px;
+
+  .skel-hero-card {
+    height: 85px;
+    border-radius: 20px;
+    padding: 20px 16px;
+    margin-bottom: 8px;
+    background: var(--essentials-box-color);
+
+    .skel-hero-title {
+      font-size: 13px;
+      color: var(--essentials-text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .skel-hero-value {
+      width: 45%;
+      height: 26px;
+      border-radius: 7px;
+    }
+  }
+
+  .skel-reward-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 16px;
+    margin-bottom: 8px;
+    border-radius: 13px;
+    background: var(--essentials-box-color);
+
+    .skel-reward-label {
+      font-size: 15px;
+      color: var(--essentials-text-secondary);
+    }
+
+    .skel-reward-value {
+      width: 34%;
+      max-width: 130px;
+      height: 14px;
+    }
+  }
 }
 
 .wallet-row {

@@ -171,6 +171,33 @@ body.has-tabbar :where(ion-content) {
     }
 }
 
+/** Loading ghost: a soft placeholder for a single value that has not loaded yet.
+    Pages render their REAL labels/structure and drop a .ui-ghost into each value
+    slot, so a loading screen reads as "almost loaded" rather than a shimmer. The
+    breathe is slow and low-contrast (settling in, not a spinner). Neutral alpha so
+    it reads on both the dark and light themes. **/
+.ui-ghost {
+    display: inline-block;
+    height: 12px;
+    min-width: 24px;
+    border-radius: 5px;
+    vertical-align: middle;
+    background: rgba(135, 135, 145, 0.22);
+    animation: ui-ghost-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes ui-ghost-breathe {
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 0.8; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ui-ghost {
+        animation: none;
+        opacity: 0.6;
+    }
+}
+
 // For "primary" ion-buttons: match the ebutton accent so all primary actions look alike
 .ion-color-primary {
     --ion-color-base: var(--essentials-button-background-color) !important;

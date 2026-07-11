@@ -3,14 +3,13 @@
   width: 100%;
 }
 
+// The soft breathe + fill come from the global .ui-ghost; this file only lays
+// out each kind and sizes its ghost spans.
 .skeleton {
   width: 100%;
 
-  // Skeleton shimmer is an opacity pulse only (no gradients). Respect reduced motion.
-  @media (prefers-reduced-motion: reduce) {
-    ion-skeleton-text {
-      --animation: none;
-    }
+  .ui-ghost {
+    display: block;
   }
 
   .row-item {
@@ -21,10 +20,7 @@
 
     .circle {
       flex-shrink: 0;
-
-      ion-skeleton-text {
-        border-radius: 50%;
-      }
+      border-radius: 50%;
     }
 
     .lines {
@@ -32,11 +28,6 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-
-      ion-skeleton-text {
-        height: 12px;
-        border-radius: 4px;
-      }
     }
 
     // Right value column, mirroring ui-token-row's amount + sub-value bars.
@@ -46,11 +37,6 @@
       flex-direction: column;
       align-items: flex-end;
       gap: 6px;
-
-      ion-skeleton-text {
-        height: 12px;
-        border-radius: 4px;
-      }
     }
   }
 
@@ -61,9 +47,8 @@
     justify-content: space-between;
     padding: 13px 0;
 
-    ion-skeleton-text {
+    .ui-ghost {
       height: 14px;
-      border-radius: 4px;
     }
   }
 
@@ -82,7 +67,6 @@
     .hero-sub {
       width: 38%;
       height: 13px;
-      border-radius: 4px;
     }
   }
 
@@ -95,24 +79,23 @@
     .tile-item {
       height: 84px;
       border-radius: 14px;
-      margin: 0;
     }
   }
 
   .block-item {
     margin-bottom: 12px;
 
-    ion-skeleton-text {
+    .ui-ghost {
       width: 100%;
       border-radius: 14px;
     }
   }
 
-  &.kind-card .block-item ion-skeleton-text {
+  &.kind-card .block-item .ui-ghost {
     height: 96px;
   }
 
-  &.kind-block .block-item ion-skeleton-text {
+  &.kind-block .block-item .ui-ghost {
     height: 20px;
     border-radius: 6px;
   }

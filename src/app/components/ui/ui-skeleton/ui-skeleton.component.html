@@ -4,16 +4,14 @@
   <!-- Row: icon disc + two text lines (+ optional right value bars) -->
   <ng-container *ngIf="kind === 'row'">
     <div *ngFor="let i of items; trackBy: trackByIndex" class="row-item">
-      <div *ngIf="disc > 0" class="circle" [style.width.px]="disc" [style.height.px]="disc">
-        <ion-skeleton-text animated [style.width.px]="disc" [style.height.px]="disc"></ion-skeleton-text>
-      </div>
+      <span *ngIf="disc > 0" class="ui-ghost circle" [style.width.px]="disc" [style.height.px]="disc"></span>
       <div class="lines">
-        <ion-skeleton-text animated style="width: 55%"></ion-skeleton-text>
-        <ion-skeleton-text animated style="width: 35%"></ion-skeleton-text>
+        <span class="ui-ghost" style="width: 55%"></span>
+        <span class="ui-ghost" style="width: 35%"></span>
       </div>
       <div *ngIf="value" class="values">
-        <ion-skeleton-text animated style="width: 60px"></ion-skeleton-text>
-        <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+        <span class="ui-ghost" style="width: 60px"></span>
+        <span class="ui-ghost" style="width: 40px"></span>
       </div>
     </div>
   </ng-container>
@@ -21,30 +19,30 @@
   <!-- Kv: label bar left, value bar right (detail card rows) -->
   <ng-container *ngIf="kind === 'kv'">
     <div *ngFor="let i of items; trackBy: trackByIndex" class="kv-item">
-      <ion-skeleton-text animated style="width: 32%"></ion-skeleton-text>
-      <ion-skeleton-text animated style="width: 42%"></ion-skeleton-text>
+      <span class="ui-ghost" style="width: 32%"></span>
+      <span class="ui-ghost" style="width: 42%"></span>
     </div>
   </ng-container>
 
   <!-- Hero: one large amount bar + a small sub line -->
   <ng-container *ngIf="kind === 'hero'">
     <div class="hero-item">
-      <ion-skeleton-text animated class="hero-amount"></ion-skeleton-text>
-      <ion-skeleton-text animated class="hero-sub"></ion-skeleton-text>
+      <span class="ui-ghost hero-amount"></span>
+      <span class="ui-ghost hero-sub"></span>
     </div>
   </ng-container>
 
   <!-- Tile: rounded action tiles in a 4-column grid -->
   <ng-container *ngIf="kind === 'tile'">
     <div class="tile-grid">
-      <ion-skeleton-text *ngFor="let i of items; trackBy: trackByIndex" animated class="tile-item"></ion-skeleton-text>
+      <span *ngFor="let i of items; trackBy: trackByIndex" class="ui-ghost tile-item"></span>
     </div>
   </ng-container>
 
   <!-- Card / block: full-width rounded blocks -->
   <ng-container *ngIf="kind === 'card' || kind === 'block'">
     <div *ngFor="let i of items; trackBy: trackByIndex" class="block-item">
-      <ion-skeleton-text animated></ion-skeleton-text>
+      <span class="ui-ghost"></span>
     </div>
   </ng-container>
 </div>

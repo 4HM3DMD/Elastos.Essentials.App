@@ -127,8 +127,18 @@ export class CoinTxInfoPage implements OnInit {
   // List of displayable transaction details
   public txDetails: TransactionDetail[] = [];
   // False until the awaited details fetch has built the rows; the details card
-  // shows a kv-shaped skeleton meanwhile instead of a blank body.
+  // shows the real labels with ghosted values meanwhile instead of a blank body.
   public detailsLoaded = false;
+  // The labels every transaction detail card shows - rendered for real during
+  // loading so only the values ghost in ("almost loaded").
+  public readonly loadingDetailLabels = [
+    'wallet.tx-info-amount',
+    'wallet.tx-info-from',
+    'wallet.tx-info-to',
+    'wallet.tx-info-network',
+    'wallet.tx-info-network-fee',
+    'wallet.tx-info-total',
+  ];
 
   public crossChainNetworkKey = null; // For cross chain transaction, we need to open address in target network explorer.
 

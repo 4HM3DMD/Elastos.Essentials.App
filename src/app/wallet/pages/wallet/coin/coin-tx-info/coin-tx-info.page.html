@@ -26,8 +26,13 @@
         <!-- TRANSACTION DETAILS: the rows that answer "what happened" in a readable card;
              chain internals collapse behind Technical details. Row templates are shared.
              A kv-shaped skeleton holds the card while the details RPC resolves. -->
+        <!-- Near-loaded: show the real detail labels immediately (they are the same
+             for every transaction) and ghost only the values the RPC still owes. -->
         <div class="details-card" *ngIf="!detailsLoaded">
-            <ui-skeleton kind="kv" [rows]="6"></ui-skeleton>
+            <div class="kv-loading-row" *ngFor="let label of loadingDetailLabels">
+                <span class="kv-loading-label">{{ label | translate }}</span>
+                <span class="ui-ghost kv-loading-value"></span>
+            </div>
         </div>
         <div class="details-card" *ngIf="essentialDetails.length > 0">
             <ng-container *ngFor="let item of essentialDetails">

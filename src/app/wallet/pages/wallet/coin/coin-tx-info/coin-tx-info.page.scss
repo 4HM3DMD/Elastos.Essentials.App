@@ -96,6 +96,32 @@ ion-grid {
     }
 }
 
+// Loading rows: real label left, ghosted value right - mirrors ui-kv-row so the
+// card looks the same shape it will be once the values arrive.
+.kv-loading-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--essentials-border-separator-color);
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    .kv-loading-label {
+        font-size: 16px;
+        color: var(--essentials-text-secondary);
+    }
+
+    .kv-loading-value {
+        width: 42%;
+        max-width: 180px;
+        height: 14px;
+    }
+}
+
 .tech-toggle {
     display: flex;
     align-items: center;
