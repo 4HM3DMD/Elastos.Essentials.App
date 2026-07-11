@@ -301,6 +301,14 @@ export const en = {
     'coin-receive-tap-to-copy': 'Tap address to copy',
     'coin-address-copied': '{{coinName}} address copied!',
     'coin-receive-address-list': 'Enter Address List',
+    'coin-receive-unavailable': 'This receiving address is unavailable right now. Please go back and try again.',
+
+    /*******************************
+     * Multi-chain Receive (select) *
+     *******************************/
+    'coin-receive-select-title': 'Receive',
+    'coin-receive-select-subtitle': 'Choose a network to receive on. Its address accepts every token on that chain.',
+    'coin-receive-select-empty': 'No networks are available to receive on right now.',
 
     /********************
      * Coin Address Page *

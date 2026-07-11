@@ -606,17 +606,15 @@ export class WalletHomePage implements OnInit, OnDestroy {
 
     /**
      * Receiving is chain-specific: one address per chain, and it receives every token on
-     * that chain (no token selection needed). In aggregate mode, pick a chain - which
-     * switches to it - then show its address via the normal receive path; single-network
-     * mode receives on the active chain. Switching (rather than a side instance) keeps
-     * coin-receive on the standard resolve path, which reads the ACTIVE network's wallet.
+     * that chain (no token selection needed). In aggregate mode, open the dedicated
+     * multi-chain Receive page (a chain list that reads addresses from the all-chains
+     * side-instances and never switches the active network); single-network mode receives
+     * on the active chain directly.
      */
-    private async startReceive() {
+    private startReceive() {
         if (this.allChainsOn) {
-            let switched = await this.walletNetworkUIService.chooseActiveNetwork(undefined, false);
-            if (!switched) return;
-            let main = this.walletManager.getActiveNetworkWallet()?.getMainTokenSubWallet();
-            if (main) this.goReceive(main);
+            this.coinTransferService.receiveNetworkKey = null;
+            this.native.go('/wallet/coin-receive-select');
             return;
         }
 
@@ -628,6 +626,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
     private goReceive(main: AnySubWallet) {
         this.coinTransferService.masterWalletId = main.networkWallet.id;
         this.coinTransferService.subWalletId = main.id;
+        this.coinTransferService.receiveNetworkKey = null; // single-network: use the active network
         this.native.go('/wallet/coin-receive');
     }
 

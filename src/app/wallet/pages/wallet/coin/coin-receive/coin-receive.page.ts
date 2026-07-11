@@ -15,6 +15,7 @@ import { TRC20SubWallet } from 'src/app/wallet/model/networks/tron/subwallets/tr
 import { ElastosMainChainStandardNetworkWallet } from 'src/app/wallet/model/networks/elastos/mainchain/networkwallets/standard/mainchain.networkwallet';
 import { TransactionInfoType } from 'src/app/wallet/model/tx-providers/transaction.types';
 import { WalletNetworkService } from 'src/app/wallet/services/network.service';
+import { AggregatedTokensService } from 'src/app/wallet/services/aggregated-tokens.service';
 import { StandardCoinName } from '../../../../model/coin';
 import { CoinTransferService } from '../../../../services/cointransfer.service';
 import { Native } from '../../../../services/native.service';
@@ -43,6 +44,9 @@ export class CoinReceivePage implements OnInit, OnDestroy {
   private subWallet: AnySubWallet = null;
   public tokenName = '';
   public qrcode: string = null;
+  // True when the receiving wallet/address could not be resolved (e.g. the active-network
+  // map is mid-rebuild, or the wallet exposes no address): show a safe message, not a blank.
+  public loadError = false;
   public isSingleAddress = false;
   public walletAddressInfo: WalletAddressInfo[] = [];
   public addressType = 0;
@@ -80,8 +84,45 @@ export class CoinReceivePage implements OnInit, OnDestroy {
   init() {
     this.masterWalletId = this.coinTransferService.masterWalletId;
     this.subWalletId = this.coinTransferService.subWalletId;
-    this.networkWallet = this.walletManager.getNetworkWalletFromMasterWalletId(this.masterWalletId);
-    this.subWallet = this.networkWallet.getSubWallet(this.subWalletId);
+
+    // receiveNetworkKey is a ONE-SHOT: the multi-chain Receive page sets it so this screen
+    // shows a specific chain's address (resolved from the all-chains side-instance, so the
+    // active network is never switched). Consume it immediately - otherwise a stale key
+    // would leak into a later, unrelated Receive navigation (e.g. an NFT receive) and show
+    // the wrong chain's address.
+    const receiveNetworkKey = this.coinTransferService.receiveNetworkKey;
+    this.coinTransferService.receiveNetworkKey = null;
+
+    if (receiveNetworkKey) {
+      // A chain was chosen: it MUST resolve from its side-instance. If that instance is
+      // gone (a sign-out / wallet-switch race), fail safe rather than silently falling back
+      // to the active network and showing another chain's address on a Receive screen.
+      this.networkWallet = AggregatedTokensService.instance
+        ? AggregatedTokensService.instance.getInstanceByKey(receiveNetworkKey)
+        : null;
+      if (!this.networkWallet) {
+        Logger.warn('wallet', 'coin-receive: no side-instance for chosen chain', receiveNetworkKey);
+        this.loadError = true;
+        return;
+      }
+    } else {
+      // Single-network Receive: use the active network's wallet as before.
+      this.networkWallet = this.walletManager.getNetworkWalletFromMasterWalletId(this.masterWalletId);
+      if (!this.networkWallet) {
+        // The active-network map is briefly empty while it rebuilds on a switch: fail safe
+        // instead of dereferencing null and rendering a blank page.
+        Logger.warn('wallet', 'coin-receive: no network wallet for', this.masterWalletId);
+        this.loadError = true;
+        return;
+      }
+    }
+
+    this.subWallet = this.networkWallet.getSubWallet(this.subWalletId) || this.networkWallet.getMainTokenSubWallet();
+    if (!this.subWallet) {
+      Logger.warn('wallet', 'coin-receive: no subwallet for', this.subWalletId);
+      this.loadError = true;
+      return;
+    }
     this.tokenName = this.subWallet.getDisplayTokenName();
 
     this.getAddress();
@@ -103,15 +144,24 @@ export class CoinReceivePage implements OnInit, OnDestroy {
   }
 
   getAddress() {
-    this.walletAddressInfo = this.networkWallet.getAddresses();
+    this.walletAddressInfo = this.networkWallet.getAddresses() || [];
+    if (this.walletAddressInfo.length === 0) {
+      // No receiving address on this chain (e.g. mainchain imported by private key):
+      // show the safe message rather than crashing on an out-of-bounds read below.
+      Logger.warn('wallet', 'coin-receive: wallet exposed no addresses');
+      this.loadError = true;
+      return;
+    }
     this.addressChips = this.walletAddressInfo.map((info, i) => ({ key: String(i), label: info.title }));
 
     this.setAddressType(0);
   }
 
   setAddressType(type: number) {
+    const info = this.walletAddressInfo[type];
+    if (!info) return;
     this.addressType = type;
-    this.qrcode = this.walletAddressInfo[type].address;
+    this.qrcode = info.address;
     Logger.log('wallet', 'Address', this.qrcode);
   }
 

@@ -1,7 +1,13 @@
 <ion-content>
   <app-titlebar></app-titlebar>
 
-  <div class="receive">
+  <!-- Safe fallback when the receiving wallet/address could not be resolved. -->
+  <div *ngIf="loadError" class="load-error">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <p>{{ 'wallet.coin-receive-unavailable' | translate }}</p>
+  </div>
+
+  <div *ngIf="!loadError" class="receive">
     <!-- QR card -->
     <!-- SCR-068: #qrCard ref lets saveImage() grab the rendered QR canvas for PNG export. -->
     <div *ngIf="qrcode" #qrCard class="qr-card">

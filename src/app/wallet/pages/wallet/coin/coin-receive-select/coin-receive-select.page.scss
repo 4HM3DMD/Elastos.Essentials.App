@@ -1,0 +1,113 @@
+.receive-select {
+  padding: 8px 16px calc(24px + env(safe-area-inset-bottom));
+
+  .intro {
+    margin: 4px 4px 18px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--essentials-text-secondary);
+  }
+
+  // Slim uppercase group labels, matching the network chooser's ecosystem/other split.
+  .section-label {
+    margin: 16px 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--essentials-text-secondary);
+  }
+
+  .chain-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chain-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border: none;
+    border-radius: 18px;
+    // Top-light gradient over the box colour for the same raised feel as the chooser rows.
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    color: var(--ion-text-color);
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+
+    .disc {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      object-fit: cover;
+    }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      margin-left: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .name {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .addr {
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--essentials-text-secondary);
+    }
+
+    .chevron {
+      margin-left: auto;
+      padding-left: 8px;
+      font-size: 18px;
+      color: var(--essentials-text-secondary);
+      flex-shrink: 0;
+    }
+
+    ion-ripple-effect {
+      --ripple-color: var(--ion-text-color);
+    }
+
+    &:active {
+      transform: scale(0.99);
+    }
+
+    // Loading rows: real layout, ghosted content.
+    &.skeleton {
+      pointer-events: none;
+
+      .name-ghost {
+        display: block;
+        width: 42%;
+        height: 13px;
+      }
+
+      .addr-ghost {
+        display: block;
+        width: 62%;
+        height: 10px;
+        margin-top: 7px;
+      }
+    }
+  }
+
+  .empty {
+    padding: 44px 20px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--essentials-text-secondary);
+  }
+}

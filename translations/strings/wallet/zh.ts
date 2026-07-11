@@ -263,6 +263,10 @@ export const zh = {
     'coin-receive-tap-to-copy': '点击地址即可复制',
     'coin-address-copied': '{{coinName}} 地址已复制！',
     'coin-receive-address-list': '地址列表',
+    'coin-receive-unavailable': '当前无法获取该收款地址，请返回后重试。',
+    'coin-receive-select-title': '收款',
+    'coin-receive-select-subtitle': '选择要接收的网络，该地址可接收该链上的所有代币。',
+    'coin-receive-select-empty': '当前没有可用于收款的网络。',
 
     /********************
      * Coin Address Page *

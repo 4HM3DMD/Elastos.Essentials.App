@@ -1,0 +1,58 @@
+<ion-content>
+  <app-titlebar></app-titlebar>
+
+  <div class="receive-select">
+    <p class="intro">{{ 'wallet.coin-receive-select-subtitle' | translate }}</p>
+
+    <!-- Shared chain-row template (used by both groups). -->
+    <ng-template #chainRow let-t>
+      <button type="button" class="chain-row ion-activatable" (click)="onPick(t)">
+        <img class="disc" [src]="t.network.logo" alt="" />
+        <span class="meta">
+          <span class="name">{{ t.network.getEffectiveName() }}</span>
+          <span class="addr">{{ shortAddress(t.address) }}</span>
+        </span>
+        <ion-icon class="chevron" name="chevron-forward"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+    </ng-template>
+
+    <!-- Loading: real chrome with ghosted rows (near-loaded, not a blank page). -->
+    <div *ngIf="loading" class="chain-list">
+      <div class="chain-row skeleton" *ngFor="let i of skeletonRows">
+        <span class="disc ui-ghost"></span>
+        <span class="meta">
+          <span class="ui-ghost name-ghost"></span>
+          <span class="ui-ghost addr-ghost"></span>
+        </span>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <!-- Elastos ecosystem -->
+      <ng-container *ngIf="elastosTargets.length > 0">
+        <div class="section-label">{{ 'wallet.network-group-elastos' | translate }}</div>
+        <div class="chain-list">
+          <ng-container *ngFor="let t of elastosTargets; trackBy: trackByKey">
+            <ng-container *ngTemplateOutlet="chainRow; context: { $implicit: t }"></ng-container>
+          </ng-container>
+        </div>
+      </ng-container>
+
+      <!-- Other networks -->
+      <ng-container *ngIf="otherTargets.length > 0">
+        <div class="section-label">{{ 'wallet.network-group-other' | translate }}</div>
+        <div class="chain-list">
+          <ng-container *ngFor="let t of otherTargets; trackBy: trackByKey">
+            <ng-container *ngTemplateOutlet="chainRow; context: { $implicit: t }"></ng-container>
+          </ng-container>
+        </div>
+      </ng-container>
+
+      <!-- Nothing to receive on (no side-instance exposed a derivable address). -->
+      <div *ngIf="!hasTargets" class="empty">
+        {{ 'wallet.coin-receive-select-empty' | translate }}
+      </div>
+    </ng-container>
+  </div>
+</ion-content>

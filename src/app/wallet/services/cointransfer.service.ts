@@ -105,6 +105,10 @@ export class CoinTransferService {
   public masterWalletId: string;
   // From subwallet
   public subWalletId: string;
+  // Receive only: the specific chain chosen on the multi-chain Receive page. When set,
+  // coin-receive resolves that chain's wallet from the all-chains side-instances instead
+  // of the app's active network, so receiving never switches the active network.
+  public receiveNetworkKey: string;
   // To subwallet (only for recharging funds)
   public toSubWalletId: string;
   // To Network infomation (only for recharging funds), the multi-sign wallet doesn't support sidechain,
@@ -145,6 +149,7 @@ export class CoinTransferService {
     this.transferType = null;
     this.masterWalletId = null;
     this.subWalletId = null;
+    this.receiveNetworkKey = null;
     this.toSubWalletId = null;
     this.intentTransfer = new IntentTransfer();
     this.payTransfer = new PayTransfer();

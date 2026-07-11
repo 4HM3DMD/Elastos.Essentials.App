@@ -1,4 +1,5 @@
 import { AnyNetwork } from './networks/network';
+import { AnyNetworkWallet } from './networks/base/networkwallets/networkwallet';
 import { AnySubWallet } from './networks/base/subwallets/subwallet';
 
 /** Logos composing the "All Chains" glyph (the four aggregate default chains). */
@@ -21,4 +22,16 @@ export interface AggregatedTokenRow {
   isDefaultEla: boolean;
   /** False until the subwallet has ever known a balance (cache or fresh fetch): the value cell shows a quiet skeleton. */
   hasValue: boolean;
+}
+
+/**
+ * One receivable chain on the multi-chain Receive page: a network, its side-instance
+ * wallet, the main-token subwallet, and the chain's main receive address (derived
+ * locally from the wallet keys - no network call, no active-network switch).
+ */
+export interface ReceiveTarget {
+  network: AnyNetwork;
+  networkWallet: AnyNetworkWallet;
+  mainSubWallet: AnySubWallet;
+  address: string;
 }

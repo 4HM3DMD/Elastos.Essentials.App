@@ -171,6 +171,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: "coin-receive-select",
+    loadChildren: () =>
+      import("./pages/wallet/coin/coin-receive-select/module").then(
+        (m) => m.CoinReceiveSelectModule
+      ),
+  },
+  {
     path: "coin-tx-info",
     loadChildren: () =>
       import("./pages/wallet/coin/coin-tx-info/module").then(

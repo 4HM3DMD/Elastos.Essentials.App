@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Logger } from 'src/app/logger';
-import { AggregatedTokenRow } from '../model/aggregated-token';
+import { AggregatedTokenRow, ReceiveTarget } from '../model/aggregated-token';
 import { AnyNetworkWallet } from '../model/networks/base/networkwallets/networkwallet';
 import { AnySubWallet } from '../model/networks/base/subwallets/subwallet';
 import { ERC20SubWallet } from '../model/networks/evms/subwallets/erc20.subwallet';
@@ -240,6 +240,43 @@ export class AggregatedTokensService {
   /** The Elastos mainchain instance (staking lives there), if built. */
   public getMainchainInstance(): AnyNetworkWallet {
     return this.instances.get('elastos') || null;
+  }
+
+  /** The built side-instance for a chain, if any. Used by coin-receive to show a chosen
+   *  chain's address without switching the app's active network. */
+  public getInstanceByKey(networkKey: string): AnyNetworkWallet {
+    return this.instances.get(networkKey) || null;
+  }
+
+  /**
+   * The receivable chains for the multi-chain Receive page. One entry per built
+   * side-instance that exposes a main-token subwallet and a derivable address (a
+   * chain address receives every token on that chain, so no per-token choice is
+   * needed). Elastos-ecosystem chains come first in the fixed default order, then
+   * the rest alphabetically. Nothing here touches the active network.
+   */
+  public getReceiveTargets(): ReceiveTarget[] {
+    const orderOf = (key: string) => {
+      const i = DEFAULT_NETWORK_ORDER.indexOf(key);
+      return i === -1 ? DEFAULT_NETWORK_ORDER.length : i;
+    };
+
+    const targets: ReceiveTarget[] = [];
+    for (const [, nw] of this.instances) {
+      const mainSubWallet = nw.getMainTokenSubWallet();
+      if (!mainSubWallet) continue;
+      const addresses = nw.getAddresses();
+      const address = addresses && addresses.length > 0 ? addresses[0].address : null;
+      if (!address) continue; // a chain with no derivable address cannot receive
+      targets.push({ network: nw.network as AnyNetwork, networkWallet: nw, mainSubWallet, address });
+    }
+
+    targets.sort((a, b) => {
+      const byOrder = orderOf(a.network.key) - orderOf(b.network.key);
+      if (byOrder !== 0) return byOrder;
+      return a.network.getEffectiveName().localeCompare(b.network.getEffectiveName());
+    });
+    return targets;
   }
 
   private sortRows(rows: AggregatedTokenRow[]): AggregatedTokenRow[] {

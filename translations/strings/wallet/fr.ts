@@ -268,6 +268,10 @@ export const fr = {
     'coin-receive-tap-to-copy': "Touchez l'adresse pour la copier",
     'coin-address-copied': 'Adresse de votre portefeuille {{coinName}} copiée!',
     'coin-receive-address-list': 'Voir la liste des adresses',
+    'coin-receive-unavailable': "Cette adresse de réception est indisponible pour le moment. Veuillez revenir en arrière et réessayer.",
+    'coin-receive-select-title': 'Recevoir',
+    'coin-receive-select-subtitle': "Choisissez un réseau pour recevoir. Son adresse accepte tous les jetons de cette chaîne.",
+    'coin-receive-select-empty': 'Aucun réseau disponible pour recevoir pour le moment.',
 
     /********************
      * Coin Address Page *
