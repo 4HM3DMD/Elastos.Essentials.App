@@ -585,25 +585,42 @@ export class WalletHomePage implements OnInit, OnDestroy {
      * for WALLET_APP-created wallets that were never backed up, prompt first.
      */
     public onReceive() {
+        // Aggregate mode: a chain address receives EVERY token on that chain, so Receive
+        // only needs a chain, not a token (and you can receive tokens you don't hold yet).
+        // Pick the chain, then show its address - no token picker.
+        if (this.allChainsOn) {
+            void this.pickChainThenReceive();
+            return;
+        }
+
+        // Single-network mode: receive on the active chain's main address.
         let main = this.getMainSubWallet();
-        if (!main) return;
+        if (main) this.receiveOn(main);
+    }
+
+    /** Aggregate mode: choose a chain (no active-network switch), then receive on it. */
+    private async pickChainThenReceive() {
+        // Offer only chains this wallet holds an address on (a built aggregator instance),
+        // so every option resolves to a real receive address.
+        let chosen = await this.walletNetworkUIService.pickNetwork(
+            (network) => !!this.aggService.getInstance(network.key)
+        );
+        if (!chosen) return;
+
+        let main = this.aggService.getInstance(chosen.key)?.getMainTokenSubWallet();
+        if (main) this.receiveOn(main);
+    }
+
+    /** Point CoinTransferService at a chain's main subwallet (coin-receive reads it) and go. */
+    private receiveOn(main: AnySubWallet) {
         this.coinTransferService.masterWalletId = main.networkWallet.id;
         this.coinTransferService.subWalletId = main.id;
 
         if (this.masterWallet && this.masterWallet.creator === WalletCreator.WALLET_APP) {
             void this.checkBackupThenReceive();
         } else {
-            this.goReceiveDestination();
+            this.native.go('/wallet/coin-receive');
         }
-    }
-
-    /** Aggregate mode asks which token/chain to receive on; single mode goes straight to the QR. */
-    private goReceiveDestination() {
-        if (this.allChainsOn && this.networkWallet) {
-            this.native.go('/wallet/coin-select-send', { masterWalletId: this.networkWallet.id, mode: 'receive' });
-            return;
-        }
-        this.native.go('/wallet/coin-receive');
     }
 
     private async checkBackupThenReceive() {
@@ -611,7 +628,7 @@ export class WalletHomePage implements OnInit, OnDestroy {
         if (needsBackup) {
             await this.showReceiveBackupPrompt();
         } else {
-            this.goReceiveDestination();
+            this.native.go('/wallet/coin-receive');
         }
     }
 

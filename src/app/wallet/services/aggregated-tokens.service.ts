@@ -242,6 +242,11 @@ export class AggregatedTokensService {
     return this.instances.get('elastos') || null;
   }
 
+  /** The built network-wallet instance for a chain, if any (used by the receive chain picker). */
+  public getInstance(networkKey: string): AnyNetworkWallet {
+    return this.instances.get(networkKey) || null;
+  }
+
   private sortRows(rows: AggregatedTokenRow[]): AggregatedTokenRow[] {
     const defaultOrder = (row: AggregatedTokenRow) => DEFAULT_NETWORK_ORDER.indexOf(row.network.key);
 
