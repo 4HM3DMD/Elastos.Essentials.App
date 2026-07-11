@@ -37,6 +37,11 @@ export class HomePage {
   public dApps: DAppMenuEntry[] = [];
   public allDApps: DAppMenuEntry[] = [];
   public favorites: BrowserFavorite[] = [];
+  // Favorites load on a delay; show a placeholder until then instead of the
+  // "no favorites" empty state, which would otherwise flash for ~2s at boot.
+  public get favoritesLoaded(): boolean {
+    return this.favoritesService.favoritesLoaded;
+  }
   public recentApps: BrowsedAppInfo[] = [];
 
   public dabRunning = false;

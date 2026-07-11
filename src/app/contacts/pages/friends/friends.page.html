@@ -3,8 +3,14 @@
   <ion-grid class="container" [class.blur]="popupService.deletePopup" [class.darkContainer]="theme.darkMode">
     <div class="header">
 
-      <!-- Empty Contacts -->
-      <div *ngIf="contacts.length === 0" class="no-contacts">
+      <!-- Loading skeleton: the contacts subject starts null (not loaded) and the
+           storage read is async, so hold the layout instead of flashing "No contacts". -->
+      <div *ngIf="!contactsLoaded" class="contacts-skeleton">
+        <ui-skeleton kind="row" [rows]="7" [disc]="50"></ui-skeleton>
+      </div>
+
+      <!-- Empty Contacts (only once the store has actually loaded) -->
+      <div *ngIf="contactsLoaded && contacts.length === 0" class="no-contacts">
         <img class="profile-img"
           [src]="!theme.darkMode ? 'assets/launcher/default/default-avatar.svg' : 'assets/launcher/default/darkmode/default-avatar.svg'">
         <h1>{{ 'contacts.no-contacts' | translate }}</h1>

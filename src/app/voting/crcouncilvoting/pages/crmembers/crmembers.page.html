@@ -76,8 +76,10 @@
             {{ 'crcouncilvoting.no-members' | translate }}
         </div>
 
-        <div *ngIf="!crMembersFetched" class="spinner align-center">
-            <ion-spinner name="crescent"></ion-spinner>
+        <!-- Content-shaped loading state: rows mirroring the member list
+             (40px avatar + name lines), instead of a bare spinner. -->
+        <div *ngIf="!crMembersFetched" class="list-skeleton">
+            <ui-skeleton kind="row" [rows]="12" [disc]="40"></ui-skeleton>
         </div>
 
     </div>

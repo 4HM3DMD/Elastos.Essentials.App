@@ -25,6 +25,9 @@ import { DappBrowserService } from './dappbrowser.service';
 export class FavoritesService {
     public favorites: BehaviorSubject<BrowserFavorite[]> = new BehaviorSubject([]); // Favorites in addition order
     public sortedFavorites: BehaviorSubject<BrowserFavorite[]> = new BehaviorSubject([]); // Favorites by more recently used order
+    // Favorites load on a 2s delay after boot; the subject starts empty, so this
+    // flag lets the UI show a placeholder instead of a false "no favorites" state.
+    public favoritesLoaded = false;
 
     constructor(
         public translate: TranslateService,
@@ -56,6 +59,7 @@ export class FavoritesService {
 
         Logger.log("dappbrowser", "Loaded favorites:", favorites);
 
+        this.favoritesLoaded = true;
         this.favorites.next(favorites);
         this.sortedFavorites.next(this.sortFavorites(favorites));
     }

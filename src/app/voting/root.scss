@@ -7,6 +7,12 @@ ion-spinner {
     align-items: center;
 }
 
+// Content-shaped page-load placeholders (ui-skeleton) share the voting pages'
+// content inset. Bare centered spinners remain only for user actions.
+.list-skeleton {
+    padding: 10px 20px;
+}
+
 .align-center {
     display: flex;
     text-align: center;

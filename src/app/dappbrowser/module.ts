@@ -6,6 +6,7 @@ import { IonicModule, Platform } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedComponentsModule } from '../components/sharedcomponents.module';
+import { UiComponentsModule } from '../components/ui/ui-components.module';
 import { GlobalDirectivesModule } from '../helpers/directives/module';
 import { NetworkChooserComponentModule } from '../wallet/components/network-chooser/module';
 import { WalletChooserComponentModule } from '../wallet/components/wallet-chooser/module';
@@ -29,6 +30,7 @@ import { DAppBrowserRoutingModule } from './routing';
   imports: [
     CommonModule,
     SharedComponentsModule,
+    UiComponentsModule,
     NetworkChooserComponentModule,
     WalletChooserComponentModule,
     DAppBrowserRoutingModule,

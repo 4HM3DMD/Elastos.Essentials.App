@@ -24,7 +24,11 @@
             [subWallet]="subWallet"></tx-details-multisig>
 
         <!-- TRANSACTION DETAILS: the rows that answer "what happened" in a readable card;
-             chain internals collapse behind Technical details. Row templates are shared. -->
+             chain internals collapse behind Technical details. Row templates are shared.
+             A kv-shaped skeleton holds the card while the details RPC resolves. -->
+        <div class="details-card" *ngIf="!detailsLoaded">
+            <ui-skeleton kind="kv" [rows]="6"></ui-skeleton>
+        </div>
         <div class="details-card" *ngIf="essentialDetails.length > 0">
             <ng-container *ngFor="let item of essentialDetails">
                 <ng-container *ngTemplateOutlet="detailRow; context: { $implicit: item }"></ng-container>

@@ -32,7 +32,9 @@
 
     <div *ngIf="networkBanner" class="network-banner">{{ networkBanner }}</div>
 
-    <!-- Active wallet balance (fiat-first; native as the secondary line) -->
+    <!-- Active wallet balance (fiat-first; native as the secondary line).
+         While the wallet service is still initializing (cold start), a hero-shaped
+         skeleton holds the layout so the page composes once instead of jumping. -->
     <div *ngIf="balanceVm" class="balance-block">
       <ui-amount-display [size]="3" [value]="balanceVm.primary" [unit]="balanceVm.symbol"
         [hidden]="effectiveHide" [showToggle]="true" (toggleHidden)="toggleHideBalances()"></ui-amount-display>
@@ -40,6 +42,9 @@
         <span class="pnl-label">{{ 'launcher.home-todays-pnl' | translate }}</span>
         <span class="pnl-value" [class.up]="pnlVm.tone === 'up'" [class.down]="pnlVm.tone === 'down'">{{ effectiveHide ? mask : pnlVm.text }}</span>
       </div>
+    </div>
+    <div *ngIf="!balanceVm && !walletServiceReady" class="balance-block">
+      <ui-skeleton kind="hero"></ui-skeleton>
     </div>
 
     <!-- Quick actions: real destinations, gated per network (mirrors the Value screen).
@@ -51,6 +56,7 @@
       <ui-action-tile *ngIf="canSwap()" label="Swap" icon="assets/wallet/action/swap.png" (pressed)="onSwap()"></ui-action-tile>
       <ui-action-tile *ngIf="canStake()" label="Stake" icon="assets/wallet/action/stake.png" (pressed)="onStake()"></ui-action-tile>
     </ui-action-grid>
+    <ui-skeleton *ngIf="!hasWallet() && !walletServiceReady" class="tiles" kind="tile" [rows]="4"></ui-skeleton>
 
     <!-- Active wallet not available on the current network -->
     <div *ngIf="walletUnavailable" class="wallet-unavailable">
@@ -77,8 +83,9 @@
         [chevron]="true" (pressed)="onApps()"></ui-token-row>
     </div>
 
-    <!-- Tokens preview (top 3 by fiat value); header always shown while a wallet is active -->
-    <div *ngIf="hasWallet()" class="tokens">
+    <!-- Tokens preview (top 3 by fiat value); header always shown while a wallet is
+         active, and during wallet-service init so the list skeleton holds the layout -->
+    <div *ngIf="hasWallet() || !walletServiceReady" class="tokens">
       <div class="section-head">
         <h2>{{ 'launcher.home-tokens' | translate }}</h2>
         <button *ngIf="tokenRows && tokenRows.length > 0" type="button" class="see-all" (click)="onValue()">{{ 'launcher.home-see-all' | translate }}</button>

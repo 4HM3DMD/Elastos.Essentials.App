@@ -126,6 +126,9 @@ export class CoinTxInfoPage implements OnInit {
 
   // List of displayable transaction details
   public txDetails: TransactionDetail[] = [];
+  // False until the awaited details fetch has built the rows; the details card
+  // shows a kv-shaped skeleton meanwhile instead of a blank body.
+  public detailsLoaded = false;
 
   public crossChainNetworkKey = null; // For cross chain transaction, we need to open address in target network explorer.
 
@@ -270,6 +273,10 @@ export class CoinTxInfoPage implements OnInit {
       // row builder below reads - fire-and-forget raced it and lost.
       await this.getTransactionDetails();
     }
+
+    // The details card shows a kv skeleton until the awaited fetch above has
+    // built the rows (a full RPC round-trip on chain-backed transactions).
+    this.detailsLoaded = true;
   }
 
   async getTransactionDetails() {

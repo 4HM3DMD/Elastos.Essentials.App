@@ -113,6 +113,10 @@ export class HomePage implements OnInit, OnDestroy {
   public pnlVm: { text: string; tone: 'up' | 'down' } = null; // local 24h PnL, null until enough history
   public tokenRows: HomeTokenRow[] = null;
   public walletUnavailable = false; // active wallet has no network wallet on the active network
+  // True once the wallet service finished initializing: the hero/tiles/tokens
+  // skeletons show only before this, so a user with zero wallets is not left
+  // staring at placeholders that will never resolve.
+  public walletServiceReady = false;
   public readonly mask = HIDDEN_MASK;
   private hideBalances = false;
   private hideBalancesLoaded = false;
@@ -151,7 +155,10 @@ export class HomePage implements OnInit, OnDestroy {
     // wallet init, active network wallet / network, subwallet-list, currency and
     // transaction-published.
     this.walletServiceSub = this.walletService.walletServiceStatus.subscribe(initializationComplete => {
-      if (initializationComplete) this.refreshWalletData();
+      if (initializationComplete) {
+        this.walletServiceReady = true;
+        this.refreshWalletData();
+      }
     });
     this.networkWalletSub = this.walletService.activeNetworkWallet.subscribe(() => {
       if (this.walletService.walletServiceStatus.value) this.refreshWalletData();

@@ -86,7 +86,10 @@
         </ion-row>
 
         <!-- Favorites list -->
-        <p *ngIf="favorites.length == 0" class="no-favorite">
+        <div *ngIf="!favoritesLoaded" class="favorites-skeleton">
+            <ui-skeleton kind="row" [rows]="3" [disc]="50"></ui-skeleton>
+        </div>
+        <p *ngIf="favoritesLoaded && favorites.length == 0" class="no-favorite">
             {{ 'dappbrowser.no-favorite' | translate:{networkName: getActiveNetworkName()} }}
         </p>
         <div *ngIf="favorites.length > 0">

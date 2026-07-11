@@ -9,6 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { QRCodeModule } from 'angularx-qrcode';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { SharedComponentsModule } from '../components/sharedcomponents.module';
+import { UiComponentsModule } from '../components/ui/ui-components.module';
 import { ComponentsModule } from './components/components.module';
 import { DeleteComponent } from './components/delete/delete.component';
 import { OptionsComponent } from './components/options/options.component';
@@ -43,6 +44,7 @@ import { ContactsRoutingModule } from './routing';
     QRCodeModule,
     ComponentsModule,
     SharedComponentsModule,
+    UiComponentsModule,
     FormsModule,
     IonicStorageModule.forRoot(),
     TranslateModule,

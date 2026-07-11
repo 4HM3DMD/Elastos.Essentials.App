@@ -1,8 +1,10 @@
 <ion-content>
     <app-titlebar></app-titlebar>
 
-    <div *ngIf="!dataFetched">
-        <ion-spinner></ion-spinner>
+    <!-- Content-shaped loading state: rows mirroring the votes list
+         (40px node avatar + vote lines + right amount), instead of a bare spinner. -->
+    <div *ngIf="!dataFetched" class="list-skeleton">
+        <ui-skeleton kind="row" [rows]="5" [disc]="40" [value]="true"></ui-skeleton>
     </div>
 
     <div *ngIf="dataFetched">

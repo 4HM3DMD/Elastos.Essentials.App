@@ -54,9 +54,10 @@
             </div>
         </ion-grid>
 
-        <!-- Spinner Container - Reveal if proposals are being fetched -->
-        <div *ngIf="!proposalsFetched">
-          <ion-spinner></ion-spinner>
+        <!-- Content-shaped loading state: rows mirroring the proposal list
+             (title/date lines), instead of a bare spinner. -->
+        <div *ngIf="!proposalsFetched" class="list-skeleton">
+          <ui-skeleton kind="row" [rows]="8" [disc]="0"></ui-skeleton>
         </div>
 
         <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreProposals($event)">

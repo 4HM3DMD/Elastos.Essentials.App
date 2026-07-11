@@ -1,5 +1,10 @@
 @import "../../root.scss";
 
+// Loading skeleton inherits the page's content inset.
+.page-skeleton {
+  padding: 10px 20px;
+}
+
 .wallet-row {
   border-radius: 17px;
   padding: 5px 10px;

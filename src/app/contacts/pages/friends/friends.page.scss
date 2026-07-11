@@ -1,5 +1,10 @@
 @import "src/app/contacts/root.scss";
 
+// Loading placeholder for the contacts list (avatar + name rows).
+.contacts-skeleton {
+  padding: 20px 24px 0;
+}
+
 .container {
   padding: 40px 0 80px;
 

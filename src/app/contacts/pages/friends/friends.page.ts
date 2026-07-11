@@ -35,6 +35,9 @@ export class FriendsPage implements OnInit {
 
   public letters: string[] = [];
   public contacts: Contact[] = [];
+  // The service subject starts null (not loaded) and the storage read is async;
+  // guard the empty state on this so "No contacts" never flashes during load.
+  public contactsLoaded = false;
 
   slideOpts = {
     initialSlide: 0,
@@ -63,6 +66,7 @@ export class FriendsPage implements OnInit {
     this.friendsService.contacts.subscribe(contacts => {
       if (contacts) {
         this.contacts = contacts;
+        this.contactsLoaded = true;
         this.letters = this.friendsService.extractContactFirstLetters(contacts);
         void this.initContacts();
 

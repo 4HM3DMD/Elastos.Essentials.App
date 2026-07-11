@@ -7,6 +7,7 @@ import { IonicModule, Platform } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedComponentsModule } from 'src/app/components/sharedcomponents.module';
+import { UiComponentsModule } from 'src/app/components/ui/ui-components.module';
 import { GlobalDirectivesModule } from 'src/app/helpers/directives/module';
 import { StdTransactionComponentModule } from 'src/app/wallet/components/std-transaction/module';
 import { OptionsComponentsModule } from './components/options/module';
@@ -31,6 +32,7 @@ import { DPoS2RoutingModule } from './routing';
     IonicStorageModule,
     OptionsComponentsModule,
     SharedComponentsModule,
+  UiComponentsModule,
     StdTransactionComponentModule,
     GlobalDirectivesModule
   ],

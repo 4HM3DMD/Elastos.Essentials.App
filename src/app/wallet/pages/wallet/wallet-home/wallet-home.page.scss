@@ -14,6 +14,22 @@
     background-origin: border-box;
 }
 
+// Page-level loading skeleton: mirrors the loaded sections' vertical rhythm
+// (hero at 20px, tiles at 22px, list at 26px) so content lands without a jump.
+.page-skeleton {
+    .skeleton-hero {
+        margin-top: 20px;
+    }
+
+    .skeleton-tiles {
+        margin-top: 22px;
+    }
+
+    .skeleton-list {
+        margin-top: 26px;
+    }
+}
+
 .icon-btn {
     display: inline-flex;
     align-items: center;

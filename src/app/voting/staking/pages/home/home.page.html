@@ -1,8 +1,12 @@
 <ion-content>
     <app-titlebar></app-titlebar>
 
-    <div *ngIf="!dataFetched">
-        <ion-spinner></ion-spinner>
+    <!-- Content-shaped loading state mirroring the loaded layout: wallet row,
+         staked-amount hero card, reward rows - instead of a bare spinner. -->
+    <div *ngIf="!dataFetched" class="page-skeleton">
+        <ui-skeleton kind="row" [rows]="1" [disc]="24"></ui-skeleton>
+        <ui-skeleton kind="card" [rows]="1"></ui-skeleton>
+        <ui-skeleton kind="row" [rows]="3" [disc]="0" [value]="true"></ui-skeleton>
     </div>
 
     <div *ngIf="dataFetched">

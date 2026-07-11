@@ -51,9 +51,10 @@
             </div>
         </ion-grid>
 
-        <!-- Spinner Container - Reveal if suggestions are being fetched -->
-        <div *ngIf="!suggestionsFetched">
-          <ion-spinner></ion-spinner>
+        <!-- Content-shaped loading state: rows mirroring the suggestion list
+             (title/date lines), instead of a bare spinner. -->
+        <div *ngIf="!suggestionsFetched" class="list-skeleton">
+          <ui-skeleton kind="row" [rows]="8" [disc]="0"></ui-skeleton>
         </div>
 
         <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreSuggestions($event)">
