@@ -6,6 +6,7 @@ import { Logger } from 'src/app/logger';
 import { App } from 'src/app/model/app.enum';
 import { IdentityEntry } from 'src/app/model/didsessions/identityentry';
 import { GlobalDIDSessionsService } from 'src/app/services/global.didsessions.service';
+import { GlobalStartupService } from 'src/app/services/global.startup.service';
 import { GlobalEvents } from 'src/app/services/global.events.service';
 import { GlobalNativeService } from 'src/app/services/global.native.service';
 import { Direction, GlobalNavService } from 'src/app/services/global.nav.service';
@@ -98,7 +99,15 @@ export class UXService {
   }
 
   async navigateRoot() {
-    // Redirect to the appropriate screen depending on available identities
+    // If a user is already signed in, "back to root" was reached from an in-app flow
+    // (e.g. adding a profile from the wallet). Return to the app the user came from -
+    // NOT the pre-login identity picker, which has no back button and would trap them.
+    if (GlobalDIDSessionsService.instance.getSignedInIdentity()) {
+      await GlobalStartupService.instance.navigateToStartupScreen();
+      return;
+    }
+
+    // Pre-login: redirect to the appropriate screen depending on available identities
     let identities = await GlobalDIDSessionsService.instance.getIdentityEntries();
     if (identities.length == 0) {
       Logger.log('didsessions', 'No existing identity. Navigating to language chooser then createidentity');
