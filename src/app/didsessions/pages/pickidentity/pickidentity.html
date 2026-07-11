@@ -1,25 +1,28 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid class="container" [class.dark-container]="theme.darkMode" [class.blur]="uxService.popover">
+  <ion-grid class="container" [class.blur]="uxService.popover">
     <div class="identities">
       <div *ngFor="let group of groupedIdentities">
-        <ion-row class="id-row ion-activatable ripple" *ngFor="let identityEntry of group.entries">
-          <ion-col class="img-col" size="1.9" (click)="signIn(identityEntry)">
-            <div *ngIf="!identityEntry.avatar" class="noAvatar" inlineSVG="assets/launcher/default/default-avatar.svg">
-            </div>
-            <img *ngIf="identityEntry.avatar"
+        <div class="id-row ion-activatable" *ngFor="let identityEntry of group.entries">
+          <div class="avatar-wrap" (click)="signIn(identityEntry)">
+            <div *ngIf="!identityEntry.avatar" class="avatar noAvatar"
+              inlineSVG="assets/launcher/default/default-avatar.svg"></div>
+            <img *ngIf="identityEntry.avatar" class="avatar"
               [src]="'data:'+identityEntry.avatar.contentType+';base64,'+identityEntry.avatar.base64ImageData">
-          </ion-col>
-          <ion-col class="info-col" size="9" (click)="signIn(identityEntry)">
-            <h1>{{ identityEntry.name }}</h1>
-            <p>{{ identityEntry.didString.slice(0,16) }}...{{ identityEntry.didString.slice(40,46) }}</p>
-          </ion-col>
-          <ion-col class="info-col" size="1.1" (click)="showOptions($event, identityEntry)">
-            <img
-              [src]="!theme.darkMode ? 'assets/didsessions/icon/dots.svg' : 'assets/didsessions/icon/dark_mode/dots.svg'">
-          </ion-col>
+          </div>
+
+          <div class="meta" (click)="signIn(identityEntry)">
+            <span class="name">{{ identityEntry.name }}</span>
+            <span class="did">{{ identityEntry.didString.slice(0,16) }}...{{ identityEntry.didString.slice(40,46) }}</span>
+          </div>
+
+          <span class="row-action" role="button" aria-label="Identity options"
+            (click)="showOptions($event, identityEntry)">
+            <ion-icon name="ellipsis-horizontal"></ion-icon>
+          </span>
+
           <ion-ripple-effect></ion-ripple-effect>
-        </ion-row>
+        </div>
       </div>
     </div>
 

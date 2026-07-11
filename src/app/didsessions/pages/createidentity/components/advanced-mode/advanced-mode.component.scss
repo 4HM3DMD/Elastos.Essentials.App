@@ -1,12 +1,13 @@
 @import "src/app/didsessions/root.scss";
 
 // SCR-118: single onboarding screen replacing the 3-slide welcome carousel.
+// 2026 redesign: token-based typography/spacing on the 8pt rhythm.
 .welcome-screen {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 90px 45px 45px;
+  padding: 90px 24px 24px;
 
   &.hidden {
     display: none;
@@ -17,16 +18,17 @@
   }
 
   .welcome-title {
-    font-size: 20px;
-    font-weight: 300;
-    line-height: 28px;
-    margin-top: 60px;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 32px;
+    margin-top: 48px;
+    color: var(--ion-text-color);
   }
 
   .welcome-intro {
     font-size: 16px;
     font-weight: 500;
-    line-height: 22px;
+    line-height: 24px;
     margin-top: 16px;
     color: var(--essentials-text-secondary);
   }
@@ -35,77 +37,4 @@
 // Hide the Create/Import footer while the welcome content is hidden.
 .footer.hidden {
   display: none;
-}
-
-ion-slides {
-  height: calc(100% - (150px + 40px)); // Substract height of slides on approximate height of footer
-}
-
-ion-slide {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 90px 45px 45px;
-  height: 100%;
-
-  ion-label {
-    font-size: 20px;
-    margin-top: 60px;
-    font-weight: 300;
-  }
-}
-
-#slide1 {
-  img {
-    //width: 80px;
-    //height: 80px;
-
-    animation: imgAnimate;
-    animation-duration: 800ms;
-    animation-fill-mode: forwards;
-
-    @keyframes imgAnimate {
-      0% {
-        width: 0px;
-      }
-      100% {
-        width: 200px;
-      }
-    }
-  }
-}
-
-#slide2 {
-  img {
-    position: absolute;
-    bottom: 50%;
-    animation: imgAnimate2;
-    animation-duration: 2600ms;
-    animation-iteration-count: infinite;
-    animation-fill-mode: forwards;
-
-    @keyframes imgAnimate2 {
-      0% {
-        width: 190px;
-      }
-      25% {
-        width: 200px;
-      }
-      50% {
-        width: 190px;
-      }
-      75% {
-        width: 200px;
-      }
-      100% {
-        width: 190px;
-      }
-    }
-  }
-
-  ion-label {
-    position: relative;
-    top: 50px;
-  }
 }

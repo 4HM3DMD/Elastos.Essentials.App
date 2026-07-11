@@ -1,4 +1,4 @@
-<ion-grid class="container ion-text-center" [class.dark-container]="theme.darkMode">
+<ion-grid class="container ion-text-center">
 
   <ion-row class="slide-bar-row">
     <ion-col size="2.2">
@@ -21,8 +21,7 @@
   <ion-slides #slide [options]="slideOpts" [class.hidden]="hidden">
     <ion-slide class="ion-text-center">
       <div class="slide-card">
-        <img
-          [src]="!theme.darkMode ? 'assets/didsessions/onboard/slide1.svg' : 'assets/didsessions/onboard/dark_mode/slide1.svg'">
+        <img src="assets/didsessions/onboard/slide1.svg">
         <h1>{{ 'didsessions.prepare.publish-title' | translate }}</h1>
         <p>{{ 'didsessions.prepare.publish-intro' | translate }}</p>
         <div class="error-box" *ngIf="publishError">

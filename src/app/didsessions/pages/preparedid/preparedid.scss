@@ -3,31 +3,34 @@
 .container {
   height: calc(100% - (50px));
   background: var(--ion-background-color);
-  padding: 0 20px 20px;
+  padding: 0 20px 24px;
 
+  // Segmented progress bar tracking the 5 preparation steps. Empty segments use
+  // the subtle separator tint; completed ones fill with the accent.
   .slide-bar-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 0 20px;
+    padding: 8px 0 24px;
 
     ion-col {
       div {
         width: 100%;
-        height: 2.5px !important;
+        height: 4px !important;
         border-radius: 10px;
-        background: var(--ion-text-color);
-        opacity: 0.2;
+        background: var(--essentials-border-separator-color);
+        transition: background 0.3s ease;
       }
 
       .fillBar {
-        opacity: 1;
+        background: var(--essentials-accent);
       }
     }
   }
 
+  // "Please wait" loader shown beneath the active step card.
   .slide-circle-row {
-    margin-top: -50px;
+    margin-top: 8px;
 
     ion-col {
       display: flex;
@@ -36,10 +39,11 @@
       align-items: center;
 
       span {
-        margin-top: -25px;
+        margin-top: -20px;
         font-size: 12px;
-        font-weight: 500;
+        font-weight: 600;
         letter-spacing: 2.4px;
+        text-transform: uppercase;
         color: var(--essentials-text-secondary);
       }
     }
@@ -49,45 +53,49 @@
     height: auto;
 
     ion-slide {
-      padding: 10px;
+      padding: 0 2px;
 
+      // 2026 token card: rounded 18px surface with a subtle top-light gradient,
+      // matching the network-chooser / profile-selector rows.
       .slide-card {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         width: 100%;
-        padding: 20px 20px 35px;
-        background: var(--essentials-box-color);
-        border-radius: 28px;
+        padding: 28px 20px 32px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+          var(--essentials-box-color);
 
         img {
-          width: 236px;
-          height: 236px;
-          padding: 20px 0;
+          width: 200px;
+          height: 200px;
+          padding: 12px 0 20px;
         }
 
         h1 {
-          font-size: 20px;
-          font-weight: 500;
+          font-size: 22px;
+          font-weight: 700;
           line-height: 28px;
-          letter-spacing: 0.4px;
-          padding: 0 10px;
-          margin: 0 0 20px;
+          letter-spacing: 0.2px;
+          padding: 0 8px;
+          margin: 0 0 12px;
+          color: var(--ion-text-color);
         }
 
         p {
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 500;
           line-height: 22px;
-          letter-spacing: 0.32px;
-          padding: 0 20px 20px;
+          letter-spacing: 0.2px;
+          padding: 0 8px;
           margin: 0;
           color: var(--essentials-text-secondary);
         }
 
         ebutton {
-          margin: 20px 10px 0;
+          margin-top: 24px;
           width: 100%;
         }
 
@@ -95,9 +103,14 @@
           width: 100%;
           max-height: 160px;
           overflow-y: auto;
+          margin-top: 20px;
 
-          span {
-            margin-top: 10px;
+          ebutton {
+            margin-top: 0;
+          }
+
+          span.error {
+            margin-top: 12px;
             font-size: 12px;
             font-weight: 500;
             color: var(--essentials-danger);

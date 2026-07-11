@@ -1,20 +1,25 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <div class="container" [class.dark-container]="theme.darkMode">
+  <div class="container">
 
-    <ion-row class="ion-text-center">
-      <h1>{{ 'didsessions.more-than-one-import-did-pick-one' | translate }} </h1>
-    </ion-row>
+    <div class="intro">
+      <h1>{{ 'didsessions.more-than-one-import-did-pick-one' | translate }}</h1>
+    </div>
 
-    <ion-row class="item" *ngFor="let did of importedDids" (click)="selectDID(did)">
-      <ion-col size="10" class="id-col">
-        <h2>{{ did.getNameCredentialValue() }}</h2>
-        <p>{{ did.getDIDString() }}</p>
-      </ion-col>
-      <ion-col size="2" class="checkbox-col">
-        <ion-checkbox mode="ios" [checked]="selectedDid === did"></ion-checkbox>
-      </ion-col>
-    </ion-row>
+    <div class="did-list">
+      <button type="button" class="did-card ion-activatable" *ngFor="let did of importedDids"
+        [class.selected]="selectedDid === did" (click)="selectDID(did)">
+        <span class="avatar" aria-hidden="true">
+          <ion-icon name="person-circle-outline"></ion-icon>
+        </span>
+        <span class="meta">
+          <span class="name">{{ did.getNameCredentialValue() }}</span>
+          <span class="sub">{{ did.getDIDString() }}</span>
+        </span>
+        <ion-icon class="check" name="checkmark"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+    </div>
 
     <div class="footer" *ngIf="selectedDid">
       <ebutton (clicked)="continue()" [title]="'common.continue' | translate "></ebutton>

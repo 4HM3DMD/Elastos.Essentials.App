@@ -1,56 +1,92 @@
 @import "src/app/didsessions/root.scss";
 
 .container {
-  padding: 15px;
+  padding: 20px;
   margin: 0;
 
   .identities {
     margin-bottom: 75px;
 
     .id-row {
-      border-radius: 16px;
-      padding: 4px;
-      margin-bottom: 10px;
-      background: var(--essentials-box-color);
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+        var(--essentials-box-color);
+      color: var(--ion-text-color);
+      cursor: pointer;
 
-      .img-col {
+      .avatar-wrap {
+        flex-shrink: 0;
         display: flex;
-        justify-content: flex-end;
         align-items: center;
+        justify-content: center;
 
-        img {
-          width: 41px;
-          height: 41px;
+        .avatar {
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
           object-fit: cover;
+          background: var(--essentials-border-separator-color);
         }
       }
 
-      .info-col {
+      .meta {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: flex-start;
+        margin-left: 12px;
+        min-width: 0;
+        flex: 1;
 
-        h1 {
-          margin: 0;
+        .name {
           font-size: 16px;
           font-weight: 600;
+          letter-spacing: 0.3px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        p {
-          margin: 0;
-          font-size: 14px;
-          font-weight: 300;
+        .did {
+          margin-top: 3px;
+          font-size: 12px;
+          color: var(--essentials-text-secondary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
-    }
-  }
 
-  .btn-row {
-    padding: 30px 15px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
+      .row-action {
+        margin-left: 6px;
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--essentials-text-secondary);
+        flex-shrink: 0;
+        cursor: pointer;
+
+        ion-icon {
+          font-size: 20px;
+        }
+
+        &:active {
+          background: var(--essentials-border-separator-color);
+        }
+      }
+
+      ion-ripple-effect {
+        --ripple-color: var(--ion-text-color);
+      }
+    }
   }
 }

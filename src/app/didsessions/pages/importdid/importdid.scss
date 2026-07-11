@@ -1,93 +1,89 @@
 @import "src/app/didsessions/root.scss";
 
 .container {
-  padding: 25px;
+  padding: 24px 22px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  align-items: stretch;
 
-  .mnemonic-rows {
-    margin-top: 20px;
+  .prompt {
+    margin: 0 0 24px;
+    padding: 0 4px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--essentials-text-secondary);
+    text-align: center;
+  }
+
+  .mnemonic-grid {
     width: 100%;
 
     .mnemonic-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: space-between;
+      // A real 3-column grid: it reserves the gap out of the row width, so 3 chips per
+      // row always fit. (A flex row + gap made 3x 33%-wide ion-cols overflow to 2+1.)
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       width: 100%;
+      margin: 0 0 8px;
+      gap: 8px;
 
-      ion-col {
-        height: 40px;
-        background: var(--essentials-box-color);
-        border-radius: 8px;
-        margin-bottom: 20px;
+      .word-chip {
+        // ion-col size="4" caps each column at 33.33% and adds grid padding; neutralize
+        // both so the CSS grid above owns the column widths.
+        max-width: none !important;
+        flex: initial !important;
+        --ion-grid-column-padding: 0;
+        position: relative;
         display: flex;
-        justify-content: center;
         align-items: center;
+        gap: 8px;
+        min-height: 52px;
+        padding: 0 12px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+          var(--essentials-box-color);
+        border: 1px solid transparent;
+        transition: border-color 0.15s ease, background 0.15s ease;
 
         .mnemonic-index {
-          position: absolute;
-          z-index: 100;
-          top: -11px;
-          left: -11px;
-          width: 22px;
-          height: 22px;
-          background: var(--essentials-box-color);
-          border-radius: 100%;
-          border: 2px solid var(--essentials-border-separator-color);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 9px;
-        }
-      }
-
-      .selectedCol {
-        background: var(--ion-text-color);
-
-        .mnemonic-index {
-          background: var(--ion-text-color);
-          color: var(--essentials-box-color);
+          flex-shrink: 0;
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--essentials-text-tertiary);
         }
 
-        ion-label {
-          font-size: 12px;
-          font-weight: 500;
+        .word-text {
+          flex: 1;
+          min-width: 0;
+          font-size: 13px;
+          font-weight: 600;
           line-height: 1.25;
-          letter-spacing: -0.29px;
-          color: var(--essentials-box-color);
+          letter-spacing: -0.2px;
+          color: var(--ion-text-color);
+          text-transform: lowercase;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        &.selectedCol {
+          border-color: var(--essentials-accent);
+
+          .mnemonic-index {
+            color: var(--essentials-accent);
+          }
+
+          .word-text {
+            color: var(--ion-text-color);
+          }
         }
       }
-    }
-  }
-
-  p {
-    margin: 0;
-    padding: 0 20px;
-    font-size: 16px;
-    font-weight: 500;
-  }
-
-  .input-row {
-    width: 100%;
-    padding: 30px 15px;
-
-    .virtual-textarea {
-      width: 100%;
-      background: var(--essentials-box-color);
-      border-radius: 8px;
-      font-size: 13px;
-      text-transform: lowercase;
-      height: 100px;
-      padding-top: 15px;
-      padding-left: 12px;
-      padding-right: 12px;
     }
   }
 
   .btn-row {
-    padding: 10px 0;
+    margin-top: 12px;
 
     ebutton {
       width: 100%;
@@ -97,9 +93,11 @@
 
 @media screen and (max-height: 670px) {
   .container {
-    .mnemonic-row {
-      ion-col {
-        margin-bottom: 15px;
+    .mnemonic-grid .mnemonic-row {
+      margin-bottom: 8px;
+
+      .word-chip {
+        min-height: 46px;
       }
     }
   }
