@@ -1,80 +1,106 @@
 @import "src/app/identity/root.scss";
 
-.container {
+.signdigest-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  /* 2026 shared gutter */
+  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
+
+  /* ---- App / origin header ---- */
+  .request-header {
     display: flex;
     flex-direction: column;
-    min-height: 100%;
-    padding: 20px;
+    align-items: center;
+    text-align: center;
+    padding: 12px 0 20px;
 
-    ion-card {
-        margin: 0;
-        background: var(--essentials-box-color);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        box-shadow: none;
-        border-radius: 15px;
-        padding: 15px;
+    .app-disc {
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 100%),
+        var(--essentials-box-color);
+      border: 0.5px solid var(--essentials-border-separator-color);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.14);
 
-        img {
-            margin-top: 2.5px;
-            width: 56px;
-            height: 56px;
-        }
-
-        ion-card-title {
-            font-size: 21px;
-            font-weight: 600;
-            line-height: 1.29;
-            margin: 15px 15px 10px;
-        }
-
-        ion-card-subtitle {
-            text-transform: none;
-            font-size: 13px;
-            font-weight: 500;
-            line-height: 1.46;
-            margin: 0 15px 15px;
-        }
+      img {
+        width: 42px;
+        height: 42px;
+      }
     }
 
-    .msg-container {
-        padding: 20px 20px 5px;
-
-        p {
-            font-size: 16px;
-            font-weight: 600;
-            line-height: 1.25;
-            text-align: center;
-        }
-
-        .first-msg {
-            margin-bottom: 20px;
-        }
+    .request-title {
+      margin: 16px 0 0;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--ion-text-color);
     }
 
-    .data-container {
-        background-color: var(--essentials-box-color);
-        border-radius: 15px;
-        padding: 0px 20px;
-        margin-bottom: 7.5px;
+    /* Origin attribution (requesting-app component) sits just under the title */
+    requesting-app {
+      margin-top: 6px;
+    }
+  }
 
-        p {
-            width: 100%;
-            font-size: 13px;
-            font-weight: 600;
-            line-height: 1.46;
-            text-align: left;
-            word-wrap: break-word;
-        }
+  /* ---- Intro / explanation ---- */
+  .request-intro {
+    text-align: center;
+    margin-bottom: 16px;
+
+    p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.4;
     }
 
-    .btn-container {
-        padding: 32.5px 0;
-
-        ebutton {
-            width: 90%;
-        }
+    .intro-lead {
+      font-weight: 600;
+      color: var(--ion-text-color);
     }
+
+    .intro-body {
+      margin-top: 8px;
+      font-weight: 500;
+      color: var(--essentials-text-secondary);
+    }
+  }
+
+  /* ---- Request detail: data to sign ---- */
+  .data-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+
+    .data-value {
+      width: 100%;
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+      text-align: left;
+      color: var(--ion-text-color);
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  /* ---- Actions ---- */
+  .request-actions {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    padding: 24px 0 8px;
+
+    ebutton {
+      width: 100%;
+    }
+  }
 }

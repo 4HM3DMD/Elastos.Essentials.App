@@ -1,32 +1,31 @@
 <ion-content>
     <app-titlebar></app-titlebar>
-    <ion-grid *ngIf="receivedIntent" class="container" [class.dark-container]="theme.darkMode">
-        <ion-card>
-            <img src="/assets/launcher/icons/hive-cross.svg">
-            <requesting-app [caller]="receivedIntent.params.caller"></requesting-app>
-        </ion-card>
+    <div *ngIf="receivedIntent" class="sethiveprovider">
 
-        <div class="msg-container">
-            <p class="first-msg">{{ 'identity.sethiveprovider-intro' | translate }}</p>
+        <!-- App / origin header: requesting app icon + name + intro line -->
+        <div class="request-header">
+            <div class="app-disc">
+                <img src="/assets/launcher/icons/hive-cross.svg">
+            </div>
+            <requesting-app [caller]="receivedIntent.params.caller"></requesting-app>
+            <p class="request-intro">{{ 'identity.sethiveprovider-intro' | translate }}</p>
         </div>
 
-        <ion-row class="data-row" *ngIf="receivedIntent.params.name">
-            <p>{{ 'identity.sethiveprovider-name' | translate }}</p>
-            <h5>
-                {{ receivedIntent.params.name }}
-            </h5>
-        </ion-row>
+        <!-- Requested detail: the hive provider being set -->
+        <div class="detail-card" *ngIf="receivedIntent.params.name">
+            <p class="detail-label">{{ 'identity.sethiveprovider-name' | translate }}</p>
+            <p class="detail-value">{{ receivedIntent.params.name }}</p>
+        </div>
 
-        <ion-row class="data-row">
-            <p>{{ 'identity.sethiveprovider-address' | translate }}</p>
-            <h5>
-                {{ receivedIntent.params.address }}
-            </h5>
-        </ion-row>
+        <div class="detail-card">
+            <p class="detail-label">{{ 'identity.sethiveprovider-address' | translate }}</p>
+            <p class="detail-value">{{ receivedIntent.params.address }}</p>
+        </div>
 
-        <ion-row class="btn-container">
+        <!-- Action -->
+        <div class="btn-container">
             <ebutton (clicked)="acceptRequest()" [title]="'identity.accept-and-publish' | translate"> </ebutton>
-        </ion-row>
+        </div>
 
-    </ion-grid>
+    </div>
 </ion-content>

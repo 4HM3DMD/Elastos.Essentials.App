@@ -1,24 +1,30 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid class="container" [class.dark-container]="theme.darkMode" *ngIf="receivedIntent">
-    <ion-card>
-      <img src="assets/shared/essentials-black-circle.svg">
-      <ion-card-title>{{ 'identity.sign-data' | translate }}</ion-card-title>
-      <requesting-app [caller]="receivedIntent.params.caller"></requesting-app>
-    </ion-card>
+  <div class="signrequest" *ngIf="receivedIntent">
 
-    <div class="msg-container">
-      <p class="first-msg">{{ 'identity.credimport-intro' | translate }}</p>
+    <!-- App / origin header -->
+    <div class="req-hero">
+      <div class="app-disc">
+        <requesting-app [caller]="receivedIntent.params.caller"></requesting-app>
+      </div>
+      <p class="req-label">{{ 'identity.credimport-intro' | translate }}</p>
+      <h1 class="req-title">{{ 'identity.sign-data' | translate }}</h1>
+    </div>
+
+    <!-- Intro message -->
+    <div class="intro-card">
       <p>{{ 'identity.credimport-intro2' | translate }}</p>
     </div>
 
-    <ion-row class="data-container">
-      <p *ngIf="receivedIntent">{{ receivedIntent.params.data }}</p>
-    </ion-row>
+    <!-- Data being signed -->
+    <div class="data-card">
+      <p class="data-value">{{ receivedIntent.params.data }}</p>
+    </div>
 
-    <ion-row class="btn-container">
-      <ebutton (clicked)="acceptRequest()" [title]="'identity.accept' | translate"> </ebutton>
-    </ion-row>
+    <!-- Actions -->
+    <div class="actions">
+      <ebutton (clicked)="acceptRequest()" [title]="'identity.accept' | translate"></ebutton>
+    </div>
 
-  </ion-grid>
+  </div>
 </ion-content>

@@ -1,80 +1,107 @@
 @import "src/app/identity/root.scss";
 
-.container {
+.signrequest {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: 20px;
+  /* 2026 shared gutter */
+  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
 
-  ion-card {
-    margin: 0;
-    background: var(--essentials-box-color);
+  /* ---- App / origin header ---- */
+  .req-hero {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    box-shadow: none;
-    border-radius: 15px;
-    padding: 15px;
+    padding: 12px 0 20px;
 
-    img {
-      margin-top: 2.5px;
-      width: 56px;
-      height: 56px;
+    .app-disc {
+      width: 96px;
+      height: 96px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      overflow: hidden;
+      /* Frosted glass disc, matching the identity / launcher hero */
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 100%),
+        var(--essentials-box-color);
+      border: 0.5px solid var(--essentials-border-separator-color);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+
+      /* The requesting-app component renders the app icon + name inside the disc.
+         Constrain the icon so it fills the disc; lift the name out below. */
+      ::ng-deep .requesting-app {
+        img {
+          width: 56px;
+          height: 56px;
+          margin-bottom: 0;
+        }
+
+        h2 {
+          display: none;
+        }
+      }
     }
 
-    ion-card-title {
-      font-size: 21px;
-      font-weight: 600;
-      line-height: 1.29;
-      margin: 15px 15px 10px;
-    }
-
-    ion-card-subtitle {
-      text-transform: none;
-      font-size: 13px;
+    .req-label {
+      margin: 16px 0 0;
+      font-size: 12px;
       font-weight: 500;
-      line-height: 1.46;
-      margin: 0 15px 15px;
-    }
-  }
-
-  .msg-container {
-    padding: 20px 20px 5px;
-
-    p {
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 1.25;
+      color: var(--essentials-text-secondary);
       text-align: center;
     }
 
-    .first-msg {
-      margin-bottom: 20px;
+    .req-title {
+      margin: 4px 0 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ion-text-color);
+      text-align: center;
     }
   }
 
-  .data-container {
-    background-color: var(--essentials-box-color);
-    border-radius: 15px;
-    padding: 0px 20px;
-    margin-bottom: 7.5px;
+  /* ---- Shared card surface ---- */
+  .intro-card,
+  .data-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
 
-    p {
+  .intro-card p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--essentials-text-secondary);
+    text-align: center;
+  }
+
+  .data-card {
+    .data-value {
+      margin: 0;
       width: 100%;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
-      line-height: 1.46;
+      line-height: 1.5;
+      color: var(--ion-text-color);
       text-align: left;
       word-wrap: break-word;
+      overflow-wrap: anywhere;
     }
   }
 
-  .btn-container {
-    padding: 32.5px 0;
+  /* ---- Actions ---- */
+  .actions {
+    margin-top: auto;
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
 
     ebutton {
-      width: 90%;
+      width: 100%;
     }
   }
 }

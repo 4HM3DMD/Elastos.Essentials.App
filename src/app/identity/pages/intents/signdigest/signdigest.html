@@ -1,27 +1,34 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid class="container" [class.dark-container]="theme.darkMode" *ngIf="receivedIntent">
-    <ion-card>
-      <img src="assets/shared/essentials-black-circle.svg">
-      <ion-card-title>{{ 'identity.sign-data' | translate }}</ion-card-title>
+  <div class="signdigest-container" *ngIf="receivedIntent">
+
+    <!-- App / origin header -->
+    <div class="request-header">
+      <div class="app-disc">
+        <img src="assets/shared/essentials-black-circle.svg">
+      </div>
+      <h1 class="request-title">{{ 'identity.sign-data' | translate }}</h1>
       <!-- Only warn "Unknown application" when a caller was declared but could not be
            resolved (an external request): Essentials' own flows (CR voting) invoke
            signdigest internally with no caller, so no warning is shown there. -->
       <requesting-app [caller]="receivedIntent.params.caller" [showUnknownLabel]="!!receivedIntent.params.caller"></requesting-app>
-    </ion-card>
-
-    <div class="msg-container">
-      <p class="first-msg">{{ 'identity.credimport-intro' | translate }}</p>
-      <p>{{ 'identity.credimport-intro2' | translate }}</p>
     </div>
 
-    <ion-row class="data-container">
-      <p *ngIf="receivedIntent">{{ receivedIntent.params.data }}</p>
-    </ion-row>
+    <!-- Intro / explanation -->
+    <div class="request-intro">
+      <p class="intro-lead">{{ 'identity.credimport-intro' | translate }}</p>
+      <p class="intro-body">{{ 'identity.credimport-intro2' | translate }}</p>
+    </div>
 
-    <ion-row class="btn-container">
+    <!-- Request detail: the digest/data to sign -->
+    <div class="data-card">
+      <p class="data-value" *ngIf="receivedIntent">{{ receivedIntent.params.data }}</p>
+    </div>
+
+    <!-- Actions -->
+    <div class="request-actions">
       <ebutton (clicked)="acceptRequest()" [title]="'identity.accept' | translate"> </ebutton>
-    </ion-row>
+    </div>
 
-  </ion-grid>
+  </div>
 </ion-content>
