@@ -482,52 +482,50 @@ export class HomePage implements OnInit, OnDestroy {
    * whose identity was never backed up.
    */
   public onReceive() {
-    // Aggregate mode: a chain address receives EVERY token on that chain, so Receive
-    // only needs a chain, not a token (and you can receive tokens you don't hold yet).
+    // Backup nag comes FIRST (a not-backed-up app wallet risks losing received funds),
+    // then the user chooses where to receive.
+    if (this.networkWallet && this.networkWallet.masterWallet.creator === WalletCreator.WALLET_APP) {
+      void this.receiveAfterBackupCheck();
+    } else {
+      void this.startReceive();
+    }
+  }
+
+  private async receiveAfterBackupCheck() {
+    const needsBackup = !(await GlobalDIDSessionsService.instance.activeIdentityWasBackedUp());
+    if (!needsBackup) {
+      void this.startReceive();
+      return;
+    }
+    // Warn once, then respect the choice: confirm proceeds to receive, cancel aborts.
+    const proceed = await this.globalPopupService.ionicConfirm('launcher.backup-title', 'launcher.backup-message');
+    if (proceed) void this.startReceive();
+  }
+
+  /**
+   * Receiving is chain-specific (one address per chain, receives every token on it). In
+   * aggregate mode, pick a chain - which switches to it - then receive via the normal
+   * path (coin-receive reads the ACTIVE network's wallet). Single mode receives on the
+   * active chain.
+   */
+  private async startReceive() {
     if (this.allChainsOn) {
-      void this.pickChainThenReceive();
+      let switched = await this.walletNetworkUIService.chooseActiveNetwork(undefined, false);
+      if (!switched) return;
+      let main = this.walletService.getActiveNetworkWallet()?.getMainTokenSubWallet();
+      if (main) this.goReceive(main);
       return;
     }
 
     let main = this.networkWallet ? this.networkWallet.getMainTokenSubWallet() : null;
-    if (main) this.receiveOn(main);
-  }
-
-  /** Aggregate mode: choose a chain (no active-network switch), then receive on it. */
-  private async pickChainThenReceive() {
-    let chosen = await this.walletNetworkUIService.pickNetwork(
-      (network) => !!this.aggService.getInstance(network.key)
-    );
-    if (!chosen) return;
-
-    let main = this.aggService.getInstance(chosen.key)?.getMainTokenSubWallet();
-    if (main) this.receiveOn(main);
+    if (main) this.goReceive(main);
   }
 
   /** Point CoinTransferService at a chain's main subwallet (coin-receive reads it) and go. */
-  private receiveOn(main: AnySubWallet) {
+  private goReceive(main: AnySubWallet) {
     this.coinTransferService.masterWalletId = main.networkWallet.id;
     this.coinTransferService.subWalletId = main.id;
-    if (main.networkWallet.masterWallet.creator === WalletCreator.WALLET_APP) {
-      void this.checkBackupThenReceive();
-    } else {
-      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
-    }
-  }
-
-  /** Same semantics as the Value screen: offer backup first, but never block receiving. */
-  private async checkBackupThenReceive() {
-    const needsBackup = !(await GlobalDIDSessionsService.instance.activeIdentityWasBackedUp());
-    if (!needsBackup) {
-      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
-      return;
-    }
-    const goToBackup = await this.globalPopupService.ionicConfirm('launcher.backup-title', 'launcher.backup-message');
-    if (goToBackup) {
-      void this.globalNav.navigateTo('identitybackup', '/identity/backupdid');
-    } else {
-      void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
-    }
+    void this.globalNav.navigateTo(App.WALLET, '/wallet/coin-receive');
   }
 
   /** Swap: the swap-providers screen for the main subwallet (mirrors the Value screen). */

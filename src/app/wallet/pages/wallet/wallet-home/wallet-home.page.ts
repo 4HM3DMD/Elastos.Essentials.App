@@ -71,7 +71,6 @@ import { StakingInitService } from 'src/app/voting/staking/services/init.service
 import { SwapService } from 'src/app/wallet/services/evm/swap.service';
 import { WarningComponent } from 'src/app/wallet/components/warning/warning.component';
 import { GlobalDIDSessionsService } from 'src/app/services/global.didsessions.service';
-import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { CoinTransferService } from '../../../services/cointransfer.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
@@ -585,74 +584,74 @@ export class WalletHomePage implements OnInit, OnDestroy {
      * for WALLET_APP-created wallets that were never backed up, prompt first.
      */
     public onReceive() {
-        // Aggregate mode: a chain address receives EVERY token on that chain, so Receive
-        // only needs a chain, not a token (and you can receive tokens you don't hold yet).
-        // Pick the chain, then show its address - no token picker.
+        // Backup nag comes FIRST (a not-backed-up app wallet risks losing received
+        // funds), then the user chooses where to receive - not the other way round.
+        if (this.masterWallet && this.masterWallet.creator === WalletCreator.WALLET_APP) {
+            void this.receiveAfterBackupCheck();
+        } else {
+            void this.startReceive();
+        }
+    }
+
+    private async receiveAfterBackupCheck() {
+        const needsBackup = !(await GlobalDIDSessionsService.instance.activeIdentityWasBackedUp());
+        if (!needsBackup) {
+            void this.startReceive();
+            return;
+        }
+        // Warn once, then respect the choice: Continue proceeds to receive, Cancel aborts.
+        const proceed = await this.showReceiveBackupPrompt();
+        if (proceed) void this.startReceive();
+    }
+
+    /**
+     * Receiving is chain-specific: one address per chain, and it receives every token on
+     * that chain (no token selection needed). In aggregate mode, pick a chain - which
+     * switches to it - then show its address via the normal receive path; single-network
+     * mode receives on the active chain. Switching (rather than a side instance) keeps
+     * coin-receive on the standard resolve path, which reads the ACTIVE network's wallet.
+     */
+    private async startReceive() {
         if (this.allChainsOn) {
-            void this.pickChainThenReceive();
+            let switched = await this.walletNetworkUIService.chooseActiveNetwork(undefined, false);
+            if (!switched) return;
+            let main = this.walletManager.getActiveNetworkWallet()?.getMainTokenSubWallet();
+            if (main) this.goReceive(main);
             return;
         }
 
-        // Single-network mode: receive on the active chain's main address.
         let main = this.getMainSubWallet();
-        if (main) this.receiveOn(main);
-    }
-
-    /** Aggregate mode: choose a chain (no active-network switch), then receive on it. */
-    private async pickChainThenReceive() {
-        // Offer only chains this wallet holds an address on (a built aggregator instance),
-        // so every option resolves to a real receive address.
-        let chosen = await this.walletNetworkUIService.pickNetwork(
-            (network) => !!this.aggService.getInstance(network.key)
-        );
-        if (!chosen) return;
-
-        let main = this.aggService.getInstance(chosen.key)?.getMainTokenSubWallet();
-        if (main) this.receiveOn(main);
+        if (main) this.goReceive(main);
     }
 
     /** Point CoinTransferService at a chain's main subwallet (coin-receive reads it) and go. */
-    private receiveOn(main: AnySubWallet) {
+    private goReceive(main: AnySubWallet) {
         this.coinTransferService.masterWalletId = main.networkWallet.id;
         this.coinTransferService.subWalletId = main.id;
-
-        if (this.masterWallet && this.masterWallet.creator === WalletCreator.WALLET_APP) {
-            void this.checkBackupThenReceive();
-        } else {
-            this.native.go('/wallet/coin-receive');
-        }
+        this.native.go('/wallet/coin-receive');
     }
 
-    private async checkBackupThenReceive() {
-        const needsBackup = !(await GlobalDIDSessionsService.instance.activeIdentityWasBackedUp());
-        if (needsBackup) {
-            await this.showReceiveBackupPrompt();
-        } else {
-            this.native.go('/wallet/coin-receive');
-        }
-    }
-
-    /** Backup warning popover shown before Receive on un-backed-up app wallets (mirrors coin-home.showBackupPrompt). */
-    private async showReceiveBackupPrompt() {
-        this.popover = await this.popoverCtrl.create({
-            mode: 'ios',
-            cssClass: 'wallet-warning-component',
-            component: WarningComponent,
-            componentProps: {
-                title: this.translate.instant('launcher.backup-title'),
-                message: this.translate.instant('launcher.backup-message')
-            },
-            translucent: false
+    /** Backup warning popover. Resolves true when the user taps Continue (proceed to receive), false on Cancel. */
+    private showReceiveBackupPrompt(): Promise<boolean> {
+        return new Promise(resolve => {
+            void this.popoverCtrl.create({
+                mode: 'ios',
+                cssClass: 'wallet-warning-component',
+                component: WarningComponent,
+                componentProps: {
+                    title: this.translate.instant('launcher.backup-title'),
+                    message: this.translate.instant('launcher.backup-message')
+                },
+                translucent: false
+            }).then(popover => {
+                this.popover = popover;
+                void popover.onWillDismiss().then(params => {
+                    this.popover = null;
+                    resolve(!!(params && params.data && params.data.confirm));
+                });
+                void popover.present();
+            });
         });
-        void this.popover.onWillDismiss().then(params => {
-            this.popover = null;
-            if (params && params.data && params.data.confirm) {
-                void GlobalNavService.instance.navigateTo('identitybackup', '/identity/backupdid');
-            } else {
-                this.native.go('/wallet/coin-receive');
-            }
-        });
-        return await this.popover.present();
     }
 
     /** Swap: navigate to the swap providers screen for the main subwallet. */
