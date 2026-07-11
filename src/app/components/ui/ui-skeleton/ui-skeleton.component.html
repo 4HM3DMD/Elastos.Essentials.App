@@ -1,20 +1,48 @@
 <div class="skeleton" [class.kind-row]="kind === 'row'" [class.kind-card]="kind === 'card'"
-  [class.kind-block]="kind === 'block'" aria-hidden="true">
-  <!-- Row: icon circle + two text lines -->
+  [class.kind-block]="kind === 'block'" [class.kind-hero]="kind === 'hero'" [class.kind-tile]="kind === 'tile'"
+  [class.kind-kv]="kind === 'kv'" aria-hidden="true">
+  <!-- Row: icon disc + two text lines (+ optional right value bars) -->
   <ng-container *ngIf="kind === 'row'">
     <div *ngFor="let i of items; trackBy: trackByIndex" class="row-item">
-      <div class="circle">
-        <ion-skeleton-text animated></ion-skeleton-text>
+      <div *ngIf="disc > 0" class="circle" [style.width.px]="disc" [style.height.px]="disc">
+        <ion-skeleton-text animated [style.width.px]="disc" [style.height.px]="disc"></ion-skeleton-text>
       </div>
       <div class="lines">
         <ion-skeleton-text animated style="width: 55%"></ion-skeleton-text>
         <ion-skeleton-text animated style="width: 35%"></ion-skeleton-text>
       </div>
+      <div *ngIf="value" class="values">
+        <ion-skeleton-text animated style="width: 60px"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Kv: label bar left, value bar right (detail card rows) -->
+  <ng-container *ngIf="kind === 'kv'">
+    <div *ngFor="let i of items; trackBy: trackByIndex" class="kv-item">
+      <ion-skeleton-text animated style="width: 32%"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 42%"></ion-skeleton-text>
+    </div>
+  </ng-container>
+
+  <!-- Hero: one large amount bar + a small sub line -->
+  <ng-container *ngIf="kind === 'hero'">
+    <div class="hero-item">
+      <ion-skeleton-text animated class="hero-amount"></ion-skeleton-text>
+      <ion-skeleton-text animated class="hero-sub"></ion-skeleton-text>
+    </div>
+  </ng-container>
+
+  <!-- Tile: rounded action tiles in a 4-column grid -->
+  <ng-container *ngIf="kind === 'tile'">
+    <div class="tile-grid">
+      <ion-skeleton-text *ngFor="let i of items; trackBy: trackByIndex" animated class="tile-item"></ion-skeleton-text>
     </div>
   </ng-container>
 
   <!-- Card / block: full-width rounded blocks -->
-  <ng-container *ngIf="kind !== 'row'">
+  <ng-container *ngIf="kind === 'card' || kind === 'block'">
     <div *ngFor="let i of items; trackBy: trackByIndex" class="block-item">
       <ion-skeleton-text animated></ion-skeleton-text>
     </div>
