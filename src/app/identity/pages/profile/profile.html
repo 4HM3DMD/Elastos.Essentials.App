@@ -54,14 +54,25 @@
     </div>
 
     <div class="field-list" *ngIf="this.profileService.profileEntries.length > 0">
-      <div class="field-row" *ngFor="let entry of this.profileService.profileEntries">
-        <div class="field-icon">
-          <img [src]="getCredIconSrc(entry)">
+      <ng-container *ngFor="let entry of this.profileService.profileEntries">
+        <div class="field-row" *ngIf="entry.credential.getFragment() !== 'name'">
+          <div class="field-icon">
+            <img [src]="getCredIconSrc(entry)">
+          </div>
+          <div class="field-meta">
+            <span class="field-value">{{ getCredentialValue(entry.credential) | translate }}</span>
+          </div>
         </div>
-        <div class="field-meta">
-          <span class="field-value">{{ getCredentialValue(entry.credential) | translate }}</span>
-        </div>
+      </ng-container>
+    </div>
+
+    <!-- Empty state: no profile details beyond the identity name -->
+    <div class="about-empty" *ngIf="this.profileService.profileEntries.length <= 1">
+      <div class="about-empty-glyph">
+        <ion-icon name="create-outline"></ion-icon>
       </div>
+      <div class="about-empty-title">{{ 'identity.about-me-empty-title' | translate }}</div>
+      <div class="about-empty-sub">{{ 'identity.about-me-empty-sub' | translate }}</div>
     </div>
 
   </div>

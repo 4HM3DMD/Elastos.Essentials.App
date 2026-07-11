@@ -1,40 +1,84 @@
 @import "src/app/didsessions/root.scss";
 
 // SCR-118: single onboarding screen replacing the 3-slide welcome carousel.
-// 2026 redesign: token-based typography/spacing on the 8pt rhythm.
+// 2026 redesign: one full-height flex column — hero vertically centred with the
+// Create/Import CTAs pinned to the bottom, so the screen never shows a dead void.
+// The host is a slotted child of ion-content, so it inherits the scroll host's
+// definite height and min-height:100% resolves to the full content area.
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
 .welcome-screen {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 90px 24px 24px;
+  flex: 1 1 auto;
+  padding: 24px 22px calc(env(safe-area-inset-bottom) + 20px);
+  text-align: center;
 
   &.hidden {
     display: none;
   }
+}
 
-  .welcome-logo {
-    width: 200px;
+// Hero (focal disc + heading + intro) vertically centred in the space above the footer.
+.content-top {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero {
+  margin-bottom: 8px;
+
+  // Compact token focal disc instead of the oversized 200px brand logo: the box-color
+  // surface with a subtle top-light gradient, matching the editprofile avatar disc.
+  .brand-disc {
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    border: 1px solid var(--essentials-border-separator-color);
+  }
+
+  .brand-mark {
+    width: 52px;
+    height: auto;
   }
 
   .welcome-title {
-    font-size: 24px;
-    font-weight: 700;
-    line-height: 32px;
-    margin-top: 48px;
+    margin: 0 0 10px;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
     color: var(--ion-text-color);
   }
 
   .welcome-intro {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 24px;
-    margin-top: 16px;
+    margin: 0 auto;
+    max-width: 320px;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.45;
     color: var(--essentials-text-secondary);
   }
 }
 
-// Hide the Create/Import footer while the welcome content is hidden.
-.footer.hidden {
-  display: none;
+// Create + Import CTAs pinned to the bottom, stacked full-width with a small gap.
+.footer {
+  flex: 0 0 auto;
+  padding-top: 20px;
+
+  ebutton + ebutton {
+    margin-top: 6px;
+  }
 }

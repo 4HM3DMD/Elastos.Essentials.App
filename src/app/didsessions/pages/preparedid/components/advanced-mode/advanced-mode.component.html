@@ -18,78 +18,80 @@
     </ion-col>
   </ion-row>
 
-  <ion-slides #slide [options]="slideOpts" [class.hidden]="hidden">
-    <ion-slide class="ion-text-center">
-      <div class="slide-card">
-        <img src="assets/didsessions/onboard/slide1.svg">
-        <h1>{{ 'didsessions.prepare.publish-title' | translate }}</h1>
-        <p>{{ 'didsessions.prepare.publish-intro' | translate }}</p>
-        <div class="error-box" *ngIf="publishError">
-          <ebutton (clicked)="onCancelPreparation()" [title]="'common.back' | translate"></ebutton>
-          <span class="error">{{ publishError }}</span>
+  <!-- Active step card + "please wait" loader form one vertically-centred cluster, so the
+       lower half of the screen is never a dead void beneath a top-anchored card. -->
+  <div class="stage">
+
+    <ion-slides #slide [options]="slideOpts" [class.hidden]="hidden">
+      <ion-slide class="ion-text-center">
+        <div class="slide-card">
+          <div class="glyph"><ion-icon name="cloud-upload-outline"></ion-icon></div>
+          <h1>{{ 'didsessions.prepare.publish-title' | translate }}</h1>
+          <p>{{ 'didsessions.prepare.publish-intro' | translate }}</p>
+          <div class="error-box" *ngIf="publishError">
+            <ebutton (clicked)="onCancelPreparation()" [title]="'common.back' | translate"></ebutton>
+            <span class="error">{{ publishError }}</span>
+          </div>
         </div>
-      </div>
-    </ion-slide>
+      </ion-slide>
 
-    <ion-slide class="ion-text-center">
-      <div class="slide-card">
-        <img src="assets/didsessions/onboard/slide2.svg">
-        <h1>{{ 'didsessions.prepare.sign-in-title' | translate }}</h1>
-        <p>{{ 'didsessions.prepare.sign-in-intro' | translate }}</p>
-        <div class="error-box" *ngIf="signInError">
-          <ebutton (clicked)="onCancelPreparation()" [title]="'common.back' | translate"></ebutton>
-          <span class="error">{{ signInError }}</span>
+      <ion-slide class="ion-text-center">
+        <div class="slide-card">
+          <div class="glyph"><ion-icon name="finger-print-outline"></ion-icon></div>
+          <h1>{{ 'didsessions.prepare.sign-in-title' | translate }}</h1>
+          <p>{{ 'didsessions.prepare.sign-in-intro' | translate }}</p>
+          <div class="error-box" *ngIf="signInError">
+            <ebutton (clicked)="onCancelPreparation()" [title]="'common.back' | translate"></ebutton>
+            <span class="error">{{ signInError }}</span>
+          </div>
         </div>
-      </div>
-    </ion-slide>
+      </ion-slide>
 
-    <ion-slide class="ion-text-center">
-      <div class="slide-card">
-        <!-- SCR-123: de-branded the Hive storage step. Neutral illustration + generic
-             storage strings replace the hive art (slide3.svg) and hive-* bindings.
-             TODO(figma-asset): swap in the exported neutral "storage" illustration;
-             using the neutral elastos-icon as a safe existing-asset fallback. -->
-        <img src="assets/components/tab-bar/elastos-icon.svg">
-        <h1>{{ 'didsessions.prepare.storage-title' | translate }}</h1>
-        <p>{{ 'didsessions.prepare.storage-intro' | translate }}</p>
-        <div class="error-box" *ngIf="hiveError">
-          <ebutton (clicked)="onCancelPreparation()" [title]="'common.back' | translate"></ebutton>
-          <span class="error">{{ hiveError }}</span>
+      <ion-slide class="ion-text-center">
+        <div class="slide-card">
+          <div class="glyph"><ion-icon name="server-outline"></ion-icon></div>
+          <h1>{{ 'didsessions.prepare.storage-title' | translate }}</h1>
+          <p>{{ 'didsessions.prepare.storage-intro' | translate }}</p>
+          <div class="error-box" *ngIf="hiveError">
+            <ebutton (clicked)="onCancelPreparation()" [title]="'common.back' | translate"></ebutton>
+            <span class="error">{{ hiveError }}</span>
+          </div>
         </div>
-      </div>
-    </ion-slide>
+      </ion-slide>
 
-    <ion-slide class="ion-text-center">
-      <div class="slide-card">
-        <img src="assets/didsessions/onboard/slide4.svg">
-        <h1>{{ 'didsessions.prepare.wallet-title' | translate }}</h1>
-        <p>{{ 'didsessions.prepare.wallet-intro' | translate }}</p>
-        <div class="error-box" *ngIf="walletError">
-          <ebutton (clicked)="onCancelPreparation()" [title]="'common.back' | translate"></ebutton>
-          <span class="error">{{ walletError }}</span>
+      <ion-slide class="ion-text-center">
+        <div class="slide-card">
+          <div class="glyph"><ion-icon name="wallet-outline"></ion-icon></div>
+          <h1>{{ 'didsessions.prepare.wallet-title' | translate }}</h1>
+          <p>{{ 'didsessions.prepare.wallet-intro' | translate }}</p>
+          <div class="error-box" *ngIf="walletError">
+            <ebutton (clicked)="onCancelPreparation()" [title]="'common.back' | translate"></ebutton>
+            <span class="error">{{ walletError }}</span>
+          </div>
         </div>
-      </div>
-    </ion-slide>
+      </ion-slide>
 
-    <ion-slide class="ion-text-center">
-      <div class="slide-card">
-        <img src="assets/components/tab-bar/elastos-icon.svg">
-        <h1>{{ 'didsessions.prepare.done-title' | translate }}</h1>
-        <p>{{ 'didsessions.prepare.done-intro' | translate }}</p>
-        <ebutton (clicked)="onFinalizePreparation()" *ngIf="!finalizingPreparation"
-          [title]="'common.continue' | translate"></ebutton>
-      </div>
-    </ion-slide>
+      <ion-slide class="ion-text-center">
+        <div class="slide-card">
+          <div class="glyph"><ion-icon name="checkmark-circle-outline"></ion-icon></div>
+          <h1>{{ 'didsessions.prepare.done-title' | translate }}</h1>
+          <p>{{ 'didsessions.prepare.done-intro' | translate }}</p>
+          <ebutton (clicked)="onFinalizePreparation()" *ngIf="!finalizingPreparation"
+            [title]="'common.continue' | translate"></ebutton>
+        </div>
+      </ion-slide>
 
-  </ion-slides>
+    </ion-slides>
 
-  <ion-row *ngIf="(slideIndex < 4 || finalizingPreparation) && !(signInError || hiveError || publishError || walletError)"
-    class="slide-circle-row">
-    <ion-col size="12">
-      <lottie-player src="../../../assets/identity/animations/block-loader.json" background="transparent" speed="1"
-        style="width: 160px; height: 160px;" autoplay loop></lottie-player>
-      <span>{{ 'common.please-wait' | translate }}</span>
-    </ion-col>
-  </ion-row>
+    <ion-row *ngIf="(slideIndex < 4 || finalizingPreparation) && !(signInError || hiveError || publishError || walletError)"
+      class="slide-circle-row">
+      <ion-col size="12">
+        <lottie-player src="../../../assets/identity/animations/block-loader.json" background="transparent" speed="1"
+          style="width: 160px; height: 160px;" autoplay loop></lottie-player>
+        <span>{{ 'common.please-wait' | translate }}</span>
+      </ion-col>
+    </ion-row>
+
+  </div>
 
 </ion-grid>

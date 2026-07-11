@@ -1,28 +1,36 @@
-<ion-content *ngIf="hasConfigSections">
+<ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid class="container" [class.dark-container]="theme.darkMode">
-    <!-- Language selection -->
-    <ion-row class="section" (click)="open('/didsessions/language')">
-      <ion-col size="11" class="title-col">
-        <h1>{{ 'common.language-setting' | translate }}</h1>
-        <h2 class="secondary-text">{{ 'settings.change-lang' | translate }}</h2>
-      </ion-col>
-      <ion-col size="1" class="arrow-col">
-        <img
-          [src]="!theme.darkMode ? 'assets/settings/icon/light_mode/detail-arrow.svg' : 'assets/settings/icon/dark_mode/detail-arrow.svg'">
-      </ion-col>
-    </ion-row>
 
-    <ion-row class="section" (click)="open('/didsessions/settings-select-net')">
-      <ion-col size="11" class="title-col">
-        <h1>{{ 'settings.configure-network' | translate }}</h1>
-        <h2 class="secondary-text">{{ 'settings.developer-setting' | translate }}</h2>
-      </ion-col>
-      <ion-col size="1" class="arrow-col">
-        <img
-          [src]="!theme.darkMode ? 'assets/settings/icon/light_mode/detail-arrow.svg' : 'assets/settings/icon/dark_mode/detail-arrow.svg'">
-      </ion-col>
-    </ion-row>
+  <div class="settings">
+    <div class="intro">
+      <h1 class="heading">{{ 'didsessions.settings-heading' | translate }}</h1>
+      <p class="subtitle">{{ 'didsessions.settings-subtitle' | translate }}</p>
+    </div>
 
-  </ion-grid>
+    <div class="rows">
+      <!-- Language selection -->
+      <button type="button" class="row" (click)="open('/didsessions/language')">
+        <span class="row-glyph">
+          <ion-icon name="language-outline"></ion-icon>
+        </span>
+        <span class="row-text">
+          <span class="row-title">{{ 'common.language-setting' | translate }}</span>
+          <span class="row-sub">{{ 'settings.change-lang' | translate }}</span>
+        </span>
+        <ion-icon class="chevron" name="chevron-forward"></ion-icon>
+      </button>
+
+      <!-- Network configuration -->
+      <button type="button" class="row" (click)="open('/didsessions/settings-select-net')">
+        <span class="row-glyph">
+          <ion-icon name="globe-outline"></ion-icon>
+        </span>
+        <span class="row-text">
+          <span class="row-title">{{ 'settings.configure-network' | translate }}</span>
+          <span class="row-sub">{{ 'settings.developer-setting' | translate }}</span>
+        </span>
+        <ion-icon class="chevron" name="chevron-forward"></ion-icon>
+      </button>
+    </div>
+  </div>
 </ion-content>

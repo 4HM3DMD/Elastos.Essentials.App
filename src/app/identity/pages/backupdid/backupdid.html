@@ -1,19 +1,26 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-slides #slide [options]="slideOpts" (ionSlideWillChange)="getActiveSlide()" class="ion-text-center backup-slides">
-    <ion-slide class="ion-text-center first-slide">
+  <div class="backup">
+    <!-- Step 0: private QR code -->
+    <div class="content-top" *ngIf="slideIndex === 0">
       <div class="qr-card" *ngIf="dataIsReady">
         <h1>{{ 'didsessions.decentralized-id' | translate }}</h1>
         <div #qrcode class="qr-image" style="width:100%;"></div>
         <p>{{ mnemonic }}</p>
       </div>
+      <div class="qr-card qr-card--loading" *ngIf="!dataIsReady">
+        <ion-spinner></ion-spinner>
+        <p>{{ 'didsessions.preparing-backup' | translate }}</p>
+      </div>
       <div class="warning-note">
         <ion-icon name="shield-checkmark-outline"></ion-icon>
         <span>{{ 'didsessions.did-warning-info' | translate }}</span>
       </div>
-    </ion-slide>
-    <ion-slide class="ion-text-center second-slide">
-      <div class="mnemonic-grid">
+    </div>
+
+    <!-- Step 1: private key words -->
+    <div class="content-top" *ngIf="slideIndex === 1">
+      <div class="mnemonic-grid" *ngIf="dataIsReady">
         <div class="word-chip" *ngFor="let mnemonic of mnemonicList">
           <span class="word-index">{{ mnemonicList.indexOf(mnemonic) + 1 }}</span>
           <span class="word-text">{{ mnemonic }}</span>
@@ -23,15 +30,15 @@
         {{ 'common.your-mnemonic-prompt1' | translate }}<b>{{ 'common.your-mnemonic-prompt2' | translate }}</b>{{
         'common.your-mnemonic-prompt3' | translate }}
       </p>
-    </ion-slide>
-  </ion-slides>
+    </div>
 
-  <div class="footer" *ngIf="slideIndex < 1">
-    <ebutton (clicked)="showPrintOptions()" [title]="'didsessions.print-qrcode' | translate"></ebutton>
-    <ebutton (clicked)="nextSlide()" [title]="'didsessions.manual-verify' | translate"></ebutton>
-  </div>
-  <div class="footer" *ngIf="slideIndex === 1">
-    <ebutton (clicked)="prevSlide()" [title]="'common.back' | translate"></ebutton>
-    <ebutton (clicked)="nextClicked()" [title]="'didsessions.verify-did' | translate"></ebutton>
+    <div class="footer" *ngIf="slideIndex === 0">
+      <ebutton [arrow]="true" (clicked)="nextSlide()" [title]="'didsessions.manual-verify' | translate"></ebutton>
+      <ebutton mode="secondary" (clicked)="showPrintOptions()" [title]="'didsessions.print-qrcode' | translate"></ebutton>
+    </div>
+    <div class="footer" *ngIf="slideIndex === 1">
+      <ebutton [arrow]="true" (clicked)="nextClicked()" [title]="'didsessions.verify-did' | translate"></ebutton>
+      <ebutton mode="secondary" (clicked)="prevSlide()" [title]="'common.back' | translate"></ebutton>
+    </div>
   </div>
 </ion-content>

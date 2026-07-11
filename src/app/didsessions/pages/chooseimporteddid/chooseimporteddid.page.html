@@ -21,8 +21,8 @@
       </button>
     </div>
 
-    <div class="footer" *ngIf="selectedDid">
-      <ebutton (clicked)="continue()" [title]="'common.continue' | translate "></ebutton>
+    <div class="footer">
+      <ebutton [arrow]="true" [disabled]="!selectedDid" (clicked)="continue()" [title]="'common.continue' | translate"></ebutton>
     </div>
 
   </div>

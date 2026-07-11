@@ -1,15 +1,27 @@
 <ion-content>
   <app-titlebar></app-titlebar>
   <div class="settings-page">
-    <div class="token-list">
-      <div class="token-row" (click)="goToSettings('/identity/advanced-settings')">
-        <div class="row-icon">
+    <div class="hero">
+      <div class="glyph">
+        <ion-icon name="settings-outline"></ion-icon>
+      </div>
+      <h1 class="heading">{{ 'common.settings' | translate }}</h1>
+      <p class="subtitle">{{ 'identity.settings-intro' | translate }}</p>
+    </div>
+
+    <p class="section-label">{{ 'identity.available-options' | translate }}</p>
+
+    <div class="settings-list">
+      <div class="option-row ion-activatable ripple" (click)="goToSettings('/identity/advanced-settings')">
+        <div class="icon-circle">
           <ion-icon name="options-outline"></ion-icon>
         </div>
         <div class="meta">
           <span class="title">{{ 'identity.advanced-settings' | translate }}</span>
+          <span class="desc">{{ 'identity.advanced-settings-desc' | translate }}</span>
         </div>
         <ion-icon class="chevron" name="chevron-forward"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
       </div>
     </div>
   </div>

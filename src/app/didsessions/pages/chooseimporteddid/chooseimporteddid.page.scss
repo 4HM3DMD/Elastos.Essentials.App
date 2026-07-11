@@ -1,7 +1,10 @@
 @import "src/app/didsessions/root.scss";
 
 .container {
-  padding: 8px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 16px 20px calc(env(safe-area-inset-bottom) + 20px);
 
   .intro {
     padding: 8px 4px 16px;
@@ -96,6 +99,7 @@
   }
 
   .footer {
-    margin-top: 16px;
+    margin-top: auto;
+    padding-top: 16px;
   }
 }

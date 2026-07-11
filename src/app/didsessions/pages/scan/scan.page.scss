@@ -1,54 +1,176 @@
 @import 'src/app/didsessions/root.scss';
 
+// Camera renders behind the transparent webview while scanning — must stay transparent.
 .scan {
   --background: none transparent;
 }
 
+// Camera-starting / loading state sits on the solid signed-out (dark) theme background.
 .notScanning {
-  --background: #f8f8ff;
+  --background: var(--ion-background-color);
 }
 
-.qrscanner-area {
+/* ---------------------------------------------------------------------------
+   (A) Scanning overlay — reticle + instruction, transparent over live camera
+   --------------------------------------------------------------------------- */
+.scan-overlay {
   position: fixed;
-  height: 100%;
-  width: 100%;
-  background: url(../../../../assets/didsessions/images/scanner.svg) no-repeat center center;
-  background-size: contain;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 22px;
+  // Nothing here is interactive; let taps reach the titlebar / camera beneath.
+  pointer-events: none;
+
+  .reticle {
+    position: relative;
+    width: 248px;
+    height: 248px;
+
+    // Four L-shaped accent corner brackets frame the capture area.
+    .corner {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--essentials-accent);
+    }
+
+    .top-left {
+      top: 0;
+      left: 0;
+      border-right: none;
+      border-bottom: none;
+      border-top-left-radius: 14px;
+    }
+
+    .top-right {
+      top: 0;
+      right: 0;
+      border-left: none;
+      border-bottom: none;
+      border-top-right-radius: 14px;
+    }
+
+    .bottom-left {
+      bottom: 0;
+      left: 0;
+      border-right: none;
+      border-top: none;
+      border-bottom-left-radius: 14px;
+    }
+
+    .bottom-right {
+      bottom: 0;
+      right: 0;
+      border-left: none;
+      border-top: none;
+      border-bottom-right-radius: 14px;
+    }
+
+    // Single on-brand sweeping scan line (replaces the old rainbow keyframe).
+    .scan-line {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg,
+          rgba(237, 110, 43, 0) 0%,
+          var(--essentials-accent) 50%,
+          rgba(237, 110, 43, 0) 100%);
+      box-shadow: 0 0 12px rgba(237, 110, 43, 0.55);
+      animation: scanSweep 2.2s ease-in-out infinite alternate;
+    }
+  }
+
+  // Instruction cluster on a translucent-dark scrim — the only legitimate non-token
+  // surface, because it sits over unpredictable live-camera content.
+  .scan-instruction {
+    margin-top: 28px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.55);
+    text-align: center;
+
+    .scan-instruction-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: rgba(255, 255, 255, 1);
+    }
+
+    .scan-instruction-sub {
+      margin: 6px 0 0;
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.75);
+    }
+  }
 }
 
-.through-line {
-  left: 25%;
-  width: 50%;
-  height: 2px;
-  background: #f04141;
-  position: absolute;
-  animation: lineAnimation 2s linear infinite alternate;
-}
-
-@keyframes lineAnimation {
+@keyframes scanSweep {
   0% {
-      background: #f04141;
-      top: 40%;
+    top: 8%;
   }
-  20% {
-      background: #ffc409;
-      top: 45%;
-  }
-  40% {
-      background: #3dc2ff;
-      top: 50%;
-  }
-  60% {
-      background: #2dd36f;
-      top: 55%;
-  }
-  80% {
-      background: #4854e0;
-      top: 60%;
-  }
+
   100% {
-      background: #eb445a;
-      top: 65%;
+    top: 92%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   (B) Camera-starting state — on-brand glyph + heading + subcopy + spinner
+   --------------------------------------------------------------------------- */
+.camera-starting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 100%;
+  padding: 24px 22px calc(env(safe-area-inset-bottom) + 20px);
+
+  .glyph {
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 22px;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+    border: 1px solid rgba(237, 110, 43, 0.28);
+
+    ion-icon {
+      font-size: 38px;
+      color: var(--essentials-accent);
+    }
+  }
+
+  .starting-title {
+    margin: 0 0 10px;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    color: var(--ion-text-color);
+  }
+
+  .starting-sub {
+    margin: 0 auto 24px;
+    max-width: 300px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--essentials-text-secondary);
+  }
+
+  .starting-spinner {
+    color: var(--essentials-accent);
   }
 }
 

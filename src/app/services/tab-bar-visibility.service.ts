@@ -62,7 +62,14 @@ const HIDE_TABBAR_EXACT_ROUTES = [
   '/crproposalvoting/voteforproposal',
   '/crproposalvoting/updatemilestone',
   '/crproposalvoting/reviewmilestone',
-  '/crproposalvoting/withdraw'
+  '/crproposalvoting/withdraw',
+  // Identity action pages pushed from My Identity whose primary CTA is pinned to the
+  // bottom band the floating bar overlays (2026 finish pass): sync-now, publish,
+  // backup QR/words, and mnemonic verification. Focused flows with a back chevron.
+  '/identity/advanced-settings',
+  '/identity/publish',
+  '/identity/backupdid',
+  '/identity/verifymnemonics'
 ];
 
 /**

@@ -1,36 +1,34 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid class="container" [class.darkContainer]="theme.darkMode">
-    <ion-row class="header">
-      <ion-col size="12">
-        <ion-label>
-          {{ "identity.add-field" | translate }}
-        </ion-label>
-      </ion-col>
-    </ion-row>
-    <ion-row
-      class="ion-activatable ripple item"
-      *ngFor="let item of availableItems"
-      (click)="selectItem(item)"
-    >
-      <ion-col size="1" class="icon-container">
-        <img src="/assets/identity/default/plus.svg">
-      </ion-col>
-      <ion-col size="11" class="label-container">
-        <ion-label
-          >{{ "identity.credential-info-type-"+item.key | translate }}</ion-label
-        >
-      </ion-col>
-      <ion-ripple-effect></ion-ripple-effect>
-    </ion-row>
+  <div class="picker">
+    <div class="picker-header">
+      <h1 class="title">{{ "identity.add-field" | translate }}</h1>
+      <p class="subtitle">{{ "identity.add-field-subtitle" | translate }}</p>
+    </div>
 
-    <!--  <ion-row (click)="createData()">
-      <ion-col offset="0.25" size="2" class="icon-container">
-        <img src="/assets/identity/default/plus.svg">
-      </ion-col>
-      <ion-col size="9.75" class="label-container">
-        <ion-label>Create Credential</ion-label>
-      </ion-col>
-    </ion-row> -->
-  </ion-grid>
+    <div class="item-list" *ngIf="availableItems.length > 0">
+      <button
+        type="button"
+        class="item ion-activatable"
+        *ngFor="let item of availableItems"
+        (click)="selectItem(item)"
+      >
+        <span class="glyph">
+          <ion-icon name="add-outline"></ion-icon>
+        </span>
+        <span class="item-label">{{ "identity.credential-info-type-"+item.key | translate }}</span>
+        <ion-icon name="chevron-forward" class="chev"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+    </div>
+
+    <div class="empty-state" *ngIf="availableItems.length === 0">
+      <span class="glyph">
+        <ion-icon name="checkmark-done-outline"></ion-icon>
+      </span>
+      <h1 class="empty-title">{{ "identity.add-field-empty-title" | translate }}</h1>
+      <p class="empty-sub">{{ "identity.add-field-empty-sub" | translate }}</p>
+      <ebutton class="cta" (clicked)="close()" [title]="'common.close' | translate"></ebutton>
+    </div>
+  </div>
 </ion-content>

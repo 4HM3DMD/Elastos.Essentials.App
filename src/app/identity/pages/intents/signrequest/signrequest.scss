@@ -7,6 +7,17 @@
   /* 2026 shared gutter */
   padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
 
+  /* Top-anchored content block: keeps hero + cards hugging the titlebar and
+     lets the payload scroll from the top for long data, while .actions stays
+     pinned to the bottom via margin-top:auto. */
+  .content-top {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 8px;
+  }
+
   /* ---- App / origin header ---- */
   .req-hero {
     display: flex;
@@ -65,6 +76,7 @@
   .data-card {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
       var(--essentials-box-color);
+    border: 1px solid var(--essentials-border-separator-color);
     border-radius: 18px;
     padding: 14px 16px;
     margin-bottom: 8px;
@@ -102,6 +114,24 @@
 
     ebutton {
       width: 100%;
+    }
+
+    /* Secondary, in-body decline below the primary Accept CTA. Mirrors
+       editprofile's .import-link so the confirmation offers an explicit
+       reject rather than relying on the titlebar close button. */
+    .reject-link {
+      display: block;
+      width: 100%;
+      margin: 16px auto 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 500;
+      text-align: center;
+      color: var(--essentials-text-secondary);
+      cursor: pointer;
     }
   }
 }

@@ -1,15 +1,37 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid class="container" [class.dark-subsetting-grid]="theme.darkMode">
-    <!-- Network Lists -->
-    <ion-row *ngFor="let networkTemplate of availableNetworkTemplates" class="section-row"
-      (click)="selectNetworkTemplate(networkTemplate)">
-      <ion-col size="9" class="left-col">
-        <h1>{{ networkTemplate | translate }}</h1>
-      </ion-col>
-      <ion-col size="3" class="right-col">
-        <ion-icon *ngIf="selectedNetworkTemplate === networkTemplate" name="checkmark"></ion-icon>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <div class="select-net">
+    <div class="content-top">
+
+      <!-- Hero: accent glyph + heading + intro that frames what a network is and warns
+           that switching resets the DID manager and restarts the app. -->
+      <div class="hero">
+        <div class="glyph">
+          <ion-icon name="globe-outline"></ion-icon>
+        </div>
+        <h1 class="heading">{{ 'didsessions.choose-network-heading' | translate }}</h1>
+        <p class="subtitle">{{ 'didsessions.choose-network-intro' | translate }}</p>
+      </div>
+
+      <!-- Network list: each template rendered as a token card with the current
+           selection accent-bordered and checkmarked. Tapping triggers the restart flow. -->
+      <div class="net-list">
+        <button type="button" class="net-card"
+          [class.selected]="selectedNetworkTemplate === networkTemplate"
+          *ngFor="let networkTemplate of availableNetworkTemplates"
+          (click)="selectNetworkTemplate(networkTemplate)">
+          <span class="net-icon">
+            <ion-icon name="globe-outline"></ion-icon>
+          </span>
+          <span class="net-text">
+            <span class="net-name">{{ networkTemplate | translate }}</span>
+            <span class="net-desc">{{ ('didsessions.network-desc-' + networkTemplate) | translate }}</span>
+          </span>
+          <ion-icon class="net-check" name="checkmark"
+            *ngIf="selectedNetworkTemplate === networkTemplate"></ion-icon>
+        </button>
+      </div>
+
+    </div>
+  </div>
 </ion-content>

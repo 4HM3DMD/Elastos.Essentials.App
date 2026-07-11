@@ -2,70 +2,61 @@
     <app-titlebar></app-titlebar>
     <div class="container">
 
-        <div class="page-header">
-            <h1 class="page-title">
-                {{ 'identity.mycredentials-header' | translate }}
-            </h1>
-            <div class="page-hints">
-                <div class="hint">
-                    <ion-icon name="ellipse"></ion-icon>
-                    <span>{{ 'identity.showing-all-visible-credentials' | translate }}</span>
-                </div>
-                <div class="hint">
-                    <ion-icon name="ellipse"></ion-icon>
-                    <span>{{ 'identity.toggle-credentials-to-publish' | translate }}</span>
-                </div>
+        <!-- Empty state: nothing is ready to publish, so show a centred glyph + heading + subcopy
+             and hide the instructional hints and Confirm CTA entirely. -->
+        <div class="empty-state"
+            *ngIf="profileService.isPublishStatusFetched() && publishableCredentials().length === 0">
+            <div class="glyph">
+                <ion-icon name="shield-checkmark-outline"></ion-icon>
             </div>
+            <h2 class="empty-title">{{ 'identity.publish-empty-title' | translate }}</h2>
+            <p class="empty-sub">{{ 'identity.publish-empty-sub' | translate }}</p>
         </div>
 
-        <div class="status-card" *ngIf="profileService.isPublishStatusFetched() && !profileService.didNeedsToBePublished">
-            <div class="status-icon">
-                <ion-icon name="shield-checkmark"></ion-icon>
-            </div>
-            <div class="meta">
-                <span class="meta-title">
-                    {{ unchangedPublishedCredentials.length }}/{{ profileService.allCreds.length }}
-                </span>
-                <span class="meta-sub">
-                    {{ 'identity.credentials-published-on-blockchain' | translate }}
-                </span>
-            </div>
-        </div>
+        <!-- Filled state: the credential list plus the Confirm CTA pinned to the bottom edge. -->
+        <div class="filled-state" *ngIf="publishableCredentials().length > 0">
 
-        <div class="credentials">
-            <div class="card" *ngFor="let entry of publishableCredentials()">
-                <credential [credential]="entry.credential.pluginVerifiableCredential" [selectable]="true"
-                    [selected]="entry.isInLocalDocument" (checkBoxClicked)="onCredentialCheckboxClicked(entry)"
-                    [showPubStatus]="false" class="credential">
-                </credential>
-
-                <!-- <div class="card-icon">
-                    <img *ngIf="!isAvatarCred(entry)" [src]="getCredIconSrc(entry)" />
-                    <div *ngIf="isAvatarCred(entry)">
-                        <img class="avatar" [src]="getAvatar(entry)" />
+            <div class="page-header">
+                <h1 class="page-title">
+                    {{ 'identity.mycredentials-header' | translate }}
+                </h1>
+                <div class="page-hints">
+                    <div class="hint">
+                        <span>{{ 'identity.showing-all-visible-credentials' | translate }}</span>
+                    </div>
+                    <div class="hint">
+                        <span>{{ 'identity.toggle-credentials-to-publish' | translate }}</span>
                     </div>
                 </div>
-                <div class="card-internal">
-                    <ion-row class="card-body">
-                        <ion-col class="labels-col" offset="2" size="8">
-                            <span class="card-title">{{ getDisplayableCredentialTitle(entry) }}</span>
-                            <span class="card-value" *ngFor="let prop of displayableProperties(entry.credential)">
-                                {{ prop.value }}
-                            </span>
-                        </ion-col>
-                        <ion-col size="2" class="toggle-col">
-                            <ion-toggle color="tertiary" [(ngModel)]="entry.isInLocalDocument" mode="ios"
-                                [disabled]="updatingVisibility" (ngModelChange)="onVisibilityChange($event, entry)">
-                            </ion-toggle>
-                        </ion-col>
-                    </ion-row>
-                </div> -->
             </div>
-        </div>
 
-        <div class="publish-cta">
-            <ebutton (clicked)="profileService.showWarning('publishIdentity', '')"
-                [title]="'common.confirm' | translate"></ebutton>
+            <div class="status-card" *ngIf="profileService.isPublishStatusFetched() && !profileService.didNeedsToBePublished">
+                <div class="status-icon">
+                    <ion-icon name="shield-checkmark"></ion-icon>
+                </div>
+                <div class="meta">
+                    <span class="meta-title">
+                        {{ unchangedPublishedCredentials.length }}/{{ profileService.allCreds.length }}
+                    </span>
+                    <span class="meta-sub">
+                        {{ 'identity.credentials-published-on-blockchain' | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="credentials">
+                <div class="card" *ngFor="let entry of publishableCredentials()">
+                    <credential [credential]="entry.credential.pluginVerifiableCredential" [selectable]="true"
+                        [selected]="entry.isInLocalDocument" (checkBoxClicked)="onCredentialCheckboxClicked(entry)"
+                        [showPubStatus]="false" class="credential">
+                    </credential>
+                </div>
+            </div>
+
+            <div class="publish-cta">
+                <ebutton (clicked)="profileService.showWarning('publishIdentity', '')"
+                    [title]="'common.confirm' | translate"></ebutton>
+            </div>
         </div>
     </div>
 

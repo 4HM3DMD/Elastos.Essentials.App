@@ -28,11 +28,12 @@
 
       <!-- Suggest to get KYCed -->
       <div class="status-row tappable" *ngIf="!userHasKYCedCredentials()" (click)="launchKYCVerification()">
-        <div class="icon-circle">
+        <div class="icon-circle accent">
           <ion-icon name="shield-checkmark-outline"></ion-icon>
         </div>
         <div class="meta">
-          <p class="title">Touch here to get your real identity verified</p>
+          <p class="title">{{ 'identity.get-verified' | translate }}</p>
+          <p class="sub">{{ 'identity.get-verified-description' | translate }}</p>
         </div>
         <ion-icon class="chevron" name="chevron-forward"></ion-icon>
       </div>

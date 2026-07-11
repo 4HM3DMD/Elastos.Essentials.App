@@ -1,58 +1,128 @@
 @import "src/app/identity/root.scss";
 
-.settings-page {
-  padding: 16px 20px 32px;
-  min-height: 100%;
+ion-content {
+  --background: var(--ion-background-color);
 }
 
-.token-list {
+.settings-page {
   display: flex;
   flex-direction: column;
+  min-height: 100%;
+  padding: 24px 22px calc(env(safe-area-inset-bottom) + 20px);
 }
 
-.token-row {
-  display: flex;
-  align-items: center;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%), var(--essentials-box-color);
-  border-radius: 18px;
-  padding: 14px 16px;
-  margin-bottom: 8px;
-  cursor: pointer;
+.hero {
+  text-align: center;
+  margin-bottom: 28px;
 
-  .row-icon {
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+  .glyph {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--essentials-border-separator-color);
-    margin-right: 14px;
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    margin: 0 auto 20px;
+    background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+    border: 1px solid rgba(237, 110, 43, 0.28);
 
     ion-icon {
-      font-size: 20px;
+      font-size: 34px;
       color: var(--essentials-accent);
     }
   }
 
-  .meta {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-
-    .title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--ion-text-color);
-    }
+  .heading {
+    margin: 0 0 10px;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    color: var(--ion-text-color);
   }
 
-  .chevron {
-    flex-shrink: 0;
-    font-size: 20px;
+  .subtitle {
+    margin: 0 auto;
+    max-width: 300px;
+    font-size: 15px;
+    line-height: 1.45;
     color: var(--essentials-text-secondary);
-    margin-left: 12px;
+  }
+}
+
+.section-label {
+  margin: 2px 2px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--essentials-text-secondary);
+}
+
+.settings-list {
+  display: flex;
+  flex-direction: column;
+
+  // Tappable settings row: icon circle + title/desc + trailing chevron on a raised card.
+  .option-row {
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    color: var(--ion-text-color);
+    cursor: pointer;
+
+    .icon-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--essentials-border-separator-color);
+
+      ion-icon {
+        font-size: 20px;
+        color: var(--essentials-accent);
+      }
+    }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-left: 12px;
+      min-width: 0;
+
+      .title {
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        color: var(--ion-text-color);
+      }
+
+      .desc {
+        margin-top: 2px;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--essentials-text-secondary);
+      }
+    }
+
+    .chevron {
+      margin-left: auto;
+      font-size: 18px;
+      color: var(--essentials-text-secondary);
+      flex-shrink: 0;
+    }
+
+    ion-ripple-effect {
+      --ripple-color: var(--ion-text-color);
+    }
   }
 }

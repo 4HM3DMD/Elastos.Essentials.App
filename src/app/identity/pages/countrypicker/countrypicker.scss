@@ -1,19 +1,123 @@
 @import "src/app/identity/root.scss";
 
-ion-list {
-  ion-item {
-    border-bottom: 1px solid #f0f1ff;
+.country-picker {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 
-    ion-label {
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.27;
+  // Sticky search field: gradient-over-box-color surface, pinned to the top of the list.
+  .search-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin: 16px 22px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    border: 1px solid var(--essentials-border-separator-color);
+    border-radius: 14px;
+
+    .search-icon {
+      flex-shrink: 0;
+      font-size: 18px;
+      color: var(--essentials-text-tertiary);
+    }
+
+    .search-input {
+      flex: 1;
+      --background: transparent;
+      --padding-start: 0;
+      --padding-end: 0;
+      --padding-top: 0;
+      --padding-bottom: 0;
+      --placeholder-color: var(--essentials-text-tertiary);
+      --placeholder-opacity: 1;
+      color: var(--ion-text-color);
+      font-size: 15px;
     }
   }
-}
 
-.dark-container {
-  ion-item {
-    border-bottom: 1px solid #2f305a;
+  // Country rows fill the remaining height; each is a real actionable button.
+  .country-list {
+    flex: 1 1 auto;
+
+    .country-row {
+      width: 100%;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--essentials-border-separator-color);
+      text-align: left;
+      cursor: pointer;
+
+      .country-name {
+        flex: 1;
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--ion-text-color);
+      }
+
+      .country-code {
+        margin-right: 10px;
+        font-size: 13px;
+        color: var(--essentials-text-tertiary);
+      }
+
+      .chevron {
+        flex-shrink: 0;
+        font-size: 16px;
+        color: var(--essentials-text-tertiary);
+      }
+    }
+  }
+
+  // No-results state: accent glyph + heading + subcopy, centred in the remaining space.
+  .empty-state {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 24px;
+
+    .glyph {
+      width: 76px;
+      height: 76px;
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+      border: 1px solid rgba(237, 110, 43, 0.28);
+
+      ion-icon {
+        font-size: 38px;
+        color: var(--essentials-accent);
+      }
+    }
+
+    .empty-title {
+      margin: 22px 0 10px;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+
+    .empty-sub {
+      margin: 0;
+      max-width: 280px;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--essentials-text-secondary);
+    }
   }
 }

@@ -1,121 +1,101 @@
-@import "src/app/settings/root.scss";
-
-.container {
-  padding: 0px 20px 20px;
+.settings {
+  padding: 24px 22px calc(env(safe-area-inset-bottom) + 20px);
+  display: flex;
+  flex-direction: column;
   min-height: 100%;
 
-  .section {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    margin-right: 20px;
-    border-bottom: 1.5px solid var(--essentials-border-separator-color);
-
-    ion-col {
-      padding: 0;
+  .intro {
+    .heading {
+      margin: 0 0 8px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      color: var(--ion-text-color);
     }
 
-    .title-col {
-      h1,
-      h2 {
-        margin: 0;
-      }
-
-      h1 {
-        font-size: 17px;
-        font-weight: 400;
-        margin-bottom: 7.5px;
-      }
-
-      h2 {
-        font-size: 11px;
-        font-weight: 700;
-        opacity: 0.7;
-      }
+    .subtitle {
+      margin: 0 0 24px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--essentials-text-secondary);
     }
+  }
 
-    .arrow-col {
+  .rows {
+    display: flex;
+    flex-direction: column;
+
+    .row {
       display: flex;
-      justify-content: flex-end;
       align-items: center;
+      gap: 14px;
+      width: 100%;
+      min-height: 64px;
+      padding: 0 16px;
+      margin-bottom: 12px;
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+        var(--essentials-box-color);
+      border: 1px solid var(--essentials-border-separator-color);
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.12s ease;
 
-      img {
-        width: 7.7px;
-        height: 13.3px;
+      &:last-child {
+        margin-bottom: 0;
       }
 
-      ion-toggle {
-        zoom: 0.85;
+      &:active {
+        transform: scale(0.99);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%),
+          var(--essentials-box-color);
       }
 
-      .theme-toggle {
+      .row-glyph {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        height: 85%;
-        width: 100%;
-        border-radius: 17px;
-        background-color: #dddddd;
+        justify-content: center;
+        background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+        border: 1px solid rgba(237, 110, 43, 0.28);
 
-        div {
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-
-          p {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1.09px;
-            color: #222222;
-            margin: 0;
-          }
+        ion-icon {
+          font-size: 20px;
+          color: var(--essentials-accent);
         }
       }
 
-      .light-toggled {
-        .dark-mode {
-          margin-left: 5px;
-          width: 45%;
+      .row-text {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+
+        .row-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--ion-text-color);
         }
 
-        .light-mode {
-          width: 55%;
-          border-radius: 17px;
-          box-shadow: 0px 10px 20px 0 #f5e4aa;
-          background-color: #fdd034;
-
-          p {
-            color: #ffffff !important;
-          }
+        .row-sub {
+          font-size: 12px;
+          font-weight: 500;
+          color: var(--essentials-text-secondary);
+          margin-top: 3px;
         }
+      }
+
+      .chevron {
+        flex-shrink: 0;
+        font-size: 18px;
+        color: var(--essentials-text-tertiary);
       }
     }
-
-    .dark-toggled {
-      .dark-mode {
-        width: 55%;
-        border-radius: 17px;
-        box-shadow: 0px 10px 20px 0 #0b0b08;
-        background-color: #212021;
-
-        p {
-          color: #ffffff !important;
-        }
-      }
-
-      .light-mode {
-        width: 45%;
-        margin-right: 5px;
-      }
-    }
-  }
-
-  .theme-mode {
-    margin-right: 5px;
-  }
-
-  .dev-mode {
-    border: none;
-    margin-right: 5px;
   }
 }

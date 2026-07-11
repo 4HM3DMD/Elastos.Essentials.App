@@ -1,6 +1,32 @@
 <ion-content [class.notScanning]="!scanning" [class.scan]="scanning">
   <app-titlebar></app-titlebar>
-  <div [class.hidden]="!scanning" class='qrscanner-area'> </div>
-  <div [class.hidden]="!scanning" class='through-line'></div>
-</ion-content>
 
+  <!-- (A) Scanning overlay: the native camera renders behind the transparent webview,
+       so this block stays transparent and only overlays the reticle + instruction copy.
+       pointer-events are disabled so the titlebar back button stays tappable. -->
+  <div class="scan-overlay" [class.hidden]="!scanning">
+    <div class="reticle">
+      <span class="corner top-left"></span>
+      <span class="corner top-right"></span>
+      <span class="corner bottom-left"></span>
+      <span class="corner bottom-right"></span>
+      <span class="scan-line"></span>
+    </div>
+    <!-- Legibility scrim over live camera: the one legitimate non-token surface. -->
+    <div class="scan-instruction">
+      <p class="scan-instruction-title">{{ 'didsessions.scan-instruction' | translate }}</p>
+      <p class="scan-instruction-sub">{{ 'didsessions.scan-instruction-sub' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- (B) Camera-starting state: shown while qrScanner.prepare() is pending. The .ts
+       auto-navigates away on denial/error, so this is effectively a loading state. -->
+  <div class="camera-starting" *ngIf="!scanning">
+    <div class="glyph">
+      <ion-icon name="qr-code-outline"></ion-icon>
+    </div>
+    <h1 class="starting-title">{{ 'didsessions.scan-title' | translate }}</h1>
+    <p class="starting-sub">{{ 'didsessions.scan-starting-camera' | translate }}</p>
+    <ion-spinner class="starting-spinner"></ion-spinner>
+  </div>
+</ion-content>

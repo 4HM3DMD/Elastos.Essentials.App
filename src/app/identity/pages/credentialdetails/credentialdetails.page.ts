@@ -61,6 +61,9 @@ export class CredentialDetailsPage implements OnInit {
 
   public segment = "validator";
   public credentialId: string = null;
+  // False until prepareCredential() has run to completion; drives the loading vs
+  // not-found empty states (credentials are loaded in the constructor's init()).
+  public credentialResolved = false;
   public iconSrc = transparentPixelIconDataUrl(); // Main icon html src data
   public iconLoaded = false;
 
@@ -205,6 +208,9 @@ export class CredentialDetailsPage implements OnInit {
 
     if (selected.length > 0)
       this.credential = selected[0];
+
+    // Resolution attempt is now complete (whether or not a match was found).
+    this.credentialResolved = true;
 
     if (this.credential == null)
       return;

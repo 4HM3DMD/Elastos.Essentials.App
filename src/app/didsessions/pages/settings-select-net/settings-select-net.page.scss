@@ -1,28 +1,136 @@
-@import "src/app/settings/root.scss";
+@import "src/app/didsessions/root.scss";
 
-.container {
-  ion-row {
-    .left-col {
-      h1 {
-        font-size: 17px;
-        font-weight: 400;
-        margin: 10px;
-      }
-    }
+.select-net {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 24px 22px calc(env(safe-area-inset-bottom) + 20px);
 
-    .right-col {
+  // Hero + list form one block, vertically centred so the screen never shows the dead
+  // void the old bare grid left below its two rows.
+  .content-top {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 32px;
+
+    // Accent glyph: the focal point that frames this as a network picker.
+    .glyph {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 22px;
+      border-radius: 22px;
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+      border: 1px solid rgba(237, 110, 43, 0.28);
 
       ion-icon {
-        width: 24px;
-        height: 24px;
+        font-size: 38px;
+        color: var(--essentials-accent);
       }
     }
 
-    &:not(:last-child) {
-      border-bottom: solid 1px var(--essentials-border-separator-color);
+    .heading {
+      margin: 0 0 10px;
+      font-size: 30px;
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      color: var(--ion-text-color);
+    }
+
+    // Intro copy states MainNet holds real assets, TestNet is for development, and that
+    // switching restarts the app — covering the previously-unsignaled consequence.
+    .subtitle {
+      margin: 0 auto;
+      max-width: 320px;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.45;
+      color: var(--essentials-text-secondary);
+    }
+  }
+
+  .net-list {
+    display: flex;
+    flex-direction: column;
+
+    // Token card row: leading icon, name + description, trailing checkmark when active.
+    .net-card {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      margin-bottom: 12px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+        var(--essentials-box-color);
+      border: 1px solid var(--essentials-border-separator-color);
+      width: 100%;
+      font-family: inherit;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s ease, background 0.15s ease;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .net-icon {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        ion-icon {
+          font-size: 22px;
+          color: var(--essentials-text-secondary);
+        }
+      }
+
+      .net-text {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .net-name {
+          font-size: 17px;
+          font-weight: 600;
+          line-height: 1.25;
+          color: var(--ion-text-color);
+        }
+
+        .net-desc {
+          font-size: 13px;
+          font-weight: 400;
+          line-height: 1.35;
+          color: var(--essentials-text-secondary);
+        }
+      }
+
+      .net-check {
+        flex-shrink: 0;
+        font-size: 22px;
+        color: var(--essentials-accent);
+      }
+
+      &.selected {
+        border-color: var(--essentials-accent);
+
+        .net-icon ion-icon {
+          color: var(--essentials-accent);
+        }
+      }
     }
   }
 }

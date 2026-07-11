@@ -239,3 +239,41 @@
     }
   }
 }
+
+/* ---------- About Me empty state ---------- */
+.about-empty {
+  text-align: center;
+  padding: 24px 8px;
+
+  .about-empty-glyph {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+    border: 1px solid rgba(237, 110, 43, 0.28);
+
+    ion-icon {
+      font-size: 30px;
+      color: var(--essentials-accent);
+    }
+  }
+
+  .about-empty-title {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ion-text-color);
+  }
+
+  .about-empty-sub {
+    max-width: 260px;
+    margin: 0 auto;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--essentials-text-secondary);
+  }
+}

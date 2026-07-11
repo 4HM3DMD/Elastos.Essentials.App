@@ -2,32 +2,38 @@
   <app-titlebar></app-titlebar>
   <div class="signdigest-container" *ngIf="receivedIntent">
 
-    <!-- App / origin header -->
-    <div class="request-header">
-      <div class="app-disc">
-        <img src="assets/shared/essentials-black-circle.svg">
+    <!-- Centred content cluster: header + intro + data (kills the vertical void) -->
+    <div class="content-top">
+
+      <!-- App / origin header -->
+      <div class="request-header">
+        <div class="app-disc">
+          <img src="assets/shared/essentials-black-circle.svg">
+        </div>
+        <h1 class="request-title">{{ 'identity.sign-data' | translate }}</h1>
+        <!-- Only warn "Unknown application" when a caller was declared but could not be
+             resolved (an external request): Essentials' own flows (CR voting) invoke
+             signdigest internally with no caller, so no warning is shown there. -->
+        <requesting-app [caller]="receivedIntent.params.caller" [showUnknownLabel]="!!receivedIntent.params.caller"></requesting-app>
       </div>
-      <h1 class="request-title">{{ 'identity.sign-data' | translate }}</h1>
-      <!-- Only warn "Unknown application" when a caller was declared but could not be
-           resolved (an external request): Essentials' own flows (CR voting) invoke
-           signdigest internally with no caller, so no warning is shown there. -->
-      <requesting-app [caller]="receivedIntent.params.caller" [showUnknownLabel]="!!receivedIntent.params.caller"></requesting-app>
-    </div>
 
-    <!-- Intro / explanation -->
-    <div class="request-intro">
-      <p class="intro-lead">{{ 'identity.credimport-intro' | translate }}</p>
-      <p class="intro-body">{{ 'identity.credimport-intro2' | translate }}</p>
-    </div>
+      <!-- Intro / explanation -->
+      <div class="request-intro">
+        <p class="intro-lead">{{ 'identity.signdigest-intro' | translate }}</p>
+        <p class="intro-body">{{ 'identity.signdigest-review' | translate }}</p>
+      </div>
 
-    <!-- Request detail: the digest/data to sign -->
-    <div class="data-card">
-      <p class="data-value" *ngIf="receivedIntent">{{ receivedIntent.params.data }}</p>
+      <!-- Request detail: the digest/data to sign -->
+      <div class="data-card">
+        <p class="data-value" *ngIf="receivedIntent">{{ receivedIntent.params.data }}</p>
+      </div>
+
     </div>
 
     <!-- Actions -->
     <div class="request-actions">
       <ebutton (clicked)="acceptRequest()" [title]="'identity.accept' | translate"> </ebutton>
+      <button type="button" class="deny-link" (click)="rejectRequest()">{{ 'common.cancel' | translate }}</button>
     </div>
 
   </div>

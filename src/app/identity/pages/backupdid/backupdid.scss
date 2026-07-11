@@ -4,137 +4,176 @@ ion-content {
   --background: var(--ion-background-color);
 }
 
-.backup-slides {
-  height: calc(100% - (150px + 40px)); // Substract height of slides on approximate height of footer
+// Bar layout shell (mirrors editprofile): a single flex-column page that centres the
+// active step's cluster in the space above a locally-styled footer, so the screen never
+// shows a dead void and the CTAs clear the notch. Replaces the old slides shell.
+.backup {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 24px 22px calc(env(safe-area-inset-bottom) + 20px);
 
-  ion-slide {
+  // Each step's cluster is vertically centred with no reserved-height hack.
+  .content-top {
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 0 24px;
-    height: 100%;
+    text-align: center;
   }
 
-  .first-slide {
-    .qr-card {
-      width: 100%;
-      max-width: 320px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
-        var(--essentials-box-color);
-      border: 1px solid var(--essentials-border-separator-color);
-      border-radius: 18px;
-      padding: 20px 16px;
+  .qr-card {
+    width: 100%;
+    max-width: 320px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    border: 1px solid var(--essentials-border-separator-color);
+    border-radius: 18px;
+    padding: 20px 16px;
 
-      h1 {
-        margin: 0 0 14px;
-        font-size: 20px;
-        font-weight: 700;
-        letter-spacing: -0.5px;
-        color: var(--ion-text-color);
-      }
-
-      .qr-image {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #ffffff;
-        border-radius: 14px;
-        padding: 12px;
-        overflow: hidden;
-      }
-
-      p {
-        margin: 14px 0 0;
-        padding: 0 12px;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: -0.5px;
-        line-height: 1.5;
-        color: var(--essentials-text-secondary);
-        word-break: break-word;
-      }
+    h1 {
+      margin: 0 0 14px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--ion-text-color);
     }
 
-    .warning-note {
+    .qr-image {
       display: flex;
-      align-items: center;
       justify-content: center;
-      gap: 8px;
-      margin-top: 20px;
-      padding: 0 8px;
-
-      ion-icon {
-        flex-shrink: 0;
-        font-size: 18px;
-        color: var(--essentials-warning);
-      }
-
-      span {
-        font-size: 14px;
-        font-weight: 500;
-        letter-spacing: -0.5px;
-        line-height: 1.4;
-        color: var(--essentials-text-secondary);
-        text-align: left;
-      }
-    }
-  }
-
-  .second-slide {
-    .mnemonic-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px 12px;
-      width: 100%;
-      max-width: 360px;
-
-      .word-chip {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        min-height: 42px;
-        padding: 8px 10px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
-          var(--essentials-box-color);
-        border: 1px solid var(--essentials-border-separator-color);
-        border-radius: 12px;
-
-        .word-index {
-          flex-shrink: 0;
-          min-width: 18px;
-          font-size: 11px;
-          font-weight: 700;
-          text-align: center;
-          color: var(--essentials-accent);
-        }
-
-        .word-text {
-          font-size: 13px;
-          font-weight: 600;
-          line-height: 1.2;
-          letter-spacing: -0.29px;
-          color: var(--ion-text-color);
-          word-break: break-word;
-        }
-      }
+      align-items: center;
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 12px;
+      overflow: hidden;
     }
 
-    .mnemonic-prompt {
-      margin-top: 22px;
+    p {
+      margin: 14px 0 0;
       padding: 0 12px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       letter-spacing: -0.5px;
       line-height: 1.5;
       color: var(--essentials-text-secondary);
-      text-align: center;
+      word-break: break-word;
+    }
+  }
 
-      b {
-        color: var(--ion-text-color);
+  // Loading placeholder for step 0 while the mnemonic/QR are being prepared, so the step
+  // never shows only a bare floating warning.
+  .qr-card--loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 260px;
+
+    ion-spinner {
+      --color: var(--essentials-accent);
+      width: 42px;
+      height: 42px;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .warning-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 0 8px;
+
+    ion-icon {
+      flex-shrink: 0;
+      font-size: 18px;
+      color: var(--essentials-warning);
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      line-height: 1.4;
+      color: var(--essentials-text-secondary);
+      text-align: center;
+    }
+  }
+
+  .mnemonic-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px 12px;
+    width: 100%;
+    max-width: 360px;
+
+    .word-chip {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 42px;
+      padding: 8px 10px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+        var(--essentials-box-color);
+      border: 1px solid var(--essentials-border-separator-color);
+      border-radius: 12px;
+
+      .word-index {
+        flex-shrink: 0;
+        min-width: 18px;
+        font-size: 11px;
         font-weight: 700;
+        text-align: center;
+        color: var(--essentials-accent);
       }
+
+      .word-text {
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: -0.29px;
+        color: var(--ion-text-color);
+        word-break: break-word;
+      }
+    }
+  }
+
+  .mnemonic-prompt {
+    margin-top: 22px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    line-height: 1.5;
+    color: var(--essentials-text-secondary);
+    text-align: center;
+
+    b {
+      color: var(--ion-text-color);
+      font-weight: 700;
+    }
+  }
+
+  // Locally-styled footer (mirrors editprofile) instead of the global fixed one: the
+  // primary CTA sits above a quieter secondary, both full-width, clearing the safe area.
+  .footer {
+    flex: 0 0 auto;
+    padding-top: 20px;
+
+    ebutton {
+      width: 100%;
+    }
+
+    ebutton + ebutton {
+      margin-top: 12px;
     }
   }
 }

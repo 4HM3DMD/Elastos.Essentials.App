@@ -1,13 +1,16 @@
 @import "src/app/didsessions/root.scss";
 
 .container {
-  height: calc(100% - (50px));
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100% - 50px);
   background: var(--ion-background-color);
   padding: 0 20px 24px;
 
   // Segmented progress bar tracking the 5 preparation steps. Empty segments use
   // the subtle separator tint; completed ones fill with the accent.
   .slide-bar-row {
+    flex: 0 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -28,6 +31,15 @@
     }
   }
 
+  // Active step card + loader are grouped here and vertically centred, filling the
+  // space beneath the progress bar so the lower half of the screen is never empty.
+  .stage {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
   // "Please wait" loader shown beneath the active step card.
   .slide-circle-row {
     margin-top: 8px;
@@ -39,7 +51,7 @@
       align-items: center;
 
       span {
-        margin-top: -20px;
+        margin-top: 20px;
         font-size: 12px;
         font-weight: 600;
         letter-spacing: 2.4px;
@@ -68,10 +80,23 @@
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
           var(--essentials-box-color);
 
-        img {
-          width: 200px;
-          height: 200px;
-          padding: 12px 0 20px;
+        // Accent glyph replacing the oversized 200px illustration / brand logo, matching
+        // the importdid empty-state glyph so every identity screen shares one language.
+        .glyph {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 76px;
+          height: 76px;
+          margin: 4px 0 20px;
+          border-radius: 22px;
+          background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+          border: 1px solid rgba(237, 110, 43, 0.28);
+
+          ion-icon {
+            font-size: 38px;
+            color: var(--essentials-accent);
+          }
         }
 
         h1 {

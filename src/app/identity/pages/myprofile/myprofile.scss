@@ -21,8 +21,8 @@
       align-items: center;
       border-radius: 50%;
       overflow: hidden;
-      /* Frosted glass disc, matching the launcher/wallet identity hero */
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 100%),
+      /* Frosted glass disc, matching the reference card surface */
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
         var(--essentials-box-color);
       border: 0.5px solid var(--essentials-border-separator-color);
       box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.14);
@@ -77,6 +77,16 @@
 
     &.warn ion-icon {
       color: var(--essentials-warning);
+    }
+
+    /* Accent glyph treatment for the tappable KYC entry row */
+    &.accent {
+      background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+      border: 1px solid rgba(237, 110, 43, 0.28);
+
+      ion-icon {
+        color: var(--essentials-accent);
+      }
     }
   }
 
@@ -146,10 +156,10 @@
 
   /* ---- Action tiles ---- */
   .tiles {
-    margin-top: 16px;
+    margin-top: 20px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 14px;
 
     .tile {
       position: relative;
@@ -158,7 +168,7 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 20px 12px;
+      padding: 22px 12px;
       border-radius: 18px;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
         var(--essentials-box-color);

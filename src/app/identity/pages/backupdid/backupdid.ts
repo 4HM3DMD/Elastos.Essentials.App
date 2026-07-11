@@ -2,7 +2,7 @@ import { Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import QRCode from 'easyqrcodejs';
 
-import { IonSlides, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { BuiltInIcon, TitleBarIcon, TitleBarIconSlot, TitleBarMenuItem } from 'src/app/components/titlebar/titlebar.types';
@@ -24,7 +24,6 @@ import { UXService } from '../../services/ux.service';
 })
 export class BackupDIDPage {
   @ViewChild(TitleBarComponent, { static: true }) titleBar: TitleBarComponent;
-  @ViewChild(IonSlides, { static: false }) slide: IonSlides;
   @ViewChild('qrcode', { static: false }) qrcode: ElementRef;
 
   public qrcodeImg: string;
@@ -34,11 +33,6 @@ export class BackupDIDPage {
   public dataIsReady = false;
 
   public slideIndex = 0;
-  public slideOpts = {
-    initialSlide: 0,
-    speed: 400,
-    init: false
-  };
 
   private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void;
 
@@ -111,19 +105,27 @@ export class BackupDIDPage {
     await this.createQrCode();
   }
 
-  async getActiveSlide() {
-    this.slideIndex = await this.slide.getActiveIndex();
+  // The two-step backup flow is gated on slideIndex (0 = private QR code, 1 = recovery
+  // words). The old ion-slides Swiper was removed in the 2026 redesign, so navigation
+  // sets slideIndex directly and refreshes the titlebar for the active step.
+  private updateStepTitle() {
     this.slideIndex === 0 ?
       this.titleBar.setTitle(this.translate.instant('didsessions.your-private-qr-code')) :
       this.titleBar.setTitle(this.translate.instant('didsessions.your-private-key'));
   }
 
+  getActiveSlide() {
+    this.updateStepTitle();
+  }
+
   nextSlide() {
-    return this.slide.slideNext();
+    this.slideIndex = 1;
+    this.updateStepTitle();
   }
 
   prevSlide() {
-    return this.slide.slidePrev();
+    this.slideIndex = 0;
+    this.updateStepTitle();
   }
 
   nextClicked() {

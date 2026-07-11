@@ -1,34 +1,42 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-  <ion-grid class="container" [class.blur]="uxService.popover">
-    <div class="identities">
-      <div *ngFor="let group of groupedIdentities">
-        <div class="id-row ion-activatable" *ngFor="let identityEntry of group.entries">
-          <div class="avatar-wrap" (click)="signIn(identityEntry)">
-            <div *ngIf="!identityEntry.avatar" class="avatar noAvatar"
-              inlineSVG="assets/launcher/default/default-avatar.svg"></div>
-            <img *ngIf="identityEntry.avatar" class="avatar"
-              [src]="'data:'+identityEntry.avatar.contentType+';base64,'+identityEntry.avatar.base64ImageData">
+  <div class="container" [class.blur]="uxService.popover">
+    <div class="content-top">
+      <div class="hero">
+        <div class="glyph"><ion-icon name="people-outline"></ion-icon></div>
+        <h1 class="heading">{{ 'didsessions.pick-identity-heading' | translate }}</h1>
+        <p class="subtitle">{{ 'didsessions.pick-identity-subtitle' | translate }}</p>
+      </div>
+
+      <div class="identities">
+        <div *ngFor="let group of groupedIdentities">
+          <div class="id-row ion-activatable" *ngFor="let identityEntry of group.entries">
+            <div class="avatar-wrap" (click)="signIn(identityEntry)">
+              <div *ngIf="!identityEntry.avatar" class="avatar noAvatar"
+                inlineSVG="assets/launcher/default/default-avatar.svg"></div>
+              <img *ngIf="identityEntry.avatar" class="avatar"
+                [src]="'data:'+identityEntry.avatar.contentType+';base64,'+identityEntry.avatar.base64ImageData">
+            </div>
+
+            <div class="meta" (click)="signIn(identityEntry)">
+              <span class="name">{{ identityEntry.name }}</span>
+              <span class="did">{{ identityEntry.didString.slice(0,16) }}...{{ identityEntry.didString.slice(40,46) }}</span>
+            </div>
+
+            <span class="row-action" role="button" aria-label="Identity options"
+              (click)="showOptions($event, identityEntry)">
+              <ion-icon name="ellipsis-horizontal"></ion-icon>
+            </span>
+
+            <ion-ripple-effect></ion-ripple-effect>
           </div>
-
-          <div class="meta" (click)="signIn(identityEntry)">
-            <span class="name">{{ identityEntry.name }}</span>
-            <span class="did">{{ identityEntry.didString.slice(0,16) }}...{{ identityEntry.didString.slice(40,46) }}</span>
-          </div>
-
-          <span class="row-action" role="button" aria-label="Identity options"
-            (click)="showOptions($event, identityEntry)">
-            <ion-icon name="ellipsis-horizontal"></ion-icon>
-          </span>
-
-          <ion-ripple-effect></ion-ripple-effect>
         </div>
       </div>
     </div>
 
-    <div *ngIf="!uxService.popover" class="footer">
+    <div *ngIf="!uxService.popover" class="cta-footer">
       <ebutton (clicked)="createIdentity()" [title]="'didsessions.create-new-identity' | translate"></ebutton>
     </div>
 
-  </ion-grid>
+  </div>
 </ion-content>

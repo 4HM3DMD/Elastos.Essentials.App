@@ -1,18 +1,33 @@
 <ion-content>
   <app-titlebar></app-titlebar>
-<!--   <ion-list class="ion-padding" [class.dark-container]="theme.darkMode">
-    <ion-virtual-scroll [items]="areaList" approxItemHeight="320px">
-      <ion-item *virtualItem="let item" (click)="selectItem(item)">
-        <ion-label>{{ item.name }}</ion-label>
-      </ion-item>
-    </ion-virtual-scroll>
-  </ion-list> -->
 
-  <ion-list class="ion-padding" [class.dark-container]="theme.darkMode">
-    <ion-item *ngFor="let item of areaList" (click)="selectItem(item)">
-      <ion-label>{{ item.name }}</ion-label>
-    </ion-item>
-  </ion-list>
-  
+  <div class="country-picker">
+
+    <!-- Sticky search header: filters the 247-row list on keystroke. -->
+    <div class="search-wrap">
+      <ion-icon name="search-outline" class="search-icon"></ion-icon>
+      <ion-input class="search-input" [(ngModel)]="searchTerm" (ngModelChange)="handleSearch()"
+        [placeholder]="'identity.country-search-placeholder' | translate"></ion-input>
+    </div>
+
+    <!-- Country rows: token-based buttons with a trailing chevron affordance. -->
+    <div class="country-list" *ngIf="areaList.length > 0">
+      <button type="button" class="country-row" *ngFor="let item of areaList" (click)="selectItem(item)">
+        <span class="country-name">{{ item.name }}</span>
+        <span class="country-code">{{ item.alpha3 }}</span>
+        <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+      </button>
+    </div>
+
+    <!-- No-results empty state: centred cluster that fills the remaining space. -->
+    <div class="empty-state" *ngIf="areaList.length === 0">
+      <div class="glyph">
+        <ion-icon name="search-outline"></ion-icon>
+      </div>
+      <h1 class="empty-title">{{ 'identity.country-no-results' | translate }}</h1>
+      <p class="empty-sub">{{ 'identity.country-no-results-sub' | translate }}</p>
+    </div>
+
+  </div>
+
 </ion-content>
-

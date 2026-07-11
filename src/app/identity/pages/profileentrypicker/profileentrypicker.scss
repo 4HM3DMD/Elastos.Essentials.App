@@ -1,60 +1,135 @@
 @import "src/app/identity/root.scss";
 
-.container {
+.picker {
+  display: flex;
+  flex-direction: column;
   min-height: 100%;
-  padding: 0;
+  padding: 24px 22px calc(env(safe-area-inset-bottom) + 20px);
+}
 
-  ion-row {
-    border-bottom: 1px solid #EAEAEA;
+.picker-header {
+  .title {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.4px;
+    color: var(--ion-text-color);
   }
 
-  .header {
-    padding: 13px 15px;
-
-    ion-col {
-        padding-left: 0;
-        padding-right: 0;
-
-        ion-label {
-            font-size: 30px;
-            font-weight: 600;
-            line-height: 0.93;
-            text-align: left;
-        }
-    }
+  .subtitle {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--essentials-text-secondary);
   }
+}
+
+// Token card rows: each available profile detail as a tappable card with an accent glyph,
+// clear label, and trailing chevron — a real hierarchy versus bare hairline-separated rows.
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 
   .item {
-    padding: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    min-height: 60px;
+    padding: 0 14px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+      var(--essentials-box-color);
+    border: 1px solid var(--essentials-border-separator-color);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
 
-    .icon-container {
+    .glyph {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+      border: 1px solid rgba(237, 110, 43, 0.28);
 
-      img {
-        height: 15px;
-        width: 15px;
+      ion-icon {
+        font-size: 20px;
+        color: var(--essentials-accent);
       }
     }
 
-    .label-container {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
+    .item-label {
+      flex: 1;
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
 
-      ion-label {
-        font-size: 13px;
-        font-weight: 600;
-        line-height: 1.62;
-        text-align: left;
-      }
+    .chev {
+      flex-shrink: 0;
+      font-size: 18px;
+      color: var(--essentials-text-tertiary);
     }
   }
 }
 
-.darkContainer {
-  ion-row {
-    border-bottom: 1px solid #464646;
+// Empty state: once every field has been added the list is empty; a self-contained centred
+// cluster (glyph + heading + subcopy + CTA) fills the screen so it reads as a finished state.
+.empty-state {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 8px;
+
+  .glyph {
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 22px;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+    border: 1px solid rgba(237, 110, 43, 0.28);
+
+    ion-icon {
+      font-size: 38px;
+      color: var(--essentials-accent);
+    }
+  }
+
+  .empty-title {
+    margin: 0 0 10px;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    color: var(--ion-text-color);
+  }
+
+  .empty-sub {
+    margin: 0 auto 28px;
+    max-width: 300px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--essentials-text-secondary);
+  }
+
+  // Primary CTA sits directly under the message; full-width for a strong target.
+  .cta {
+    align-self: stretch;
+    width: 100%;
   }
 }

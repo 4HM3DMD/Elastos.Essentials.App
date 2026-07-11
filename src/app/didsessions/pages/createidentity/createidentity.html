@@ -1,8 +1,7 @@
 <ion-content>
   <app-titlebar></app-titlebar>
 
-  <app-advanced-mode [hidden]="hidden" [slideIndex]="slideIndex" [slideOpts]="slideOpts"
-    (slideIndexChange)="onSlideIndexChange($event)" (nextSlide)="onNextSlide()"
+  <app-advanced-mode [hidden]="hidden"
     (createNewIdentity)="createNewIdentity()" (importIdentity)="importIdentity()">
   </app-advanced-mode>
 </ion-content>

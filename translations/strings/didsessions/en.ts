@@ -1,5 +1,22 @@
 export const en = {
   didsessions: {
+// --- 2026 identity finish-pass strings ---
+    'scan-instruction': 'Point your camera at the QR code',
+    'scan-instruction-sub': 'Align the code within the frame to import your identity',
+    'scan-starting-camera': 'Starting camera…',
+    'language-subtitle': 'Choose the language you would like to use throughout the app. You can change this later in settings.',
+    'settings-heading': 'Settings',
+    'settings-subtitle': 'Adjust your language and network before you continue.',
+    'choose-network-heading': 'Choose Network',
+    'choose-network-intro': 'Select which network Essentials connects to. MainNet is for your real assets; TestNet is for development. Switching networks restarts the app.',
+    'network-desc-MainNet': 'Real assets on the live Elastos networks.',
+    'network-desc-TestNet': 'Test environment for development. No real value.',
+    'pick-identity-heading': 'Choose an identity',
+    'pick-identity-subtitle': 'Select a profile to sign in, or create a new one.',
+    'create-title': 'Create your identity',
+    'create-subtitle': 'Start fresh with a new identity, or import one you already own.',
+    'verify-mnemonic-heading': 'Verify your recovery phrase',
+    'preparing-backup': 'Preparing your backup…',
     'create': 'Create',
     // Titlebar
     'create-identity': 'Create Identity',

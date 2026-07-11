@@ -1,15 +1,21 @@
-<!-- SCR-118: Collapsed the legacy 3-slide welcome carousel (slide1/slide2/slide3 with
-     welcome-message1/2/3 + Begin/Continue step footer) into a single onboarding screen.
-     The Create/Import CTAs drive straight into the editprofile "Name Your Identity"
-     screen, so onboarding is one dark screen instead of carousel-then-editprofile. -->
-<div class="welcome-screen ion-text-center" [class.hidden]="hidden">
-  <img class="welcome-logo"
-    [src]="!theme.darkMode ? 'assets/didsessions/onboard/essentials-top-logo.svg' : 'assets/didsessions/onboard/dark_mode/essentials-top-logo.svg'">
-  <h1 class="welcome-title">{{ 'didsessions.welcome-message1' | translate }}</h1>
-  <p class="welcome-intro">{{ 'didsessions.create-message' | translate }}</p>
-</div>
-<div class="footer" [class.hidden]="hidden">
-  <!-- SCR-131: primary "Create" CTA + dark secondary "Import" CTA (mode="secondary"). -->
-  <ebutton [arrow]="true" (clicked)="onCreateNewIdentity()" [title]="'didsessions.create' | translate"></ebutton>
-  <ebutton mode="secondary" (clicked)="onImportIdentity()" [title]="'didsessions.import' | translate"></ebutton>
+<!-- SCR-118: Single onboarding screen (was a 3-slide welcome carousel). One full-height
+     flex column — hero vertically centred, Create/Import CTAs pinned to the bottom — so
+     the screen never shows a dead void. Mirrors the editprofile "Name Your Identity" bar. -->
+<div class="welcome-screen" [class.hidden]="hidden">
+  <div class="content-top">
+    <div class="hero">
+      <div class="brand-disc">
+        <img class="brand-mark"
+          [src]="!theme.darkMode ? 'assets/didsessions/onboard/essentials-top-logo.svg' : 'assets/didsessions/onboard/dark_mode/essentials-top-logo.svg'">
+      </div>
+      <h1 class="welcome-title">{{ 'didsessions.create-title' | translate }}</h1>
+      <p class="welcome-intro">{{ 'didsessions.create-subtitle' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <!-- SCR-131: primary "Create" CTA + tonal secondary "Import" CTA (mode="secondary"). -->
+    <ebutton [arrow]="true" (clicked)="onCreateNewIdentity()" [title]="'didsessions.create' | translate"></ebutton>
+    <ebutton mode="secondary" (clicked)="onImportIdentity()" [title]="'didsessions.import' | translate"></ebutton>
+  </div>
 </div>

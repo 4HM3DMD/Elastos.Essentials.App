@@ -5,71 +5,61 @@ ion-content {
 }
 
 .advanced-settings {
-  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 24px 22px calc(env(safe-area-inset-bottom) + 20px);
 
-  .section-label {
-    margin: 2px 2px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--essentials-text-secondary);
+  .content-top {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
-  // Tappable token row: icon circle + title + trailing chevron on a raised card.
-  .option-row {
-    display: flex;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-    padding: 14px 16px;
-    margin-bottom: 8px;
-    border-radius: 18px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
-      var(--essentials-box-color);
-    color: var(--ion-text-color);
-    cursor: pointer;
+  .hero {
+    text-align: center;
 
-    .icon-circle {
+    .glyph {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 22px;
+      border-radius: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: var(--essentials-border-separator-color);
+      background: linear-gradient(180deg, rgba(237, 110, 43, 0.18) 0%, rgba(237, 110, 43, 0.08) 100%);
+      border: 1px solid rgba(237, 110, 43, 0.28);
 
       ion-icon {
-        font-size: 20px;
+        font-size: 38px;
         color: var(--essentials-accent);
       }
     }
 
-    .meta {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      margin-left: 12px;
-      min-width: 0;
-
-      .title {
-        font-size: 16px;
-        font-weight: 600;
-        letter-spacing: 0.2px;
-        color: var(--ion-text-color);
-      }
+    .heading {
+      margin: 0 0 10px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      color: var(--ion-text-color);
     }
 
-    .chevron {
-      margin-left: auto;
-      font-size: 18px;
+    .subtitle {
+      margin: 0 auto;
+      max-width: 300px;
+      font-size: 14px;
+      line-height: 1.5;
       color: var(--essentials-text-secondary);
-      flex-shrink: 0;
     }
+  }
 
-    ion-ripple-effect {
-      --ripple-color: var(--ion-text-color);
+  .footer {
+    flex: 0 0 auto;
+    padding-top: 20px;
+
+    ebutton {
+      width: 100%;
     }
   }
 }

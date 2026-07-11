@@ -2,52 +2,58 @@
   <app-titlebar></app-titlebar>
   <div *ngIf="receivedIntent" class="container">
 
-    <!-- App / origin header: the requesting app + what it wants -->
-    <div class="app-header">
-      <requesting-app [caller]="receivedIntent.params.caller"></requesting-app>
-      <h1 class="request-title">{{ 'identity.register-app' | translate }}</h1>
-      <p class="request-sub">{{ 'identity.registerapp-intro' | translate }}</p>
-    </div>
+    <!-- Hero + request detail as one block, vertically centred so no void opens above the CTA -->
+    <div class="content-top">
 
-    <!-- Request detail: what will be visible vs private -->
-    <div class="detail-card">
-      <div class="detail-row">
-        <div class="icon-circle">
-          <ion-icon name="eye-outline"></ion-icon>
+      <!-- App / origin header: the requesting app + what it wants -->
+      <div class="app-header">
+        <requesting-app [caller]="receivedIntent.params.caller"></requesting-app>
+        <h1 class="request-title">{{ 'identity.register-app' | translate }}</h1>
+        <p class="request-sub">{{ 'identity.registerapp-intro' | translate }}</p>
+      </div>
+
+      <!-- Request detail: what will be visible vs private -->
+      <div class="detail-card">
+        <div class="detail-row">
+          <div class="icon-circle">
+            <ion-icon name="eye-outline"></ion-icon>
+          </div>
+          <div class="meta">
+            <p class="title">{{ 'identity.visible' | translate }}</p>
+            <p class="sub">{{ 'identity.registerapp-msg' | translate }}</p>
+          </div>
         </div>
-        <div class="meta">
-          <p class="title">{{ 'identity.visible' | translate }}</p>
-          <p class="sub">{{ 'identity.registerapp-msg' | translate }}</p>
+
+        <div class="detail-row">
+          <div class="icon-circle">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+          </div>
+          <div class="meta">
+            <p class="title">{{ 'identity.private' | translate }}</p>
+            <p class="sub">{{ 'identity.registerapp-msg2' | translate }}</p>
+          </div>
         </div>
       </div>
 
-      <div class="detail-row">
-        <div class="icon-circle">
-          <ion-icon name="lock-closed-outline"></ion-icon>
-        </div>
-        <div class="meta">
-          <p class="title">{{ 'identity.private' | translate }}</p>
-          <p class="sub">{{ 'identity.registerapp-msg2' | translate }}</p>
+      <!-- Publish preference -->
+      <div class="detail-card">
+        <div class="detail-row toggle-row">
+          <div class="icon-circle">
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+          </div>
+          <div class="meta">
+            <p class="title">{{ 'identity.publish' | translate }}</p>
+          </div>
+          <ion-toggle color="tertiary" [(ngModel)]="shouldPublishOnSidechain"></ion-toggle>
         </div>
       </div>
-    </div>
 
-    <!-- Publish preference -->
-    <div class="detail-card">
-      <div class="detail-row toggle-row">
-        <div class="icon-circle">
-          <ion-icon name="cloud-upload-outline"></ion-icon>
-        </div>
-        <div class="meta">
-          <p class="title">{{ 'identity.publish' | translate }}</p>
-        </div>
-        <ion-toggle color="tertiary" [(ngModel)]="shouldPublishOnSidechain"></ion-toggle>
-      </div>
     </div>
 
     <!-- Actions -->
     <div class="btn-container">
       <ebutton [title]="'identity.accept' | translate" (clicked)="acceptRequest()"></ebutton>
+      <button class="deny-link" (click)="rejectRequest()">{{ 'identity.registerapp-deny' | translate }}</button>
     </div>
 
   </div>
