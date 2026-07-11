@@ -555,6 +555,12 @@ ion-modal.network-chooser-sheet {
   --border-radius: 24px;
 }
 
+// Profile (identity) selector: same sheet treatment as the network chooser.
+ion-modal.profile-selector-sheet {
+  --background: var(--essentials-raised-surface, #242424);
+  --border-radius: 24px;
+}
+
 /********************** CONTACTS **********************/
 .contacts-qrcode-component {
   --height: 55%;

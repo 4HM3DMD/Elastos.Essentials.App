@@ -17,6 +17,7 @@ import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { BackupReminderService } from 'src/app/services/backup-reminder.service';
+import { ProfileSelectorService } from 'src/app/services/profile-selector.service';
 import { DposStatus, VoteService } from 'src/app/voting/services/vote.service';
 import { StakingInitService } from 'src/app/voting/staking/services/init.service';
 import { WalletCreator } from 'src/app/wallet/model/masterwallets/wallet.types';
@@ -139,7 +140,8 @@ export class HomePage implements OnInit, OnDestroy {
     private stakingInitService: StakingInitService,
     private walletNetworkUIService: WalletNetworkUIService,
     private aggService: AggregatedTokensService,
-    private backupReminderService: BackupReminderService
+    private backupReminderService: BackupReminderService,
+    private profileSelectorService: ProfileSelectorService
   ) {}
 
   /** Masks amounts while the hide-balances pref is on, and (privacy-safe) while it is still loading. */
@@ -636,6 +638,11 @@ export class HomePage implements OnInit, OnDestroy {
 
   public onIdentity() {
     void this.globalNav.navigateTo(App.IDENTITY, '/identity/myprofile/home');
+  }
+
+  /** Header name tap: open the profile (identity) selector sheet. */
+  public openProfileSelector() {
+    void this.profileSelectorService.open();
   }
 
   public onApps() {

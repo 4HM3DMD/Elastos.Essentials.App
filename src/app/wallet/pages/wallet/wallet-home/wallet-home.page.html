@@ -29,15 +29,17 @@
 
         <!-- Identity / account header: avatar initial + name/DID stack, network pill inline right -->
         <div class="wallet-row">
-            <div class="account-avatar" aria-hidden="true">{{ walletInitial }}</div>
-            <div class="account-id">
-                <div class="wallet-name">{{ masterWallet.name }}</div>
-                <!-- Identity (DID) of the wallet owner - NOT a network address. A master
-                     wallet has many per-network addresses, so a single truncated address
-                     here is arbitrary and meaningless; the copyable receive address lives
-                     on the Receive screen. -->
-                <div *ngIf="didShort" class="wallet-did">{{ didShort }}</div>
-            </div>
+            <button type="button" class="account-tap" (click)="openProfileSelector()" aria-label="Switch profile">
+                <div class="account-avatar" aria-hidden="true">{{ walletInitial }}</div>
+                <div class="account-id">
+                    <div class="wallet-name">{{ masterWallet.name }}</div>
+                    <!-- Identity (DID) of the wallet owner - NOT a network address. A master
+                         wallet has many per-network addresses, so a single truncated address
+                         here is arbitrary and meaningless; the copyable receive address lives
+                         on the Receive screen. -->
+                    <div *ngIf="didShort" class="wallet-did">{{ didShort }}</div>
+                </div>
+            </button>
             <div *ngIf="currentNetwork || allChainsOn" class="network-pill ion-activatable" (click)="pickNetwork()">
                 <span *ngIf="allChainsOn" class="all-glyph" aria-hidden="true">
                     <img *ngFor="let logo of allChainsGlyphLogos" [src]="logo" alt="" />

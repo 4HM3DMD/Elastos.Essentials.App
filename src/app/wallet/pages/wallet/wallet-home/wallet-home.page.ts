@@ -71,6 +71,7 @@ import { StakingInitService } from 'src/app/voting/staking/services/init.service
 import { SwapService } from 'src/app/wallet/services/evm/swap.service';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { BackupReminderService } from 'src/app/services/backup-reminder.service';
+import { ProfileSelectorService } from 'src/app/services/profile-selector.service';
 import { CoinTransferService } from '../../../services/cointransfer.service';
 import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
@@ -211,9 +212,15 @@ export class WalletHomePage implements OnInit, OnDestroy {
         private stakingInitService: StakingInitService,
         private cdr: ChangeDetectorRef,
         private aggService: AggregatedTokensService,
-        private backupReminderService: BackupReminderService
+        private backupReminderService: BackupReminderService,
+        private profileSelectorService: ProfileSelectorService
     ) {
         GlobalFirebaseService.instance.logEvent("wallet_home_enter");
+    }
+
+    /** Header name/avatar tap: open the profile (identity) selector sheet. */
+    public openProfileSelector() {
+        void this.profileSelectorService.open();
     }
 
     ngOnInit() {

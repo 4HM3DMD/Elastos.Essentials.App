@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { NetworkChooserComponentModule } from 'src/app/wallet/components/network-chooser/module';
+import { ProfileSelectorComponentModule } from 'src/app/components/profile-selector/module';
 import { SharedComponentsModule } from '../../../components/sharedcomponents.module';
 import { UiComponentsModule } from 'src/app/components/ui/ui-components.module';
 import { GlobalDirectivesModule } from '../../../helpers/directives/module';
@@ -29,6 +30,7 @@ import { HomePage } from './home.page';
     WalletAddressChooserComponentsModule,
     OptionsComponentsModule,
     NetworkChooserComponentModule,
+    ProfileSelectorComponentModule,
     NewsConfiguratorComponentsModule,
     WidgetModule,
     RouterModule.forChild([{ path: '', component: HomePage }])

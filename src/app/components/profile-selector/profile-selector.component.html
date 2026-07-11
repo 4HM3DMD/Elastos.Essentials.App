@@ -1,0 +1,31 @@
+<ion-content>
+  <div class="profile-sheet">
+    <ui-sheet-header [title]="'launcher.profile-selector-title' | translate"></ui-sheet-header>
+
+    <div class="profile-list">
+      <button type="button" class="profile-row ion-activatable" *ngFor="let row of profiles; trackBy: trackByDid"
+        [class.current]="row.isCurrent" (click)="onSelect(row)">
+        <img class="avatar" [src]="row.avatarUrl" alt="" />
+
+        <span class="meta">
+          <span class="name">{{ row.entry.name }}</span>
+          <span class="did">{{ row.didShort }}</span>
+        </span>
+
+        <span *ngIf="row.isCurrent" class="current-tag">{{ 'launcher.profile-current' | translate }}</span>
+
+        <!-- Active profile: settings gear. Other profiles: remove control. -->
+        <span *ngIf="row.isCurrent" class="row-action" role="button" aria-label="Profile settings"
+          (click)="onSettings($event)">
+          <ion-icon name="settings-outline"></ion-icon>
+        </span>
+        <span *ngIf="!row.isCurrent" class="row-action" role="button" aria-label="Remove profile"
+          (click)="onRemove(row, $event)">
+          <ion-icon name="ellipsis-horizontal"></ion-icon>
+        </span>
+
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+    </div>
+  </div>
+</ion-content>

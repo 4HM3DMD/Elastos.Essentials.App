@@ -1,0 +1,109 @@
+// Matches the network chooser sheet: same raised surface, grabber header (ui-sheet-header),
+// and 18px gradient card rows.
+:host ion-content {
+  --padding-bottom: 0;
+  --background: var(--essentials-raised-surface, #242424);
+}
+
+.profile-sheet {
+  padding: 4px 16px 16px;
+
+  ui-sheet-header {
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .profile-list {
+    .profile-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      border: none;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%),
+        var(--essentials-box-color);
+      color: var(--ion-text-color);
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
+
+      .avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: var(--essentials-border-separator-color);
+      }
+
+      .meta {
+        display: flex;
+        flex-direction: column;
+        margin-left: 12px;
+        min-width: 0;
+        flex: 1;
+
+        .name {
+          font-size: 16px;
+          font-weight: 600;
+          letter-spacing: 0.3px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .did {
+          margin-top: 3px;
+          font-size: 12px;
+          color: var(--essentials-text-secondary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      // Small accent pill marking the signed-in profile.
+      .current-tag {
+        margin-left: 8px;
+        padding: 3px 8px;
+        border-radius: 8px;
+        background: var(--essentials-accent, #ed6e2b);
+        color: var(--essentials-accent-ink, #1a1208);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        flex-shrink: 0;
+      }
+
+      .row-action {
+        margin-left: 6px;
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--essentials-text-secondary);
+        flex-shrink: 0;
+        cursor: pointer;
+
+        ion-icon {
+          font-size: 20px;
+        }
+
+        &:active {
+          background: var(--essentials-border-separator-color);
+        }
+      }
+
+      ion-ripple-effect {
+        --ripple-color: var(--ion-text-color);
+      }
+    }
+  }
+}

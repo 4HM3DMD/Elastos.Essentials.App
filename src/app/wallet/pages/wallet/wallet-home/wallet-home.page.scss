@@ -56,6 +56,26 @@
     align-items: center;
     gap: 12px;
 
+    // Tappable avatar + name/DID region that opens the profile selector; a bare button
+    // that keeps the original avatar|name flex layout (gap matches the row).
+    .account-tap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        min-width: 0;
+        padding: 0;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        text-align: left;
+        cursor: pointer;
+
+        &:active {
+            opacity: 0.75;
+        }
+    }
+
     .account-avatar {
         flex-shrink: 0;
         display: flex;

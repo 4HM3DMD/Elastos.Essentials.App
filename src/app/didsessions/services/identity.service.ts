@@ -580,9 +580,10 @@ export class IdentityService {
                   return false;
               } */
 
-      // Delete all wallets.
+      // Delete all wallets. deleteAllWallet operates on a manager scoped to this identity's
+      // own storage and disposes it, so there is nothing to reset here - and resetting would
+      // wrongly tear down the signed-in user's live manager when removing another profile.
       await WalletJSSDKHelper.deleteAllWallet(identity.didString);
-      WalletJSSDKHelper.resetMasterWalletManager();
 
       // Delete the did store, as for now, 1 DID = 1 DID store
       await this.deleteDIDStore(identity.didStoreId);

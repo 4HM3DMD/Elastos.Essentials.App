@@ -41,6 +41,8 @@ export const en = {
         'backup-reminder-backup': 'Back Up Now',
         'backup-reminder-skip': 'Skip',
         'backup-reminder-skip-in': 'Skip ({{seconds}})',
+        'profile-selector-title': 'Profiles',
+        'profile-current': 'Current',
         'wallet-connect-sessions': 'Wallet Connect sessions',
         'active-network': 'Active network',
         'active-wallet': 'Active wallet',

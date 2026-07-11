@@ -34,6 +34,8 @@ export const zh = {
         'backup-reminder-backup': '立即备份',
         'backup-reminder-skip': '跳过',
         'backup-reminder-skip-in': '跳过 ({{seconds}})',
+        'profile-selector-title': '身份',
+        'profile-current': '当前',
         'wallet-connect-sessions': '钱包连接会话',
         'active-network': '网络',
         'active-wallet': '钱包',

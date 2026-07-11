@@ -189,15 +189,26 @@ export class WalletJSSDKHelper {
     return await this.masterWalletManager.destroyWallet(masterWalletId)
   }
 
-  // Call this when delete identiy
+  // Call this when deleting an identity. Operates on a MasterWalletManager scoped to the
+  // TARGET identity's own storage and disposed afterwards, so deleting one identity's
+  // wallets never touches the signed-in user's cached manager. loadMasterWalletManager()
+  // returns the cached (signed-in) manager regardless of didString, which would otherwise
+  // wipe the CURRENT user's wallets when removing a non-active profile while signed in.
   public static async deleteAllWallet(didString: string) {
-    // The MasterWalletManager is not created if the user does not signin.
-    await this.loadMasterWalletManager(didString);
-    let allMasterWallets = this.masterWalletManager.getAllMasterWalletID();
+    let networkTemplate = await GlobalNetworksService.instance.getActiveNetworkTemplate();
+    if (networkTemplate === "LRW") {
+      networkTemplate = "PrvNet";
+    }
+    const browserStorage = new JSSDKLocalStorage(didString);
+    const netConfig = { NetType: networkTemplate, ELA: {} };
+    const { MasterWalletManager } = await lazyElastosWalletSDKImport();
+    const manager = await MasterWalletManager.create(browserStorage, networkTemplate, netConfig);
+    const allMasterWallets = manager.getAllMasterWalletID();
     Logger.log('wallet', 'WalletJSSDKHelper deleteAllWallet count:', allMasterWallets.length);
     for (let i = 0; i < allMasterWallets.length; i++) {
-      await this.masterWalletManager.destroyWallet(allMasterWallets[i])
+      await manager.destroyWallet(allMasterWallets[i]);
     }
+    manager.destroy();
   }
 
   public static getMasterWallet(masterWalletId: string) {

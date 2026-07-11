@@ -9,6 +9,7 @@ import { UiComponentsModule } from 'src/app/components/ui/ui-components.module';
 import { GlobalDirectivesModule } from 'src/app/helpers/directives/module';
 import { EthTransactionComponentModule } from 'src/app/wallet/components/eth-transaction/module';
 import { NetworkChooserComponentModule } from 'src/app/wallet/components/network-chooser/module';
+import { ProfileSelectorComponentModule } from 'src/app/components/profile-selector/module';
 import { WalletChooserComponentModule } from 'src/app/wallet/components/wallet-chooser/module';
 import { WalletHomePage } from './wallet-home.page';
 
@@ -24,6 +25,7 @@ import { WalletHomePage } from './wallet-home.page';
                 GlobalDirectivesModule,
                 WalletChooserComponentModule,
                 NetworkChooserComponentModule,
+                ProfileSelectorComponentModule,
                 EthTransactionComponentModule,
                 RouterModule.forChild([{ path: '', component: WalletHomePage }]),
         ],

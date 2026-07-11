@@ -34,6 +34,8 @@ export const fr = {
         'backup-reminder-backup': 'Sauvegarder',
         'backup-reminder-skip': 'Ignorer',
         'backup-reminder-skip-in': 'Ignorer ({{seconds}})',
+        'profile-selector-title': 'Profils',
+        'profile-current': 'Actuel',
         'wallet-connect-sessions': 'Sessions Wallet Connect',
         'active-network': 'Réseau actif',
         'active-wallet': 'Portefeuille actif',

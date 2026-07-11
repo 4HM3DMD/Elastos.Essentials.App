@@ -5,7 +5,7 @@
       <!-- Identity-and-chain split pill: one glass control carrying the session context.
            Left segment opens the identity page, right segment opens the network chooser. -->
       <div class="id-pill">
-        <button type="button" class="seg account" (click)="onIdentity()" aria-label="My identity">
+        <button type="button" class="seg account" (click)="openProfileSelector()" aria-label="Switch profile">
           <img *ngIf="avatarDataUrl" class="avatar" [src]="avatarDataUrl" alt="" />
           <span *ngIf="!avatarDataUrl" class="avatar avatar-initial">{{ (identityName || 'E').charAt(0) | uppercase }}</span>
           <span class="name">{{ identityName }}</span>
