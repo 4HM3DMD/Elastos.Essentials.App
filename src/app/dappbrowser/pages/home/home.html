@@ -1,4 +1,4 @@
-<ion-content class="ion-text-center">
+<ion-content class="ion-text-center warm-top">
     <browser-titlebar (urlConfirmed)="onUrlInput($event)" (urlChanged)="onUrlTyped($event)"
         [attr.disabled]="dabRunning"></browser-titlebar>
     <ion-grid *ngIf="!dabRunning" class="container" [class.dark-container]="theme.darkMode">
