@@ -207,6 +207,13 @@ ion-content {
     .tiles {
         // Figma: ~48px between the hero/PnL block and the quick-action tiles.
         margin-top: 48px;
+
+        // Loading tiles are disabled (not tappable, out of the a11y tree) but should
+        // still read as "almost there" rather than the full 0.4 disabled fade. Only
+        // the loading grid has disabled tiles, so this never touches the real grid.
+        ::ng-deep .tile.disabled {
+            opacity: 0.72;
+        }
     }
 
     .wallet-unavailable {

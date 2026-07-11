@@ -59,10 +59,10 @@
     <!-- Real action tiles during load (static labels/icons); they wire up once the
          wallet is ready. Near-loaded rather than four ghost blocks. -->
     <ui-action-grid *ngIf="!hasWallet() && !walletServiceReady" [columns]="4" class="tiles">
-      <ui-action-tile label="Send" icon="assets/wallet/action/send.png"></ui-action-tile>
-      <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png"></ui-action-tile>
-      <ui-action-tile label="Swap" icon="assets/wallet/action/swap.png"></ui-action-tile>
-      <ui-action-tile label="Stake" icon="assets/wallet/action/stake.png"></ui-action-tile>
+      <ui-action-tile label="Send" icon="assets/wallet/action/send.png" [disabled]="true"></ui-action-tile>
+      <ui-action-tile label="Receive" icon="assets/wallet/action/receive.png" [disabled]="true"></ui-action-tile>
+      <ui-action-tile label="Swap" icon="assets/wallet/action/swap.png" [disabled]="true"></ui-action-tile>
+      <ui-action-tile label="Stake" icon="assets/wallet/action/stake.png" [disabled]="true"></ui-action-tile>
     </ui-action-grid>
 
     <!-- Active wallet not available on the current network -->

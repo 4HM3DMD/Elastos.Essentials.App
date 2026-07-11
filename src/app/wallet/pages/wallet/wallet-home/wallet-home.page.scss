@@ -23,6 +23,12 @@
 
     .skeleton-tiles {
         margin-top: 22px;
+
+        // The tiles are disabled during load (not tappable, out of the a11y tree)
+        // but should still read as "almost there", not the full 0.4 disabled fade.
+        ::ng-deep .tile.disabled {
+            opacity: 0.72;
+        }
     }
 
     .skeleton-list {

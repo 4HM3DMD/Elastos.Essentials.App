@@ -182,19 +182,22 @@ body.has-tabbar :where(ion-content) {
     min-width: 24px;
     border-radius: 5px;
     vertical-align: middle;
-    background: rgba(135, 135, 145, 0.22);
+    // currentColor so the ghost tracks the surrounding text: a soft light bar on
+    // the dark theme, a soft dark bar on the light theme - visible on both.
+    background: currentColor;
+    opacity: 0.13;
     animation: ui-ghost-breathe 2.4s ease-in-out infinite;
 }
 
 @keyframes ui-ghost-breathe {
-    0%, 100% { opacity: 0.45; }
-    50% { opacity: 0.8; }
+    0%, 100% { opacity: 0.09; }
+    50% { opacity: 0.17; }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .ui-ghost {
         animation: none;
-        opacity: 0.6;
+        opacity: 0.13;
     }
 }
 
