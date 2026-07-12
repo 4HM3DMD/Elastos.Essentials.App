@@ -1,27 +1,21 @@
 <div class="container" [class.darkContainer]="theme.darkMode">
 
-  <ion-row class="header">
-    <img src="/assets/didsessions/default/deleteWarning.svg">
-    <h1 class="ion-padding-horizontal ion-text-center">{{ 'didsessions.delete-identity' | translate }}</h1>
-  </ion-row>
+  <div class="glyph">
+    <ion-icon name="warning-outline"></ion-icon>
+  </div>
 
-  <ion-row>
-    <ion-col class="message ion-padding">
-      <p class="ion-padding">
-        {{ 'didsessions.delete-identity-prompt' | translate }}
-      </p>
-    </ion-col>
-  </ion-row>
+  <h1>{{ 'didsessions.delete-identity' | translate }}</h1>
+  <p>{{ 'didsessions.delete-identity-prompt' | translate }}</p>
 
-  <ion-row  class="btn-row">
-    <ion-col class="btn ripple ion-activatable" size="5" (click)="cancel()">
+  <div class="btn-row">
+    <button type="button" class="btn cancel ion-activatable" (click)="cancel()">
       <ion-label>{{ 'common.cancel' | translate }}</ion-label>
       <ion-ripple-effect></ion-ripple-effect>
-    </ion-col>
-    <ion-col class="btn ripple ion-activatable" size="5" (click)="deleteDID()">
-      <ion-label>{{ 'common.continue' | translate }}</ion-label>
+    </button>
+    <button type="button" class="btn danger ion-activatable" (click)="deleteDID()">
+      <ion-label>{{ 'common.delete' | translate }}</ion-label>
       <ion-ripple-effect></ion-ripple-effect>
-    </ion-col>
-  </ion-row>
-  
+    </button>
+  </div>
+
 </div>

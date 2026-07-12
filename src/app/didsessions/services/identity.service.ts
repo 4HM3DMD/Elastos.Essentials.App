@@ -571,14 +571,23 @@ export class IdentityService {
   async deleteIdentity(identity: IdentityEntry): Promise<boolean> {
     Logger.log('didsessions', 'Deleting identity', identity);
 
-    // Get did store password from the password manager
     try {
-      // Prompt password
-      /*   const passwordInfo = await passwordManager.getPasswordInfo("didstore-"+identity.didStoreId) as PasswordManagerPlugin.GenericPasswordInfo;
-              if (!passwordInfo) {
-                  Logger.log('didsessions', "Unable to retrieve DID store password from password manager");
-                  return false;
-              } */
+      // Deleting an identity is destructive, so require the master password first.
+      // forceMasterPasswordPrompt makes the native prompt appear even if the password
+      // manager is already unlocked. A cancel / wrong password throws and is handled by the
+      // catch below, so the deletion never runs.
+      let options: PasswordManagerPlugin.GetPasswordInfoOptions = {
+        promptPasswordIfLocked: true,
+        forceMasterPasswordPrompt: true
+      };
+      const passwordInfo = await this.globalPasswordService.getPasswordInfo(
+        'didstore-' + identity.didStoreId,
+        options
+      );
+      if (!passwordInfo) {
+        Logger.log('didsessions', 'Master password not provided; aborting identity deletion');
+        return false;
+      }
 
       // Delete all wallets. deleteAllWallet operates on a manager scoped to this identity's
       // own storage and disposes it, so there is nothing to reset here - and resetting would
