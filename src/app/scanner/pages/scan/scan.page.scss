@@ -105,6 +105,10 @@ $scan-text-secondary: rgba(255, 255, 255, 0.65);
     height: 100%;
     padding: 0 32px;
     text-align: center;
+    // Own dark surface so the white fallback text stays legible in light theme (the
+    // camera-on state gets its dark backdrop from the viewport box-shadow, which this
+    // denied state does not have).
+    background: $scan-page-bg;
 }
 
 .camera-denied-icon {

@@ -32,6 +32,7 @@ export class BrowserPage implements DappBrowserClient {
 
   private titleBarIconClickedListener: (icon: TitleBarIcon | TitleBarMenuItem) => void;
   private backButtonSub: Subscription;
+  private activeAppInfoSub: Subscription;
 
   private inputStatusSub: Subscription;
   private restoreWebviewTimeout;
@@ -49,7 +50,7 @@ export class BrowserPage implements DappBrowserClient {
     private dAppBrowserService: DappBrowserService,
     private globalIntentService: GlobalIntentService
   ) {
-    this.dAppBrowserService.activeBrowsedAppInfo.subscribe(appInfo => {
+    this.activeAppInfoSub = this.dAppBrowserService.activeBrowsedAppInfo.subscribe(appInfo => {
       if (appInfo && this.titleBar) {
         this.titleBar.setTitle(appInfo.title ?? null);
         this.titleBar.setUrl(appInfo.url ?? null);
@@ -129,6 +130,12 @@ export class BrowserPage implements DappBrowserClient {
   }
 
   ngOnDestroy() {
+    // Tear down the app-info subscription; this routed page is recreated on every entry,
+    // so without this each open/close cycle leaks a subscription retaining the dead page.
+    if (this.activeAppInfoSub) {
+      this.activeAppInfoSub.unsubscribe();
+      this.activeAppInfoSub = null;
+    }
     // The user may return to the launcher page through other pages.
     void dappBrowser.close();
   }
@@ -167,9 +174,14 @@ export class BrowserPage implements DappBrowserClient {
           void dappBrowser.close();
         } else {
           void dappBrowser.show();
-          //void this.dAppBrowserService.open(url, null, null, false);
         }
       });
+    } else {
+      // Non-scam domain: navigate the current browser to the typed URL. Without this the
+      // address bar was dead — typing a URL and pressing Go/Enter did nothing. navigate=false
+      // reloads the current webview instead of pushing a new browser page. (open() runs its
+      // own scam check, so we only reach it here for non-scam domains — no double warning.)
+      void this.dAppBrowserService.open(url, null, null, false);
     }
   }
 

@@ -405,7 +405,9 @@ export class HomePage {
 
   public dismissNoInAppNotice() {
     this.noInAppNoticeDismissed = true;
-    this.noInAppNoticeDismissed = void this.globalStorageService.setSetting(
+    // Fire-and-forget the persistence; do NOT assign the void result back into the flag,
+    // which overwrote it with undefined and left the notice on screen for the session.
+    void this.globalStorageService.setSetting(
       DIDSessionsStore.signedInDIDString,
       NetworkTemplateStore.networkTemplate,
       'dappbrowser',

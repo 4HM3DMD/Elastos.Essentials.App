@@ -82,7 +82,6 @@ export class GlobalNotificationsService extends GlobalService {
     * @returns A promise that can be awaited and catched in case or error.
     */
     public sendNotification(request: NotificationRequest): Promise<void> {
-        const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
         const notificationsLength = this._notifications.length;
         this._notifications = this._notifications.filter(notification => notification.key !== request.key);
         let notification: Notification = {
@@ -91,7 +90,9 @@ export class GlobalNotificationsService extends GlobalService {
             message: request.message,
             subMessage: request.subMessage,
             app: request.app ? request.app : null,
-            notificationId: characters.charAt(Math.floor(Math.random() * characters.length)),
+            // Collision-resistant id. The previous single-character id collided constantly,
+            // so clearing one notification deleted every other notification sharing its id.
+            notificationId: Date.now().toString(36) + Math.random().toString(36).slice(2, 10),
             url: request.url ? request.url : null,
             sent_date: Date.now()
         };

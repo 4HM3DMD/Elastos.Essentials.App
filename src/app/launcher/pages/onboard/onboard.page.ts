@@ -60,6 +60,11 @@ export class OnboardPage implements OnInit {
 
   showSlider() {
     this.hidden = false;
+    // Defensive: the ViewChild ref must resolve (#slider) before init; guard so a missing
+    // slider never throws and leaves the welcome slide uninitialised/clipped.
+    if (!this.slider) {
+      return;
+    }
     void this.slider.getSwiper().then((swiper) => {
       swiper.init();
     });

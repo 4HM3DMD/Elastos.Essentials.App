@@ -280,7 +280,7 @@ export class ScanPage {
                         });
                     } else {
                         Logger.error("Scanner", err);
-                        void this.alertNoScannedContent('sorry', 'scanner.gallery-err');
+                        void this.alertNoScannedContent('common.sorry', 'scanner.gallery-err');
                     }
                 }, {
                 targetWidth: 1200, // Reduce picture size to avoid memory problems - keep it large enough for QR code readabilitiy
