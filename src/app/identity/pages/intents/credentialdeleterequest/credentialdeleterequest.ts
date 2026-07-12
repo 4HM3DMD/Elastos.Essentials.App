@@ -223,7 +223,8 @@ export class CredentialDeleteRequestPage {
     }, () => {
       // Cancelled
       this.accepting = false;
-    });
+    }, true, true); // forceMasterPasswordPrompt: a dApp-initiated credential deletion is
+    // destructive, so require a fresh master password even if the database is unlocked.
   }
 
   private async publishAndFinalize(deletedCredentialsResult: string[]) {
