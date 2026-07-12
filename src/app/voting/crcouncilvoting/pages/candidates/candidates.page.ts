@@ -64,15 +64,21 @@ export class CandidatesPage implements OnInit {
         try {
             if (!this.candidatesFetched) {
                 await this.crCouncilService.fetchCandidates();
-                this.candidatesFetched = true;
             }
             this.remainingTime = await this.crCouncilService.getRemainingTime();
-        } catch (e) {
-            // Without this, a failed fetch leaves candidatesFetched false and the page
-            // stuck on its spinner forever. Resolve the spinner and surface the error.
-            Logger.error(App.CRCOUNCIL_VOTING, 'candidates ionViewWillEnter error:', e);
+            // Only mark fetched after a full success, so a transient failure retries on the
+            // next entry (matching the original behaviour) instead of caching a failed state.
             this.candidatesFetched = true;
+        } catch (e) {
+            // Surface the error; leave candidatesFetched false so re-entry retries the fetch.
+            Logger.error(App.CRCOUNCIL_VOTING, 'candidates ionViewWillEnter error:', e);
             void this.voteService.popupErrorMessage(e);
+            return;
+        }
+
+        // candidateInfo is populated by fetchCandidates; guard so a partial/failed load can
+        // never crash the switch below with an undefined state.
+        if (!this.crCouncilService.candidateInfo) {
             return;
         }
 
