@@ -1,14 +1,10 @@
 @import "src/app/didsessions/root.scss";
 
-// Warm gradient wash across the top of the screen, matching the 2026 onboarding
-// design (the "Name Your Identity" frame). The dark page beneath it comes from the
-// signed-out theme now being dark.
+// Flat dark page. Name Your Identity is a focused task screen, so it drops the warm
+// header texture (which rendered as a hard-edged band above the dark, centred content)
+// and matches the rest of the screen.
 ion-content {
-  // Same exact 2026 header wave texture as Home, faded into the dark page.
-  --background:
-    linear-gradient(180deg, rgba(17, 17, 17, 0) 0%, rgba(17, 17, 17, 0) 30%, var(--ion-background-color) 78%) top center / 100% 300px no-repeat,
-    url("/assets/components/backgrounds/top-cover.jpg") top center / 100% auto no-repeat,
-    var(--ion-background-color);
+  --background: var(--ion-background-color);
 }
 
 .name-identity {
