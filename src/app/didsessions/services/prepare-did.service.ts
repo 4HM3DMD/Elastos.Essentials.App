@@ -102,7 +102,7 @@ export class PrepareDIDService {
           }
           break;
         case this.DEFAULT_WALLET_SLIDE_INDEX:
-          await this.createWalletFromIdentity(callbacks);
+          operationSuccessful = await this.createWalletFromIdentity(callbacks);
           break;
         default:
         // Do nothing.
@@ -317,18 +317,30 @@ export class PrepareDIDService {
     }
   }
 
-  private async createWalletFromIdentity(callbacks: PrepareDIDCallbacks): Promise<void> {
+  private async createWalletFromIdentity(callbacks: PrepareDIDCallbacks): Promise<boolean> {
     Logger.log('didsessions', 'Creating a default wallet with the same mnemonic as the identity');
-    await Promise.all([
-      sleep(MIN_SLIDE_SHOW_DURATION_MS),
-      this.walletCreationService.createWalletFromNewIdentity(
-        this.identityService.identityBeingCreated.name,
-        this.identityService.identityBeingCreated.mnemonic,
-        this.identityService.identityBeingCreated.mnemonicPassphrase
-      )
-    ]);
+    try {
+      await Promise.all([
+        sleep(MIN_SLIDE_SHOW_DURATION_MS),
+        this.walletCreationService.createWalletFromNewIdentity(
+          this.identityService.identityBeingCreated.name,
+          this.identityService.identityBeingCreated.mnemonic,
+          this.identityService.identityBeingCreated.mnemonicPassphrase
+        )
+      ]);
 
-    this.walletStepCompleted = true;
-    callbacks.onWalletCompleted();
+      this.walletStepCompleted = true;
+      callbacks.onWalletCompleted();
+      return true;
+    } catch (e) {
+      // Without this the throw reached startPreparation's generic catch (onError('general')),
+      // which preparedid.ts does not handle, so no walletError flag was set: the loader spun
+      // forever with the back button disabled and the user was permanently stuck on the wallet
+      // step with no wallet created. Surface a wallet error so the step's Back button appears.
+      Logger.error('didsessions', 'Default wallet creation failed in prepare did:', e);
+      const error = this.translate.instant('didsessions.error-default-wallet-creation-failed') + e;
+      callbacks.onError('wallet', error);
+      return false;
+    }
   }
 }

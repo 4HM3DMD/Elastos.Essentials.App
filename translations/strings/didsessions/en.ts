@@ -158,6 +158,7 @@ export const en = {
     'error-hive-storage-failed':
       'Hive storage setup could not be completed, please try again manually later. Continuing.',
     'error-hive-storage-setup-failed': 'Failed to setup the hive storage: ',
+    'error-default-wallet-creation-failed': 'Failed to create your default wallet: ',
     'error-can-not-publish': 'Sorry, your identity could not be published for now',
     'error-failed-to-publish': 'Failed to publish identity: ',
     'error-failed-to-sign': 'Failed to sign in: '
