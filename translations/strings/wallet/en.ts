@@ -823,6 +823,8 @@ export const en = {
     'next-four-words': 'Next 4 words',
     'create-wallet': 'Create Wallet',
     'import-wallet': 'Import Wallet',
+    'no-wallet-title': 'No wallet yet',
+    'no-wallet-sub': 'This profile has no wallet. Create a new one or import an existing wallet to see your tokens here.',
     'mnemonic-import-missing-words': 'Please fill in all inputs before proceeding',
     'mnemonic-check-title': 'Mnemonic Verification',
     'memory-written-down': 'I have written it down',

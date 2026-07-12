@@ -22,6 +22,17 @@
         </div>
     </div>
 
+    <!-- Wallet-less profile: the service is ready but there's no wallet (e.g. an identity
+         created without completing the default-wallet step), so guide the user to add one
+         instead of showing a blank page. -->
+    <div *ngIf="!masterWallet && walletServiceReady" class="wallet-empty">
+        <div class="empty-glyph"><ion-icon name="wallet-outline"></ion-icon></div>
+        <h1 class="empty-title">{{ 'wallet.no-wallet-title' | translate }}</h1>
+        <p class="empty-sub">{{ 'wallet.no-wallet-sub' | translate }}</p>
+        <ebutton [arrow]="true" (clicked)="onCreateWallet()" [title]="'wallet.create-wallet' | translate"></ebutton>
+        <ebutton mode="secondary" (clicked)="onImportWallet()" [title]="'wallet.import-wallet' | translate"></ebutton>
+    </div>
+
     <div *ngIf="masterWallet" class="wallet-home">
         <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
             <ion-refresher-content pullingIcon="arrow-down" refreshingSpinner="crescent"></ion-refresher-content>

@@ -580,6 +580,15 @@ export class WalletHomePage implements OnInit, OnDestroy {
         if (main) this.goCoinHome(main.networkWallet.id, main.id);
     }
 
+    /** No-wallet empty state: route to the standard create / import wallet flows. */
+    public onCreateWallet() {
+        this.native.go('/wallet/wallet-create');
+    }
+
+    public onImportWallet() {
+        this.native.go('/wallet/wallet-import');
+    }
+
     /** Send opens the 2026 token picker first, then the transfer form for the chosen token. */
     public onSend() {
         let main = this.getMainSubWallet();
