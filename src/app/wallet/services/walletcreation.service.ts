@@ -147,8 +147,18 @@ export class WalletCreationService {
           true
         );
       } catch (err) {
-        Logger.error("wallet", "Wallet import error:", err);
+        // Do NOT swallow: a swallowed error here made onboarding believe a wallet was
+        // created when it was not (and the destroy-then-recreate single-address path can
+        // leave NO wallet at all if the recreate throws). Re-throw so prepare-did surfaces
+        // the failure instead of dropping the user on Home with no wallet.
+        Logger.error("wallet", "Default wallet creation error:", err);
+        throw err;
       }
+    } else {
+      // No wallet password means the wallet cannot be created. Throw rather than returning
+      // void — returning void previously left the profile with no wallet while onboarding
+      // reported the wallet step as successful.
+      throw new Error("Could not create or save the wallet password");
     }
   }
 }

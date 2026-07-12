@@ -93,7 +93,7 @@
 
     <!-- Tokens preview (top 3 by fiat value); header always shown while a wallet is
          active, and during wallet-service init so the list skeleton holds the layout -->
-    <div *ngIf="hasWallet() || !walletServiceReady" class="tokens">
+    <div *ngIf="(hasWallet() || !walletServiceReady) && !hasNoWallet()" class="tokens">
       <div class="section-head">
         <h2>{{ 'launcher.home-tokens' | translate }}</h2>
         <button *ngIf="tokenRows && tokenRows.length > 0" type="button" class="see-all" (click)="onValue()">{{ 'launcher.home-see-all' | translate }}</button>

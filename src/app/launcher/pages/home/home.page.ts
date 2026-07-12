@@ -483,6 +483,16 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   /**
+   * True once the wallet service has finished initializing AND the active profile has no
+   * master wallets. Reads the live walletServiceStatus value (not the walletServiceReady
+   * flag, which can stay false on this persistent page for a freshly-switched profile) so a
+   * wallet-less profile resolves to no token section instead of an endless token skeleton.
+   */
+  public hasNoWallet(): boolean {
+    return this.walletService.walletServiceStatus.value && this.walletService.getMasterWalletsCount() === 0;
+  }
+
+  /**
    * Receive: point CoinTransferService at the main subwallet (coin-receive reads
    * masterWalletId/subWalletId from it) and open the receive screen. Mirrors the
    * Value screen's onReceive(), including the backup prompt for app-created wallets
