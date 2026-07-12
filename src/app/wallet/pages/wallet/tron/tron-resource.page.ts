@@ -151,11 +151,21 @@ export class TronResourcePage implements OnDestroy {
 
     let address = this.subWallet.getCurrentReceiverAddress();
 
-    this.accountResource = await GlobalTronGridService.instance.getAccountResource(address);
-    this.accountInfo = await GlobalTronGridService.instance.account(
-      this.subWallet.networkWallet.network.getSelectedRpcUrl(),
-      address
-    );
+    try {
+      this.accountResource = await GlobalTronGridService.instance.getAccountResource(address);
+      this.accountInfo = await GlobalTronGridService.instance.account(
+        this.subWallet.networkWallet.network.getSelectedRpcUrl(),
+        address
+      );
+    } catch (e) {
+      // The template body is gated on accountInfo, so a failed fetch would otherwise
+      // leave the page permanently blank. Tell the user and return them to the
+      // previous screen instead of stranding them on an empty page.
+      Logger.error('wallet', 'tron-resource initResource error:', e);
+      this.native.toast_trans('wallet.wrong-rpc-url');
+      this.native.pop();
+      return;
+    }
     if (this.accountInfo) {
       // Stake V1
       if (this.accountInfo.frozen && this.accountInfo.frozen[0]) {

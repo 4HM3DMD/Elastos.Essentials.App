@@ -129,8 +129,9 @@
       font-variant-numeric: tabular-nums;
 
       // Anti-poisoning emphasis: bright edges (what users compare), muted middle.
+      // Full-strength theme text token so the edges stay legible in light theme.
       .addr-edge {
-        color: #FFFFFF;
+        color: var(--ion-text-color);
         font-weight: 700;
       }
 

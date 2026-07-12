@@ -78,6 +78,14 @@ export class MnemonicExportPage implements OnInit {
       }
 
     ionViewWillEnter() {
+        // Only auto-reveal when the wallet password is already in hand — that is the
+        // settings "backup wallet" flow, which passes payPassword via navigation state
+        // (see init()). In the dApp-intent and standalone export flows payPassword is
+        // still empty here, so the user must first authenticate through the Export
+        // button (onExport -> getPassword) before any secret is decrypted and shown.
+        if (!this.payPassword) {
+            return;
+        }
         if (this.hasMnemonic) {
             void this.showMnemonics();
         } else {
@@ -131,6 +139,9 @@ export class MnemonicExportPage implements OnInit {
             if (this.hasMnemonic) {
                 void this.showMnemonics();
             } else {
+                // showMnemonics() clears hideMnemonic itself; showPrivateKey() does not,
+                // so reveal the private-key view explicitly for mnemonic-less wallets.
+                this.hideMnemonic = false;
                 void this.showPrivateKey();
             }
         } else {

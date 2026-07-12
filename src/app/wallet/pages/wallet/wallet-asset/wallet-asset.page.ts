@@ -214,7 +214,9 @@ export class WalletAssetPage implements OnDestroy {
               return network.name === networks[i].getEffectiveName();
             });
             if (networkIndex !== -1) {
-              this.assetsInfo[networkWalletIndex].networks.splice(networkIndex);
+              // Remove exactly the one stale network entry. splice(networkIndex) with a
+              // single argument would delete that entry AND every entry after it.
+              this.assetsInfo[networkWalletIndex].networks.splice(networkIndex, 1);
             }
           }
 

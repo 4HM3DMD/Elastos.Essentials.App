@@ -1,9 +1,10 @@
 <ion-content>
     <app-titlebar></app-titlebar>
-    <ion-grid *ngIf="hideMnemonic && hasMnemonic" class="verify-container ion-no-padding ion-no-margin"
+    <ion-grid *ngIf="hideMnemonic" class="verify-container ion-no-padding ion-no-margin"
         [class.verify-dark-container]="theme.darkMode">
         <ion-row class="btn-container">
-            <ebutton (clicked)="onExport()" [title]="'wallet.text-export-mnemonic' | translate"> </ebutton>
+            <ebutton (clicked)="onExport()"
+                [title]="(hasMnemonic ? 'wallet.text-export-mnemonic' : 'wallet.privatekey') | translate"> </ebutton>
         </ion-row>
     </ion-grid>
 

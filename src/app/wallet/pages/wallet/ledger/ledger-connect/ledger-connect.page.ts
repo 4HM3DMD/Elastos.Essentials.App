@@ -172,6 +172,9 @@ export class LedgerConnectPage implements OnInit {
         catch (e) {
             Logger.error(TAG, ' initLedger error:', e);
             this.connectError = true;
+            // Surface the failure — the error row in the template is commented out, so
+            // without this toast the spinner just disappears with no explanation.
+            this.native.toast_trans('wallet.ledger-connect-error');
         }
         this.connecting = false;
     }

@@ -9,7 +9,8 @@ import { GlobalPopupService } from 'src/app/services/global.popup.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { AnyNetworkWallet } from 'src/app/wallet/model/networks/base/networkwallets/networkwallet';
 import { EVMNetwork } from 'src/app/wallet/model/networks/evms/evm.network';
-import { ERC20Coin } from '../../../../model/coin';
+import { TronNetworkBase } from 'src/app/wallet/model/networks/tron/network/tron.base.network';
+import { CoinType, ERC20Coin, TRC20Coin } from '../../../../model/coin';
 import { AnySubWallet } from '../../../../model/networks/base/subwallets/subwallet';
 import { Native } from '../../../../services/native.service';
 import { WalletService } from '../../../../services/wallet.service';
@@ -81,7 +82,15 @@ export class CoinErc20DetailsPage implements OnInit {
     void this.globalPopupService.ionicConfirm('wallet.delete-coin-confirm-title', 'wallet.delete-coin-confirm-subtitle')
       .then(async (data) => {
         if (data) {
-          await this.network.deleteERC20Coin(this.coin);
+          // TRC20 tokens are routed to this page too (coin-list handles ERC20 or TRC20),
+          // but they live on Tron networks, which extend Network (not EVMNetwork) and
+          // expose deleteTRC20Coin rather than deleteERC20Coin. Route by coin type so the
+          // delete does not call an undefined method on a Tron network.
+          if (this.coin.getType() === CoinType.TRC20) {
+            await (this.networkWallet.network as unknown as TronNetworkBase).deleteTRC20Coin(this.coin as unknown as TRC20Coin);
+          } else {
+            await this.network.deleteERC20Coin(this.coin);
+          }
           this.native.pop();
         }
       });

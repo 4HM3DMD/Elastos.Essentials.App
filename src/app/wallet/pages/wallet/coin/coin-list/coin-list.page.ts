@@ -44,7 +44,7 @@ export class CoinListPage implements OnInit, OnDestroy {
     coinBalanceCache = {};
     payPassword = "";
     singleAddress = false;
-    currentCoin: any;
+    currentCoin: EditableCoinInfo;
     walletAddress = null;
 
     // Helpers
@@ -145,10 +145,12 @@ export class CoinListPage implements OnInit, OnDestroy {
         if (this.network.supportsERC20Coins() || this.network.supportsTRC20Coins()) {
             this.walletAddress = this.networkWallet.getMainTokenSubWallet().getCurrentReceiverAddress();
             this.updateSubscription = this.events.subscribe("error:update", () => {
-                this.currentCoin["open"] = false;
+                // Revert the toggle the template actually binds to (isOpen), otherwise a
+                // failed create/destroy leaves the switch stuck in the wrong position.
+                this.currentCoin.isOpen = false;
             });
             this.destroySubscription = this.events.subscribe("error:destroySubWallet", () => {
-                this.currentCoin["open"] = true;
+                this.currentCoin.isOpen = true;
             });
             this.coinAddSubscription = this.network.onCoinAdded.subscribe(() => {
                 void this.refreshCoinList();
@@ -229,7 +231,7 @@ export class CoinListPage implements OnInit, OnDestroy {
             // Create the sub Wallet (ex: IDChain)
             await this.networkWallet.createNonStandardSubWallet(coin);
         } catch (error) {
-            this.currentCoin["open"] = false; // TODO: currentCoin type
+            this.currentCoin.isOpen = false;
         }
         await this.native.hideLoading();
     }

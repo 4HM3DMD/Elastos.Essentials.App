@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { TitleBarForegroundMode } from 'src/app/components/titlebar/titlebar.types';
 import { Native } from 'src/app/identity/services/native';
+import { Logger } from 'src/app/logger';
 import { Util } from 'src/app/model/util';
 import { GlobalEvents } from 'src/app/services/global.events.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
@@ -86,12 +87,23 @@ export class KeystoreExportPage implements OnInit {
     }
 
     async export() {
-        if (this.checkPassword()) {
+        if (!this.checkPassword()) {
+            return;
+        }
+        try {
             this.keystore = await WalletJSSDKHelper.exportKeystore(this.masterWalletId, this.keystorePassword, this.payPassword);
+        } catch (e) {
+            Logger.error('wallet', 'KeystoreExportPage export error:', e);
+            this.native.toast_trans('wallet.transaction-fail');
         }
     }
 
     copyKeystore() {
+        // The read-only textarea is visible before any export, so guard against copying
+        // an empty box and showing a false "copied" confirmation.
+        if (!this.keystore) {
+            return;
+        }
         void this.native.copyClipboard(this.keystore);
         this.native.toast(this.translate.instant("common.copied-to-clipboard"));
     }

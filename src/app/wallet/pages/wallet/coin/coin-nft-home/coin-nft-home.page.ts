@@ -160,6 +160,12 @@ export class CoinNFTHomePage implements OnInit {
             next: (assets) => {
                 this.assets = this.nft.getAssets();
             },
+            // Without an error handler a failed refresh never completes, so the spinner
+            // would spin forever. Clear it and log so the user can retry.
+            error: (e) => {
+                Logger.error('wallet', 'coin-nft-home refreshAssets error:', e);
+                this.refreshingAssets = false;
+            },
             complete: () => {
                 this.refreshingAssets = false;
             }
