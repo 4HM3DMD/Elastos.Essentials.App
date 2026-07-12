@@ -7,9 +7,17 @@
     <ion-spinner></ion-spinner>
   </ion-grid>
 
+  <!-- Packet info could not be loaded (server unreachable). Without this the page would
+       fall through to the balance block and dereference a null packet at render. -->
+  <ion-grid class="container ion-padding redpacket-container payment-section-container"
+    *ngIf="!fetchingPacketInfo && !packet"
+    style="display: flex; flex-direction: column; align-items: center; text-align:center;">
+    <h3>{{ 'redpackets.error-retrieve-packet' | translate }}</h3>
+  </ion-grid>
+
   <!-- Not enough balance either native or ERC20 -->
   <ion-grid class="container ion-padding balance-not-enough"
-    *ngIf="!fetchingPacketInfo && (!nativeTokenBalanceIsEnough || (packet.costs.erc20Token && !erc20TokenBalanceIsEnough))">
+    *ngIf="!fetchingPacketInfo && packet && (!nativeTokenBalanceIsEnough || (packet.costs.erc20Token && !erc20TokenBalanceIsEnough))">
     <div *ngIf="!nativeTokenBalanceIsEnough">
       {{ 'redpackets.balance-not-enough' | translate: { currentTokens: currentNativeBalance, targetTokens:
       getNativeTokenTotal(), symbol: getNativeTokenSymbol() } }}

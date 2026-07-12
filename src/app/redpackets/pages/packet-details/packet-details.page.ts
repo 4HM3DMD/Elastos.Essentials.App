@@ -278,7 +278,9 @@ export class PacketDetailsPage implements OnInit {
     // For each winner, get DID information if any. During this time, we may display placeholders
     // and then show avatar and real DID names as they arrive asynchronously
     this.winners = [];
-    for (let winner of rawWinners) {
+    // getPacketWinners() returns null on a failed/empty /winners response; guard so the
+    // post-grab refetch can't throw and skip checkActiveWalletAsWinner().
+    for (let winner of (rawWinners || [])) {
       let winnerEntry: WinnerDisplayEntry = {
         winner,
         name: "",

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import BigNumber from 'bignumber.js';
+import { Subscription } from 'rxjs';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { TitleBarForegroundMode } from 'src/app/components/titlebar/titlebar.types';
 import { Logger } from 'src/app/logger';
@@ -168,6 +169,10 @@ export class PayPage {
   }
 
   public areAllPaymentsCompleted(): boolean {
+    // The page footer calls this while only guarded by !fetchingPacketInfo, so it can run
+    // when a failed fetch left packet null — guard here rather than deref null.
+    if (!this.packet)
+      return false;
     if (this.packet.tokenType === TokenType.NATIVE_TOKEN)
       return this.isNativePaymentCompleted();
     else
@@ -276,26 +281,29 @@ export class PayPage {
 
     this.sendingNativePayment = true;
 
-    let rawTx = await evmSubWallet.createPaymentTransaction(
-      this.packet.paymentAddress,
-      this.packet.costs.nativeToken.total,
-      "", null, null, -1);
-
-    console.log("Payment rawTx", rawTx);
-
-    const transfer = new Transfer();
-    Object.assign(transfer, {
-      masterWalletId: evmSubWallet.masterWallet.id,
-      subWalletId: evmSubWallet.id,
-      rawTransaction: rawTx,
-      action: null,
-      intentId: null
-    });
-
+    // Declared outside the try so the catch can tear down a subscription that was already
+    // created before a later failure.
+    let txStatusSub: Subscription = null;
     try {
+      let rawTx = await evmSubWallet.createPaymentTransaction(
+        this.packet.paymentAddress,
+        this.packet.costs.nativeToken.total,
+        "", null, null, -1);
+
+      console.log("Payment rawTx", rawTx);
+
+      const transfer = new Transfer();
+      Object.assign(transfer, {
+        masterWalletId: evmSubWallet.masterWallet.id,
+        subWalletId: evmSubWallet.id,
+        rawTransaction: rawTx,
+        action: null,
+        intentId: null
+      });
+
       // Listen to transaction events in order to catch the published transaction hash.
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      let txStatusSub = this.ethTransactionService.ethTransactionStatus.subscribe(async txStatus => {
+      txStatusSub = this.ethTransactionService.ethTransactionStatus.subscribe(async txStatus => {
         // Make sure we are receiving a status for our current operation, not for something else
         // Note: this check if far from being robust, let's assume for now that there is only one on going
         // transaction at a time... Can't do much better over the existing mechanism.
@@ -324,7 +332,7 @@ export class PayPage {
             }
             else {
               // Networking or other unexpected error during notification of payment -
-              this.nativePaymentStepError = "Unknown error";
+              this.nativePaymentStepError = this.translate.instant('redpackets.payment-unknown-error');
             }
 
             this.sendingNativePayment = false;
@@ -333,6 +341,7 @@ export class PayPage {
             txStatusSub.unsubscribe();
           } else if (txStatus.status === ETHTransactionStatus.CANCEL) {
             this.sendingNativePayment = false;
+            txStatusSub.unsubscribe();
           }
         }
       });
@@ -340,7 +349,12 @@ export class PayPage {
       await evmSubWallet.signAndSendRawTransaction(rawTx, transfer, false);
     }
     catch (err) {
-      Logger.error('redpackets', 'publishTransaction error:', err)
+      Logger.error('redpackets', 'publishTransaction error:', err);
+      // Reset the flag (and drop any subscription) so the button becomes clickable again;
+      // otherwise the spinner spins forever and the method's guard blocks all retries.
+      this.sendingNativePayment = false;
+      if (txStatusSub)
+        txStatusSub.unsubscribe();
     }
 
     console.log("after native payment");
@@ -367,26 +381,29 @@ export class PayPage {
 
     this.sendingERC20Payment = true;
 
-    let rawTx = await erc20SubWallet.createPaymentTransaction(
-      this.packet.paymentAddress,
-      this.packet.costs.erc20Token.total,
-      "", null, null, -1);
-
-    console.log("Payment rawTx", rawTx);
-
-    const transfer = new Transfer();
-    Object.assign(transfer, {
-      masterWalletId: erc20SubWallet.masterWallet.id,
-      subWalletId: erc20SubWallet.id,
-      rawTransaction: rawTx,
-      action: null,
-      intentId: null
-    });
-
+    // Declared outside the try so the catch can tear down a subscription that was already
+    // created before a later failure.
+    let txStatusSub: Subscription = null;
     try {
+      let rawTx = await erc20SubWallet.createPaymentTransaction(
+        this.packet.paymentAddress,
+        this.packet.costs.erc20Token.total,
+        "", null, null, -1);
+
+      console.log("Payment rawTx", rawTx);
+
+      const transfer = new Transfer();
+      Object.assign(transfer, {
+        masterWalletId: erc20SubWallet.masterWallet.id,
+        subWalletId: erc20SubWallet.id,
+        rawTransaction: rawTx,
+        action: null,
+        intentId: null
+      });
+
       // Listen to transaction events in order to catch the published transaction hash.
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      let txStatusSub = this.ethTransactionService.ethTransactionStatus.subscribe(async txStatus => {
+      txStatusSub = this.ethTransactionService.ethTransactionStatus.subscribe(async txStatus => {
         // Make sure we are receiving a status for our current operation, not for something else
         // Note: this check if far from being robust, let's assume for now that there is only one on going
         // transaction at a time... Can't do much better over the existing mechanism.
@@ -415,7 +432,7 @@ export class PayPage {
             }
             else {
               // Networking or other unexpected error during notification of payment -
-              this.erc20PaymentStepError = "Unknown error";
+              this.erc20PaymentStepError = this.translate.instant('redpackets.payment-unknown-error');
             }
 
             this.sendingERC20Payment = false;
@@ -423,17 +440,25 @@ export class PayPage {
             // Stop listening, we got everything we needed
             txStatusSub.unsubscribe();
           }
-        }
-        else if (txStatus.status === ETHTransactionStatus.CANCEL) {
-          this.sendingERC20Payment = false;
-          txStatusSub.unsubscribe();
+          else if (txStatus.status === ETHTransactionStatus.CANCEL) {
+            // Was an else-if on the chainId check, so a cancel for THIS wallet was never
+            // handled and left the flag stuck. Nest it with the PACKED branch, mirroring
+            // the native flow.
+            this.sendingERC20Payment = false;
+            txStatusSub.unsubscribe();
+          }
         }
       });
 
       await evmSubWallet.signAndSendRawTransaction(rawTx, transfer, false);
     }
     catch (err) {
-      Logger.error('redpackets', 'publishTransaction ERC20 error:', err)
+      Logger.error('redpackets', 'publishTransaction ERC20 error:', err);
+      // Reset the flag (and drop any subscription) so the button becomes clickable again;
+      // otherwise the spinner spins forever and the method's guard blocks all retries.
+      this.sendingERC20Payment = false;
+      if (txStatusSub)
+        txStatusSub.unsubscribe();
     }
 
     console.log("after erc20 payment");

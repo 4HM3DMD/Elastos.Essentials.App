@@ -19,7 +19,7 @@ export class AboutPage implements OnInit {
       type: 'settings.developer',
       links: [
         { title: 'Elastos DAO LLC', link: null },
-        { title: 'common.website', link: 'elastos.com' },
+        { title: 'common.website', link: 'https://elastos.com' },
         { title: 'common.email', link: 'secretariat@elastos.com' },
       ]
     },

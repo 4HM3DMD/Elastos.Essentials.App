@@ -4,6 +4,7 @@ import { Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleBarComponent } from 'src/app/components/titlebar/titlebar.component';
 import { BuiltInIcon, TitleBarIcon, TitleBarIconSlot, TitleBarMenuItem } from 'src/app/components/titlebar/titlebar.types';
+import { Logger } from 'src/app/logger';
 import { GlobalNavService } from 'src/app/services/global.nav.service';
 import { GlobalThemeService } from 'src/app/services/theming/global.theme.service';
 import { GlobalWalletConnectService, WalletConnectSessionRequestSource } from 'src/app/services/walletconnect/global.walletconnect.service';
@@ -87,7 +88,13 @@ export class WalletConnectPrepareToConnectPage implements OnInit {
     if (this.comingFromScanner()) {
       // Coming from a scan: reject current request, kill all sessions and let user scan again
       await this.rejectSession("Scanning again");
-      await void this.walletConnect.killAllSessions();
+      // Await so sessions are torn down before re-scanning, but tolerate a rejection
+      // (e.g. a stale/expired topic) so the user always reaches the scanner.
+      try {
+        await this.walletConnect.killAllSessions();
+      } catch (e) {
+        Logger.warn('walletconnect', 'killAllSessions failed during retry, continuing to scanner:', e);
+      }
       await this.globalNav.navigateTo("scanner", '/scanner/scan');
     }
     else {

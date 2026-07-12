@@ -97,6 +97,7 @@ export const en = {
     'this-packet-is-not-live': 'This packet is not live yet',
     'packet-is-expired': 'This packet is expired',
     'error-retrieve-packet': 'Unable to retrieve red packet information, please retry later.',
+    'payment-unknown-error': 'The payment could not be confirmed. Please try again later.',
     'grab-me': 'Grab me!',
     'grab-packet': 'Grab packet',
     'anonymous-offering': 'A generous anonymous friend is offering some',
