@@ -23,6 +23,7 @@ import { GlobalPopupService } from 'src/app/services/global.popup.service';
 import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
 import { GlobalStartupService } from 'src/app/services/global.startup.service';
 import { GlobalStorageService } from 'src/app/services/global.storage.service';
+import { DIDSessionsStore } from 'src/app/services/stores/didsessions.store';
 import { NetworkTemplateStore } from 'src/app/services/stores/networktemplate.store';
 import { WalletJSSDKHelper } from 'src/app/wallet/model/networks/elastos/wallet.jssdk.helper';
 import { DIDMnemonicHelper } from '../helpers/didmnemonic.helper';
@@ -271,6 +272,24 @@ export class IdentityService {
       };
       let result = await this.globalPasswordService.setPasswordInfo(passwordInfo);
       if (result.value) {
+        // Adding a profile from within an active session (e.g. the launcher "Add Profile" entry)
+        // reaches here still signed in as the PREVIOUS identity. The new identity's default wallet
+        // must belong to the NEW DID, but the wallet subsystem files a new wallet under whichever
+        // identity is signed in at creation time: storage.service writes the wallet list under the
+        // live DIDSessionsStore.signedInDIDString, and the keystore is written through a
+        // MasterWalletManager cached/frozen to the signed-in DID that is only rebuilt on sign-out
+        // (WalletService.stop -> resetMasterWalletManager, via onUserSignOut). So we sign the current
+        // identity out here - AFTER the master password is confirmed (setPasswordInfo above ran with
+        // the still-unlocked session) and BEFORE the identity is added and prepare-did runs. That
+        // clears signedInDIDString and resets the frozen manager, so prepare-did executes its own
+        // sign-in step and scopes the new wallet to the new DID - exactly as signed-out onboarding
+        // does. Guarded so normal signed-out onboarding is a no-op. Sign-out is non-destructive and
+        // fully reversible, and doing it here (at commit) rather than at the entry means exploring
+        // and cancelling Add Profile never disturbs the current session.
+        if (DIDSessionsStore.signedInDIDString) {
+          await this.signOut();
+        }
+
         await this.nativeService.showLoading(this.translate.instant('common.please-wait'));
         // Master password was created and did store password could be saved
         // Save the identity entry in the did session plugin
