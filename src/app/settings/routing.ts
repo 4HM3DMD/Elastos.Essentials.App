@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AboutPage } from './pages/about/about.page';
+import { AutoLockPage } from './pages/autolock/autolock.page';
 import { DeveloperPage } from './pages/developer/developer.page';
 import { DevTestsPage } from './pages/devtests/devtests.page';
 import { ElastosAPIProviderPage } from './pages/elastosapiprovider/elastosapiprovider.page';
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'privacy', component: PrivacyPage },
   { path: 'privacy/elastosapiprovider', component: ElastosAPIProviderPage },
   { path: 'startupscreen', component: StartupScreenPage },
+  { path: 'autolock', component: AutoLockPage },
 ];
 
 @NgModule({

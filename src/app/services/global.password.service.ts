@@ -35,4 +35,13 @@ export class GlobalPasswordService {
   public changeMasterPassword(): Promise<PasswordManagerPlugin.BooleanWithReason> {
     return this.queue.add(() => passwordManager.changeMasterPassword());
   }
+
+  /**
+   * Re-locks the password database. The next access to a stored password will require the
+   * user to provide the master password again. Used by the auto-lock (GlobalSecurityService).
+   * Routed through the same queue as the other calls so it cannot race an in-flight unlock.
+   */
+  public lockMasterPassword(): Promise<void> {
+    return this.queue.add(() => Promise.resolve(passwordManager.lockMasterPassword()));
+  }
 }

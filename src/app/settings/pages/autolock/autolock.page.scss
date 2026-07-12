@@ -1,0 +1,23 @@
+@import "src/app/settings/root.scss";
+@import "../../shared.scss";
+
+.container {
+  .intro-row {
+    padding: 8px 4px 12px;
+
+    h2 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+
+  ion-row {
+    .right-col {
+      ion-icon {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+<ion-content>
+  <app-titlebar></app-titlebar>
+  <ion-grid class="container" [class.dark-container]="theme.darkMode">
+    <ion-row class="intro-row">
+      <ion-col>
+        <h2 class="secondary-text">{{ 'settings.autolock-intro' | translate }}</h2>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngFor="let option of options" class="section" (click)="select(option)">
+      <ion-col size="9" class="title-col">
+        <h1>{{ option.name }}</h1>
+      </ion-col>
+      <ion-col size="3" class="right-col">
+        <ion-icon *ngIf="activeSeconds === option.seconds" name="checkmark"></ion-icon>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

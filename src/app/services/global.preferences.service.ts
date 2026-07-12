@@ -54,6 +54,9 @@ export interface AllPreferences {
   'help.dailytips.show': boolean;
   /** Whether to enable creating red packets (removed on iOS due to Apple policy) */
   'privacy.redpacket.create': boolean;
+  /** Auto-lock the password database after this many seconds in the background. 0 = lock
+   *  immediately (require the master password every time the app returns). */
+  'security.lockTimeout': number;
 }
 
 export type PreferenceKey = keyof AllPreferences;
@@ -134,7 +137,10 @@ export class GlobalPreferencesService implements GlobalService {
       'chain.network.configurl': '',
       'elastosapi.provider': 'elastosio',
       'help.dailytips.show': true,
-      'privacy.redpacket.create': enableCreatingRedPacket
+      'privacy.redpacket.create': enableCreatingRedPacket,
+      // 5 minutes by default: re-lock the password database after being backgrounded this
+      // long, so returning to the app re-prompts for the master password on sensitive access.
+      'security.lockTimeout': 300
     };
   }
 
