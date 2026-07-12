@@ -72,7 +72,7 @@
                 </ion-row>
 
                 <ion-row class="profile-data"
-                    *ngIf="suggestionDetail.newRecipient && (proposaltype == 'changeproposaladdress' || proposaltype == 'changeproposalowner')">
+                    *ngIf="suggestionDetail.newRecipient && proposaltype == 'changeproposal'">
                     <ion-col>
                         <h5>{{ 'crproposalvoting.new-recipient-address' | translate }}</h5>
                         <h4>{{ suggestionDetail.newRecipient }}</h4>
@@ -80,7 +80,7 @@
                 </ion-row>
 
                 <ion-row class="profile-data"
-                    *ngIf="suggestionDetail.newOwnerDID && proposaltype == 'changeproposalowner'">
+                    *ngIf="suggestionDetail.newOwnerDID && proposaltype == 'changeproposal'">
                     <ion-col>
                         <h5>{{ 'crproposalvoting.new-owner-did' | translate }}</h5>
                         <h4>{{ suggestionDetail.newOwnerDID }}</h4>
@@ -95,7 +95,7 @@
                 </ion-row>
 
                 <ion-row class="profile-data" *ngIf="suggestionDetail.targetProposalTitle &&
-                (proposaltype == 'changeproposalowner' || proposaltype == 'closeproposal')">
+                (proposaltype == 'changeproposal' || proposaltype == 'closeproposal')">
                     <ion-col>
                         <h5>{{ 'crproposalvoting.target-proposal-title' | translate }}</h5>
                         <h4>{{ suggestionDetail.targetProposalTitle }}</h4>
@@ -103,7 +103,7 @@
                 </ion-row>
 
                 <ion-row class="profile-data"
-                    *ngIf="onGoingCommand.data.targetproposalhash && (proposaltype == 'changeproposalowner' || proposaltype == 'closeproposal')">
+                    *ngIf="onGoingCommand.data.targetproposalhash && (proposaltype == 'changeproposal' || proposaltype == 'closeproposal')">
                     <ion-col>
                         <h5>{{ 'crproposalvoting.target-proposal-hash' | translate }}</h5>
                         <h4>{{ onGoingCommand.data.targetproposalhash }}</h4>

@@ -85,7 +85,9 @@ ion-col {
     }
 
     .expired {
-        color: #000000;
+        // Was #000000 (invisible on the dark page background); adaptive token so the
+        // Expired status stays legible in both themes.
+        color: var(--ion-text-color);
         border: 1px solid #c4c4c4;
     }
 }
@@ -179,7 +181,9 @@ ion-segment {
 }
 
 .undecided {
-    color: #cccccc;
+    // Was #cccccc (light-gray, illegible on the teal tint in light theme); adaptive
+    // token keeps the label readable on the tint in both themes.
+    color: var(--ion-text-color);
     background-color: rgba(96, 206, 180, 0.15);
 }
 

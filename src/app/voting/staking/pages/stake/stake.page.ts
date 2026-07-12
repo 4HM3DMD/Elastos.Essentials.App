@@ -44,14 +44,22 @@ export class StakePage {
 
         this.dataFetched = false;
 
-        this.maxStake = await this.stakeService.getBalanceByFirstAddress();
-        if (this.maxStake >= 1) {
-            this.maxStake = this.maxStake - 1;
-        }
-        else {
+        try {
+            this.maxStake = await this.stakeService.getBalanceByFirstAddress();
+            if (this.maxStake >= 1) {
+                this.maxStake = this.maxStake - 1;
+            }
+            else {
+                this.maxStake = 0;
+            }
+        } catch (e) {
+            // Without this, a failed balance fetch leaves dataFetched false and the page
+            // stuck on its spinner forever. Resolve the spinner with a safe zero balance.
+            Logger.error('wallet', 'stake ionViewWillEnter getBalance error:', e);
             this.maxStake = 0;
+        } finally {
+            this.dataFetched = true;
         }
-        this.dataFetched = true;
 
         this.isSingleAddressWallet = this.voteService.networkWallet.getNetworkOptions().singleAddress;
     }

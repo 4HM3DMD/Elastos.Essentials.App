@@ -61,11 +61,20 @@ export class CandidatesPage implements OnInit {
         //this.titleBar.setForegroundMode(TitleBarForegroundMode.LIGHT);
         this.titleBar.setTitle(this.translate.instant('crcouncilvoting.council-candidates'));
 
-        if (!this.candidatesFetched) {
-            await this.crCouncilService.fetchCandidates();
+        try {
+            if (!this.candidatesFetched) {
+                await this.crCouncilService.fetchCandidates();
+                this.candidatesFetched = true;
+            }
+            this.remainingTime = await this.crCouncilService.getRemainingTime();
+        } catch (e) {
+            // Without this, a failed fetch leaves candidatesFetched false and the page
+            // stuck on its spinner forever. Resolve the spinner and surface the error.
+            Logger.error(App.CRCOUNCIL_VOTING, 'candidates ionViewWillEnter error:', e);
             this.candidatesFetched = true;
+            void this.voteService.popupErrorMessage(e);
+            return;
         }
-        this.remainingTime = await this.crCouncilService.getRemainingTime();
 
         switch (this.crCouncilService.candidateInfo.state) {
             case 'Unregistered':

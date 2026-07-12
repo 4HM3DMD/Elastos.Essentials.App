@@ -214,17 +214,24 @@ export class DPosUnRegistrationPage implements OnInit {
       return;
     }
 
-    const payload = await this.voteService.sourceSubwallet.generateCancelProducerPayload(
-      this.dposInfo.ownerpublickey,
-      payPassword
-    );
+    try {
+      const payload = await this.voteService.sourceSubwallet.generateCancelProducerPayload(
+        this.dposInfo.ownerpublickey,
+        payPassword
+      );
 
-    await this.globalNative.showLoading(this.translate.instant('common.please-wait'));
-    const rawTx = await this.voteService.sourceSubwallet.createCancelProducerTransaction(payload, '');
-    await this.globalNative.hideLoading();
-    let ret = await this.voteService.signAndSendRawTransaction(rawTx);
-    if (ret) {
-      this.voteService.toastSuccessfully('dposregistration.unregister');
+      await this.globalNative.showLoading(this.translate.instant('common.please-wait'));
+      const rawTx = await this.voteService.sourceSubwallet.createCancelProducerTransaction(payload, '');
+      await this.globalNative.hideLoading();
+      let ret = await this.voteService.signAndSendRawTransaction(rawTx);
+      if (ret) {
+        this.voteService.toastSuccessfully('dposregistration.unregister');
+      }
+    } catch (e) {
+      // Without this, a throw after showLoading leaves the please-wait overlay on
+      // screen forever, locking the app mid-unregistration.
+      await this.globalNative.hideLoading();
+      await this.voteService.popupErrorMessage(e);
     }
   }
 

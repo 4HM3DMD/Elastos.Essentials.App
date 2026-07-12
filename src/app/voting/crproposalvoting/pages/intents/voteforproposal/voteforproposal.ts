@@ -64,39 +64,47 @@ export class VoteForProposalPage {
         this.onGoingCommand = this.crOperations.onGoingCommand as VoteForProposalCommand;
         Logger.log(App.CRPROPOSAL_VOTING, "VoteForProposalCommand", this.onGoingCommand);
 
-        this.proposalDetail = await this.crOperations.getCurrentProposal();
+        try {
+            this.proposalDetail = await this.crOperations.getCurrentProposal();
 
-        if (this.proposalDetail) {
-            this.keyboard.onKeyboardWillShow().subscribe(() => {
-                this.zone.run(() => {
-                    this.isKeyboardHide = false;
+            if (this.proposalDetail) {
+                this.keyboard.onKeyboardWillShow().subscribe(() => {
+                    this.zone.run(() => {
+                        this.isKeyboardHide = false;
+                    });
                 });
-            });
 
-            this.keyboard.onKeyboardWillHide().subscribe(() => {
-                this.zone.run(() => {
-                    this.isKeyboardHide = true;
+                this.keyboard.onKeyboardWillHide().subscribe(() => {
+                    this.zone.run(() => {
+                        this.isKeyboardHide = true;
+                    });
                 });
-            });
-            await this.stakeService.getVoteRights();
-            if (this.stakeService.votesRight.totalVotesRight > 0) {
-                this.maxVotes = this.stakeService.votesRight.totalVotesRight;
-            }
-            else {
-                let status = await this.voteService.dPoSStatus.value;
-                if (status == DposStatus.DPoSV2) {
-                    this.maxVotes = 0;
+                await this.stakeService.getVoteRights();
+                if (this.stakeService.votesRight.totalVotesRight > 0) {
+                    this.maxVotes = this.stakeService.votesRight.totalVotesRight;
                 }
-                else if (this.voteService.sourceSubwallet.masterWallet.type == WalletType.MULTI_SIG_STANDARD) {
-                    // Multi-signature wallets can only vote with staked ELA.
-                    this.maxVotes = 0;
-                } else {
-                    this.maxVotes = await this.voteService.getMaxVotes();
+                else {
+                    let status = await this.voteService.dPoSStatus.value;
+                    if (status == DposStatus.DPoSV2) {
+                        this.maxVotes = 0;
+                    }
+                    else if (this.voteService.sourceSubwallet.masterWallet.type == WalletType.MULTI_SIG_STANDARD) {
+                        // Multi-signature wallets can only vote with staked ELA.
+                        this.maxVotes = 0;
+                    } else {
+                        this.maxVotes = await this.voteService.getMaxVotes();
+                    }
                 }
             }
+        } catch (e) {
+            // Without this, a rejected proposal/vote-rights/balance fetch would strand the
+            // page on the bare spinner forever. Surface the error; the finally still
+            // resolves the loading state so the page renders past the spinner.
+            Logger.error(App.CRPROPOSAL_VOTING, 'voteforproposal ionViewWillEnter error:', e);
+            await this.voteService.popupErrorMessage(e);
+        } finally {
+            this.proposalDetailFetched = true;
         }
-
-        this.proposalDetailFetched = true;
     }
 
     ionViewWillLeave() {
