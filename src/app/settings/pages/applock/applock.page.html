@@ -1,0 +1,28 @@
+<ion-content>
+  <app-titlebar></app-titlebar>
+  <div class="settings">
+    <div class="card-group">
+      <button type="button" class="setting-row" (click)="onChangePassword()">
+        <span class="icon"><ion-icon name="key-outline"></ion-icon></span>
+        <span class="text"><span class="title">{{ 'settings.applock-change-password' | translate }}</span>
+          <span class="sub">{{ 'settings.applock-change-password-sub' | translate }}</span></span>
+        <ion-icon class="chevron" name="chevron-forward"></ion-icon>
+      </button>
+
+      <button type="button" class="setting-row" (click)="onAutoLock()">
+        <span class="icon"><ion-icon name="timer-outline"></ion-icon></span>
+        <span class="text"><span class="title">{{ 'settings.autolock-title' | translate }}</span>
+          <span class="sub">{{ autoLockLabel() }}</span></span>
+        <ion-icon class="chevron" name="chevron-forward"></ion-icon>
+      </button>
+
+      <div class="setting-row toggle-row">
+        <span class="icon"><ion-icon name="eye-off-outline"></ion-icon></span>
+        <span class="text"><span class="title">{{ 'settings.applock-block-screenshots' | translate }}</span>
+          <span class="sub">{{ 'settings.applock-block-screenshots-sub' | translate }}</span></span>
+        <ion-toggle mode="ios" [(ngModel)]="blockScreenshots" (ngModelChange)="toggleBlockScreenshots()"
+          ngDefaultControl></ion-toggle>
+      </div>
+    </div>
+  </div>
+</ion-content>

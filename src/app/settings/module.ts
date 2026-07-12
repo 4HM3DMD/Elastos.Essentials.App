@@ -18,6 +18,7 @@ import { MenuPage } from './pages/menu/menu.page';
 import { PrivacyPage } from './pages/privacy/privacy.page';
 import { StartupScreenPage } from './pages/startupscreen/startupscreen.page';
 import { AutoLockPage } from './pages/autolock/autolock.page';
+import { AppLockPage } from './pages/applock/applock.page';
 import { WalletConnectConnectV2Page } from './pages/walletconnect/connectv2/connectv2.page';
 import { WalletConnectPrepareToConnectPage } from './pages/walletconnect/preparetoconnect/preparetoconnect.page';
 import { WalletConnectSessionsPage } from './pages/walletconnect/sessions/sessions.page';
@@ -38,7 +39,8 @@ import { SettingsRoutingModule } from './routing';
     PrivacyPage,
     ElastosAPIProviderPage,
     StartupScreenPage,
-    AutoLockPage
+    AutoLockPage,
+    AppLockPage
   ],
   imports: [
     CommonModule,
