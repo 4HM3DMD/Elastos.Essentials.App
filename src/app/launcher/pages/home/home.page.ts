@@ -158,10 +158,16 @@ export class HomePage implements OnInit, OnDestroy {
     this.walletServiceSub = this.walletService.walletServiceStatus.subscribe(initializationComplete => {
       if (initializationComplete) {
         this.walletServiceReady = true;
+        // A profile switch re-initializes the wallet service for the new DID without
+        // re-firing ionViewWillEnter (same launcher page), so refresh the identity name
+        // here too - otherwise the header keeps showing the previous profile's name.
+        this.refreshIdentity();
         this.refreshWalletData();
       }
     });
     this.networkWalletSub = this.walletService.activeNetworkWallet.subscribe(() => {
+      // The active wallet changes when the profile switches; keep the header in sync.
+      this.refreshIdentity();
       if (this.walletService.walletServiceStatus.value) this.refreshWalletData();
     });
     this.activeNetworkSub = this.walletNetworkService.activeNetwork.subscribe(network => {

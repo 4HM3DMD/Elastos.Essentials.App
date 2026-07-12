@@ -23,13 +23,6 @@ export class PrepareDIDPage {
 
   // UI
   public slideIndex = 0;
-  public slideOpts = {
-    initialSlide: 0,
-    speed: 400,
-    init: false,
-    allowTouchMove: false,
-    slidesPerView: 1
-  };
   public hidden = true;
 
   // True when we are doing the very last finalization before showing the launch screen.

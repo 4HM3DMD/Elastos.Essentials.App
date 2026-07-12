@@ -50,7 +50,9 @@ export class EditProfilePage {
   ionViewWillEnter() {
     // Chromeless header (2026 onboarding): drop the duplicate title and the gear
     // icon so the gradient hero leads the screen; keep only the back control (SCR-119/120).
-    this.titleBar.setTitle('');
+    // A single space (not '') keeps the bar blank WITHOUT falling back to the default
+    // ELASTOS ESSENTIALS logo, which the titlebar shows whenever the title is empty.
+    this.titleBar.setTitle(' ');
     this.titleBar.setIcon(TitleBarIconSlot.OUTER_LEFT, { key: 'back', iconPath: BuiltInIcon.BACK });
     this.titleBar.setIcon(TitleBarIconSlot.OUTER_RIGHT, null);
     this.titleBar.setNavigationMode(null);
