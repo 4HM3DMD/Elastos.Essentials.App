@@ -60,7 +60,9 @@ import { Native } from '../../../services/native.service';
 import { LocalStorage } from '../../../services/storage.service';
 import { UiService } from '../../../services/ui.service';
 import { WalletService } from '../../../services/wallet.service';
+import { NewWallet, WalletCreationService } from '../../../services/walletcreation.service';
 import { WalletEditionService } from '../../../services/walletedition.service';
+import { ImportWalletType } from 'src/app/wallet/model/masterwallets/wallet.types';
 import { LedgerConnectType } from '../ledger/ledger-connect/ledger-connect.page';
 import { Logger } from 'src/app/logger';
 import { GlobalPreferencesService } from 'src/app/services/global.preferences.service';
@@ -213,7 +215,8 @@ export class WalletHomePage implements OnInit, OnDestroy {
         private cdr: ChangeDetectorRef,
         private aggService: AggregatedTokensService,
         private backupReminderService: BackupReminderService,
-        private profileSelectorService: ProfileSelectorService
+        private profileSelectorService: ProfileSelectorService,
+        private walletCreationService: WalletCreationService
     ) {
         GlobalFirebaseService.instance.logEvent("wallet_home_enter");
     }
@@ -580,13 +583,25 @@ export class WalletHomePage implements OnInit, OnDestroy {
         if (main) this.goCoinHome(main.networkWallet.id, main.id);
     }
 
-    /** No-wallet empty state: route to the standard create / import wallet flows. */
+    /**
+     * No-wallet empty state: route to the standard create / import wallet flows.
+     * These MUST prime walletCreationService exactly like the wallet-settings "add wallet"
+     * entry (reset + isMulti=false + type). Skipping that made wallet-create fall through
+     * to the import branch with stale service state, so "Create Wallet" did not produce a
+     * proper new standard (multi-chain) wallet.
+     */
     public onCreateWallet() {
+        this.walletCreationService.reset();
+        this.walletCreationService.isMulti = false;
+        this.walletCreationService.type = NewWallet.CREATE;
         this.native.go('/wallet/wallet-create');
     }
 
     public onImportWallet() {
-        this.native.go('/wallet/wallet-import');
+        this.walletCreationService.reset();
+        this.walletCreationService.isMulti = false;
+        this.walletCreationService.type = NewWallet.IMPORT;
+        this.native.go('/wallet/wallet-create', { importType: ImportWalletType.MNEMONIC });
     }
 
     /** Send opens the 2026 token picker first, then the transfer form for the chosen token. */
