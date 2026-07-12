@@ -1,5 +1,5 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ActionSheetController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { IdentityService } from 'src/app/didsessions/services/identity.service';
@@ -40,6 +40,7 @@ export class ProfileSelectorComponent implements OnInit, OnDestroy {
     public theme: GlobalThemeService,
     public translate: TranslateService,
     private modalCtrl: ModalController,
+    private actionSheetCtrl: ActionSheetController,
     private didSessions: GlobalDIDSessionsService,
     // Injected so the singletons are alive post-login: IdentityService performs the switch
     // and (via its 'deleteIdentity' listener) the removal; UXService owns the delete-warning
@@ -121,10 +122,37 @@ export class ProfileSelectorComponent implements OnInit, OnDestroy {
     void this.globalNav.navigateTo(App.IDENTITY, '/identity/myprofile/home');
   }
 
-  /** Remove control on another profile -> the existing delete-with-warning flow. */
-  public onRemove(row: ProfileRow, event: Event) {
+  /**
+   * "More options" (ellipsis) on another profile: open an action sheet so a destructive
+   * delete is never a single tap. Delete still runs the existing delete-with-warning flow.
+   */
+  public async onMore(row: ProfileRow, event: Event) {
     event.stopPropagation();
-    this.events.publish('showDeleteIdentityPrompt', row.entry);
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: row.entry.name,
+      buttons: [
+        {
+          text: this.translate.instant('launcher.profile-switch-to'),
+          handler: () => {
+            this.onSelect(row);
+          }
+        },
+        {
+          text: this.translate.instant('launcher.profile-delete'),
+          role: 'destructive',
+          handler: () => {
+            // The delete-with-warning popover (UXService 'showDeleteIdentityPrompt' listener)
+            // still runs, so the user gets the final confirmation before anything is removed.
+            this.events.publish('showDeleteIdentityPrompt', row.entry);
+          }
+        },
+        {
+          text: this.translate.instant('common.cancel'),
+          role: 'cancel'
+        }
+      ]
+    });
+    await actionSheet.present();
   }
 
   /** Add a profile: the on-brand Add Profile entry (offers create + import), not the legacy didsessions welcome. */

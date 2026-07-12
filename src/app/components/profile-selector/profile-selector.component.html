@@ -19,8 +19,8 @@
           (click)="onSettings($event)">
           <ion-icon name="settings-outline"></ion-icon>
         </span>
-        <span *ngIf="!row.isCurrent" class="row-action" role="button" aria-label="Remove profile"
-          (click)="onRemove(row, $event)">
+        <span *ngIf="!row.isCurrent" class="row-action" role="button" aria-label="Profile options"
+          (click)="onMore(row, $event)">
           <ion-icon name="ellipsis-horizontal"></ion-icon>
         </span>
 

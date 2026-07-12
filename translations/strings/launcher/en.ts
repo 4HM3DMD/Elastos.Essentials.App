@@ -45,6 +45,8 @@ export const en = {
         'profile-current': 'Current',
         'profile-add': 'Add profile',
         'profile-add-sub': 'Create or import an identity',
+        'profile-switch-to': 'Switch to this profile',
+        'profile-delete': 'Delete profile',
         'add-profile-title': 'Add Profile',
         'add-profile-heading': 'Add a profile',
         'add-profile-sub': 'Create a new identity, or import one you already own.',
